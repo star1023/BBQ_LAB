@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<!--
+	properties,
+	settings,
+	typeAliases,
+	typeHandlers,
+	objectFactory,
+	objectWrapperFactory,
+	plugins,
+	environments,
+	databaseIdProvider,
+	mappers
+
+	순서 지키지 않을시
+	요소 유형 "configuration"의 콘텐츠는 "(properties?,settings?,typeAliases?,typeHandlers?,objectFactory?,objectWrapperFactory?,
+	plugins?,environments?,databaseIdProvider?,mappers?)"과(와) 일치해야 합니다
+	 -->
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="true" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="defaultExecutorType" value="REUSE" />
+		<setting name="defaultStatementTimeout" value="10" />
+		<setting name="logImpl" value="NO_LOGGING" />
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+		<setting name="jdbcTypeForNull" value="NULL" />
+		<setting name="callSettersOnNulls" value="true"/>
+	</settings>
+
+	<typeAliases>
+		<typeAlias alias="map" type="java.util.Map" />
+		<typeAlias alias="hashmap" type="java.util.HashMap" />
+		<typeAlias alias="list" type="java.util.List" />
+	</typeAliases>
+</configuration>
+
+
+

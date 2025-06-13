@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="businessTripPlan">
+	<sql id="whereBusinessTripPlan">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('searchName')">
+			AND PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+      		<when test="searchType.equals('searchTitle')">
+      		AND TITLE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      	</choose>
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND DESIGN_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'DESIGN' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+		</if>
+	</sql>
+	
+	<select id="selectBusinessTripPlanCount" parameterType="map" resultType="int">
+		/*	businessTripPlan.selectBusinessTripPlanCount */
+		SELECT
+			count(PLAN_IDX) as cnt
+		FROM
+			lab_business_trip_plan
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			<include refid="businessTripPlan.whereBusinessTripPlan" />			
+	</select>
+	
+	<select id="selectBusinessTripPlanList" parameterType="map" resultType="hashmap">
+		/*	businessTripPlan.selectBusinessTripPlanList */
+		SELECT
+			tmp.*
+			, CASE 
+				WHEN tmp.TRIP_TYPE = 'I' THEN '국내'
+				WHEN tmp.TRIP_TYPE = 'O' THEN '해외'
+				END	AS TRIP_TYPE_TXT
+			, CASE 
+				WHEN tmp.TRIP_DIV = 'T' THEN '출장'
+				WHEN tmp.TRIP_DIV = 'R' THEN '시장조사'
+				END	AS TRIP_DIV_TXT	
+			, FN_GET_USER_NAME(tmp.DOC_OWNER) as DOC_OWNER_NAME
+			, CASE 
+				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
+				WHEN tmp.STATUS = 'REG' THEN '등록'
+				WHEN tmp.STATUS = 'APPR' THEN '결재중'
+				WHEN tmp.STATUS = 'COMP' THEN '완료'
+				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+		FROM
+		(	
+			SELECT
+				row_number() over (order by  PLAN_IDX DESC) as rnum
+				, PLAN_IDX
+				, TRIP_TYPE
+				, TRIP_DIV
+				, TITLE
+				, TRIP_START_DATE
+				, TRIP_END_DATE
+				, TRIP_TRANSIT
+				, TRIP_COST
+				, CAL_METHOD
+				, TRIP_EFFECT
+				, REG_USER
+				, DOC_OWNER
+				, STATUS
+				, IS_LAST
+				, IS_DELETE
+				, VERSION_NO	
+			FROM 	
+				lab_business_trip_plan
+			WHERE 1 = 1
+				AND DOC_OWNER = #{userId}
+				AND IS_DELETE = 'N'
+				AND IS_LAST = 'Y'
+				<include refid="businessTripPlan.whereBusinessTripPlan" />
+		)tmp
+		WHERE rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="selectTripPlanSeq" resultType="int">
+		/*	businessTripPlan.selectTripPlanSeq */
+		SELECT FN_NEXTVAL('business_trip_plan_seq') as seq
+	</select>
+	
+	<insert id="insertBusinessTripPlan" parameterType="map">
+		/*	businessTripPlan.insertBusinessTripPlan */
+		INSERT INTO lab_business_trip_plan(
+			PLAN_IDX
+			, TRIP_TYPE
+			, TRIP_DIV
+			, TITLE
+			, TRIP_START_DATE
+			, TRIP_END_DATE
+			, TRIP_TRANSIT
+			, TRIP_COST
+			, CAL_METHOD
+			, TRIP_EFFECT
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+			, IS_LAST
+			, IS_DELETE
+			, VERSION_NO			
+		)VALUES(
+			#{idx}
+			, #{tripType}
+			, #{tripDiv}
+			, #{title}
+			, #{tripStartDate}
+			, #{tripEndDate}
+			, #{tripTransit}
+			, #{tripCost}
+			, #{calMethod}
+			, #{tripEffect}
+			, #{userId}
+			, #{userId}
+			, #{status}
+			, 'Y'
+			, 'N'
+			, 1		
+		)
+	</insert>
+	
+	<insert id="insertBusinessTripPlanUser" parameterType="list">
+		/*	businessTripPlan.insertBusinessTripPlanUser */
+		INSERT
+		INTO lab_business_trip_plan_user(
+			PLAN_IDX
+			, DISPLAY_ORDER
+			, DEPT
+			, POSITION
+			, NAME
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( #{item.idx}, #{item.displayOrder}, #{item.dept}, #{item.position}, #{item.name} )
+		</foreach>
+	</insert>
+	
+	<insert id="insertBusinessTripPlanAddInfo" parameterType="list">
+		/*	businessTripPlan.insertBusinessTripPlanAddInfo */
+		INSERT
+		INTO lab_business_trip_plan_add_info(
+			PLAN_IDX
+			, DISPLAY_ORDER
+			, INFO_TYPE
+			, INFO_TEXT
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( #{item.idx}, #{item.displayOrder}, #{item.infoType}, #{item.infoText} )
+		</foreach>
+	</insert>
+	
+	<insert id="insertBusinessTripPlanContents" parameterType="list">
+		/*	businessTripPlan.insertBusinessTripPlanContents */
+		INSERT
+		INTO lab_business_trip_plan_contents(
+			PLAN_IDX
+			, DISPLAY_ORDER
+			, SCHEDULE
+			, CONTENT
+			, PLACE
+			, NOTE
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( #{item.idx}, #{item.displayOrder}, #{item.schedule}, #{item.content}, #{item.place}, #{item.note} )
+		</foreach>
+	</insert>
+	
+	<select id="selectBusinessTripPlanData" parameterType="map" resultType="hashmap">
+		/*	businessTripPlan.selectBusinessTripPlanData */
+		SELECT
+			PLAN_IDX
+			, TRIP_TYPE
+			, CASE 
+				WHEN TRIP_TYPE = 'I' THEN '국내'
+				WHEN TRIP_TYPE = 'O' THEN '해외'
+				END	AS TRIP_TYPE_TXT
+			, TRIP_DIV
+			, CASE 
+				WHEN TRIP_DIV = 'T' THEN '출장'
+				WHEN TRIP_DIV = 'R' THEN '시장조사'
+				END	AS TRIP_DIV_TXT
+			, TITLE
+			, TRIP_START_DATE
+			, TRIP_END_DATE
+			, TRIP_TRANSIT
+			, TRIP_COST
+			, CAL_METHOD
+			, TRIP_EFFECT
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+			, IS_LAST
+			, IS_DELETE
+			, VERSION_NO	
+		FROM
+			lab_business_trip_plan
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}	
+	</select>
+	
+	<select id="selectBusinessTripPlanUserList" parameterType="map" resultType="hashmap">
+		/*	businessTripPlan.selectBusinessTripPlanUserList */
+		SELECT
+			PLAN_IDX
+			, DISPLAY_ORDER
+			, DEPT
+			, POSITION
+			, NAME 
+		FROM 
+			lab_business_trip_plan_user
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}
+		ORDER BY DISPLAY_ORDER ASC			
+	</select>
+	
+	<select id="selectBusinessTripPlanAddInfoList" parameterType="map" resultType="hashmap">
+		/*	businessTripPlan.selectBusinessTripPlanAddInfoList */
+		SELECT
+			PLAN_IDX
+			, DISPLAY_ORDER
+			, INFO_TYPE
+			, INFO_TEXT
+			FROM 
+			lab_business_trip_plan_add_info
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}
+		ORDER BY DISPLAY_ORDER ASC	
+	</select>
+	
+	<select id="selectBusinessTripPlanContentsList" parameterType="map" resultType="hashmap">
+		/*	businessTripPlan.selectBusinessTripPlanContentsList */
+		SELECT
+			PLAN_IDX
+			, DISPLAY_ORDER
+			, SCHEDULE
+			, CONTENT
+			, PLACE
+			, NOTE
+			FROM 
+			lab_business_trip_plan_contents
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}
+		ORDER BY DISPLAY_ORDER ASC	
+	</select>
+	
+	<update id="updateBusinessTripPlan" parameterType="map">
+		/*	businessTripPlan.updateBusinessTripPlan */
+		UPDATE
+			lab_business_trip_plan
+		SET
+			TRIP_TYPE = #{tripType}
+			, TRIP_DIV = #{tripDiv}
+			, TITLE = #{title}
+			, TRIP_START_DATE = #{tripStartDate}
+			, TRIP_END_DATE = #{tripEndDate}
+			, TRIP_TRANSIT = #{tripTransit}
+			, TRIP_COST = #{tripCost}
+			, CAL_METHOD = #{calMethod}
+			, TRIP_EFFECT = #{tripEffect}
+			, STATUS = #{status}
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}	
+	</update>
+	
+	<delete id="deleteBusinessTripPlanUser" parameterType="map">
+		/*	businessTripPlan.deleteBusinessTripPlanUser */
+		DELETE
+		FROM lab_business_trip_plan_user
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}
+	</delete>
+	
+	<delete id="deleteBusinessTripPlanAddInfo" parameterType="map">
+		/*	businessTripPlan.deleteBusinessTripPlanAddInfo */
+		DELETE
+		FROM lab_business_trip_plan_add_info
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}
+	</delete>
+	
+	<delete id="deleteBusinessTripPlanContents" parameterType="map">
+		/*	businessTripPlan.deleteBusinessTripPlanContents */
+		DELETE
+		FROM lab_business_trip_plan_contents
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}
+	</delete>
+	
+	<select id="searchBusinessTripPlanList" parameterType="map" resultType="hashmap">
+		/*	businessTripPlan.searchBusinessTripPlanList */
+		SELECT
+			PLAN_IDX
+			, TRIP_TYPE
+			, CASE 
+				WHEN TRIP_TYPE = 'I' THEN '국내'
+				WHEN TRIP_TYPE = 'O' THEN '해외'
+				END	AS TRIP_TYPE_TXT
+			, TITLE
+			, TRIP_START_DATE
+			, TRIP_END_DATE
+			, TRIP_TRANSIT
+			, TRIP_COST
+			, CAL_METHOD
+			, TRIP_EFFECT
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+			, IS_LAST
+			, IS_DELETE
+			, VERSION_NO
+		FROM 	
+			lab_business_trip_plan
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			<if test="searchValue != null and searchValue != '' ">
+			AND ( 
+		 		TITLE LIKE CONCAT('%',#{searchValue},'%') 
+		 		OR TRIP_EFFECT LIKE CONCAT('%',#{searchValue},'%') 
+		 		OR PLAN_IDX IN (SELECT distinct PLAN_IDX FROM lab_business_trip_plan_add_info WHERE 1 = 1 AND (INFO_TYPE = 'PUR' OR INFO_TYPE = 'DEST') AND INFO_TEXT LIKE CONCAT('%',#{searchValue},'%') )
+		 	)
+		 	</if>
+			<if test="tripDiv != null and tripDiv != '' ">
+			AND TRIP_DIV = #{tripDiv}
+			</if>
+	</select>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+		/* businessTripPlan.selectHistory */
+		SELECT 
+			lh.DOC_IDX
+			, lh.HISTORY_TYPE
+			, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+				WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+				WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+				WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+				END HISTORY_TYPE_TXT 
+			,<choose>
+				<when test="docType.equals('DESIGN')">
+				rt.PRODUCT_NAME 
+				</when> 
+				<when test="docType.equals('TRIP')">
+				rt.TITLE
+				</when>
+				<when test="docType.equals('PLAN')">
+				rt.TITLE
+				</when>
+				<when test="docType.equals('RESEARCH')">
+				rt.TITLE
+				</when>
+			</choose>
+				AS TITLE
+			, lh.USER_ID 
+			, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+			, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+		FROM lab_history lh ,
+		<choose>
+			<when test="docType.equals('DESIGN')">
+			lab_design rt
+			</when> 
+			<when test="docType.equals('TRIP')">
+			lab_business_trip rt
+			</when>
+			<when test="docType.equals('PLAN')">
+			lab_business_trip_plan rt
+			</when>
+			<when test="docType.equals('RESEARCH')">
+			lab_market_research rt
+			</when>
+		</choose>	
+		WHERE 1 = 1
+			AND lh.DOC_IDX = #{idx}
+			AND lh.DOC_TYPE = #{docType}
+			<choose>
+				<when test="docType.equals('DESIGN')">
+				AND lh.DOC_IDX = rt.DESIGN_IDX 
+				</when> 
+				<when test="docType.equals('TRIP')">
+				AND lh.DOC_IDX = rt.TRIP_IDX 
+				</when>
+				<when test="docType.equals('PLAN')">
+				AND lh.DOC_IDX = rt.PLAN_IDX 
+				</when>
+				<when test="docType.equals('RESEARCH')">
+				AND lh.DOC_IDX = rt.RESEARCH_IDX 
+				</when>
+			</choose>		
+		ORDER BY lh.REG_DATE ASC
+	</select>
+</mapper>

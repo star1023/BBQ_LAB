@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="systemRoleMenu">
+	<select id="selectRoleMenuList" parameterType="map" resultType="hashmap">
+		/* systemRoleMenu.selectRoleMenuList */
+		SELECT 
+			ROLE_MENU_IDX
+			, ROLE_IDX
+			, MENU_IDX
+			, IS_ROOT
+			, REG_USER_ID
+			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') as REG_DATE
+		FROM
+			lab_system_role_menu
+		WHERE 1 = 1
+			AND ROLE_IDX = #{selectedRoleIdx}
+	</select>
+	
+	<delete id="deleteRoleMenu" parameterType="map">
+		/* systemRoleMenu.deleteRoleMenu */
+		DELETE
+		FROM lab_system_role_menu
+		WHERE 1 = 1
+			AND ROLE_IDX = #{selectedRoleIdx}
+	</delete>
+	
+	<insert id="insertRoleMenu" parameterType="map">
+		/* systemRoleMenu.insertRoleMenu */
+		INSERT 
+    	INTO lab_system_role_menu(
+			ROLE_MENU_IDX
+			, ROLE_IDX
+			, MENU_IDX
+			, IS_ROOT
+			, REG_USER_ID
+			, REG_DATE
+		)values
+		<foreach collection="selectedMenu" item="item" index="index"  separator=",">
+		( FN_NEXTVAL('system_role_menu_seq'), #{selectedRoleIdx}, ${item}, 'N', #{userId}, sysdate() )
+		</foreach>
+	
+	</insert>
+</mapper>

@@ -1,0 +1,813 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="menu">
+	
+	<select id="selectMenuCode" resultType="String">
+	/* menu.menu */
+		SELECT 
+			LPAD(FN_NEXTVAL('menu_code_seq'), '3' , '0') as code
+	</select>
+	
+	<select id="checkMaterial" parameterType="map" resultType="hashmap">
+	/* menu.checkMaterial */
+		SELECT 
+			MATERIAL_IDX,
+			MATERIAL_CODE,
+			SAP_CODE,
+			NAME,
+			COMPANY_CODE,
+			PLANT,
+			PRICE,
+			UNIT,
+			EXTRA_UNIT,
+			TYPE,
+			IS_SAMPLE,
+			IS_HIDDEN,
+			IS_DELETE,
+			MATERIAL_TYPE1,
+			MATERIAL_TYPE2,
+			MATERIAL_TYPE3,
+			VERSION_NO,
+			IS_LAST,
+			DOC_NO,
+			KEEP_CONDITION,
+			WIDTH,
+			LENGTH,
+			HEIGHT,
+			TOTAL_WEIGHT,
+			STANDARD,
+			ORIGIN,
+			EXPIRATION_DATE
+		FROM lab_material
+		WHERE 1 = 1
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			AND IS_SAMPLE = 'Y'
+			<if test="matCode != null and matCode != '' ">
+			AND MATERIAL_CODE LIKE CONCAT('%',#{matCode},'%')
+			</if>
+			<if test="sapCode != null and sapCode != '' ">
+			AND SAP_CODE LIKE CONCAT('%',#{sapCode},'%')
+			</if>
+	</select>
+	
+	<sql id="whereMaterialList">
+		<if test="searchValue != null and searchValue != '' ">
+			AND MATERIAL_CODE LIKE CONCAT('%',#{searchValue},'%')
+		</if>
+	</sql>
+	
+	<select id="selectMaterialCount" parameterType="map" resultType="int">
+	/* menu.selectMaterialCount */
+		SELECT 
+			count(MATERIAL_IDX) as cnt
+		FROM lab_material
+		WHERE 1 = 1
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			<include refid="menu.whereMaterialList" />
+	</select>
+	
+	<select id="selectMaterialList" parameterType="map" resultType="hashmap">
+	/* menu.selectMaterialList */
+		SELECT 
+			tmp.*
+			, (SELECT UNIT_NAME FROM lab_unit WHERE 1 = 1 AND UNIT_CODE = UNIT) as UNIT_NAME			
+		FROM (
+			SELECT 
+				row_number() over (order by  MATERIAL_IDX DESC) as rnum
+				, MATERIAL_IDX,
+				MATERIAL_CODE,
+				SAP_CODE,
+				NAME,
+				COMPANY_CODE,
+				PLANT,
+				PRICE,
+				UNIT,
+				EXTRA_UNIT,
+				TYPE,
+				IS_SAMPLE,
+				IS_HIDDEN,
+				IS_DELETE,
+				MATERIAL_TYPE1,
+				MATERIAL_TYPE2,
+				MATERIAL_TYPE3,
+				VERSION_NO,
+				IS_LAST,
+				DOC_NO,
+				KEEP_CONDITION,
+				WIDTH,
+				LENGTH,
+				HEIGHT,
+				TOTAL_WEIGHT,
+				STANDARD,
+				ORIGIN,
+				EXPIRATION_DATE
+			FROM lab_material
+			WHERE 1 = 1
+				AND IS_DELETE = 'N'
+				AND IS_LAST = 'Y'
+				<include refid="menu.whereMaterialList" />
+		)tmp 
+		WHERE rnum between #{startRow} AND #{endRow}
+	</select>
+	
+	<select id="selectMenuDataCount" parameterType="map" resultType="int">
+	/* menu.selectMenuDataCount */
+		SELECT 
+			count(MENU_IDX)
+		FROM lab_menu
+		WHERE 1 = 1
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			AND MENU_CODE = #{menuCode}
+	</select>
+	
+	<select id="selectMenuSeq" resultType="int">
+	/* menu.selectMenuSeq */
+		SELECT FN_NEXTVAL('menu_seq') as seq
+	</select>
+	
+	<!--  20250425 Product-> Menu 로 바뀌면서 컬럼 삭제함 TOTAL_WEIGHT, STANDARD, KEEP_CONDITION, EXPIRATION_DATE -->
+	<insert id="insertMenu" parameterType="map">
+	/* menu.insertMenu */
+		INSERT INTO lab_menu(
+			MENU_IDX
+			, DOC_NO
+			, MENU_CODE
+			, SAP_CODE
+			, NAME
+			, TITLE
+			, CONTENTS
+			, IS_NEW_MATERIAL
+			, VERSION_NO
+			<if test="menuType1 != null and menuType1 !='' ">
+			, MENU_TYPE1
+			</if>
+			<if test="menuType2 != null and menuType2 !='' ">
+			, MENU_TYPE2
+			</if>
+			<if test="menuType3 != null and menuType3 !='' ">
+			, MENU_TYPE3
+			</if>
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+			, SCHEDULE_DATE
+		)VALUES(
+			#{idx}
+			, (SELECT ifnull(MAX(lp.DOC_NO),0)+1 FROM lab_menu lp WHERE 1 = 1)
+			, #{menuCode}
+			, #{menuSapCode}
+			, #{menuName}
+			, #{title}
+			, #{contents}
+			, #{newMat}
+			<choose>
+				<when test="menuType1 != null and menuType1 !='' ">
+				, (SELECT ifnull(MAX(lp.VERSION_NO),0)+1 FROM lab_menu lp WHERE 1 = 1 AND MENU_CODE = #{menuCode})
+				</when>
+				<otherwise>
+				, 1
+				</otherwise>
+			</choose>
+			<if test="menuType1 != null and menuType1 !='' ">
+			, #{menuType1}
+			</if>
+			<if test="menuType2 != null and menuType2 !='' ">
+			, #{menuType2}
+			</if>
+			<if test="menuType3 != null and menuType3 !='' ">
+			, #{menuType3}
+			</if>
+			, 'N'
+			, 'Y'
+			, #{userId}
+			, #{userId}
+			, #{status}
+			, #{scheduleDate}
+		)
+	</insert>
+	
+	<insert id="insertAddInfo" parameterType="list">
+		INSERT
+		INTO lab_menu_add_info(
+			INFO_IDX
+			, MENU_IDX
+			, INFO_TYPE
+			, INFO_TEXT
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( FN_NEXTVAL('lab_menu_add_info_seq'), #{item.idx}, #{item.infoType}, #{item.infoText} )
+		</foreach>
+	</insert>
+	
+	<insert id="insertMenuNew" parameterType="list">
+		INSERT
+		INTO lab_menu_new(
+			NEW_IDX
+			, MENU_IDX
+			, DISPLAY_ORDER
+			, PRODUCT_NAME
+			, PACKAGE_STANDARD
+			, SUPPLIER
+			, KEEP_EXP
+			, NOTE
+			, TYPE_CODE
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( FN_NEXTVAL('lab_menu_new_seq'), #{item.idx}, #{item.displayOrder}, #{item.menuName}, #{item.packageStandard}, #{item.supplier}, #{item.keepExp}, #{item.note}, #{item.typeCode} )
+		</foreach>
+	</insert>
+	
+	<insert id="insertMenuMaterial" parameterType="map">
+	/* menu.insertMenuMaterial */
+		INSERT 
+    	INTO lab_menu_material(
+			M_MATERIAL_IDX
+			, MENU_IDX
+			, MATERIAL_IDX
+			, MATERIAL_CODE
+			, SAP_CODE
+			, NAME
+			, UNIT_PRICE
+			, STANDARD
+			, KEEP_EXP
+			, DESCRIPTION
+			, MATERIAL_TYPE
+		)values
+		<foreach collection="matList" item="item" index="index"  separator=",">
+		( FN_NEXTVAL('menu_material_seq'), #{idx} , #{item.matIdx}, #{item.matCode}, #{item.sapCode}, #{item.name}, #{item.unitPrice}, #{item.standard}, #{item.keepExp}, #{item.desc}, #{item.itemType} )
+		</foreach>
+	</insert>
+	
+	<sql id="whereMenuList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('searchName')">
+			AND NAME LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+      		<when test="searchType.equals('searchMenuCode')">
+      		AND MENU_CODE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      	</choose>
+		</if>
+		<if test="searchCategory1 != null and searchCategory1 != '' ">
+			AND MENU_TYPE1 = #{searchCategory1}
+		</if>
+		<if test="searchCategory2 != null and searchCategory2 != '' ">
+			AND MENU_TYPE2 = #{searchCategory2}
+		</if>
+		<if test="searchCategory3 != null and searchCategory3 != '' ">
+			AND MENU_TYPE3 = #{searchCategory3}
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND MENU_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'MENU' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+		</if>
+	</sql>
+	
+	<select id="selectMenuCount" parameterType="map" resultType="int">
+	/* menu.selectMenuCount */
+		SELECT 
+			count(MENU_IDX) as cnt
+		FROM lab_menu
+		WHERE 1 = 1
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			<include refid="menu.whereMenuList" />
+	</select>
+	<select id="selectMenuList" parameterType="map" resultType="hashmap">
+	/* menu.selectMenuList */
+		SELECT 
+			lp.*
+			, CASE 
+				WHEN lp.STATUS = 'TMP' THEN '임시저장'
+				WHEN lp.STATUS = 'REG' THEN '등록'
+				WHEN lp.STATUS = 'APPR' THEN '결재중'
+				WHEN lp.STATUS = 'COMP' THEN '완료'
+				WHEN lp.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+			, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lp.MENU_TYPE1) as CATEGORY_NAME1
+			, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lp.MENU_TYPE2) as CATEGORY_NAME2
+			, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lp.MENU_TYPE3) as CATEGORY_NAME3
+			, IFNULL(lf.FILE_CNT10,0) as FILE_CNT10
+			, IFNULL(lf.FILE_CNT20,0) as FILE_CNT20
+			, IFNULL(lf.FILE_CNT30,0) as FILE_CNT30
+			, IFNULL(lf.FILE_CNT40,0) as FILE_CNT40
+			, IFNULL(lf.FILE_CNT50,0) as FILE_CNT50
+			, IFNULL(lf.FILE_CNT60,0) as FILE_CNT60
+			, (SELECT COUNT(*) FROM lab_menu WHERE 1 = 1 AND MENU_CODE = lp.MENU_CODE AND IS_LAST = 'N' AND VERSION_NO <![CDATA[<]]> lp.VERSION_NO AND IS_DELETE = 'N' ) as CHILD_CNT
+			, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lp.DOC_OWNER) as USER_NAME 
+		FROM 
+			lab_menu lp
+			left outer join (
+					SELECT DOC_IDX
+						, DOC_TYPE
+						, MAX(IF(FILE_TYPE=10, 1, 0)) FILE_CNT10
+					    , MAX(IF(FILE_TYPE=20, 1, 0)) FILE_CNT20
+					    , MAX(IF(FILE_TYPE=30, 1, 0)) FILE_CNT30
+					    , MAX(IF(FILE_TYPE=40, 1, 0)) FILE_CNT40
+					    , MAX(IF(FILE_TYPE=50, 1, 0)) FILE_CNT50
+					    , MAX(IF(FILE_TYPE=60, 1, 0)) FILE_CNT60
+					FROM lab_file_type
+					WHERE 1 = 1
+					GROUP BY DOC_IDX, DOC_TYPE
+				)lf
+				ON lp.MENU_IDX = lf.DOC_IDX 
+				AND lf.DOC_TYPE = "MENU" 
+		WHERE 1 = 1
+			AND DOC_NO in (
+				SELECT 
+					tmp.DOC_NO
+				FROM (
+					SELECT
+						row_number() over (order by  MENU_IDX DESC) as rnum
+						, DOC_NO
+					FROM lab_menu
+					WHERE 1 = 1
+						AND IS_DELETE = 'N'
+						AND IS_LAST = 'Y'
+						<include refid="menu.whereMenuList" />
+				) tmp
+				WHERE rnum between #{startRow} AND #{endRow}
+			)
+		ORDER BY DOC_NO DESC, VERSION_NO DESC, MENU_IDX DESC		
+	</select>
+	
+	<!--  20250425 Product-> Menu 로 바뀌면서 컬럼 삭제함 TOTAL_WEIGHT, STANDARD, KEEP_CONDITION, EXPIRATION_DATE -->
+	<select id="selectMenuData" parameterType="map" resultType="hashmap">
+	/* menu.selectMenuData */
+		SELECT 
+			MENU_IDX
+			, DOC_NO
+			, MENU_CODE
+			, SAP_CODE
+			, NAME
+			, TITLE
+			, CONTENTS
+			, IS_NEW_MATERIAL
+			, VERSION_NO
+			, MENU_TYPE1
+			, (select CATEGORY_NAME from lab_system_category where CATEGORY_IDX = MENU_TYPE1) as  MENU_TYPE_NAME1
+			, MENU_TYPE2
+			, (select CATEGORY_NAME from lab_system_category where CATEGORY_IDX = MENU_TYPE2) as  MENU_TYPE_NAME2
+			, MENU_TYPE3
+			, (select CATEGORY_NAME from lab_system_category where CATEGORY_IDX = MENU_TYPE3) as  MENU_TYPE_NAME3
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, CONTENTS
+			, STATUS
+			, SAP_CODE
+			, SCHEDULE_DATE
+		FROM 
+			lab_menu
+		WHERE 1 = 1 
+			AND MENU_IDX = #{idx}
+	</select>
+	
+	<select id="selectMenuMaterial" parameterType="map" resultType="hashmap">
+	/* menu.selectMenuMaterial */
+		SELECT
+			M_MATERIAL_IDX
+			, MENU_IDX
+			, MATERIAL_IDX
+			, MATERIAL_CODE			
+			, SAP_CODE
+			, NAME
+			, SAP_PRICE
+			, VOLUMN
+			, UNIT_PRICE
+			, STANDARD
+			, KEEP_EXP
+			, DESCRIPTION
+			, MATERIAL_TYPE
+		FROM 
+			lab_menu_material
+		WHERE 1 = 1
+			AND MENU_IDX = #{idx}
+		ORDER BY M_MATERIAL_IDX ASC
+	</select>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	/* menu.selectHistory */
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+			WHEN lh.HISTORY_TYPE  = 'U' then '임시저장'
+			END HISTORY_TYPE_TXT 
+		, lp.VERSION_NO
+		, lp.NAME 
+		, lp.MENU_CODE 
+		, lh.USER_ID 
+		, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+		lab_menu lp 
+	WHERE 1 = 1
+		AND lh.DOC_IDX IN (SELECT MENU_IDX FROM lab_menu WHERE 1 = 1 AND DOC_NO = #{docNo})
+		AND lh.DOC_TYPE = #{docType}
+		AND lh.DOC_IDX = lp.MENU_IDX 
+	ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<update id="updateMenuIsLast" parameterType="map">
+	/* menu.updateMenuIsLast */
+		UPDATE 
+			lab_menu
+		SET
+			IS_LAST = 'N'
+		WHERE 1 = 1
+			AND MENU_IDX = #{currentIdx}
+	</update>
+	
+	<!--  20250425 Product-> Menu 로 바뀌면서 컬럼 삭제함 TOTAL_WEIGHT, STANDARD, KEEP_CONDITION, EXPIRATION_DATE -->
+	<insert id="insertNewVersionMenu" parameterType="map">
+	/* menu.insertNewVersionMenu */
+		INSERT INTO lab_menu(
+			MENU_IDX
+			, DOC_NO
+			, MENU_CODE
+			, SAP_CODE
+			, NAME
+			, TITLE
+			, CONTENTS
+			, IS_NEW_MATERIAL
+			, VERSION_NO
+			<if test="menuType1 != null and menuType1 !='' ">
+			, MENU_TYPE1
+			</if>
+			<if test="menuType2 != null and menuType2 !='' ">
+			, MENU_TYPE2
+			</if>
+			<if test="menuType3 != null and menuType3 !='' ">
+			, MENU_TYPE3
+			</if>
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+			, SCHEDULE_DATE
+		)VALUES(
+			#{idx}
+			, #{docNo}
+			, #{menuCode}
+			, #{menuSapCode}
+			, #{menuName}
+			, #{title}
+			, #{contents}
+			, #{newMat}
+			, #{versionNo}
+			<if test="menuType1 != null and menuType1 !='' ">
+			, #{menuType1}
+			</if>
+			<if test="menuType2 != null and menuType2 !='' ">
+			, #{menuType2}
+			</if>
+			<if test="menuType3 != null and menuType3 !='' ">
+			, #{menuType3}
+			</if>
+			, 'N'
+			, #{isLast}
+			, #{userId}
+			, #{userId}
+			, #{status}
+			, #{scheduleDate}
+		)
+	</insert>
+	
+	<select id="checkErpMaterial" parameterType="map" resultType="hashmap">
+	/* menu.checkErpMaterial */
+		SELECT 
+			SAP_CODE
+				, NAME
+				, KEEP_CONDITION
+				, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_TXT 
+				, WIDTH
+				, WIDTH_UNIT
+				, LENGTH
+				, LENGTH_UNIT
+				, HEIGHT
+				, HEIGHT_UNIT
+				, TOTAL_WEIGHT
+				, TOTAL_WEIGHT_UNIT
+				, UNIT
+				, CHANGE_COUNT
+				, CHANGE_UNIT
+				, STANDARD
+				, ORIGIN
+				, EXPIRATION_DATE
+				, BOX_AMOUNT
+				, MIN_ORDER_AMOUNT
+				, LEAD_TIME
+				, PALLET_WIDTH_COUNT
+				, PALLET_LENGTH_COUNT
+				, CD_ACCT
+				, PALLET_AMOUNT
+		FROM lab_erp_material2
+		WHERE 1 = 1
+			AND SAP_CODE LIKE CONCAT('%',#{sapCode},'%')
+	</select>
+	
+	<select id="selectErpMaterialData" parameterType="map" resultType="hashmap">
+	/* menu.selectErpMaterialData */
+		SELECT 
+			SAP_CODE
+				, NAME
+				, KEEP_CONDITION
+				, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_TXT 
+				, WIDTH
+				, WIDTH_UNIT
+				, LENGTH
+				, LENGTH_UNIT
+				, HEIGHT
+				, HEIGHT_UNIT
+				, TOTAL_WEIGHT
+				, TOTAL_WEIGHT_UNIT
+				, UNIT
+				, CHANGE_COUNT
+				, CHANGE_UNIT
+				, STANDARD
+				, ORIGIN
+				, EXPIRATION_DATE
+				, BOX_AMOUNT
+				, MIN_ORDER_AMOUNT
+				, LEAD_TIME
+				, PALLET_WIDTH_COUNT
+				, PALLET_LENGTH_COUNT
+				, CD_ACCT
+				, PALLET_AMOUNT
+		FROM 
+			lab_erp_material2
+		WHERE 1 = 1
+			AND SAP_CODE = 	#{sapCode}
+	</select>
+	
+	<select id="insertNewVersionCheck" parameterType="map" resultType="int">
+	/* menu.insertNewVersionCheck */
+		SELECT
+			count(MENU_IDX) as cnt
+		FROM 
+			lab_menu
+		WHERE 1 = 1
+			AND MENU_CODE = #{menuCode}
+			AND DOC_NO = #{docNo}
+			AND VERSION_NO = #{versionNo}
+	</select>
+	
+	<sql id="whereSearchMenuList">
+		<if test="searchValue != null and searchValue != '' ">
+			AND (NAME LIKE CONCAT('%',#{searchValue},'%') OR MENU_CODE LIKE CONCAT('%',#{searchValue},'%'))
+		</if>
+		<if test="searchCategory1 != null and searchCategory1 != '' ">
+			AND MENU_TYPE1 = #{searchCategory1}
+		</if>
+		<if test="searchCategory2 != null and searchCategory2 != '' ">
+			AND MENU_TYPE2 = #{searchCategory2}
+		</if>
+		<if test="searchCategory3 != null and searchCategory3 != '' ">
+			AND MENU_TYPE3 = #{searchCategory3}
+		</if>
+	</sql>
+	
+	<select id="selectSearchMenu" parameterType="map" resultType="hashmap">
+	/* menu.selectSearchMenu */
+		SELECT 
+			lp.*
+			, CASE 
+				WHEN lp.STATUS = 'REG' THEN '등록'
+				WHEN lp.STATUS = 'APPR' THEN '결재중'
+				WHEN lp.STATUS = 'COMP' THEN '완료'
+				WHEN lp.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+			, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lp.MENU_TYPE1) as CATEGORY_NAME1
+			, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lp.MENU_TYPE2) as CATEGORY_NAME2
+			, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lp.MENU_TYPE3) as CATEGORY_NAME3
+
+		FROM 
+			lab_menu lp
+		WHERE 1 = 1
+			AND DOC_NO in (
+				SELECT 
+					tmp.DOC_NO
+				FROM (
+					SELECT
+						row_number() over (order by  MENU_IDX DESC) as rnum
+						, DOC_NO
+					FROM lab_menu
+					WHERE 1 = 1
+						AND IS_DELETE = 'N'
+						AND IS_LAST = 'Y'
+						AND DOC_OWNER = #{userId}
+						<include refid="menu.whereSearchMenuList" />
+				) tmp
+			)
+		ORDER BY DOC_NO DESC, VERSION_NO DESC, MENU_IDX DESC		
+	</select>
+	
+	<insert id="insertFileCopy" parameterType="map">
+	/* menu.insertFileCopy */
+		INSERT 
+    	INTO lab_file(
+			FILE_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, FILE_TYPE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+			, REG_DATE
+			, FILE_CONTENT
+		)
+		SELECT 
+			#{fileIdx}
+			, #{docIdx}
+			, #{docType}
+			, FILE_TYPE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+			, sysdate()
+			, FILE_CONTENT
+		FROM lab_file
+		WHERE 1 = 1
+			AND FILE_IDX = #{tempFileIdx}		
+	</insert>
+	
+	<select id="selectFileData" parameterType="map" resultType="hashmap">
+	/* menu.selectFileData */
+		SELECT
+			FILE_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, FILE_TYPE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+			, REG_DATE
+			, FILE_CONTENT
+		FROM 
+			lab_file
+		WHERE 1 = 1
+			AND FILE_IDX = #{fileIdx}
+	</select>
+	
+	<delete id="deleteFileData" parameterType="map">
+	/* menu.deleteFileData */
+		DELETE
+		FROM lab_file
+		WHERE 1 = 1
+			AND FILE_IDX = #{fileIdx}
+	</delete>
+	
+	<!--  20250425 Product-> Menu 로 바뀌면서 컬럼 삭제함 TOTAL_WEIGHT, STANDARD, KEEP_CONDITION, EXPIRATION_DATE -->
+	<update id="updateMenuData" parameterType="map">
+	/* menu.updateMenuData */
+		UPDATE 
+			lab_menu
+		SET
+			NAME = #{menuName}
+			, TITLE = #{title}
+			, MENU_CODE = #{menuCode}
+			, IS_NEW_MATERIAL = #{newMat}
+			, MENU_TYPE1 = #{menuType1}
+			, MENU_TYPE2 = #{menuType2}
+			, MENU_TYPE3 = #{menuType3}
+			, CONTENTS = #{contents}
+			, SAP_CODE = #{menuSapCode}
+			<if test="status != null and status != '' ">
+			, STATUS = #{status}
+			</if>
+			, SCHEDULE_DATE = #{scheduleDate}
+		WHERE 1 = 1
+			AND MENU_IDX = #{menuIdx}
+	</update>
+	
+	<delete id="deleteMenuMaterial" parameterType="map">
+	/* menu.deleteMenuMaterial */
+		DELETE
+		FROM lab_menu_material
+		WHERE 1 = 1
+			AND MENU_IDX = #{menuIdx}
+	</delete>
+	
+	<delete id="deleteFileType" parameterType="map">
+	/* menu.deleteFileType */
+		DELETE
+		FROM lab_file_type
+		WHERE 1 = 1
+			AND DOC_IDX = #{menuIdx}
+			AND DOC_TYPE = #{docType}
+	</delete>
+	
+	<select id="selectAddInfo" parameterType="map" resultType="hashmap">
+		SELECT
+			INFO_IDX,
+			MENU_IDX,
+			INFO_TYPE,
+			INFO_TEXT,
+			<!-- ✅ USA일 때만 함수로 치환, 아니면 원래 값 -->
+			CASE 
+				WHEN INFO_TYPE = 'USB' THEN FN_GET_CODE_NAME('BRAND', INFO_TEXT)
+				ELSE ''
+			END AS INFO_TEXT_NAME
+		FROM 
+			lab_menu_add_info
+		WHERE 
+			MENU_IDX = #{idx}
+		ORDER BY INFO_IDX ASC
+	</select>
+	
+	<!-- 20250425 PRODUCT_NAME 나중에 어떤 내용이 오게될지 확인 후 수정 바람 -->
+	<select id="selectNewDataList" parameterType="map" resultType="hashmap">
+		SELECT
+			NEW_IDX
+			, MENU_IDX
+			, DISPLAY_ORDER
+			, PRODUCT_NAME
+			, PACKAGE_STANDARD
+			, SUPPLIER
+			, KEEP_EXP
+			, NOTE
+			, TYPE_CODE
+		FROM
+			lab_menu_new
+		WHERE 1 = 1		
+			AND MENU_IDX = #{idx}
+		ORDER BY DISPLAY_ORDER ASC
+	</select>
+	
+	<delete id="deleteAddInfo" parameterType="map">
+		DELETE
+		FROM lab_menu_add_info
+		WHERE 1 = 1
+			AND MENU_IDX = #{menuIdx}
+	</delete>
+	
+	<delete id="deleteMenuNew" parameterType="map">
+		DELETE
+		FROM lab_menu_new
+		WHERE 1 = 1
+			AND MENU_IDX = #{menuIdx}
+	</delete>
+	
+	<insert id="insertMenuImporvePurpose" parameterType="list">
+		INSERT
+		INTO lab_menu_imporve_purpose(
+			IMPROVE_IDX
+			, MENU_IDX
+			, DISPLAY_ORDER
+			, IMPROVE
+			, EXIST
+			, NOTE
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( FN_NEXTVAL('lab_menu_imporve_purpose_seq'), #{item.idx}, #{item.displayOrder}, #{item.improve}, #{item.exist}, #{item.note} )
+		</foreach>
+	</insert>
+	
+	<select id="selectImporvePurposeList" parameterType="map" resultType="hashmap">
+		SELECT
+			IMPROVE_IDX
+			, MENU_IDX
+			, DISPLAY_ORDER
+			, IMPROVE
+			, EXIST
+			, NOTE
+		FROM
+			lab_menu_imporve_purpose
+		WHERE 1 = 1		
+			AND MENU_IDX = #{idx}
+		ORDER BY DISPLAY_ORDER ASC
+	</select>
+	
+	<select id="selectAddInfoCount" parameterType="map" resultType="hashmap">
+		SELECT
+			SUM(CASE WHEN tmp.INFO_TYPE = 'PUR' THEN tmp.cnt ELSE 0 END) AS PUR_CNT
+			, SUM(CASE WHEN tmp.INFO_TYPE = 'FEA' THEN tmp.cnt ELSE 0 END) AS FEA_CNT 
+			, SUM(CASE WHEN tmp.INFO_TYPE = 'IMP' THEN tmp.cnt ELSE 0 END) AS IMP_CNT 
+			, SUM(CASE WHEN tmp.INFO_TYPE = 'USB' THEN tmp.cnt ELSE 0 END) AS USB_CNT 
+			, SUM(CASE WHEN tmp.INFO_TYPE = 'USC' THEN tmp.cnt ELSE 0 END) AS USC_CNT 
+		FROM (
+			SELECT INFO_TYPE, COUNT(INFO_TYPE) AS cnt FROM lab_menu_add_info lpai 
+			WHERE 1 = 1
+ 				AND MENU_IDX = #{idx}
+ 			GROUP BY INFO_TYPE
+ 		)tmp	
+	</select>
+	
+	<delete id="deleteMenuImporvePurpose" parameterType="map">
+		DELETE
+		FROM lab_menu_imporve_purpose
+		WHERE 1 = 1
+			AND MENU_IDX = #{menuIdx}
+	</delete>
+</mapper>

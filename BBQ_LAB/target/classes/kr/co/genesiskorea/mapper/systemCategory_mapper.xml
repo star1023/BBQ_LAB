@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="systemCategory">
+	<select id="selectCategory" resultType="hashmap">
+		/* systemCategory.selectCategory */
+		SELECT  
+			t.CATEGORY_IDX as id
+			, ifnull(t.P_CATEGORY_IDX,'#') as parent
+			, t.CATEGORY_NAME as text
+		FROM (
+			WITH RECURSIVE tmp AS
+			(
+				SELECT 
+					t1.CATEGORY_IDX
+					, t1.P_CATEGORY_IDX
+					, t1.CATEGORY_LEVEL
+					, t1.CATEGORY_NAME
+					, t1.CATEGORY_NAME as CATEGORY_NAME_PATH
+					, t1.USE_YN
+					, t1.DISPLAY_ORDER
+					, t1.REG_USER_ID
+					, DATE_FORMAT(t1.REG_DATE,'%Y-%m-%d') as REG_DATE
+				FROM lab_system_category t1
+				WHERE 1 = 1
+					AND t1.P_CATEGORY_IDX is null 
+					and t1.USE_YN = 'Y'
+				
+				UNION ALL
+			
+				SELECT 
+					t2.CATEGORY_IDX
+					, t2.P_CATEGORY_IDX
+					, t2.CATEGORY_LEVEL
+					, t2.CATEGORY_NAME
+					, concat(tmp.CATEGORY_NAME, ' > ', t2.CATEGORY_NAME) as CATEGORY_NAME_PATH
+					, t2.USE_YN
+					, t2.DISPLAY_ORDER
+					, t2.REG_USER_ID
+					, DATE_FORMAT(t2.REG_DATE,'%Y-%m-%d') as REG_DATE
+				FROM lab_system_category t2
+				INNER JOIN tmp ON t2.P_CATEGORY_IDX = tmp.CATEGORY_IDX
+				where t2.USE_YN = 'Y'
+			)
+			SELECT * FROM tmp
+			ORDER BY tmp.CATEGORY_LEVEL, tmp.DISPLAY_ORDER
+		)t
+	</select>
+	
+	<select id="selectCategoryData" parameterType="map" resultType="hashmap">
+		/* systemCategory.selectCategoryData */
+		SELECT 
+			CATEGORY_IDX
+			, P_CATEGORY_IDX
+			, CATEGORY_NAME
+			, USE_YN
+			, DISPLAY_ORDER
+			, CATEGORY_LEVEL
+			, REG_USER_ID
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+		FROM 
+			lab_system_category
+		WHERE 1 = 1
+			AND CATEGORY_IDX = #{id}
+	</select>
+	
+	<update id="updateCategoryName" parameterType="map">
+		/* systemCategory.updateCategoryName */
+		UPDATE
+			lab_system_category
+		SET	
+			CATEGORY_NAME = #{categoryName}
+		WHERE 1 = 1
+			AND CATEGORY_IDX = #{id}  	
+	</update>
+	
+	<insert id="insertCategory" parameterType="map">
+		/* systemCategory.insertCategory */
+		INSERT INTO lab_system_category(
+			CATEGORY_IDX
+			<if test="pId != null and pId != '' ">
+			, P_CATEGORY_IDX
+			</if>
+			, CATEGORY_NAME
+			, USE_YN
+			, DISPLAY_ORDER
+			, CATEGORY_LEVEL
+			, REG_USER_ID
+			, REG_DATE
+		)VALUES(
+			FN_NEXTVAL('system_category_seq')
+			<if test="pId != null and pId != '' ">
+			, #{pId}
+			</if>
+			, #{categoryName}
+			, 'Y'
+			, (SELECT ifnull(max(a.DISPLAY_ORDER)+1, 1) 
+				FROM lab_system_category a 
+				WHERE 1 = 1 
+				<choose>
+					<when test='pId.equals("#")'>
+					AND a.P_CATEGORY_IDX IS NULL
+					</when>
+					<otherwise>
+					AND a.P_CATEGORY_IDX = #{pId}
+					</otherwise>
+				</choose>
+				)
+			, #{level}
+			, #{userId}
+			, sysdate()
+		)
+	</insert>
+	
+	<update id="deleteCategory" parameterType="map">
+		/* systemCategory.deleteCategory */
+		UPDATE
+			lab_system_category
+		SET	
+			USE_YN = 'N'
+		WHERE 1 = 1
+			AND CATEGORY_IDX = #{id}  	
+	</update>
+	
+	<update id="updateCategoryOrder" parameterType="map">
+		/* systemCategory.updateCategoryOrder */
+		UPDATE
+				lab_system_category
+			SET
+				DISPLAY_ORDER = DISPLAY_ORDER-1
+			WHERE 1 = 1
+			<choose>
+				<when test='pId.equals("#")'>
+				AND P_CATEGORY_IDX IS NULL
+				</when>
+				<otherwise>
+				AND P_CATEGORY_IDX = #{pId}
+				</otherwise>
+			</choose>
+			AND DISPLAY_ORDER > ( SELECT tmp.DISPLAY_ORDER FROM (select a.DISPLAY_ORDER from lab_system_category a where 1 = 1 and a.CATEGORY_IDX = #{id}) as tmp )	
+		
+	</update>
+	
+	<select id="selectNPCategory" parameterType="map" resultType="hashmap">
+		/* systemCategory.selectNPCategory */
+		SELECT 
+			* 
+		FROM 
+			lab_system_category lsc 
+		WHERE 1 = 1 
+			AND USE_YN = 'Y'
+		<choose>
+			<when test='pId.equals("#")'>
+			AND P_CATEGORY_IDX is null
+			</when>
+			<otherwise>
+			AND P_CATEGORY_IDX = #{pId}
+			</otherwise>
+		</choose>
+		<choose>
+			<when test='div.equals("UP")'>
+			AND DISPLAY_ORDER <![CDATA[<]]> (SELECT a.DISPLAY_ORDER FROM lab_system_category a WHERE 1 = 1 AND a.USE_YN  = 'Y' AND a.CATEGORY_IDX = #{id} )
+			ORDER BY DISPLAY_ORDER DESC LIMIT 1
+			</when>
+			<otherwise>
+			AND DISPLAY_ORDER > (SELECT a.DISPLAY_ORDER FROM lab_system_category a WHERE 1 = 1 AND a.USE_YN  = 'Y' AND a.CATEGORY_IDX = #{id} )
+			ORDER BY DISPLAY_ORDER ASC LIMIT 1
+			</otherwise>
+		</choose>
+	</select>
+	
+	<update id="updateNPCategoryOrder" parameterType="map">
+		/* systemCategory.updateNPCategoryOrder */
+		UPDATE
+			lab_system_category
+		SET 
+			DISPLAY_ORDER = #{displayOrder}
+		WHERE 1 = 1
+			AND CATEGORY_IDX = #{id}
+	</update>
+	
+	<update id="updateMyCategoryOrder" parameterType="map">
+		/* systemCategory.updateMyCategoryOrder */
+		UPDATE
+			lab_system_category
+		SET 
+			<choose>
+				<when test='div.equals("UP")'>
+				DISPLAY_ORDER = DISPLAY_ORDER-1
+				</when>
+				<otherwise>
+				DISPLAY_ORDER = DISPLAY_ORDER+1
+				</otherwise>
+			</choose>
+		WHERE 1 = 1
+			AND CATEGORY_IDX = #{id}
+	</update>
+</mapper>

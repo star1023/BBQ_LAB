@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="systemMenu">
+	<select id="selectTotalMenuCount" parameterType="map" resultType="int">
+		/*	systemMenu.selectTotalMenuCount */
+		SELECT 
+			count(menuId) as cnt
+		FROM lab_system_menu
+		WHERE 1 = 1
+			AND useYn = 'Y'
+	</select>
+	
+	<select id="selectMenuList" parameterType="map" resultType="hashmap">
+		/*	systemMenu.selectMenuList */
+		select 
+			tmp.menuId
+			, tmp.pMenuId
+			, tmp.menuName
+			, (select menuName from lab_system_menu where menuId = tmp.pMenuId) as pMenuName
+			, tmp.eMenuName
+			, (select eMenuName from lab_system_menu where menuId = tmp.pMenuId) as pEMenuName
+			, tmp.level
+			, tmp.displayOrder
+			, tmp.url
+			, tmp.useYn
+			, tmp.displayYn
+			, tmp.regUserId
+			, tmp.regDate 
+		from (  
+			select
+				 row_number() over (order by  menuId DESC) as rnum
+				, menuId
+				, pMenuId
+				, menuName
+				, eMenuName
+				, level
+				, displayOrder
+				, url
+				, useYn
+				, displayYn
+				, regUserId
+				, DATE_FORMAT(regDate,'%Y-%m-%d') as regDate
+			FROM lab_system_menu
+			WHERE 1 = 1
+				AND useYn = 'Y'	
+			)tmp WHERE rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="selectAllMenuList" parameterType="map" resultType="hashmap">
+		/*	systemMenu.selectAllMenuList */
+		SELECT  
+			t.menuId as id
+			, ifnull(t.pMenuId,'#') as parent
+			, t.menuName as text
+		from (	
+			WITH RECURSIVE tmp AS
+			(
+				SELECT 
+					t1.menuId
+					, t1.pMenuId
+					, t1.menuName
+					, t1.menuName as ko_path
+					, t1.eMenuName
+					, t1.eMenuName as en_path
+					, t1.level
+					, t1.displayOrder
+					, t1.url
+					, t1.useYn
+					, t1.regUserId
+					, DATE_FORMAT(t1.regDate,'%Y-%m-%d') as regDate
+				FROM lab_system_menu t1
+				WHERE t1.pMenuId is null
+					AND t1.useYn = 'Y'
+					
+				UNION ALL
+			
+				SELECT 
+					t2.menuId
+					, t2.pMenuId
+					, t2.menuName
+					, concat(tmp.ko_path, ' > ', t2.menuName) as ko_path
+					, t2.eMenuName
+					, concat(tmp.en_path, ' > ', t2.eMenuName) as en_path
+					, t2.level
+					, t2.displayOrder
+					, t2.url
+					, t2.useYn
+					, t2.regUserId
+					, DATE_FORMAT(t2.regDate,'%Y-%m-%d') as regDate
+				FROM lab_system_menu t2
+				INNER JOIN tmp ON t2.pMenuId = tmp.menuId
+				AND t2.useYn = 'Y'
+			)
+			SELECT * FROM tmp
+			ORDER BY tmp.level asc, tmp.displayOrder asc
+		)t
+	</select>
+	
+	<select id="selectPMenuList" parameterType="map" resultType="hashmap">
+		/*	systemMenu.selectPMenuList */
+		SELECT 
+			menuId
+			, pMenuId
+			, menuName
+			, eMenuName
+			, level
+			, displayOrder
+			, url
+			, useYn
+			, displayYn
+		FROM lab_system_menu
+		WHERE 1 = 1
+			AND level = ${level}-1
+			AND useYn = 'Y'
+			AND displayYn = 'Y'
+	</select>
+	
+	<select id="selectMenuData" parameterType="map" resultType="hashmap">
+		/*	systemMenu.selectMenuData */
+		SELECT 
+			menuId
+			, pMenuId
+			, menuName
+			, eMenuName
+			, level
+			, displayOrder
+			, url
+			, useYn
+			, displayYn
+		FROM lab_system_menu
+		WHERE 1 = 1
+			AND menuId = ${menuId}
+			AND useYn = 'Y'
+	</select>
+	
+	<insert id="insertMenu" parameterType="map">
+		/*	systemMenu.insertMenu */
+		INSERT INTO lab_system_menu (
+			menuId
+			<if test="pMenuId != null and pMenuId !='' ">
+			, pMenuId
+			</if>
+			, menuName
+			, eMenuName
+			, level
+			, displayOrder
+			, url
+			, useYn
+			, displayYn
+			, regUserId
+			, regDate
+		) VALUES (
+			FN_NEXTVAL('system_menu_seq')
+			<if test="pMenuId != null and pMenuId !='' ">
+			, #{pMenuId}
+			</if>
+			, #{menuName}
+			, #{eMenuName}
+			, #{level}
+			, #{displayOrder}
+			, #{url}
+			, #{useYn}
+			, #{displayYn}
+			, #{userId}
+			, sysdate() 	
+		)
+	</insert>
+	
+	<insert id="insertMenu2" parameterType="map">
+		/*	systemMenu.insertMenu2 */
+		INSERT INTO lab_system_menu(
+			menuId
+			, pMenuId
+			, menuName
+			, useYn
+			, displayOrder
+			, level
+			, displayYn
+			, regUserId
+			, regDate
+		)VALUES(
+			FN_NEXTVAL('system_menu_seq')
+			, #{pId}
+			, #{menuName}
+			, 'Y'
+			, (SELECT ifnull(max(a.displayOrder)+1, 1) FROM lab_system_menu a WHERE 1 = 1 AND a.pMenuId = #{pId})
+			, #{level}
+			, 'Y'
+			, #{userId}
+			, sysdate()
+		)
+	</insert>
+	
+	<update id="updateMenu" parameterType="map">
+		/*	systemMenu.updateMenu */
+		UPDATE lab_system_menu
+		SET
+			pMenuId = #{pMenuId}
+			, menuName = #{menuName}
+			, eMenuName = #{eMenuName}
+			, level = #{level}
+			, displayOrder = #{displayOrder}
+			, url = #{url}
+			, useYn = #{useYn}
+			, displayYn = #{displayYn}
+		WHERE 1 = 1
+			AND menuId = #{menuId}
+	</update>
+	
+	<update id="deleteMenu" parameterType="map">
+		/*	systemMenu.deleteMenu */
+		UPDATE lab_system_menu
+		SET
+			useYn = 'N'
+		WHERE 1 = 1
+			AND menuId = #{menuId}
+	</update>
+	
+	<select id="selectAllMenu" parameterType="map" resultType="hashmap">
+		/*	systemMenu.selectAllMenu */
+		SELECT 
+			t.menuId as id
+			, ifnull(t.pMenuId,'#') as parent
+			, t.menuName as text
+			, t.displayYn
+		FROM ( 
+		 WITH RECURSIVE tmp AS
+		(
+			SELECT 
+				t1.menuId
+				, t1.pMenuId
+				, t1.menuName
+				, t1.menuName as pathnm
+				, t1.eMenuName
+				, t1.level
+				, t1.displayOrder
+				, t1.url
+				, t1.useYn
+				, t1.displayYn
+				, t1.regUserId
+				, DATE_FORMAT(t1.regDate,'%Y-%m-%d') as regDate
+			FROM lab_system_menu t1
+			WHERE t1.pMenuId is null
+			AND useYn = 'Y'	
+			UNION ALL
+		
+			SELECT 
+				t2.menuId
+				, t2.pMenuId
+				, t2.menuName
+				, concat(tmp.pathnm, ' > ', t2.menuName) as pathnm
+				, t2.eMenuName
+				, t2.level
+				, t2.displayOrder
+				, t2.url
+				, t2.useYn
+				, t2.displayYn
+				, t2.regUserId
+				, DATE_FORMAT(t2.regDate,'%Y-%m-%d') as regDate
+			FROM lab_system_menu t2
+			INNER JOIN tmp ON t2.pMenuId = tmp.menuId
+			and t2.useYn = 'Y'
+		)
+		SELECT * FROM tmp
+		ORDER BY tmp.level, tmp.displayOrder
+		)t
+	</select>
+</mapper>

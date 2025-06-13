@@ -1,0 +1,456 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="user">
+	<select id="selectUser" parameterType="map" resultType="hashmap">
+	/*	user.selectUser 사용자 정보 조회 */
+	SELECT 
+	  USER_ID AS userId
+      ,USER_NAME AS userName
+      ,USER_GRAD AS userGrade
+      ,getCodeName('GRADE',USER_GRAD) AS userGradeName
+      ,REG_DATE AS regDate
+      ,USER_CODE AS userCode
+      ,EMAIL AS email
+      ,DEPT_CODE AS deptCode
+      ,getCodeName('DEPT',DEPT_CODE) AS deptCodeName
+      ,TEAM_CODE AS teamCode
+      ,getCodeName('TEAM',TEAM_CODE) AS teamCodeName	
+      ,TITLE_CODE AS titleCode
+      ,USER_TYPE AS userType
+      ,IS_ADMIN AS isAdmin
+      ,IS_DELETE AS isDelete
+      ,THEME AS theme
+      ,CONTENT_MODE AS contentMode
+      ,WIDTH_MODE AS widthMode
+      ,MAIL_CHECK1 AS mailCheck1
+      ,MAIL_CHECK2 AS mailCheck2
+      ,MAIL_CHECK3 AS mailCheck3
+      ,IS_LOCK AS isLock
+      ,ROLE_CODE AS roleCode
+    FROM 
+    	lab_user
+	WHERE	1 = 1
+	    AND IS_DELETE != 'Y'         
+		AND USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+    
+    <select id="loginCheck" parameterType="map" resultType="hashmap">
+	/*	user.loginCheck 로그인 체크 */
+	SELECT 
+		USER_ID AS userId
+		,USER_NAME AS userName
+	    ,USER_GRAD AS userGrade
+	    ,getCodeName('GRADE',USER_GRAD) AS userGradeName
+	    ,REG_DATE AS regDate
+	    ,USER_CODE AS userCode
+	    ,EMAIL AS email
+	    ,DEPT_CODE AS deptCode
+	    ,getCodeName('DEPT',DEPT_CODE) AS deptCodeName
+	    ,TEAM_CODE AS teamCode
+	    ,getCodeName('TEAM',TEAM_CODE) AS teamCodeName	
+	    ,TITLE_CODE AS titleCode
+	    ,USER_TYPE AS userType
+	    ,IS_ADMIN AS isAdmin
+	    ,IS_DELETE AS isDelete
+	    ,THEME AS theme
+	    ,CONTENT_MODE AS contentMode
+	    ,WIDTH_MODE AS widthMode
+	    ,MAIL_CHECK1 AS mailCheck1
+	    ,MAIL_CHECK2 AS mailCheck2
+	    ,MAIL_CHECK3 AS mailCheck3
+	    ,IS_LOCK AS isLock
+	    ,ROLE_CODE AS roleCode
+    FROM 
+    	lab_user
+	WHERE	1 = 1
+		AND USER_ID = #{userId}
+		AND USER_PWD = #{userEncPwd}
+    </select>
+    
+    <select id="userCount" parameterType="map" resultType="int">
+	/* user.userCount 리스트 카운트 */
+			SELECT	COUNT(*)
+			FROM	lab_user	
+			WHERE 1=1
+			<if test="searchValue != null and searchValue != '' ">
+				AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
+			</if>
+			<if test="deptCode != null and deptCode != '' ">
+				AND DEPT_CODE = #{deptCode}
+			</if>
+			<if test="teamCode != null and teamCode != '' ">
+				AND TEAM_CODE = #{teamCode}
+			</if>
+			<if test="userGrade != null and userGrade != '' ">
+				AND USER_GRAD = #{userGrade}
+			</if>
+	</select>
+	
+	<select id="userList" parameterType="map" resultType="hashmap">
+		/* user.userList 리스트 */
+			SELECT		t.*
+			FROM	
+					(
+						SELECT	row_number() over (order by USER_ID desc) as rnum
+						  ,USER_ID AS userId
+					      ,USER_PWD AS userPwd
+					      ,USER_NAME AS userName
+					      ,USER_GRAD AS userGrade
+					      ,getCodeName('GRADE',USER_GRAD) AS userGradeName
+					      ,DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS regDate
+					      ,USER_CODE AS userCode
+					      ,EMAIL AS email
+					      ,DEPT_CODE AS deptCode
+					      ,getCodeName('DEPT',DEPT_CODE) AS deptCodeName
+					      ,TEAM_CODE AS teamCode
+					      ,getCodeName('TEAM',TEAM_CODE) AS teamCodeName					      
+					      ,TITLE_CODE AS titleCode
+					      ,USER_TYPE AS userType
+					      ,IS_ADMIN AS isAdmin	
+					      ,IS_DELETE AS isDelete
+					      ,IS_LOCK AS isLock
+						FROM	lab_user	
+						WHERE 1=1
+						<if test="searchValue != null and searchValue != '' ">
+							AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
+						</if>
+						<if test="deptCode != null and deptCode != '' ">
+							AND DEPT_CODE = #{deptCode}
+						</if>
+						<if test="teamCode != null and teamCode != '' ">
+							AND TEAM_CODE = #{teamCode}
+						</if>
+						<if test="userGrade != null and userGrade != '' ">
+							AND USER_GRAD = #{userGrade}
+						</if>
+					) t WHERE rnum between #{startRow} and #{endRow}
+		<![CDATA[
+			ORDER BY USER_ID desc
+		]]>
+	</select>
+	<insert id="insert" parameterType="map">
+		/* user.insert 사용자 등록  */
+		INSERT INTO lab_user(
+			USER_ID
+			,USER_NAME
+			,USER_GRAD
+			,EMAIL
+			,DEPT_CODE
+			,TEAM_CODE
+			,REG_DATE
+			,IS_DELETE
+			,  IS_ADMIN
+			,MAIL_CHECK1
+		    ,MAIL_CHECK2
+		    ,MAIL_CHECK3
+		)	VALUES (
+			#{userId}
+			,#{userName}
+			,#{userGrade}
+			,#{email} 
+			,#{deptCode}
+			,#{teamCode}
+			,sysdate()
+			,'N'
+			,#{isAdmin}
+			,'Y'
+			,'Y'
+			,'Y'
+		)
+	</insert>
+	
+	<select id="checkId" parameterType="string" resultType="int">
+	   /*user.checkId 아이디체크  */
+    	SELECT COUNT(USER_ID) FROM lab_user WHERE USER_ID = #{value}
+    </select>
+    
+    <select id="getUserData" parameterType="map" resultType="hashmap">
+	/*	user.getUserData 사용자 정보 조회 */
+	SELECT 
+		USER_ID AS userId
+      ,USER_PWD AS userPwd
+      ,USER_NAME AS userName
+      ,USER_GRAD AS userGrade
+      ,REG_DATE AS regDate
+      ,USER_CODE AS userCode
+      ,EMAIL AS email
+      ,DEPT_CODE AS deptCode
+      ,TEAM_CODE AS teamCode
+      ,TITLE_CODE AS titleCode
+      ,USER_TYPE AS userType
+      ,IS_ADMIN AS isAdmin
+      ,IS_DELETE AS isDelete
+    FROM 
+    	lab_user
+	WHERE	1 = 1
+		AND USER_ID = #{userId}
+    </select>
+    
+    <update id="update" parameterType="map">
+	/*	user.update 사용자 정보 조회 */
+	UPDATE lab_user 
+	SET 
+      USER_NAME =  #{userName}
+      ,USER_GRAD =  #{userGrade}
+      ,EMAIL = #{email}
+      ,DEPT_CODE =  #{deptCode}
+      ,TEAM_CODE =  #{teamCode}
+      ,IS_ADMIN	=  #{isAdmin}
+	WHERE	1 = 1
+		AND USER_ID = #{userId}
+    </update>
+    
+    <update id="delete" parameterType="map">
+	/*	user.delete 사용자 정보 조회 */
+	UPDATE lab_user 
+	SET 
+     IS_DELETE	=  'Y'
+     , USER_GRAD = ''
+	WHERE	1 = 1
+		AND USER_ID = #{userId}
+    </update>
+    
+    <update id="restore" parameterType="map">
+	/*	user.restore 사용자 정보 조회 */
+	UPDATE lab_user 
+	SET 
+     IS_DELETE	=  'N'
+	WHERE	1 = 1
+		AND USER_ID = #{userId}
+    </update>
+    
+    <update id="unlock" parameterType="map">
+	/*	user.unlock 사용자 잠금해제  */
+	UPDATE lab_user 
+	SET 
+     IS_LOCK	=  'N'
+	WHERE	1 = 1
+		AND USER_ID = #{userId}
+    </update>
+    
+    <insert id="insertLog" parameterType="map">
+		/* user.insertLog   */
+		INSERT INTO userTable_log(
+			type
+		    ,description
+		    ,userId
+		    ,regUserId
+		    ,regDate
+		)	VALUES (
+				#{type}
+			,	#{description}
+			,	#{userId}
+			,  	#{regUserId} 
+			, 	sysdate()
+		)
+	</insert>
+	<insert id="insertLoginLog" parameterType="map">
+		/* user.insertLoginLog   */
+		<!-- 
+		INSERT INTO userLogin_log(
+			userId
+		    ,userIp
+		    ,loginDate
+		)	VALUES (
+				#{userId}
+			,	#{userIp}
+			, 	sysdate()
+		)
+		 -->
+		 INSERT INTO lab_login_log(
+			LOG_IDX
+			, USER_ID
+		    ,USER_IP
+		    ,LOGIN_DATE
+		)	VALUES (
+			FN_NEXTVAL('login_log_seq') 
+			,	#{userId}
+			,	#{userIp}
+			, 	sysdate()
+		)
+	</insert>
+	<select id="searchUserList" resultType="hashmap">
+		SELECT	
+		USER_ID AS userId
+		,USER_NAME AS userName
+		,getUserDeptName(USER_ID) AS deptCodeName
+		,getUserTeamName(USER_ID) AS teamCodeName
+			FROM	lab_user
+			WHERE	USER_NAME like concat('%',#{keyword},'%')
+			<if test="userGrade != null and userGrade !='' ">
+				and USER_GRAD = '${userGrade}'
+			</if>
+			and IS_DELETE !='Y'
+	</select>
+	
+	
+	<update id="setPersonalization" parameterType="map">
+	/*	user.setPersonalization 사용자 개인화 데이터 업데이트 */
+	UPDATE lab_user 
+	SET 
+    	${type} = #{value}
+	WHERE	1 = 1
+		AND USER_ID = #{userId}
+    </update>
+    <select id="userListBom" resultType="hashmap">
+    	SELECT * FROM lab_user 
+    	WHERE USER_GRAD = '3' 
+    	  AND IS_DELETE != 'Y'
+    </select>
+    <select id="marketingUserList" resultType="hashmap">
+    	select * from lab_user where DEPT_CODE = 'dept8'
+    </select>
+    
+    <select id="qualityPlanningUserList" resultType="hashmap">
+    	select * from lab_user where DEPT_CODE='dept7' and TEAM_CODE='6'
+    </select>
+    
+    <select id="researchUserList" resultType="hashmap">
+    	select * from lab_user where USER_GRAD='4'
+    </select>
+    
+    <select id="sendMailList" resultType="map" parameterType="map">
+		SELECT	USER_ID AS userId
+			, USER_NAME AS userName
+			, getUserDeptName(USER_ID) AS deptCodeName
+			, getUserTeamName(USER_ID) AS teamCodeName
+			, getCodeName('GRADE',USER_GRAD) AS userGradeName
+			, EMAIL
+			FROM	lab_user
+			WHERE	1 = 1 
+			<if test="deptCode != null and deptCode !='' ">
+				AND DEPT_CODE = #{deptCode}
+			</if> 
+			<if test="teamCode != null and teamCode !='' ">
+				AND TEAM_CODE = #{teamCode}
+			</if> 
+			<if test="userGrade != null and userGrade !='' ">
+				AND USER_GRAD = #{userGrade}
+			</if>
+			<if test="isAdmin != null and isAdmin !='' ">
+				AND IS_ADMIN = #{isAdmin}
+			</if>
+	</select>
+
+	<select id="selectAccessLogSeq" resultType="int">
+		SELECT FN_NEXTVAL('useraccess_log_seq') as seq
+	</select>
+	
+	<insert id="insertAccessLog">
+		INSERT INTO lab_useraccess_log (
+			LOG_IDX
+			, USER_ID
+			, URL
+			, ACCESS_DATE
+			, REG_DATE
+		) VALUES(
+			#{idx}
+			, #{userId}
+			, #{url}
+			, #{time} 
+			, sysdate()
+		)
+	</insert>
+	
+	<insert id="insertAccessLogParams">
+		INSERT INTO lab_useraccess_log_params (
+			LOG_IDX
+			, PARENT_IDX
+			, PARAMS
+			, DOC_NO
+			, DOC_IDX
+			, DOC_TYPE
+			, P_NO
+		) VALUES (
+			FN_NEXTVAL('useraccess_log_params_seq')
+			, #{idx}
+			, #{requestParams}
+			, #{docNo}
+			, #{tbKey}
+			, #{tbType}
+			, #{pNo}			
+		)
+	</insert>
+	
+	<select id="selectDocumentOwner" parameterType="map" resultType="hashmap">
+		/* user.selectDocumentOwner */
+		SELECT * FROM lab_user
+		WHERE 1=1
+		<choose>
+			<when test='tbType == "manufacturingProcessDoc"'>
+				AND USER_ID = (SELECT regUserId FROM manufacturingProcessDoc WHERE dNo = #{tbKey})
+			</when>
+			<when test='tbType == "trialProductionReport"'>
+				AND USER_ID = (SELECT createUser FROM trialProductionReport WHERE rNo = #{tbKey})
+			</when>
+			<otherwise>
+				1!=1
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="selectUserMenu" parameterType="map" resultType="hashmap">
+		/* user.selectUserMenu */
+		SELECT 
+			t.menuId 
+			, t.menuName
+			, t.eMenuName
+			, t.pMenuId
+			, t.level
+			, t.displayOrder
+			, t.url
+		FROM ( 
+		WITH RECURSIVE tmp AS
+		(
+			SELECT 
+				t1.menuId
+				, t1.pMenuId
+				, t1.menuName
+				, t1.menuName as pathnm
+				, t1.eMenuName
+				, t1.level
+				, t1.displayOrder
+				, t1.url
+				, t1.useYn
+				, t1.regUserId
+				, DATE_FORMAT(t1.regDate,'%Y-%m-%d') as regDate
+			FROM lab_system_menu t1 ,
+			(SELECT 
+				menu.pMenuId 
+			FROM
+				lab_system_role_menu role_menu 
+				, lab_system_menu menu
+			WHERE 1 = 1
+				AND role_menu.ROLE_IDX = #{roleCode}
+				AND role_menu.MENU_IDX = menu.menuId 
+			group by menu.pMenuId 
+			) role_menu 
+			WHERE 1 = 1
+				AND t1.pMenuId is null
+				AND role_menu.pMenuId = t1.menuId 
+				and t1.useYn = 'Y'
+			
+			UNION ALL
+	
+			SELECT 
+				t2.menuId
+				, t2.pMenuId
+				, t2.menuName
+				, concat(tmp.pathnm, ' > ', t2.menuName) as pathnm
+				, t2.eMenuName
+				, t2.level
+				, t2.displayOrder
+				, t2.url
+				, t2.useYn
+				, t2.regUserId
+				, DATE_FORMAT(t2.regDate,'%Y-%m-%d') as regDate
+			FROM lab_system_menu t2
+			INNER JOIN tmp ON t2.pMenuId = tmp.menuId
+			INNER JOIN lab_system_role_menu lm ON t2.menuId = lm.MENU_IDX and lm.ROLE_IDX = #{roleCode}
+			where t2.useYn = 'Y'
+		)
+		SELECT * FROM tmp
+		ORDER BY tmp.level, tmp.displayOrder
+		)t
+	</select>
+</mapper>

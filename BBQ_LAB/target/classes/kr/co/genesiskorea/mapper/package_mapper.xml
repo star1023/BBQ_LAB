@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="package">
+	<select id="selectCodeItemList" parameterType="map" resultType="hashmap">
+		/** package.selectCodeItemList */
+		SELECT 
+			ITEM_CODE
+			, ITEM_NAME
+		FROM 
+			lab_code_item
+		WHERE 1 = 1
+			AND GROUP_CODE = #{groupCode}
+			AND IS_DELETE = 'N'
+		ORDER BY ORDER_NO ASC			
+	</select>
+	
+	<select id="selectPackageInfoSeq" resultType="int">
+		/**	package.selectPackageInfoSeq */
+		SELECT FN_NEXTVAL('lab_package_info_seq') as seq
+	</select>
+	
+	<insert id="insertPackageInfo" parameterType="map">
+		/** package.insertPackageInfo */
+		INSERT INTO lab_package_info(
+			PACKAGE_IDX			
+			, PRODUCT_NAME
+			, PRODUCT_CODE
+			, ETC_INFO
+			, WEIGHT
+			, KEEP_CONDITION
+			, KEEP_CONDITION_TXT
+			, PRODUCT_NAME_BACK
+			, FOOD_TYPE
+			, FOOD_TYPE_TXT
+			, CONTAIN_QUANTITY
+			, ALLERGY_OBJECT
+			, MANUFACTURING_NO
+			, EXPIRED_DATE
+			, PACKAGE_OBJECT
+			, MAKER
+			, DISTRIBUTION
+			, RETURNED
+			, CUSTOMER_COUNSEL
+			, SEPARATE_DISCHARGE
+			, SEPARATE_DISCHARGE_TXT
+			, SUGGESTIONS
+			, COOK_METHOD
+			, DOC_NO			
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+		)VALUES(
+			#{idx}
+			, #{productName}
+			, #{productCode}
+			, #{etcInfo}
+			, #{weight}
+			, #{keepCondition}
+			, #{keepConditionTxt}
+			, #{productNameBack}
+			, #{foodType}
+			, #{foodTypeTxt}
+			, #{containQuantity}
+			, #{allergyObject}
+			, #{manuNo}
+			, #{expiredDate}
+			, #{packageObject}
+			, #{maker}
+			, #{distribution}
+			, #{returned}
+			, #{customerCounsel}
+			, #{separateDischarge}
+			, #{separateDischargeTxt}
+			, #{suggestions}
+			, #{cookMethod}
+			, (SELECT ifnull(MAX(lpi.DOC_NO),0)+1 FROM lab_package_info lpi WHERE 1 = 1)			
+			<choose>
+				<when test="productCode != null and productCode !='' ">
+				, (SELECT ifnull(MAX(lpi.VERSION_NO),0)+1 FROM lab_package_info lpi WHERE 1 = 1 AND lpi.PRODUCT_CODE = #{productCode})	
+				</when>
+				<otherwise>
+				, 1
+				</otherwise>
+			</choose>			
+			, 'N'
+			, 'Y'
+			, #{userId}
+			, #{userId}
+			, #{status}			
+		)
+	</insert>
+	
+	<insert id="insertPackageInfoAddInfo" parameterType="list">
+		/**	package.insertPackageInfoAddInfo */
+		INSERT
+		INTO lab_package_info_add_info(
+			PACKAGE_IDX
+			, DISPLAY_ORDER
+			, INFO_TYPE
+			, INFO_TEXT
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( #{item.idx}, #{item.displayOrder}, #{item.infoType}, #{item.infoText} )
+		</foreach>
+	</insert>
+	
+	<sql id="wherePackageInfoList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('searchName')">
+			AND PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%')
+			</when>      		
+      	</choose>
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND PACKAGE_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'PACKAGE' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+		</if>
+	</sql>
+	
+	
+	<select id="selectPackageInfoCount" parameterType="map" resultType="int">
+		/* package.selectPackageInfoCount */
+		SELECT 
+			count(PACKAGE_IDX) as cnt
+		FROM lab_package_info
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			<include refid="package.wherePackageInfoList" />
+	</select>
+	
+	<select id="selectPackageInfoList" parameterType="map" resultType="hashmap">
+		/* package.selectPackageInfoList */
+		SELECT 
+			lpi.*
+			, CASE 
+				WHEN lpi.STATUS = 'TMP' THEN '임시저장'
+				WHEN lpi.STATUS = 'REG' THEN '등록'
+				WHEN lpi.STATUS = 'APPR' THEN '결재중'
+				WHEN lpi.STATUS = 'COMP' THEN '완료'
+				WHEN lpi.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+			, (SELECT COUNT(*) FROM lab_package_info WHERE 1 = 1 AND DOC_NO = lpi.DOC_NO AND IS_LAST = 'N' AND VERSION_NO <![CDATA[<]]> lpi.VERSION_NO AND IS_DELETE = 'N' ) as CHILD_CNT
+			, FN_GET_USER_NAME(lpi.DOC_OWNER) as USER_NAME
+			, (SELECT DATE_FORMAT(REG_DATE,'%Y-%m-%d') FROM lab_history WHERE 1 = 1 AND DOC_IDX = lpi.PACKAGE_IDX AND DOC_TYPE = 'PACKAGE' ORDER BY REG_DATE ASC LIMIT 1) AS REG_DATE 
+		FROM 
+			lab_package_info lpi
+		WHERE 1 = 1
+			AND DOC_NO in (
+				SELECT 
+					tmp.DOC_NO
+				FROM (
+					SELECT
+						row_number() over (order by  PACKAGE_IDX DESC) as rnum
+						, DOC_NO
+					FROM lab_package_info
+					WHERE 1 = 1
+						AND DOC_OWNER = #{userId}
+						AND IS_DELETE = 'N'
+						AND IS_LAST = 'Y'
+						<include refid="package.wherePackageInfoList" />
+				) tmp
+				WHERE rnum between #{startRow} AND #{endRow}
+			)
+		ORDER BY DOC_NO DESC, VERSION_NO DESC, PACKAGE_IDX DESC		
+	</select>
+	
+	<select id="selectPackageInfoData" parameterType="map" resultType="hashmap">
+		/* package.selectPackageInfoData */
+		SELECT
+			PACKAGE_IDX			
+			, PRODUCT_NAME
+			, PRODUCT_CODE
+			, ETC_INFO
+			, WEIGHT
+			, KEEP_CONDITION
+			, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_NAME
+			, KEEP_CONDITION_TXT
+			, PRODUCT_NAME_BACK
+			, FOOD_TYPE
+			, FN_GET_CODE_NAME('FOOD_TYPE', FOOD_TYPE) AS FOOD_TYPE_NAME
+			, FOOD_TYPE_TXT
+			, CONTAIN_QUANTITY
+			, ALLERGY_OBJECT
+			, MANUFACTURING_NO
+			, EXPIRED_DATE
+			, PACKAGE_OBJECT
+			, MAKER
+			, DISTRIBUTION
+			, RETURNED
+			, CUSTOMER_COUNSEL
+			, SEPARATE_DISCHARGE
+			, FN_GET_CODE_NAME('DISCHARGE_DISPLAY', SEPARATE_DISCHARGE) AS SEPARATE_DISCHARGE_NAME
+			, SEPARATE_DISCHARGE_TXT
+			, SUGGESTIONS
+			, COOK_METHOD
+			, DOC_NO			
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+		FROM 
+			lab_package_info
+		WHERE 1 = 1
+			AND PACKAGE_IDX = #{idx}		
+	</select>
+	
+	<select id="selectAddInfoList" parameterType="map" resultType="hashmap">
+		/* package.selectAddInfoList */
+		SELECT
+			PACKAGE_IDX
+			, DISPLAY_ORDER
+			, INFO_TYPE
+			, INFO_TEXT
+		FROM 
+			lab_package_info_add_info
+		WHERE 1 = 1
+			AND PACKAGE_IDX = #{idx}
+		ORDER BY DISPLAY_ORDER ASC 		
+	</select>
+	
+	<update id="updatePackageInfo" parameterType="map">
+		/* package.updatePackageInfo */
+		UPDATE 
+			lab_package_info
+		SET
+			PRODUCT_NAME = #{productName}
+			, PRODUCT_CODE = #{productCode}
+			, ETC_INFO = #{etcInfo}
+			, WEIGHT = #{weight}
+			, KEEP_CONDITION = #{keepCondition}
+			, KEEP_CONDITION_TXT = #{keepConditionTxt}
+			, PRODUCT_NAME_BACK = #{productNameBack}
+			, FOOD_TYPE = #{foodType}
+			, FOOD_TYPE_TXT = #{foodTypeTxt}
+			, CONTAIN_QUANTITY = #{containQuantity}
+			, ALLERGY_OBJECT = #{allergyObject}
+			, MANUFACTURING_NO = #{manuNo}
+			, EXPIRED_DATE = #{expiredDate}
+			, PACKAGE_OBJECT = #{packageObject}
+			, MAKER = #{maker}
+			, DISTRIBUTION = #{distribution}
+			, RETURNED = #{returned}
+			, CUSTOMER_COUNSEL = #{customerCounsel}
+			, SEPARATE_DISCHARGE = #{separateDischarge}
+			, SEPARATE_DISCHARGE_TXT = #{separateDischargeTxt}
+			, SUGGESTIONS = #{suggestions}
+			, COOK_METHOD = #{cookMethod}
+			, STATUS = #{status}
+		WHERE 1 = 1
+			AND PACKAGE_IDX = #{idx} 
+	</update>
+	
+	<delete id="deletePackageInfoAddInfo" parameterType="map">
+		/* package.deletePackageInfoAddInfo */
+		DELETE
+		FROM lab_package_info_add_info
+		WHERE 1 = 1
+			AND PACKAGE_IDX = #{idx} 
+	</delete>
+	
+	<update id="updatePackageInfoIsLast" parameterType="map">
+		/* package.updatePackageInfoIsLast */
+		UPDATE
+			lab_package_info
+		SET
+			IS_LAST = 'N'
+		WHERE 1 = 1
+			AND PACKAGE_IDX = #{idx}
+	</update>
+	
+	<insert id="insertVersionUp" parameterType="map">
+		/** package.insertPackageInfo */
+		INSERT INTO lab_package_info(
+			PACKAGE_IDX			
+			, PRODUCT_NAME
+			, PRODUCT_CODE
+			, ETC_INFO
+			, WEIGHT
+			, KEEP_CONDITION
+			, KEEP_CONDITION_TXT
+			, PRODUCT_NAME_BACK
+			, FOOD_TYPE
+			, FOOD_TYPE_TXT
+			, CONTAIN_QUANTITY
+			, ALLERGY_OBJECT
+			, MANUFACTURING_NO
+			, EXPIRED_DATE
+			, PACKAGE_OBJECT
+			, MAKER
+			, DISTRIBUTION
+			, RETURNED
+			, CUSTOMER_COUNSEL
+			, SEPARATE_DISCHARGE
+			, SEPARATE_DISCHARGE_TXT
+			, SUGGESTIONS
+			, COOK_METHOD
+			, DOC_NO			
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+		)VALUES(
+			#{idx}
+			, #{productName}
+			, #{productCode}
+			, #{etcInfo}
+			, #{weight}
+			, #{keepCondition}
+			, #{keepConditionTxt}
+			, #{productNameBack}
+			, #{foodType}
+			, #{foodTypeTxt}
+			, #{containQuantity}
+			, #{allergyObject}
+			, #{manuNo}
+			, #{expiredDate}
+			, #{packageObject}
+			, #{maker}
+			, #{distribution}
+			, #{returned}
+			, #{customerCounsel}
+			, #{separateDischarge}
+			, #{separateDischargeTxt}
+			, #{suggestions}
+			, #{cookMethod}
+			, #{docNo}			
+			, (SELECT ifnull(MAX(lpi.VERSION_NO),0)+1 FROM lab_package_info lpi WHERE 1 = 1 AND lpi.DOC_NO = #{docNo})	
+			, 'N'
+			, 'Y'
+			, #{userId}
+			, #{userId}
+			, #{status}			
+		)
+	</insert>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+		/* package.selectHistory */
+		SELECT 
+			lh.DOC_IDX
+			, lh.HISTORY_TYPE
+			, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+				WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+				WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+				WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+				WHEN lh.HISTORY_TYPE  = 'T' then '임시저장'
+				END HISTORY_TYPE_TXT 
+			, lp.VERSION_NO
+			, lp.PRODUCT_NAME 
+			, lp.PRODUCT_CODE 
+			, lh.USER_ID 
+			, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+			, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+		FROM lab_history lh ,
+			lab_package_info lp 
+		WHERE 1 = 1
+			AND lh.DOC_IDX IN (SELECT PACKAGE_IDX FROM lab_package_info WHERE 1 = 1 AND DOC_NO = #{docNo})
+			AND lh.DOC_TYPE = #{docType}
+			AND lh.DOC_IDX = lp.PACKAGE_IDX 
+		ORDER BY lh.REG_DATE ASC
+	</select>
+</mapper>

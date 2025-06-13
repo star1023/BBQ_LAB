@@ -1,0 +1,70 @@
+@charset "utf-8";
+
+/*
+ * Project		:	헬로컴퍼니
+ * File			:	cnc_treegrid.css
+ * Author		:	YoungJae Lee
+ * Date			:	April. 2020
+ * Description	:	트리그리드 version 14 커스텀
+ */
+
+
+/* 트리그리드 폰트 변경 */
+.GridMain1.GridMain2.TSMain,
+.GridMain1.GridMain2.TSMain * {font-family:'Noto Sans KR', '본고딕', sans-serif !important; color:#414141; font-size:13px; font-weight:500;}
+
+
+
+/* 상단 툴바 스타일 변경 */
+/*  --- html 구조
+	<td class="TSRowSpace TSRowSpace0 TSRowSpaceFirst TSRowSpaceLast">
+		<div class="TSToolbarRow TSSolidRow">
+---------------------------------------------------------------------------------------- */
+
+.GridMain1.GridMain2 .TSRowSpace0 .TSSolidRow {background:none; padding-top:0; padding-bottom:5px; border-top:none !important; border-left:none; border-right:none;}
+
+.GridMain1.GridMain2 .TSRowSpace0 .TSCellSpace,
+.GridMain1.GridMain2 .TSRowSpace0 .TSCellSpaceIcon {padding-left:5px; padding-right:5px;}
+.GridMain1.GridMain2 .TSRowSpace0 .TSCellSpace,
+.GridMain1.GridMain2 .TSRowSpace0 .TSSpaceIconInner {padding-top:0; padding-bottom:0;}
+
+
+/* 중간 툴바 스타일 변경 */
+.GridMain1.GridMain2 .TSRowSpace2 .TSSolidRow {border-top:1px solid #ffffff !important; background:#f4f4fc;}
+
+
+/* 하단 툴바 스타일 변경 */
+/*  --- html 구조
+	<td class="TSRowSpace TSRowSpace4 TSRowSpaceFirst TSRowSpaceLast">
+		<div class="TSSpaceRow TSSolidRow">
+---------------------------------------------------------------------------------------- */
+
+.GridMain1.GridMain2 .TSRowSpace4 .TSSolidRow {background:#f5f4f8; border:1px solid rgba(197,197,197,.6); border-top:2px solid #665880 !important;}
+
+
+/* 색상 스타일 변경 */
+.GridMain1.GridMain2 .TSColorChanged {background-color:#fff;} /* 내용 변경된 cell 색상 */
+.GridMain1.GridMain2 .TSColorAlternate {background-color:#f5f4f8;} /* Color for <Cfg Alternate/>, can be changed by <I AlternateColor /> */
+.GridMain1.GridMain2 .TSColorAdded{background-color:#f2f9ff;}
+
+
+/* header */
+.GridMain1.GridMain2 .TSHeadLeft,
+.GridMain1.GridMain2 .TSHeadMid,
+.GridMain1.GridMain2 .TSHeadRight{border-top: none;}
+.GridMain1.GridMain2 .TSCellHeader {color:#fff; background: #665880; border-right: 1px solid rgba(197,197,197,.5); border-bottom: 1px solid rgba(197,197,197,.5);}
+
+
+
+
+/* 모달 트리그리드 잔상 */
+div[id^=TGHoverCursors] {z-index: -1 !important;}
+.treeAtImg .modal-content * {display: none !important;}
+
+/* 트리 그리드 글씨 css */
+.gridStatus5 {color:#FFF !important;font-weight:bold !important;}
+
+.GridMain1.GridMain2 .TSMenuHeadText {color: #fff;}
+.GridMain1.GridMain2 .GridDisabled{position:absolute;z-index:256;background:white;opacity:0.5}
+
+

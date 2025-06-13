@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="senseQuality">
+	<sql id="whereSenseQuality">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('searchName')">
+			AND PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+      		<when test="searchType.equals('searchTitle')">
+      		AND TITLE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      	</choose>
+		</if>
+	</sql>
+	
+	<select id="selectSenseQualityCount" parameterType="map" resultType="int">
+	/*	senseQuality.selectSenseQualityCount */
+		SELECT
+			count(REPORT_IDX) as cnt
+		FROM
+			lab_sense_quality_report
+		WHERE 1 = 1
+			AND REG_USER = #{userId}
+			AND IS_DELETE = 'N'
+			<include refid="senseQuality.whereSenseQuality" />			
+	</select>
+	
+	<select id="selectSenseQualityList" parameterType="map" resultType="hashmap">
+		/*	senseQuality.selectSenseQualityList */
+		SELECT
+			tmp.REPORT_IDX
+			, tmp.TITLE
+			, tmp.COMPANY_NAME
+			, tmp.PRODUCT_NAME
+			, tmp.SAP_CODE
+			, tmp.TEST_PURPOSE
+			, tmp.CONTENTS_HEADER
+			, tmp.IS_DELETE
+			, tmp.REG_USER
+			, DATE_FORMAT(tmp.REG_DATE, '%Y-%m-%d') as REG_DATE
+			, tmp.STATUS
+			, FN_GET_USER_NAME(tmp.REG_USER) as REG_USER_NAME
+			, CASE 
+				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
+				WHEN tmp.STATUS = 'REG' THEN '등록'
+				WHEN tmp.STATUS = 'APPR' THEN '결재중'
+				WHEN tmp.STATUS = 'COMP' THEN '완료'
+				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+		FROM
+		(	
+			SELECT
+				row_number() over (order by  REPORT_IDX DESC) as rnum
+				, REPORT_IDX
+				, TITLE
+				, COMPANY_NAME
+				, PRODUCT_NAME
+				, SAP_CODE
+				, TEST_PURPOSE
+				, CONTENTS_HEADER
+				, IS_DELETE
+				, REG_USER
+				, REG_DATE
+				, STATUS				
+			FROM 	
+				lab_sense_quality_report
+			WHERE 1 = 1
+				AND REG_USER = #{userId}
+				AND IS_DELETE = 'N'
+				<include refid="senseQuality.whereSenseQuality" />	
+		)tmp
+		WHERE rnum between #{startRow} and #{endRow}
+	</select>
+	
+	<select id="selectSenseQualitySeq" resultType="int">
+		/*	senseQuality.selectSenseQualitySeq */
+		SELECT FN_NEXTVAL('lab_sense_quality_report_seq') as seq
+	</select>
+	
+	<insert id="insertSenseQualityReport" parameterType="map">
+		/*	senseQuality.insertSenseQualityReport */
+		INSERT INTO lab_sense_quality_report(
+			REPORT_IDX
+			, TITLE
+			, COMPANY_NAME
+			, PRODUCT_NAME
+			, SAP_CODE
+			, TEST_PURPOSE
+			, CONTENTS_HEADER
+			, STATUS
+			, IS_DELETE
+			, REG_USER
+			, REG_DATE			
+		)VALUES(
+			#{idx}
+			, #{title} 
+			, #{companyName}
+			, #{productName}
+			, #{sapCode}
+			, #{testPurpose}
+			, #{contentsHeader}
+			, #{status}
+			, 'N'
+			, #{userId}
+			, sysdate()
+		)
+	</insert>
+	
+	<insert id="insertSenseQualityContents" parameterType="list">
+		/*	senseQuality.insertSenseQualityContents */
+		INSERT
+		INTO lab_sense_quality_contents(
+			CONTENTS_IDX
+			, REPORT_IDX
+			, DISPLAY_ORDER
+			, CONTENTS_DIV
+			, CONTENTS_RESULT
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( FN_NEXTVAL('lab_sense_quality_contents_seq'), #{item.idx}, #{item.displayOrder}, #{item.contentsDiv}, #{item.contentsResult}, #{item.orgFileName}, #{item.changeFileName}, #{item.filePath} )
+		</foreach>
+	</insert>
+	
+	<insert id="insertSenseQualityAddInfo" parameterType="list">
+		/*	senseQuality.insertSenseQualityAddInfo */
+		INSERT
+		INTO lab_sense_quality_add_info(
+			INFO_IDX
+			, REPORT_IDX
+			, INFO_TYPE
+			, INFO_TEXT
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( FN_NEXTVAL('lab_sense_quality_add_info_seq'), #{item.idx}, #{item.infoType}, #{item.infoText} )
+		</foreach>
+	</insert>
+	
+	<select id="selectSenseQualityReport" parameterType="map" resultType="hashmap">
+		/*	senseQuality.selectSenseQualityReport */
+		SELECT
+			REPORT_IDX
+			, TITLE
+			, COMPANY_NAME
+			, PRODUCT_NAME
+			, SAP_CODE
+			, TEST_PURPOSE
+			, CONTENTS_HEADER
+			, IS_DELETE
+			, REG_USER
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+			, STATUS
+		FROM 
+			lab_sense_quality_report
+		WHERE 1 = 1
+			AND REPORT_IDX = #{idx}	
+	</select>
+	
+	<select id="selectSenseQualityContensts" parameterType="map" resultType="hashmap">
+		/*	senseQuality.selectSenseQualityContensts */
+		SELECT
+			CONTENTS_IDX
+			, REPORT_IDX
+			, DISPLAY_ORDER
+			, CONTENTS_DIV
+			, CONTENTS_RESULT
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		FROM 
+			lab_sense_quality_contents
+		WHERE 1 = 1
+			AND REPORT_IDX = #{idx}	
+		ORDER BY DISPLAY_ORDER ASC	
+	</select>
+	
+	<select id="selectSenseQualityInfo" parameterType="map" resultType="hashmap">
+		/*	senseQuality.selectSenseQualityInfo */
+		SELECT
+			INFO_IDX
+			, REPORT_IDX
+			, INFO_TYPE
+			, INFO_TEXT
+		FROM 
+			lab_sense_quality_add_info
+		WHERE 1 = 1
+			AND REPORT_IDX = #{idx}	
+		<if test="infoType != null and infoType != '' ">
+			AND INFO_TYPE = #{infoType}
+		</if>	
+	</select>
+	
+	<update id="updateSenseQualityReport"  parameterType="map">
+		/*	senseQuality.updateSenseQualityReport */
+		UPDATE 
+			lab_sense_quality_report
+		SET
+			TITLE = #{title}
+			, COMPANY_NAME = #{companyName}
+			, PRODUCT_NAME = #{productName}
+			, SAP_CODE = #{sapCode}
+			, TEST_PURPOSE = #{testPurpose}
+			, CONTENTS_HEADER = #{contentsHeader}
+			, STATUS = #{status}
+		WHERE 1 = 1
+			AND REPORT_IDX = #{idx}
+	</update>
+	
+	<update id="updateSenseQualityContent" parameterType="map">
+		/*	senseQuality.updateSenseQualityContent */
+		UPDATE
+			lab_sense_quality_contents
+		SET 
+			CONTENTS_DIV = #{contentsDiv}
+			, CONTENTS_RESULT = #{contentsResult}
+		WHERE 1 = 1
+			AND CONTENTS_IDX = #{contentsIdx}
+	</update>
+	
+	<insert id="insertSenseQualityContent" parameterType="map">
+		/*	senseQuality.insertSenseQualityContent */
+		INSERT
+		INTO lab_sense_quality_contents(
+			CONTENTS_IDX
+			, REPORT_IDX
+			, DISPLAY_ORDER
+			, CONTENTS_DIV
+			, CONTENTS_RESULT
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		)values
+		( FN_NEXTVAL('lab_sense_quality_contents_seq'), #{idx}, #{displayOrder}, #{contentsDiv}, #{contentsResult}, #{orgFileName}, #{changeFileName}, #{filePath} )
+	</insert>
+	
+	<delete id="deleteSenseQualityAddInfo" parameterType="map">
+		/*	senseQuality.deleteSenseQualityAddInfo */
+		DELETE 
+		FROM 
+			lab_sense_quality_add_info
+		WHERE 1 = 1
+			AND REPORT_IDX = #{idx}
+	</delete>
+	
+	<select id="selectSenseQualityContenstsData" parameterType="map" resultType="hashmap">
+		/*	senseQuality.selectSenseQualityContenstsData */
+		SELECT
+			CONTENTS_IDX
+			, REPORT_IDX
+			, DISPLAY_ORDER
+			, CONTENTS_DIV
+			, CONTENTS_RESULT
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		FROM
+			lab_sense_quality_contents
+		WHERE 1 = 1
+			AND CONTENTS_IDX = #{contentsIdx}
+	</select>
+	
+	<delete id="deleteSenseQualityContenstsData" parameterType="map">
+		/*	senseQuality.deleteSenseQualityContenstsData */
+		DELETE
+		FROM 
+			lab_sense_quality_contents
+		WHERE 1 = 1
+			AND CONTENTS_IDX = #{contentsIdx}	
+	</delete>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	/* report2.selectHistory */
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+			END HISTORY_TYPE_TXT 
+		,<choose>
+			<when test="docType.equals('DESIGN')">
+			rt.PRODUCT_NAME 
+			</when> 
+			<when test="docType.equals('TRIP')">
+			rt.TITLE
+			</when>
+			<when test="docType.equals('PLAN')">
+			rt.TITLE
+			</when>
+			<when test="docType.equals('RESEARCH')">
+			rt.TITLE
+			</when>
+		</choose>
+			AS TITLE
+		, lh.USER_ID 
+		, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+	<choose>
+		<when test="docType.equals('DESIGN')">
+		lab_design rt
+		</when> 
+		<when test="docType.equals('TRIP')">
+		lab_business_trip rt
+		</when>
+		<when test="docType.equals('PLAN')">
+		lab_business_trip_plan rt
+		</when>
+		<when test="docType.equals('RESEARCH')">
+		lab_market_research rt
+		</when>
+	</choose>	
+	WHERE 1 = 1
+		AND lh.DOC_IDX = #{idx}
+		AND lh.DOC_TYPE = #{docType}
+		<choose>
+			<when test="docType.equals('DESIGN')">
+			AND lh.DOC_IDX = rt.DESIGN_IDX 
+			</when> 
+			<when test="docType.equals('TRIP')">
+			AND lh.DOC_IDX = rt.TRIP_IDX 
+			</when>
+			<when test="docType.equals('PLAN')">
+			AND lh.DOC_IDX = rt.PLAN_IDX 
+			</when>
+			<when test="docType.equals('RESEARCH')">
+			AND lh.DOC_IDX = rt.RESEARCH_IDX 
+			</when>
+		</choose>		
+	ORDER BY lh.REG_DATE ASC
+	</select>
+</mapper>

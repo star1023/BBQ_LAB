@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notice">
+
+	<sql id="pagenation_notice">
+		WHERE rn between #{startRow} and #{endRow}
+	</sql>
+	
+	<sql id="whereNoticeList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType == 'searchTitle'">
+			AND TITLE LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+			<when test="searchType == 'searchName'">
+			AND REG_USER LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+			<when test="searchType == 'searchContent'">
+				AND CONTENT LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+      	</choose>
+		</if>
+		<if test="searchNoticeType != null and searchNoticeType != '' ">
+			AND TYPE = #{searchNoticeType}
+		</if>
+		<if test="searchStartDate != null and searchStartDate != '' and searchEndDate != null and searchEndDate != ''">
+		    AND DATE(REG_DATE) BETWEEN #{searchStartDate} AND #{searchEndDate}
+		</if>
+	</sql>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+		/* notice.selectHistory */
+		SELECT 
+			lh.DOC_IDX
+			, lh.HISTORY_TYPE
+			, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+				WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+				WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+				WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+				WHEN lh.HISTORY_TYPE  = 'U' then '임시저장'
+				END HISTORY_TYPE_TXT 
+			, lp.TITLE
+			, lh.USER_ID 
+			, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+			, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+		FROM lab_history lh ,
+			lab_board_notice lp 
+		WHERE 1 = 1
+			AND lh.DOC_IDX IN (SELECT BNOTICE_IDX FROM lab_board_notice WHERE 1 = 1 AND BNOTICE_IDX = #{docNo})
+			AND lh.DOC_TYPE = #{docType}
+			AND lh.DOC_IDX = lp.BNOTICE_IDX
+		ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<select id="selectNoticeCount" resultType="int">
+		/* notice.selectNoticeCount */
+		SELECT count(1) 
+		FROM lab_board_notice
+		WHERE 1=1
+			  AND IS_DELETE != 'Y'
+		  <include refid="notice.whereNoticeList"/>
+	</select>
+	
+	<select id="selectNoticeList" parameterType="map" resultType="map">
+	/* boardNotice.selectNoticeList */
+		SELECT * FROM (
+			SELECT ROW_NUMBER() OVER (
+				ORDER BY 
+				    CASE 
+				        WHEN TYPE = 'I'
+				         AND CURRENT_DATE BETWEEN STR_TO_DATE(POST_START_DATE, '%Y-%m-%d') AND STR_TO_DATE(POST_END_DATE, '%Y-%m-%d')
+				        THEN 0
+				        WHEN TYPE = 'I' THEN 1
+				        ELSE 2
+				    END,
+				    BNOTICE_IDX DESC
+			) AS rn,
+				BNOTICE_IDX,
+				TITLE,
+				CONTENT,
+				REG_USER,
+				FN_GET_USER_NAME(REG_USER) AS REG_USER_NAME,
+				DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS REG_DATE,
+				TYPE,
+				POST_START_DATE,
+				POST_END_DATE,
+				IS_POPUP,
+				POP_START_DATE,
+				POP_END_DATE,
+				HITS
+			FROM lab_board_notice
+			WHERE 1=1
+			  AND IS_DELETE != 'Y'
+			<include refid="notice.whereNoticeList"/>
+		) a
+		<include refid="pagenation_notice"/>
+	</select>
+	
+	<select id="selectNoticeData" parameterType="map" resultType="map">
+	/* notice.selectNoticeData */
+		SELECT 
+			BNOTICE_IDX,
+			TITLE,
+			CONTENT,
+			REG_USER,
+			DATE_FORMAT(REG_DATE, '%Y-%m-%d') as REG_DATE,
+			TYPE,
+			POST_START_DATE,
+			POST_END_DATE,
+			IS_POPUP,
+			POP_START_DATE,
+			POP_END_DATE,
+			HITS,
+			IS_DELETE
+		FROM lab_board_notice
+		WHERE BNOTICE_IDX = #{idx}
+		  AND IS_DELETE != 'Y'
+	</select>
+	
+	<select id="selectNoticeSeq" resultType="int">
+		/* notice.selectNoticeSeq */
+		SELECT FN_NEXTVAL('lab_board_notice_seq') as seq
+	</select>
+	
+	<insert id="insertNotice" parameterType="map">
+		/* notice.insertNotice */
+        INSERT INTO lab_board_notice (
+        	BNOTICE_IDX,
+            TITLE,
+            CONTENT,
+            REG_USER,
+            REG_DATE,
+            TYPE,
+            IS_DELETE,
+            HITS,
+            POST_START_DATE,
+            POST_END_DATE,
+            IS_POPUP,
+            POP_START_DATE,
+            POP_END_DATE
+        ) VALUES (
+        	#{idx},
+            #{title},
+            #{contents},
+            #{userId},
+            NOW(),
+            #{type},
+            'N',
+            0,
+            #{postStartDate},
+            #{postEndDate},
+            #{isPopup},
+            #{popStartDate},
+            #{popEndDate}
+        )
+    </insert>
+	
+	<update id="updateNotice" parameterType="map">
+		/* notice.updateNotice */
+	    UPDATE lab_board_notice
+	    SET 
+	        TITLE = #{title},
+	        TYPE = #{type},
+	        IS_POPUP = #{isPopup},
+	        POST_START_DATE = #{postStartDate},
+	        POST_END_DATE = #{postEndDate},
+	        POP_START_DATE = #{popStartDate},
+	        POP_END_DATE = #{popEndDate},
+	        CONTENT = #{contents},
+	        REG_USER = #{userId},
+	        REG_DATE = NOW()
+	    WHERE BNOTICE_IDX = #{idx}
+	</update>
+	
+	<update id="updateHits" parameterType="map">
+		/* notice.updateHits */
+	    UPDATE lab_board_notice
+	    SET HITS = IFNULL(HITS, 0) + 1
+	    WHERE BNOTICE_IDX = #{idx}
+	</update>
+	
+	<update id="updateIsDeleteY" parameterType="map">
+	/* notice.updateIsDeleteY */
+	    UPDATE lab_board_notice
+	    SET IS_DELETE = 'Y',
+	        REG_USER = #{userId},
+	        REG_DATE = NOW()
+	    WHERE BNOTICE_IDX = #{idx}
+	</update>
+</mapper>

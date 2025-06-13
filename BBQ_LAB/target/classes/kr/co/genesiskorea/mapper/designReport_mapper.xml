@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="designReport">
+	<sql id="whereDesignList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('searchName')">
+			AND PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+      		<when test="searchType.equals('searchTitle')">
+      		AND TITLE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      	</choose>
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND DESIGN_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'DESIGN' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+		</if>
+	</sql>
+	
+	<select id="selectDesignCount" parameterType="map" resultType="int">
+		/*	designReport.selectDesignCount */
+		SELECT
+			COUNT(DESIGN_IDX) as cnt
+		FROM 	
+			lab_design
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			<include refid="designReport.whereDesignList" />
+	</select>
+	
+	<select id="selectDesignList" parameterType="map" resultType="hashmap">
+		/*	designReport.selectDesignList */
+		SELECT
+			tmp.*
+			, FN_GET_USER_NAME(tmp.DOC_OWNER) as DOC_OWNER_NAME
+			, CASE 
+				WHEN tmp.STATUS = 'REG' THEN '등록'
+				WHEN tmp.STATUS = 'APPR' THEN '결재중'
+				WHEN tmp.STATUS = 'COMP' THEN '완료'
+				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+		FROM
+		(	
+			SELECT
+				row_number() over (order by  DESIGN_IDX DESC) as rnum
+				, DESIGN_IDX
+				, PRODUCT_CODE
+				, SAP_CODE
+				, TITLE
+				, PRODUCT_NAME
+				, CONTENTS
+				, VERSION_NO
+				, IS_DELETE
+				, IS_LAST
+				, STATUS
+				, REG_USER
+				, DOC_OWNER
+			FROM 	
+				lab_design
+			WHERE 1 = 1
+				AND DOC_OWNER = #{userId}
+				AND IS_DELETE = 'N'
+				AND IS_LAST = 'Y'
+				<include refid="designReport.whereDesignList" />
+		)tmp
+		WHERE rnum between #{startRow} and #{endRow}		
+	</select>
+	
+	<select id="selectDesignSeq" resultType="int">
+		/*	designReport.selectDesignSeq */
+		SELECT FN_NEXTVAL('design_seq') as seq
+	</select>
+	
+	<insert id="insertDesign" parameterType="map">
+		/*	designReport.insertDesign */
+		INSERT INTO lab_design(
+			DESIGN_IDX
+			, PRODUCT_CODE
+			, SAP_CODE
+			, TITLE
+			, PRODUCT_NAME
+			, CONTENTS
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, STATUS
+			, REG_USER
+			, DOC_OWNER			
+		)VALUES(
+			#{idx}
+			, #{productCode}
+			, #{sapCode}
+			, #{title}
+			, #{productName}
+			, #{contents}
+			, 1
+			, 'N'
+			, 'Y'
+			, #{status}
+			, #{userId}
+			, #{userId}			
+		)
+	</insert>
+	
+	<insert id="insertChangeList" parameterType="map">
+		/*	designReport.insertChangeList */
+		INSERT 
+    	INTO lab_design_change_info(
+			CHANGE_IDX
+			, DESIGN_IDX
+			, ITEM_DIV
+			, ITEM_CURRENT
+			, ITEM_CHANGE
+			, ITEM_NOTE
+			, ORDER_NO
+		)values
+		<foreach collection="changeList" item="item" index="index"  separator=",">
+		( FN_NEXTVAL('design_change_info_seq'), #{idx}, #{item.itemDiv}, #{item.itemCurrent}, #{item.itemChange}, #{item.itemNote} , ${index+1} )
+		</foreach>
+	</insert>
+	
+	<select id="selectDesignData" parameterType="map" resultType="hashmap">
+		/*	designReport.selectDesignData */
+		SELECT
+			DESIGN_IDX
+			, PRODUCT_CODE
+			, SAP_CODE
+			, TITLE
+			, PRODUCT_NAME
+			, CONTENTS
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, STATUS
+			, REG_USER
+			, DOC_OWNER
+			, TITLE
+		FROM 
+			lab_design
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{idx}
+	</select>
+	
+	<select id="selectDesignChangeList" parameterType="map" resultType="hashmap">
+		/*	designReport.selectDesignChangeList */
+		SELECT
+			CHANGE_IDX
+			, DESIGN_IDX
+			, ITEM_DIV
+			, ITEM_CURRENT
+			, ITEM_CHANGE
+			, ITEM_NOTE
+			, ORDER_NO
+		FROM
+			lab_design_change_info
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{idx}
+		ORDER BY ORDER_NO ASC	
+	</select>
+	
+	<select id="selectAddInfoList" parameterType="map" resultType="hashmap">
+		/*	designReport.selectAddInfoList */
+		SELECT
+			DESIGN_IDX
+			, DISPLAY_ORDER
+			, INFO_TYPE
+			, INFO_TEXT
+		FROM
+			lab_design_add_info
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{idx}
+		ORDER BY DISPLAY_ORDER ASC		
+	</select>
+	
+	<update id="updateDesign" parameterType="map">
+	/*	designReport.updateDesign */
+		UPDATE 
+			lab_design
+		SET 
+			PRODUCT_CODE = #{productCode}
+			, SAP_CODE = #{sapCode}
+			, TITLE = #{title}
+			, PRODUCT_NAME = #{productName}
+			, CHANGE_COMMENT = #{changeComment}
+			, CHANGE_TIME = #{changeTime}
+			, CONTENTS = #{contents}
+			<if test="status != null and status != '' ">
+			, STATUS = #{status}
+			</if>
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{idx}	
+	</update>
+	
+	<delete id="deleteChangeList" parameterType="map">
+	/*	designReport.deleteChangeList */
+		DELETE
+		FROM lab_design_change_info
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{idx}
+	</delete>
+	
+	<insert id="insertAddInfo" parameterType="list">
+		INSERT
+		INTO lab_design_add_info(
+			DESIGN_IDX
+			, DISPLAY_ORDER
+			, INFO_TYPE
+			, INFO_TEXT
+		)values
+		<foreach collection="list" item="item" separator=",">
+		(#{item.idx}, #{item.displayOrder}, #{item.infoType}, #{item.infoText} )
+		</foreach>
+	</insert>
+	
+	<delete id="deleteAddInfo" parameterType="map">
+		DELETE
+		FROM lab_design_add_info
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{idx}
+	</delete>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	/* designReport.selectHistory */
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+			END HISTORY_TYPE_TXT 
+		,<choose>
+			<when test="docType.equals('DESIGN')">
+			rt.PRODUCT_NAME 
+			</when> 
+			<when test="docType.equals('TRIP')">
+			rt.TITLE
+			</when>
+			<when test="docType.equals('PLAN')">
+			rt.TITLE
+			</when>
+			<when test="docType.equals('RESEARCH')">
+			rt.TITLE
+			</when>
+		</choose>
+			AS TITLE
+		, lh.USER_ID 
+		, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+	<choose>
+		<when test="docType.equals('DESIGN')">
+		lab_design rt
+		</when> 
+		<when test="docType.equals('TRIP')">
+		lab_business_trip rt
+		</when>
+		<when test="docType.equals('PLAN')">
+		lab_business_trip_plan rt
+		</when>
+		<when test="docType.equals('RESEARCH')">
+		lab_market_research rt
+		</when>
+	</choose>	
+	WHERE 1 = 1
+		AND lh.DOC_IDX = #{idx}
+		AND lh.DOC_TYPE = #{docType}
+		<choose>
+			<when test="docType.equals('DESIGN')">
+			AND lh.DOC_IDX = rt.DESIGN_IDX 
+			</when> 
+			<when test="docType.equals('TRIP')">
+			AND lh.DOC_IDX = rt.TRIP_IDX 
+			</when>
+			<when test="docType.equals('PLAN')">
+			AND lh.DOC_IDX = rt.PLAN_IDX 
+			</when>
+			<when test="docType.equals('RESEARCH')">
+			AND lh.DOC_IDX = rt.RESEARCH_IDX 
+			</when>
+		</choose>		
+	ORDER BY lh.REG_DATE ASC
+	</select>
+</mapper>

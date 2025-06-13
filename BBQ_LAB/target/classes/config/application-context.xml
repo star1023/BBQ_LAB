@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:util="http://www.springframework.org/schema/util"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:cache="http://www.springframework.org/schema/cache"
+    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+    					http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
+        				http://www.springframework.org/schema/util 
+        				http://www.springframework.org/schema/util/spring-util-4.1.xsd
+        				http://www.springframework.org/schema/context 
+        				http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        				http://www.springframework.org/schema/cache
+        				http://www.springframework.org/schema/cache/spring-cache.xsd">
+
+	<!-- constant properties -->
+    <util:properties id="config" location="classpath:/prop/constant.properties" />
+    
+    <!-- annotation enabled -->
+    <context:annotation-config />
+    <!-- context component scan -->
+    <!--context:component-scan base-package="kr.co.genesiskorea">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Service" />
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Repository" />
+    </context:component-scan-->
+    
+    <bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+    	<property name="defaultEncoding" value="UTF-8"/>
+        <property name="cacheSeconds" value="60"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+        <property name="basenames">
+            <list>
+                <value>classpath:/message/message</value>
+            </list>
+        </property>
+	</bean>
+
+	<bean id="messageSourceAccessor"
+		class="org.springframework.context.support.MessageSourceAccessor">
+		<constructor-arg>
+			<ref bean="messageSource" />
+		</constructor-arg>
+	</bean> 
+</beans>

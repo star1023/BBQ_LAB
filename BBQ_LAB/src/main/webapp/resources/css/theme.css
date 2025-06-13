@@ -1,0 +1,187 @@
+﻿@charset "utf-8";
+
+/*넓이테마 */
+/*넓이 고정 */
+.wrap_in02 .btn_reduce{display:none;}
+.wrap_in02 .exp_img02{ width:100%; display:block; height:75px;background-image:url(../images/img_som_width02.png); background-repeat:no-repeat; background-position:center 15px;}
+
+/*넓이 100%*/
+.wrap_in01 .btn_extend{display:none;}
+.wrap_in01 .exp_img02{ width:100%; display:block; height:75px;background-image:url(../images/img_som_width01.png); background-repeat:no-repeat; background-position:center 15px;}
+
+/*메뉴테마*/
+/*여백있음*/
+.content_theme01{background-color:#f1f1f1;}
+.content_theme01 .wrap_in .type01{ border:1px solid #dedede;box-shadow: 3px 3px 5px #e6e6e6; }
+.content_theme01 .btn_cont01{ display:none;}
+.content_theme01 .exp_img{ width:100%; display:block; height:75px;background-image:url(../images/img_som_cont01.png); background-repeat:no-repeat; background-position:center 15px;}
+.content_theme01 .con_mode{ display:none;}
+
+
+/*여백없음*/
+.content_theme02{background-color:#ffffff;}
+.content_theme02 .wrap_in .type01{ border:0;box-shadow:none;}
+.content_theme02 .title_s{ display:none;}
+.content_theme02 h2 { height:40px;}
+.content_theme02 h2 .title{ text-align:left; padding-left:30px;}
+.content_theme02 .top_btn_box{ visibility:hidden}
+.content_theme02 .wrap_in02 .wrap_in{ }
+.content_theme02 .wrap_in02 .wrap_in .type01{ margin-top:-40px; padding-top:0px;}
+.content_theme02 .wrap_in01 .wrap_in .type01{ margin-top:-40px; padding-top:0px;}
+.content_theme02 .wrap_in02 .path{ display:table; width:100%; text-align:right; padding-right:30px; box-sizing:border-box; padding-top:15px;}
+.content_theme02 .wrap_in01 .path{ display:table; width:100%; text-align:right; padding-right:20px; box-sizing:border-box;padding-top:15px;}
+.content_theme02 .btn_cont02{ display:none;}
+.content_theme02 .exp_img{ width:100%; display:block; height:75px;background-image:url(../images/img_som_cont02.png); background-repeat:no-repeat; background-position:center 15px;}
+.content_theme02 .group01{padding-bottom:0px;}
+
+.content_theme02 #main_footer{padding-top:0px;}
+.content_theme02 .modal .top_btn_box{ visibility:visible !important;}
+
+/*컬러테마 */
+
+/*theme01*/
+.theme01 .main_nav{background-color:#fff; 	 border-top:2px solid #38b6e6; border-bottom:1px solid #a8adb9;box-shadow: 0 1px 3px RGBA(0, 0, 0, 0.1);}
+/*.theme01 h1{ background-image:url(../images/logo.png); background-repeat:no-repeat; background-position:0 0;}*/
+.theme01 h1{ background-image:url(../images/bbq_logo.png); background-repeat:no-repeat; background-position:0 0; background-size: 80%;}
+.theme01 .main_menu { height:55px;}
+
+.theme01 .main_menu li a {	padding: 20px 0  18px 0;background-image:url(../images/bg_menu_bar_01.png); background-repeat:no-repeat; background-position:right 5px;
+color:#000; font-weight:bold;}
+.theme01 .main_menu .select a{background-color:#ffffff!important; }
+.theme01 .main_menu li  ul li a {width:210px !important;padding: 10px 10px;}
+.theme01 .main_menu ul {top: 58px; border:1px solid #a8adb9;}
+.theme01 aside { background-color:#4b5165;}
+.theme01 .main_menu .select a{ color:#20a7d2; font-weight:bold;}
+.theme01 .main_menu li a:hover{ background-color:#ffffff; }
+.theme01 .main_menu ul li:hover a { color:#17a8d6 !important; background-color:#f7f7f8;}
+.theme01 .btn_theme01{ background-position:0px -30px;}
+
+.theme01 .tbl01{ width:100%;font-family:'맑은고딕',Malgun Gothic; font-size:13px; border-top:2px solid #4b5165;}
+.theme01 .tbl01 thead th{ text-align:center; background-color:#f7f7f7; border:0; height:38px; border-bottom:1px solid #adb8bc;}
+.theme01 .tbl01 tbody td{ text-align:center; height:22px; padding:6px 0 6px 0;border-bottom:1px solid #e6e6e6}
+.theme01 .tbl_app { border-top:2px solid #20a7d2 !important ;}
+
+
+
+
+/*theme02*/
+/*.theme02 .main_nav{background-color:#6a6f82; 	 border-bottom:3px solid #38b6e6}*/
+.theme02 .main_nav{background-color:#b92c35; 	 border-bottom:3px solid #38b6e6}
+/*.theme02 h1{ background-image:url(../images/logo02.png); background-repeat:no-repeat; background-position:0 0;}*/
+.theme02 h1{ background-image:url(../images/bbq_logo.png); background-repeat:no-repeat; background-position:0 0; background-size: 80%;}
+.theme02 .main_menu { height:55px;}
+.theme02 .main_menu li a {	padding: 20px 0  19px 0;background-image:url(../images/bg_menu_bar.png); background-repeat:no-repeat; background-position:right 5px;}
+.theme02	.main_menu .select a{background-color:#38b6e6 !important; background-image:none !important;}
+.theme02 .main_menu li  ul li a {width:210px !important;padding: 10px 10px;}
+.theme02 .main_menu .select ul li  a {background-color:#fff !important;}
+.theme02 .main_menu .select ul li  a:hover{ color:#3cb4e6 !important}
+.theme02 .main_menu ul {top: 58px;}
+.theme02 aside { background-color:#FFF; border-right:1px solid #999;}
+.theme02 .btn_theme02{ background-position:0px -30px;}
+
+
+.theme02 .tbl01{ width:100%;font-family:'맑은고딕',Malgun Gothic; font-size:13px; border-top:2px solid #4b5165;}
+.theme02 .tbl01 thead th{ text-align:center; background-color:#f7f7f7; border:0; height:38px; border-bottom:1px solid #adb8bc;}
+.theme02 .tbl01 tbody td{ text-align:center; height:22px; padding:6px 0 6px 0;border-bottom:1px solid #e6e6e6}
+
+
+/*theme03*/
+
+
+.theme03 .main_nav{background-color:#fff; 	 border-top:2px solid #7a9c53; border-bottom:1px solid #a8adb9;box-shadow: 0 1px 3px RGBA(0, 0, 0, 0.1);}
+/*.theme03 h1{ background-image:url(../images/logo.png); background-repeat:no-repeat; background-position:0 0;}*/
+.theme03 h1{ background-image:url(../images/bbq_logo.png); background-repeat:no-repeat; background-position:0 0; background-size: 80%;}
+.theme03 .main_menu { height:55px;}
+
+.theme03 .main_menu li a {	padding: 20px 0  18px 0;background-image:url(../images/bg_menu_bar_01.png); background-repeat:no-repeat; background-position:right 5px;
+color:#000; font-weight:bold;}
+.theme03 .main_menu .select a{background-color:#ffffff !important; color:#748f5d !important;}
+.theme03 .main_menu li  ul li a {width:210px !important;padding: 10px 10px; background-color:#f3f4f0;}
+.theme03 .main_menu li  ul li a:hover{ color:#7a9c53 !important;}
+.theme03 .main_menu ul {top: 58px; border:1px solid #a8adb9;}
+.theme03 aside { background-color:#63675f;}
+.theme03 .main_menu .select a{ color:#20a7d2; font-weight:bold;}
+.theme03 .main_menu .select ul li a{ color:#000 !important;  background-color:#f3f4f0 !important;}
+.theme03 .main_menu li a:hover{ background-color:#ffffff; }
+.theme03 .main_menu ul li:hover a { color:#17a8d6 !important; background-color:#f7f7f8;}
+.theme03 .btn_theme03{ background-position:0px -30px;}
+
+.theme03 .tbl01{ width:100%;font-family:'맑은고딕',Malgun Gothic; font-size:13px; border-top:2px solid #4b5165;}
+.theme03 .tbl01 thead th{ text-align:center; background-color:#f7f7f7; border:0; height:38px; border-bottom:1px solid #adb8bc;}
+.theme03 .tbl01 tbody td{ text-align:center; height:22px; padding:6px 0 6px 0;border-bottom:1px solid #e6e6e6}
+.theme03 .tbl_app { border-top:2px solid #20a7d2 !important ;}
+.theme03 h2 .title_s{ color:#748f5d ;}
+.theme03 .tbl_meeting thead .today { background-color:#6e8e55;}
+.theme03 .tbl_meeting tbody .today{background-color:rgba( 124,134, 93, 0.1)}
+.theme03 .group01 .title7 .txt strong{ color:#d15b47}
+
+
+
+
+/*theme04*/
+
+.theme04 nav{ position:absolute; z-index:1; border-top:3px solid #df5050;}
+
+.theme04 .main_nav{background-color: transparent;  position:absolute;}
+/*.theme04 h1{ background-image:url(../images/logo.png); background-repeat:no-repeat; background-position:0 0; margin-top:15px;}*/
+.theme04 h1{ background-image:url(../images/bbq_logo.png); background-repeat:no-repeat; background-position:0 0; margin-top:15px; background-size: 80%;}
+.theme04 .main_menu { height:40px; margin-top:15px;}
+.theme04 .main_menu li { background-color:transparent;}
+.theme04 .main_menu li a {	padding:15px 0px 15px 0px;  background-image:url(../images/bg_menu_bar.png); background-repeat:no-repeat; background-position:right 1px; color:#2e3142; font-weight:bold;}
+.theme04 .main_menu li a:hover{ background-color:transparent; color:#d15b47}
+.theme04	.main_menu .select a{background-color:#d15b47 !important; background-image:none ; color:#fff; border-radius:25px;}
+.theme04	.main_menu .select a:hover{color:#fff;}
+.theme04 .main_menu li  ul li a {width:210px !important;padding: 10px 10px;background-color:transparent !important;}
+.theme04 .main_menu .select ul li  a {background-color:transparent !important;}
+.theme04 .main_menu .select ul li  a:hover{ color:#d15b47 !important}
+.theme04 .main_menu li ul li  a:hover{ color:#d15b47 !important}
+
+.theme04 .main_menu ul {top: 50px;  border-radius:15px; border:2px solid #d15b47; background-color:#FFF;}
+.theme04 aside { background-color:#827e78; top:0;}
+.theme04 .btn_theme04{ background-position:0px -30px;}
+.theme04 h2 .title_s{ color:#b1a796;}
+.theme04 h2 .title{color:#d15b47;}
+.theme04 .tbl01{ width:100%;font-family:'맑은고딕',Malgun Gothic; font-size:13px; border-top:2px solid #4b5165;}
+.theme04 .tbl01 thead th{ text-align:center; background-color:#f7f7f7; border:0; height:38px; border-bottom:1px solid #adb8bc;}
+.theme04 .tbl01 tbody td{ text-align:center; height:22px; padding:6px 0 6px 0;border-bottom:1px solid #e6e6e6}
+.theme04 section{ border-radius:20px; }
+.theme04 .wrap_in .type01 { border:1px solid #fff;}
+.theme04 .cbp-spmenu-vertical{ top:0;}
+.theme04  .wrap_in02 .menu_position01{ padding-left:80px;}
+.theme04 .group01 .title7 .txt strong{ color:#d15b47}
+.theme04 .tab02 ul .change { background-color:#827e78; border-color:#827e78;}
+
+.theme04 .btn_admin_nomal{ border-radius:25px;}
+.theme04 .btn_admin_red{ border-radius:25px;}
+.theme04 .btn_admin_yellow{ border-radius:25px;}
+.theme04 .btn_admin_green{ border-radius:25px;}
+.theme04 .btn_admin_gray{ border-radius:25px;}
+
+
+.theme04 .btn_admin_navi{ border-radius:25px;}
+.theme04 .btn_admin_sky{ border-radius:25px;}
+
+
+
+/*theme05*/
+.theme05 .type01{ border:none;!important}
+.theme05 .main_nav{background-color:#817c71; 	 }
+/*.theme05 h1{ background-image:url(../images/logo03.png); background-repeat:no-repeat; background-position:0 0;}*/
+.theme05 h1{ background-image:url(../images/bbq_logo.png); background-repeat:no-repeat; background-position:0 0; background-size: 80%;}
+.theme05 .main_menu { height:60px;}
+.theme05 .main_menu li a {	padding: 21px 0  20px 0;background-image:url(../images/bg_menu_bar_02.png); background-repeat:no-repeat; background-position:right 5px; color:#f4e7c1;}
+.theme05 .main_menu li a:hover{background-color:#9a9382 !important;}
+.theme05	.main_menu .select a{background-color:#6e6b64 !important; background-image:none !important;}
+.theme05 .main_menu li  ul li a {width:210px !important;padding: 10px 10px;}
+.theme05 .main_menu li  ul li a:hover{color:#000 !important; background-color:#e4decf !important;}
+.theme05 .main_menu .select ul li  a {background-color:#fff !important;}
+.theme05 .main_menu .select ul li  a:hover{ color:#000 !important; background-color:#e4decf !important;}
+.theme05 .main_menu ul {top: 60px;}
+.theme05 aside { background-color:#f1f1f1; border-right:1px solid #d5d5d5;}
+.theme05 .btn_theme05{ background-position:0px -30px;}
+.theme05 h2 .title_s{ color:#e2724f;}
+
+.theme05 .tbl01{ width:100%;font-family:'맑은고딕',Malgun Gothic; font-size:13px; border-top:2px solid #4b5165;}
+.theme05 .tbl01 thead th{ text-align:center; background-color:#f7f7f7; border:0; height:38px; border-bottom:1px solid #adb8bc;}
+.theme05 .tbl01 tbody td{ text-align:center; height:22px; padding:6px 0 6px 0;border-bottom:1px solid #e6e6e6}
+

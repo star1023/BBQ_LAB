@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="code">
+	<select id="groupList" parameterType="map" resultType="hashmap">
+	/*code.groupList*/
+	SELECT GROUP_CODE AS groupCode
+		,GROUP_NAME AS groupName
+		,DESCRIPTION AS description
+		,IS_DELETE AS isDelete
+		,REG_USER_ID AS regUserId
+		,DATE_FORMAT(REG_DATE,'%Y-%m-%d') as regDate
+		,UPDATE_USER_ID AS modUserId
+		,DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d') as modDate 
+	FROM lab_code_group
+	WHERE IS_DELETE = 'N'
+    </select>
+    
+    <select id="groupCount" parameterType="map" resultType="int">
+    /*code.groupCount*/
+	  	SELECT	COUNT(GROUP_CODE) CNT
+	  	FROM 	lab_code_group
+	  	WHERE 	1=1
+	  	AND GROUP_CODE = #{groupCode}
+	</select>
+
+	<insert id="groupInsert" parameterType="map">
+	/*code.groupInsert*/
+		INSERT
+			INTO lab_code_group
+		(
+			GROUP_CODE
+			, GROUP_NAME
+			, DESCRIPTION
+			, IS_DELETE
+			, REG_USER_ID
+			, REG_DATE
+		) VALUES (
+			#{groupCode}
+			, #{groupName}
+			, #{description}
+			, 'N'
+			, ''
+			, sysdate()
+		)
+	</insert>
+	
+	<update id="groupUpdate" parameterType="map">
+	/*code.groupUpdate*/
+		UPDATE lab_code_group
+		SET
+			GROUP_NAME = #{groupName}
+			,DESCRIPTION = #{description}
+			,UPDATE_USER_ID = ''
+			,UPDATE_DATE = sysdate()
+		WHERE GROUP_CODE = #{groupCode}
+	</update>
+	
+	<update id="groupDelete" parameterType="map">
+	/*code.groupDelete*/
+		UPDATE lab_code_group
+		SET
+			IS_DELETE = 'Y'
+			,UPDATE_USER_ID = ''
+			,UPDATE_DATE = sysdate()
+		WHERE GROUP_CODE = #{groupCode}
+	</update>
+	
+	<select id="groupItemCount" parameterType="map" resultType="int">
+	/*code.groupItemCount*/
+	  	SELECT COUNT(GROUP_CODE) CNT
+	    FROM lab_code_item
+	    WHERE 	1=1
+	  	AND GROUP_CODE = #{groupCode}
+	  	AND IS_DELETE = 'N'
+	</select>
+	
+	<select id="itemList" parameterType="map" resultType="hashmap">
+	/*code.itemList*/
+	SELECT GROUP_CODE AS groupCode
+      	,ITEM_CODE AS itemCode
+      	,ITEM_NAME AS itemName
+      	,DESCRIPTION AS description
+      	,ORDER_NO AS orderNo
+     	,IS_DELETE AS isDelete
+      	,REG_USER_ID AS regUserId
+      	,DATE_FORMAT(REG_DATE,'%Y-%m-%d') as regDate 
+      	,UPDATE_USER_ID AS modUserId
+      	,DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d') as modDate
+	FROM lab_code_item
+	WHERE GROUP_CODE = #{groupCode}
+	AND IS_DELETE = 'N'
+	ORDER BY ORDER_NO ASC
+    </select>
+	
+	<select id="itemCount" parameterType="map" resultType="int">
+	/*code.itemCount*/
+	  	SELECT COUNT(ITEM_CODE) CNT
+	    FROM lab_code_item
+	    WHERE 	1=1
+	  	AND GROUP_CODE = #{groupCode}
+	  	AND ITEM_CODE = #{itemCode}
+	  	<!-- AND isDelete = 'N' -->
+	</select>
+	
+	<insert id="itemInsert" parameterType="map">
+	/*code.itemInsert*/
+		INSERT
+			INTO lab_code_item
+		(
+			GROUP_CODE
+			, ITEM_CODE
+			, ITEM_NAME
+			, DESCRIPTION
+			, ORDER_NO
+			, IS_DELETE
+			, REG_USER_ID
+			, REG_DATE
+		) VALUES (
+			#{groupCode}
+			, #{itemCode}
+			, #{itemName}
+			, #{description}
+			, (SELECT ifnull(max(a.ORDER_NO),0)+1 FROM lab_code_item a WHERE a.GROUP_CODE = #{groupCode})
+			, 'N'
+			, ''
+			, sysdate()
+		)
+	</insert>
+	
+	<update id="itemUpdate" parameterType="map">
+	/*code.itemUpdate*/
+		UPDATE lab_code_item
+		SET
+			ITEM_NAME = #{itemName}
+			,DESCRIPTION = #{description}
+			,UPDATE_USER_ID = ''
+			,UPDATE_DATE = sysdate()
+		WHERE GROUP_CODE = #{groupCode}
+		AND ITEM_CODE = #{itemCode}
+	</update>
+	
+	<update id="itemOrderUpdate" parameterType="map">
+	/*code.itemOrderUpdate*/
+		UPDATE lab_code_item
+		SET
+			ORDER_NO = (ORDER_NO-1)
+		WHERE GROUP_CODE = #{groupCode}
+		AND ORDER_NO > (SELECT tmp.orderNo FROM (SELECT a.ORDER_NO as orderNo FROM lab_code_item a WHERE a.GROUP_CODE = #{groupCode} AND a.ITEM_CODE = #{itemCode}) AS tmp )
+		AND IS_DELETE = 'N'
+	</update>
+	
+	<update id="itemDelete" parameterType="map">
+	/*code.itemDelete*/
+		UPDATE lab_code_item
+		SET
+			IS_DELETE = 'Y'
+			,UPDATE_USER_ID = ''
+			,UPDATE_DATE = sysdate()
+		WHERE GROUP_CODE = #{groupCode}
+		AND ITEM_CODE = #{itemCode}
+	</update>
+	
+	<update id="itemOrderUpDown" parameterType="map">
+	/*code.itemOrderUpDown*/
+		UPDATE lab_code_item
+		SET
+		<choose>
+			<when test="mode.equals('UP')">
+			ORDER_NO = (ORDER_NO+1)
+			</when>
+      		<when test="mode.equals('DOWN')">
+      		ORDER_NO = (ORDER_NO-1)
+      		</when>	
+      	</choose>
+		WHERE GROUP_CODE = #{groupCode}
+		<choose>
+			<when test="mode.equals('UP')">
+			AND ORDER_NO = (SELECT tmp.orderNo FROM (SELECT a.ORDER_NO-1 as orderNo FROM lab_code_item a WHERE a.GROUP_CODE = #{groupCode} AND a.ITEM_CODE = #{itemCode} AND a.IS_DELETE = 'N') tmp)
+      		</when>
+      		<when test="mode.equals('DOWN')">
+      		AND ORDER_NO = (SELECT tmp.orderNo FROM (SELECT a.ORDER_NO+1 as orderNo FROM lab_code_item a WHERE a.GROUP_CODE = #{groupCode} AND a.ITEM_CODE = #{itemCode} AND a.IS_DELETE = 'N') tmp)
+      		</when>
+		</choose>
+		AND IS_DELETE = 'N'
+	</update>
+	
+	<update id="itemOrderUpdateAjax" parameterType="map">
+	/*code.itemOrderUpdateAjax*/
+		UPDATE lab_code_item
+		SET
+		<choose>
+			<when test="mode.equals('UP')">
+			ORDER_NO = (ORDER_NO-1)
+			</when>
+      		<when test="mode.equals('DOWN')">
+      		ORDER_NO = (ORDER_NO+1)
+      		</when>	
+      	</choose>
+		WHERE GROUP_CODE = #{groupCode}
+		AND ITEM_CODE = #{itemCode}
+		AND IS_DELETE = 'N'
+	</update>
+</mapper>

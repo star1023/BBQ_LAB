@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="batch">
+	<insert id="insertMaterial" parameterType="list">
+		INSERT INTO lab_erp_material2 ( 
+			SAP_CODE
+			, NAME
+			, UNIT
+			, KEEP_CONDITION
+			, CHANGE_UNIT
+			, CHANGE_COUNT
+			, WIDTH
+			, WIDTH_UNIT
+			, LENGTH
+			, LENGTH_UNIT
+			, HEIGHT
+			, HEIGHT_UNIT
+			, TOTAL_WEIGHT
+			, TOTAL_WEIGHT_UNIT
+			, STANDARD
+			, ORIGIN
+			, LEAD_TIME
+			, SAFETY_STOCK_DAY
+			, BOX_AMOUNT
+			, MIN_ORDER_AMOUNT
+			, PALLET_WIDTH_COUNT
+			, PALLET_LENGTH_COUNT
+			, PALLET_AMOUNT
+			, CD_ACCT
+			, EXPIRATION_DATE
+		) VALUES 
+	    <foreach collection = "list" item = "item" separator = ","> 
+	    (
+	    	#{item.MATNR}
+	        , #{item.MAKTX}
+	        , #{item.MEINS}
+	        , #{item.STOR_COND}
+	        , #{item.LRMEI}
+	        , #{item.UMREZ}
+	        , #{item.HORIZONTAL}
+	        , #{item.HORIZONTAL_MEINS}
+	        , #{item.VERTICAL}
+	        , #{item.VERTICAL_MEINS}
+	        , #{item.HEIGHT}
+	        , #{item.HEIGHT_MEINS}
+	        , #{item.WEIGHT}
+	        , #{item.WEIGHT_MEINS}
+	        , #{item.SIZE_DIM}
+	        , #{item.ORIG_MAT}
+	        , #{item.LEADTIMES}
+	        , #{item.SAFETY_STOCK_DAY}
+	        , #{item.BOX_STOCK}
+	        , #{item.MOQ}
+	        , #{item.PALLET_HOR_STOCK}
+	        , #{item.PALLET_VER_STOCK}
+	        , #{item.PALLET_STOCK}
+	        , #{item.MWSKZ}
+	        , #{item.EXP_DATE}
+	     ) 
+	    </foreach> 
+	  ON DUPLICATE KEY UPDATE     
+	    NAME = VALUES(NAME)
+		, UNIT = VALUES(UNIT)
+		, KEEP_CONDITION = VALUES(KEEP_CONDITION)
+		, CHANGE_UNIT = VALUES(CHANGE_UNIT)
+		, CHANGE_COUNT = VALUES(CHANGE_COUNT)
+		, WIDTH = VALUES(WIDTH)
+		, WIDTH_UNIT = VALUES(WIDTH_UNIT)
+		, LENGTH = VALUES(LENGTH)
+		, LENGTH_UNIT = VALUES(LENGTH_UNIT)
+		, HEIGHT = VALUES(HEIGHT)
+		, HEIGHT_UNIT = VALUES(HEIGHT_UNIT)
+		, TOTAL_WEIGHT = VALUES(TOTAL_WEIGHT)
+		, TOTAL_WEIGHT_UNIT = VALUES(TOTAL_WEIGHT_UNIT)
+		, STANDARD = VALUES(STANDARD)
+		, ORIGIN = VALUES(ORIGIN)
+		, LEAD_TIME = VALUES(LEAD_TIME)
+		, SAFETY_STOCK_DAY = VALUES(SAFETY_STOCK_DAY)
+		, BOX_AMOUNT = VALUES(BOX_AMOUNT)
+		, MIN_ORDER_AMOUNT = VALUES(MIN_ORDER_AMOUNT)
+		, PALLET_WIDTH_COUNT = VALUES(PALLET_WIDTH_COUNT)
+		, PALLET_LENGTH_COUNT = VALUES(PALLET_LENGTH_COUNT)
+		, PALLET_AMOUNT = VALUES(PALLET_AMOUNT)
+		, CD_ACCT = VALUES(CD_ACCT)
+		, EXPIRATION_DATE = VALUES(EXPIRATION_DATE)
+	</insert>
+	
+	<update id="initProductSeq">
+		/* batch.initProductSeq */
+		UPDATE 
+			lab_sequences 
+		SET CURRENT_VAL = 0 
+		WHERE 1 = 1 
+			AND SEQ_NAME = 'product_code_seq'
+	</update>
+	
+	<update id="initMenuSeq">
+		/* batch.initMenuSeq */
+		UPDATE 
+			lab_sequences 
+		SET CURRENT_VAL = 0 
+		WHERE 1 = 1 
+			AND SEQ_NAME = 'menu_code_seq'
+	</update>
+	
+	<update id="initSeq">
+		/* batch.initSeq */
+		UPDATE 
+			lab_sequences 
+		SET CURRENT_VAL = 0 
+		WHERE 1 = 1 
+			AND (SEQ_NAME = 'product_code_seq' OR SEQ_NAME = 'menu_code_seq' OR SEQ_NAME = 'material_code_seq')
+	</update>
+</mapper>

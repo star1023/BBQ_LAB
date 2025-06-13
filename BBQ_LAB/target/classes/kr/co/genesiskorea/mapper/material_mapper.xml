@@ -1,0 +1,433 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="material">
+	<sql id="whereMaterialList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('searchName')">
+			AND NAME LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+			<when test="searchType.equals('searchMatCode')">
+      		AND MATERIAL_CODE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      		<when test="searchType.equals('searchSapCode')">
+      		AND SAP_CODE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      	</choose>
+		</if>
+		<if test="searchCategory1 != null and searchCategory1 != '' ">
+			AND MATERIAL_TYPE1 = #{searchCategory1}
+		</if>
+		<if test="searchCategory2 != null and searchCategory2 != '' ">
+			AND MATERIAL_TYPE2 = #{searchCategory2}
+		</if>
+		<if test="searchCategory3 != null and searchCategory3 != '' ">
+			AND MATERIAL_TYPE3 = #{searchCategory3}
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND MATERIAL_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'MAT' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+		</if>
+	</sql>
+	
+	<select id="selectMaterialCount" parameterType="map" resultType="int">
+		SELECT 
+			count(MATERIAL_IDX) as cnt
+		FROM lab_material
+		WHERE 1 = 1
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			<include refid="material.whereMaterialList" />
+	</select>
+	
+	<select id="selectMaterialList" parameterType="map" resultType="hashmap">		
+	select 
+		lm.*
+		, (SELECT UNIT_NAME FROM lab_unit WHERE 1 = 1 AND UNIT_CODE = lm.UNIT) as UNIT_NAME
+		, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lm.MATERIAL_TYPE1) as CATEGORY_NAME1
+		, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lm.MATERIAL_TYPE2) as CATEGORY_NAME2
+		, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lm.MATERIAL_TYPE3) as CATEGORY_NAME3
+		, IFNULL(lf.FILE_CNT10,0) as FILE_CNT10
+		, IFNULL(lf.FILE_CNT20,0) as FILE_CNT20
+		, IFNULL(lf.FILE_CNT30,0) as FILE_CNT30
+		, IFNULL(lf.FILE_CNT40,0) as FILE_CNT40
+		, IFNULL(lf.FILE_CNT50,0) as FILE_CNT50
+		, (SELECT COUNT(*) FROM lab_material WHERE 1 = 1 AND MATERIAL_CODE = lm.MATERIAL_CODE AND IS_LAST = 'N' AND VERSION_NO <![CDATA[<]]> lm.VERSION_NO AND IS_DELETE = 'N' ) as CHILD_CNT
+	from 
+	lab_material lm
+	left outer join (
+			SELECT DOC_IDX
+				, DOC_TYPE
+				, MAX(IF(FILE_TYPE=10, 1, 0)) FILE_CNT10
+			    , MAX(IF(FILE_TYPE=20, 1, 0)) FILE_CNT20
+			    , MAX(IF(FILE_TYPE=30, 1, 0)) FILE_CNT30
+			    , MAX(IF(FILE_TYPE=40, 1, 0)) FILE_CNT40
+			    , MAX(IF(FILE_TYPE=50, 1, 0)) FILE_CNT50
+			FROM lab_file_type
+			where 1 = 1
+			GROUP BY DOC_IDX, DOC_TYPE
+		)lf
+		on lm.MATERIAL_IDX = lf.DOC_IDX 
+		and lf.DOC_TYPE = "MAT" 
+	where 1 = 1
+		and DOC_NO in (
+			SELECT 
+				tmp.DOC_NO
+			FROM (
+				SELECT 
+					row_number() over (order by  MATERIAL_IDX DESC) as rnum
+					, DOC_NO
+				FROM lab_material
+				WHERE 1 = 1
+					AND IS_DELETE = 'N'
+					AND IS_LAST = 'Y'
+					<include refid="material.whereMaterialList" />
+			)tmp 
+			WHERE rnum between #{startRow} AND #{endRow}
+	)
+	order by DOC_NO desc, MATERIAL_IDX desc
+	</select>
+	
+	<select id="selectMaterialDataCount" parameterType="map" resultType="int">
+		SELECT 
+			count(MATERIAL_IDX) as cnt
+		FROM lab_material
+		WHERE 1 = 1
+			AND IS_DELETE = 'N'
+			AND SAP_CODE = #{sapCode}
+	</select>
+	
+	<select id="selectmaterialCode" resultType="String">
+		SELECT 
+			LPAD(FN_NEXTVAL('material_code_seq'), '3' , '0') as code
+	</select>
+	
+	<select id="selectMaterialSeq" resultType="int">
+		SELECT FN_NEXTVAL('material_seq') as seq
+	</select>
+	
+	<insert id="insertMaterial" parameterType="map">
+		INSERT INTO lab_material(
+			MATERIAL_IDX
+			, MATERIAL_CODE
+			, SAP_CODE
+			, NAME
+			, COMPANY_CODE
+			, PLANT
+			, PRICE
+			, UNIT
+			, EXTRA_UNIT
+			, TYPE
+			, IS_SAMPLE
+			, IS_HIDDEN
+			, IS_DELETE
+			<if test="materialType1 != null and materialType1 !='' ">
+			, MATERIAL_TYPE1
+			</if>
+			<if test="materialType2 != null and materialType2 !='' ">
+			, MATERIAL_TYPE2
+			</if>
+			<if test="materialType3 != null and materialType3 !='' ">
+			, MATERIAL_TYPE3
+			</if>
+			, VERSION_NO
+			, IS_LAST
+			, DOC_NO
+			, KEEP_CONDITION
+			, WIDTH
+			, LENGTH
+			, HEIGHT
+			, TOTAL_WEIGHT
+			, STANDARD
+			, ORIGIN
+			, EXPIRATION_DATE
+		)VALUES(
+			#{idx}
+			, #{matCode}
+			, #{sapCode}
+			, #{name}
+			, ''
+			, ''
+			, #{price}
+			, #{unit}
+			, ''
+			, ''
+			, #{isSample}
+			, 'N'
+			, 'N'
+			<if test="materialType1 != null and materialType1 !='' ">
+			, #{materialType1}
+			</if>
+			<if test="materialType2 != null and materialType2 !='' ">
+			, #{materialType2}
+			</if>
+			<if test="materialType3 != null and materialType3 !='' ">
+			, #{materialType3}
+			</if>
+			, #{versionNo}
+			, #{isLast}
+			, (SELECT ifnull(MAX(lm.DOC_NO),0)+1 FROM lab_material lm WHERE 1 = 1)
+			, #{keepCondition}
+			, #{width}
+			, #{length}
+			, #{height}
+			, #{weight}
+			, #{standard}
+			, #{origin}
+			, #{expireDate}
+		)
+	</insert>
+	
+	<select id="selectMaterialData" parameterType="map" resultType="hashmap">
+		SELECT 
+			MATERIAL_IDX
+			, MATERIAL_CODE
+			, SAP_CODE
+			, NAME
+			, COMPANY_CODE
+			, PLANT
+			, PRICE
+			, UNIT
+			, (select UNIT_NAME from lab_unit where UNIT_CODE = UNIT) as UNIT_NAME
+			, EXTRA_UNIT
+			, TYPE
+			, IS_SAMPLE
+			, IS_HIDDEN
+			, IS_DELETE
+			, MATERIAL_TYPE1
+			, (select CATEGORY_NAME from lab_system_category where CATEGORY_IDX = MATERIAL_TYPE1) as  MATERIAL_TYPE_NAME1
+			, MATERIAL_TYPE2
+			, (select CATEGORY_NAME from lab_system_category where CATEGORY_IDX = MATERIAL_TYPE2) as  MATERIAL_TYPE_NAME2
+			, MATERIAL_TYPE3 
+			, (select CATEGORY_NAME from lab_system_category where CATEGORY_IDX = MATERIAL_TYPE3) as  MATERIAL_TYPE_NAME3
+			, VERSION_NO
+			, IS_LAST
+			, DOC_NO
+			, KEEP_CONDITION
+			, WIDTH
+			, LENGTH
+			, HEIGHT
+			, TOTAL_WEIGHT
+			, STANDARD
+			, ORIGIN
+			, EXPIRATION_DATE
+		FROM 
+			lab_material
+		WHERE 1 = 1
+			AND MATERIAL_IDX = #{idx}
+	</select>
+	
+	<sql id="whereErpMaterialList">
+		<choose>
+			<when test = "searchType != null and searchType != ''">
+				<if test="searchType == 'searchName' ">
+				AND NAME LIKE CONCAT('%',#{searchValue},'%')
+				</if>
+				<if test="searchType == 'searchSapCode' ">
+				AND SAP_CODE LIKE CONCAT('%',#{searchValue},'%')
+				</if>
+			</when>
+			<otherwise>
+				<if test="searchValue != null and searchValue != '' ">
+				AND ( SAP_CODE LIKE CONCAT('%',#{searchValue},'%') OR NAME LIKE CONCAT('%',#{searchValue},'%') )
+				</if>
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="selectErpMaterialCount" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(SAP_CODE) 
+		FROM
+			lab_erp_material2
+		WHERE 1 = 1 
+			AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%')
+		<include refid="material.whereErpMaterialList" />
+	</select>
+	
+	<select id="selectErpMaterialList" parameterType="map" resultType="hashmap">
+		SELECT 
+			* 
+		FROM (
+			SELECT 
+				row_number() over (order by  SAP_CODE ASC) as rnum
+				, SAP_CODE
+				, NAME
+				, KEEP_CONDITION
+				, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_TXT 
+				, WIDTH
+				, WIDTH_UNIT
+				, LENGTH
+				, LENGTH_UNIT
+				, HEIGHT
+				, HEIGHT_UNIT
+				, TOTAL_WEIGHT
+				, TOTAL_WEIGHT_UNIT
+				, UNIT
+				, CHANGE_COUNT
+				, CHANGE_UNIT
+				, STANDARD
+				, ORIGIN
+				, EXPIRATION_DATE
+				, BOX_AMOUNT
+				, MIN_ORDER_AMOUNT
+				, LEAD_TIME
+				, PALLET_WIDTH_COUNT
+				, PALLET_LENGTH_COUNT
+				, CD_ACCT
+				, PALLET_AMOUNT				
+			FROM
+				lab_erp_material2
+			WHERE 1 = 1 
+				AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%')
+			<include refid="material.whereErpMaterialList" />
+		)tmp WHERE rnum between #{startRow} and #{endRow}	
+	</select>
+	
+	<select id="selectErpMaterialData" parameterType="map" resultType="hashmap">
+		SELECT
+			SAP_CODE
+				, NAME
+				, KEEP_CONDITION
+				, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_TXT 
+				, WIDTH
+				, WIDTH_UNIT
+				, LENGTH
+				, LENGTH_UNIT
+				, HEIGHT
+				, HEIGHT_UNIT
+				, TOTAL_WEIGHT
+				, TOTAL_WEIGHT_UNIT
+				, UNIT
+				, CHANGE_COUNT
+				, CHANGE_UNIT
+				, STANDARD
+				, ORIGIN
+				, EXPIRATION_DATE
+				, BOX_AMOUNT
+				, MIN_ORDER_AMOUNT
+				, LEAD_TIME
+				, PALLET_WIDTH_COUNT
+				, PALLET_LENGTH_COUNT
+				, CD_ACCT
+				, PALLET_AMOUNT
+		FROM
+			lab_erp_material2
+		WHERE 1 = 1
+			AND SAP_CODE = #{sapCode}
+	</select>
+	
+	<update id="updateMaterial" parameterType="map">
+		UPDATE 
+			lab_material
+		SET
+			IS_LAST = 'N'
+		WHERE 1 = 1
+			AND MATERIAL_IDX = #{currentIdx}
+	</update>
+	
+	<insert id="insertNewVersion" parameterType="map">
+		INSERT INTO lab_material(
+			MATERIAL_IDX
+			, MATERIAL_CODE
+			, SAP_CODE
+			, NAME
+			, COMPANY_CODE
+			, PLANT
+			, PRICE
+			, UNIT
+			, EXTRA_UNIT
+			, TYPE
+			, IS_SAMPLE
+			, IS_HIDDEN
+			, IS_DELETE
+			<if test="materialType1 != null and materialType1 !='' ">
+			, MATERIAL_TYPE1
+			</if>
+			<if test="materialType2 != null and materialType2 !='' ">
+			, MATERIAL_TYPE2
+			</if>
+			<if test="materialType3 != null and materialType3 !='' ">
+			, MATERIAL_TYPE3
+			</if>
+			, VERSION_NO
+			, IS_LAST
+			, DOC_NO
+			, KEEP_CONDITION
+			, WIDTH
+			, LENGTH
+			, HEIGHT
+			, TOTAL_WEIGHT
+			, STANDARD
+			, ORIGIN
+			, EXPIRATION_DATE
+		)VALUES(
+			#{idx}
+			, #{matCode}
+			, #{sapCode}
+			, #{name}
+			, ''
+			, ''
+			, #{price}
+			, #{unit}
+			, ''
+			, ''
+			, #{isSample}
+			, 'N'
+			, 'N'
+			<if test="materialType1 != null and materialType1 !='' ">
+			, #{materialType1}
+			</if>
+			<if test="materialType2 != null and materialType2 !='' ">
+			, #{materialType2}
+			</if>
+			<if test="materialType3 != null and materialType3 !='' ">
+			, #{materialType3}
+			</if>
+			, #{versionNo}
+			, #{isLast}
+			, #{docNo}
+			, #{keepCondition}
+			, #{width}
+			, #{length}
+			, #{height}
+			, #{weight}
+			, #{standard}
+			, #{origin}
+			, #{expireDate}
+		)
+	</insert>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+			WHEN lh.HISTORY_TYPE  = 'T' then '임시저장'
+			END HISTORY_TYPE_TXT 
+		, lm.VERSION_NO
+		, lm.NAME 
+		, lm.SAP_CODE 
+		, lh.USER_ID 
+		, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+		lab_material lm 
+	WHERE 1 = 1
+		AND lh.DOC_IDX IN (SELECT MATERIAL_IDX FROM lab_material WHERE 1 = 1 AND DOC_NO = #{docNo})
+		AND lh.DOC_TYPE = #{docType}
+		AND lh.DOC_IDX = lm.MATERIAL_IDX 
+	ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<update id="deleteMaterial" parameterType="map">
+		UPDATE 
+			lab_material
+		SET 
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND DOC_NO = #{docNo}
+	</update>
+</mapper>

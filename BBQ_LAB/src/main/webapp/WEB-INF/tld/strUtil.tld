@@ -1,0 +1,62 @@
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="htttp://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+	<tlib-version>1.1</tlib-version>
+	<short-name>strUtil</short-name>
+		<function>
+			<description>html 태그 변환</description>
+			<name>getHtml</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.String getHtml(java.lang.String)</function-signature>
+			<example>${strUtil:getHtml('문자열')}</example>
+		</function>
+		<function>
+			<description>html 태그 변환</description>
+			<name>getHtmlBr</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.String getHtmlBr(java.lang.String)</function-signature>
+			<example>${strUtil:getHtmlBr('문자열')}</example>
+		</function>
+		<function>
+			<description>예전 파일이름 변환</description>
+			<name>getOldFileName</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.String getOldFileName(java.lang.String)</function-signature>
+			<example>${strUtil:getOldFileName('문자열')}</example>
+		</function>
+		<function>
+			<description>이미지 파일 경로</description>
+			<name>getImagePath</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.String getImagePath(java.lang.String)</function-signature>
+			<example>${strUtil:getImagePath('문자열')}</example>
+		</function>
+		<function>
+			<description>시스템 이름</description>
+			<name>getSystemName</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.String getSystemName()</function-signature>
+			<example>${strUtil:getSystemName()}</example>
+		</function>
+		<function>
+			<description>제품개발문서 이미지 파일 경로</description>
+			<name>getDevdocFileName</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.String getDevdocFileName(java.lang.String)</function-signature>
+			<example>${strUtil:getDevdocFileName('문자열')}</example>
+		</function>
+		<function>
+			<description>숫자 반올림(정수)</description>
+			<name>roundData</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.Integer roundData(java.lang.String)</function-signature>
+			<example>${strUtil:roundData('숫자')}</example>
+		</function>
+		<function>
+			<description>숫자 반올림(소수점 3자리)</description>
+			<name>roundDuobleData</name>
+			<function-class>kr.co.genesiskorea.util.StringUtil</function-class>
+			<function-signature>java.lang.Integer roundDuobleData(java.lang.String)</function-signature>
+			<example>${strUtil:roundDuobleData('숫자')}</example>
+		</function>
+</taglib>

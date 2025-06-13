@@ -1,0 +1,79 @@
+/* General styles for all menus */
+/*.cbp-spmenu {background: #ffffff;border:1px solid #000;position: fixed;}*/
+/*.cbp-spmenu-vertical {width: 567px;height: 100%;top: 65px;left:77px;z-index: 1;}*/
+/*.cbp-spmenu-left {left: -500px;}*/
+/*.cbp-spmenu-left.cbp-spmenu-open {left: 76px;}*/
+/*.cbp-spmenu {-webkit-transition: all 0.3s ease;-moz-transition: all 0.3s ease;transition: all 0.3s ease;}*/
+
+.bullet-tit {position:absolute;z-index:1000;display:inline-block;padding-left:10px;margin:7px 10px 0 5px;line-height:28px;font-size:13px;font-weight: bold;}
+.fl-box {float:left}
+.panel-wrap {width:100%}/**/
+.panel-wrap01,.panel-wrap02,.panel-wrap03,.panel-wrap04,.panel-wrap05,.panel-wrap06 {position:relative;}
+.panel-body{position:relative;width:100%}
+
+.treeButton {
+    -moz-box-shadow:inset 0px 1px 0px 0px #ffffff; -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff; box-shadow:inset 0px 1px 0px 0px #ffffff;
+    -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; border:1px solid #cdd2da;
+    display:inline-block; cursor:pointer; font-size:13px; padding-left:34px; padding-right:8px; height:26px; line-height:26px; vertical-align:middle;
+    text-decoration:none; text-shadow:0px 1px 0px #ffffff; background-color:#fdfdfd; background-repeat:no-repeat; background-position:left center;
+    margin-bottom: 3px;
+}
+.treeButton:hover {-moz-box-shadow:inset 0px 3px 0px 0px #fafafa; -webkit-box-shadow:inset 0px 3px 0px 0px #fafafa; box-shadow:inset 0px 3px 0px 0px #fafafa;
+    background-color:#f0f0f0;transition:0.3s;}
+/* 불출 */ .treeButton.treeLend {background-image:url("/resources/images/com/treeIcon/tree_lend_icon.png");}
+/* 반납 */ .treeButton.treeReturn {background-image:url("/resources/images/com/treeIcon/tree_return_icon.png");}
+/* 삭제 */ .treeButton.treeDelete {background-image:url("/resources/images/com/treeIcon/tree_delete_icon.png");}
+/* 이관 */ .treeButton.treeMove {background-image:url("/resources/images/com/treeIcon/tree_move_icon.png");}
+/* 상신 */ .treeButton.treeReport {background-image:url("/resources/images/com/treeIcon/tree_report_icon.png");}
+/* 설정 */ .treeButton.treeSetting {background-image:url("/resources/images/com/treeIcon/tree_setting_icon.png");}
+/* 승인 */ .treeButton.treeApproval {background-image:url("/resources/images/com/treeIcon/tree_approval_icon.png");}
+/* 반려 */ .treeButton.treeReject {background-image:url("/resources/images/com/treeIcon/tree_reject_icon.png");}
+/* 저장 */ .treeButton.treeSave {background-image:url("/resources/images/com/treeIcon/tree_save_icon.png");}
+/* 등록 */ .treeButton.treeRegister {background-image:url("/resources/images/com/treeIcon/tree_register_icon.png");}
+/* 제외(처리) */ .treeButton.treeHide {background-image:url("/resources/images/com/treeIcon/tree_hide_icon.png");}
+/* 제외해제 */ .treeButton.treeClear {background-image:url("/resources/images/com/treeIcon/tree_clear_icon.png");}
+/* 항목선택 */ .treeButton.treeSelect {background-image:url("/resources/images/com/treeIcon/tree_select_icon.png");}
+/* 승인취소 */ .treeButton.treeCancel {background-image:url("/resources/images/com/treeIcon/tree_cancel_icon.png");}
+/* 일괄상신(결재) */ .treeButton.treeAllreport {background-image:url("/resources/images/com/treeIcon/tree_allreport_icon.png");}
+.treeButton.gridDelete {background-image:url("/resources/images/icon/web/grid_dltIcon.png");background-position: 10%}
+
+.treeButton0 {
+    -moz-box-shadow:inset 0px 1px 0px 0px #ffffff; -webkit-box-shadow:inset 0px 1px 0px 0px #ffffff; box-shadow:inset 0px 1px 0px 0px #ffffff;
+    -moz-border-radius:3px; -webkit-border-radius:3px; border-radius:3px; border:1px solid #cdd2da;
+    display:inline-block; cursor:pointer; font-size:13px;  padding-right:8px; line-height:24px;
+    text-decoration:none; text-shadow:0px 1px 0px #ffffff; background-color:#fdfdfd; background-repeat:no-repeat; background-position:left center;
+    padding-top: 5px;height: 20px;padding-left: 24px;
+    /*padding-left:34px;height:24px;*/
+}
+.treeButton0:hover {-moz-box-shadow:inset 0px 1px 0px 0px #fafafa; -webkit-box-shadow:inset 0px 1px 0px 0px #fafafa; box-shadow:inset 0px 1px 0px 0px #fafafa;
+    background-color:#f0f0f0;transition:0.3s;}
+/* 불출 */ .treeButton0.treeLend {background-image:url("/resources/images/com/treeIcon/tree_lend_icon.png");}
+/* 반납 */ .treeButton0.treeReturn {background-image:url("/resources/images/com/treeIcon/tree_return_icon.png");}
+/* 삭제 */ .treeButton0.treeDelete {background-image:url("/resources/images/com/treeIcon/tree_delete_icon.png");}
+/* 이관 */ .treeButton0.treeMove {background-image:url("/resources/images/com/treeIcon/tree_move_icon.png");}
+/* 상신 */ .treeButton0.treeReport {background-image:url("/resources/images/com/treeIcon/tree_report_icon.png");}
+/* 설정 */ .treeButton0.treeSetting {background-image:url("/resources/images/com/treeIcon/tree_setting_icon.png");}
+/* 승인 */ .treeButton0.treeApproval {background-image:url("/resources/images/com/treeIcon/tree_approval_icon.png");}
+/* 반려 */ .treeButton0.treeReject {background-image:url("/resources/images/com/treeIcon/tree_reject_icon.png");}
+/* 저장 */ .treeButton0.treeSave {background-image:url("/resources/images/com/treeIcon/tree_save_icon.png");}
+/* 등록 */ .treeButton0.treeRegister {background-image:url("/resources/images/com/treeIcon/tree_register_icon.png");}
+/* 제외(처리) */ .treeButton0.treeHide {background-image:url("/resources/images/com/treeIcon/tree_hide_icon.png");}
+/* 제외해제 */ .treeButton0.treeClear {background-image:url("/resources/images/com/treeIcon/tree_clear_icon.png");}
+/* 항목선택 */ .treeButton0.treeSelect {background-image:url("/resources/images/com/treeIcon/tree_select_icon.png");}
+/* 승인취소 */ .treeButton0.treeCancel {background-image:url("/resources/images/com/treeIcon/tree_cancel_icon.png");}
+/* 일괄상신(결재) */ .treeButton0.treeAllreport {background-image:url("/resources/images/com/treeIcon/tree_allreport_icon.png");}
+
+/* icon */
+.btn > .icon {vertical-align:middle;}
+.icon {display:inline-block !important;width:20px;height:20px;overflow:hidden;font-size:0px;line-height:0;text-indent:-9999px;cursor:pointer;}
+.icon.refresh {background:url('/resources/images/icon/web/icon-re.png') no-repeat center center;background-size:20px auto;}
+.icon.printer {background:url('/resources/images/icon/web/printer.png') no-repeat center center;background-size:20px auto;}
+.icon.excel {background:url('/resources/images/icon/web/excel.png') no-repeat center center;background-size:20px auto;}
+.icon.add {background:url('/resources/images/icon/web/add.png') no-repeat center center;background-size:20px auto;}
+.icon.submit {background:url('/resources/images/icon/web/save.png') no-repeat center center;background-size:20px auto;}
+.icon.switch {background:url('/resources/images/icon/web/switch.png') no-repeat center center;background-size:20px auto;}
+.icon.delete {background:url('/resources/images/icon/web/delete.png') no-repeat center center;background-size:auto 20px;}
+.icon.search {background:url('/resources/images/icon/web/search.png') no-repeat center center;background-size:auto 20px;}
+.icon.checked {background:url('/resources/images/icon/web/checked.png') no-repeat center 3px;background-size:auto 10px;}
+.icon.holiday {background:url('/resources/images/icon/web/holiday.png') no-repeat center center;background-size:auto 20px;}
+.icon.download {width:15px;height:15px;background:url('/resources/images/icon/web/download.png') no-repeat center center;background-size:auto 12px; vertical-align: middle;}

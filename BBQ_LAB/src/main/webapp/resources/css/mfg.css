@@ -1,0 +1,35 @@
+._tab03{ height:42px; width:100%; float:left; border-bottom:0px solid #999; background-color:#fff; border-bottom:2px solid black;}
+._tab03 ul{ height:44px; width:100%; white-space: nowrap; overflow-x: scroll; overflow-y:hidden; -ms-overflow-style: none;}
+/* Hide scrollbar for Chrome, Safari and Opera */
+._tab03 ul::-webkit-scrollbar{display: none;}
+._tab03 ul .change{ background-color:#696b77;  color:#FFF; border:1px solid #696b77;}
+._tab03 ul .change:hover{ background-color:#4a4d5e;}
+._tab03 ul .none{ height:30px; background-color:#ebebeb; border:2px solid #d2d2d2; border-bottom: none;}
+._tab03 ul .select{ height:33px; background-color:#fafafa; color:#000;border:2px solid #4b5165; border-bottom: 2px solid #FFF;}
+._tab03 ul li{ height:30px; display: inline-block; padding: 10px 16px 0px 16px; list-style:none; font-size:14px; font-family:'�������',Malgun Gothic; border:2px solid #d2d2d2; border-radius: 7px 7px 0 0; border-bottom:none; background-color:#ebebeb; cursor: default; margin-right: 5px;}
+._tab03 ul li:hover{ background-color:#fafafa; border-left:2px solid #85a2ea;border-top:2px solid #85a2ea;border-right:2px solid #85a2ea;}
+._tab03 ul li input{ width: 180px; display: none;}
+._tab03 ul li span{ pointer:cursor; }
+._tab03 ul a li{ margin-right:5px;}
+._tab03 ul a li:hover{ background-color:#fafafa; border-left:2px solid #85a2ea;border-top:2px solid #85a2ea;border-right:2px solid #85a2ea;}
+._tab03 ul a{color:#333; text-decoration: none;}
+._tab03 ul a:hover{color:#4084b4}
+._tab03 input{border-radius:5px; background-color:#f9f9f9; border:1px solid #c5c5c5; padding:3px 5px 5px 5px; box-sizing:border-box; margin-top:-3px;}
+
+/* Hide scrollbar for IE and Edge */
+.toLeft{display: inline-block; position: absolute; left: 0; height: 41px; width: 2%}
+.toRight{display: inline-block; position: absolute; right: 0; height: 41px; width: 2%}
+.unselectable {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.span_left, .span_right{
+	position: absolute;
+	top: -5px;
+	font-size:35px;
+	font-family:'�������',Malgun Gothic; 
+	line-height:45px; 
+	width:100%;
+	background-color:transparent; 
+	border:none; 
+	cursor:pointer; 
+	color:#909090; 
+	outline:none;
+}

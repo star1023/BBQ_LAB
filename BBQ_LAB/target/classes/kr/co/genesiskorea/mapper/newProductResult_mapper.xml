@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="newProductResult">
+		
+	<sql id="whereNewProductResultList">
+		<if test="searchType != null and searchType != '' ">
+			<choose>
+				<when test="searchType.equals('searchTitle')">
+					AND TITLE LIKE CONCAT('%', #{searchValue}, '%')
+				</when>
+				<when test="searchType.equals('searchDate')">
+					AND LEFT(EXCUTE_DATE, 7) = #{searchValue}
+				</when>
+				<when test="searchType.equals('searchColumnState')">
+					AND FN_GET_COLUMN_STATE_TEXT('COLUMN', COLUMN_STATE) LIKE CONCAT('%', #{searchValue}, '%')
+				</when>
+			</choose>
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND RESULT_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'RESULT' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+		</if>
+	</sql>
+		
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	/* newProductResult.selectHistory */
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+			END HISTORY_TYPE_TXT 
+		,   rt.TITLE AS TITLE
+		, lh.USER_ID 
+		, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+		lab_new_product_result rt
+	WHERE 1 = 1
+		AND lh.DOC_IDX = #{idx}
+		AND lh.DOC_TYPE = #{docType}
+		AND lh.DOC_IDX = rt.RESULT_IDX 
+	ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<select id="searchNewProductResultListAjax" parameterType="map" resultType="hashmap">
+		/*	newProductResult.searchNewProductResultListAjax */
+		SELECT
+			RESULT_IDX
+			, TITLE
+			, EXCUTE_DATE
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+			, IS_DELETE
+		FROM 	
+			lab_new_product_result
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+			AND TITLE LIKE CONCAT('%',#{searchValue},'%')
+	</select>
+	
+	<select id="selectNewProductResultCount" parameterType="map" resultType="int">
+	/*	newProductResult.selectNewProductResultCount */
+		SELECT
+			COUNT(RESULT_IDX) as cnt
+		FROM 	
+			lab_new_product_result
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+			<include refid="newProductResult.whereNewProductResultList" />
+	</select>
+	
+	<select id="selectNewProductResultList" parameterType="map" resultType="hashmap">
+	/*	newProductResult.selectNewProductResultList */
+		SELECT
+			tmp.*
+			, FN_GET_USER_NAME(tmp.DOC_OWNER) as DOC_OWNER_NAME
+			, FN_GET_COLUMN_STATE_TEXT('COLUMN', tmp.COLUMN_STATE) AS COLUMN_STATE_TEXT
+			, CASE 
+				WHEN tmp.STATUS = 'REG' THEN '등록'
+				WHEN tmp.STATUS = 'APPR' THEN '결재중'
+				WHEN tmp.STATUS = 'COMP' THEN '완료'
+				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+		FROM
+		(	
+			SELECT
+				row_number() over (order by  RESULT_IDX DESC) as rnum
+				, RESULT_IDX
+				, TITLE
+				, EXCUTE_DATE
+				, IS_DELETE
+				, STATUS
+				, REG_USER
+				, DOC_OWNER
+				, COLUMN_STATE
+			FROM 	
+				lab_new_product_result
+			WHERE 1 = 1
+				AND DOC_OWNER = #{userId}
+				AND IS_DELETE = 'N'
+				<include refid="newProductResult.whereNewProductResultList" />
+		)tmp
+		WHERE rnum between #{startRow} and #{endRow}		
+	</select>
+	
+	<select id="selectNewProductResultSeq" resultType="int">
+		/*	newProductResult.selectNewProductResultSeq */
+		SELECT FN_NEXTVAL('lab_new_product_result_seq') as seq
+	</select>
+	
+	<select id="selectNewProductResultItemSeq" resultType="int">
+		/*	newProductResult.selectNewProductResultItemSeq */
+		SELECT FN_NEXTVAL('lab_new_product_result_item_seq') as seq
+	</select>
+	
+	<select id="selectNewProductResultItemImageSeq" resultType="int">
+		/*	newProductResult.selectNewProductResultItemImageSeq */
+		SELECT FN_NEXTVAL('lab_new_product_result_image_seq') as seq
+	</select>
+	
+	<insert id="insertChemicalTest" parameterType="map">
+		/*	newProductResult.insertChemicalTest */
+		INSERT INTO lab_chemical_test(
+			CHEMICAL_IDX
+			, REQUEST_DATE
+			, REQUEST_USER
+			, COMPLETION_DATE
+			, PRODUCT_CODE
+			, PRODUCT_NAME
+			, SAP_CODE
+			, PRODUCT_COUNT
+			, PRESERVATION
+			, REQUEST_CONTENT
+			, IS_DELETE
+			, STATUS
+			, REG_USER
+			, REG_DATE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		)VALUES(
+			#{idx}
+			, #{requestDate} 
+			, #{requestUser}
+			, #{completionDate}
+			, #{productCode}
+			, #{productName}
+			, #{sapCode}
+			, #{productCount}
+			, #{preservation}
+			, #{requestContent}
+			, 'N'
+			, #{status}
+			, #{userId}
+			, sysdate()
+			, #{fileName}
+			, #{orgFileName}
+			, #{filePath}
+		)
+	</insert>
+	
+	<insert id="insertNewProductResult" parameterType="map">
+	    /*	newProductResult.insertNewProductResult */
+        INSERT INTO lab_new_product_result (
+            RESULT_IDX,
+            TITLE,
+            STATUS,
+            DOC_OWNER,
+            EXCUTE_DATE,
+            IS_DELETE,
+            REG_USER,
+            COLUMN_STATE
+        ) VALUES (
+            #{resultIdx},
+            #{title},
+            #{status},
+            #{userId},
+            #{excuteDate},
+            #{isDelete},
+            #{userId},
+            #{columnStates}
+        )
+    </insert>
+    
+    <insert id="insertNewProductResultItem" parameterType="list">
+    /*	newProductResult.insertNewProductResultItem */
+        INSERT INTO lab_new_product_result_item (
+            ITEM_IDX,
+            RESULT_IDX,
+            ROW_NO,
+            COLUMN_CODE,
+            COLUMN_VALUE
+        )
+        VALUES
+        <foreach collection="list" item="item" separator=",">
+		    (
+		        FN_NEXTVAL('lab_new_product_result_item_seq'),
+		        #{item.resultIdx},
+		        #{item.rowNo},
+		        #{item.columnCode},
+		        #{item.columnValue}
+		    )
+        </foreach>
+    </insert>
+
+    <!-- 3. 이미지 batch INSERT -->
+    <insert id="insertNewProductResultItemImage" parameterType="list">
+    /*	newProductResult.insertNewProductResultItemImage */
+        INSERT INTO lab_new_product_result_item_images (
+            IMAGE_IDX,
+            RESULT_IDX,
+            ROW_NO,
+            FILE_NAME,
+            ORG_FILE_NAME,
+            FILE_PATH
+        )
+        VALUES
+	     <foreach collection="list" item="item" separator=",">
+	        (
+	            #{item.imageIdx},
+	            #{item.resultIdx},
+	            #{item.rowNo},
+	            #{item.fileName},
+	            #{item.orgFileName},
+	            #{item.filePath}
+	        )
+	    </foreach>
+    </insert>
+    
+    <select id="selectNewProductResultData" parameterType="map" resultType="map">
+	    /* newProductResult.selectNewProductResultData */
+	    SELECT 
+	        RESULT_IDX        AS RESULT_IDX,
+	        TITLE             AS TITLE,
+	        STATUS            AS STATUS,
+	        DOC_OWNER         AS DOC_OWNER,
+	        EXCUTE_DATE       AS EXCUTE_DATE,
+	        IS_DELETE         AS IS_DELETE,
+	        REG_USER          AS REG_USER,
+	        COLUMN_STATE      AS COLUMN_STATE
+	    FROM lab_new_product_result
+	    WHERE RESULT_IDX = #{idx}
+	</select>
+    
+    <select id="selectNewProductResultItemList" parameterType="map" resultType="map">
+	    /* newProductResult.selectNewProductResultItemList */
+	    SELECT 
+	        ITEM_IDX      AS ITEM_IDX,
+	        RESULT_IDX    AS RESULT_IDX,
+	        ROW_NO        AS ROW_NO,
+	        COLUMN_CODE   AS COLUMN_CODE,
+	        COLUMN_VALUE  AS COLUMN_VALUE
+	    FROM lab_new_product_result_item
+	    WHERE RESULT_IDX = #{idx}
+	    ORDER BY ROW_NO, COLUMN_CODE
+	</select>
+    
+    <select id="selectNewProductResultItemImageList" parameterType="map" resultType="map">
+	    /* newProductResult.selectNewProductResultItemImageList */
+	    SELECT 
+	        IMAGE_IDX      AS IMAGE_IDX,
+	        RESULT_IDX     AS RESULT_IDX,
+	        ROW_NO         AS ROW_NO,
+	        FILE_NAME      AS FILE_NAME,
+	        ORG_FILE_NAME  AS ORG_FILE_NAME,
+	        FILE_PATH      AS FILE_PATH
+	    FROM lab_new_product_result_item_images
+	    WHERE RESULT_IDX = #{idx}
+	    ORDER BY ROW_NO
+	</select>
+    
+    <!-- 1. 헤더 업데이트 -->
+	<update id="updateNewProductResult" parameterType="map">
+	    <!-- newProductResult.updateNewProductResult -->
+	    UPDATE lab_new_product_result
+	    SET 
+	        TITLE = #{title},
+	        STATUS = #{status},
+	        DOC_OWNER = #{userId},
+	        EXCUTE_DATE = #{excuteDate},
+	        IS_DELETE = #{isDelete},
+	        REG_USER = #{userId},
+	        COLUMN_STATE = #{columnStates}
+	    WHERE RESULT_IDX = #{idx}
+	</update>
+	
+	<!-- 2. 기존 항목 삭제 -->
+	<delete id="deleteNewProductResultItems" parameterType="map">
+	    /* newProductResult.deleteNewProductResultItems */
+	    DELETE FROM lab_new_product_result_item
+	    WHERE RESULT_IDX = #{idx}
+	</delete>
+	
+	<!-- 3. 기존 이미지 삭제 -->
+	<delete id="deleteNewProductResultItemImages" parameterType="map">
+	    /* newProductResult.deleteNewProductResultItemImages */
+	    DELETE FROM lab_new_product_result_item_images
+	    WHERE RESULT_IDX = #{idx}
+	</delete>
+	
+	<!-- 기존 이미지 리스트 조회 -->
+	<select id="selectNewProductResultItemImages" parameterType="map" resultType="map">
+	    SELECT
+	        IMAGE_IDX,
+	        RESULT_IDX,
+	        ROW_NO,
+	        FILE_NAME,
+	        ORG_FILE_NAME,
+	        FILE_PATH
+	    FROM lab_new_product_result_item_images
+	    WHERE RESULT_IDX = #{idx}
+	</select>
+	
+	<!-- 특정 ROW_NO 의 이미지만 삭제 -->
+	<delete id="deleteNewProductResultItemImageByRow" parameterType="map">
+	    DELETE FROM lab_new_product_result_item_images
+	    WHERE RESULT_IDX = #{idx}
+	      AND ROW_NO = #{rowNo}
+	</delete>
+	
+</mapper>

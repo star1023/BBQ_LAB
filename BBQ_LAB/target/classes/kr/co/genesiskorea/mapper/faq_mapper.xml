@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="faq">
+
+	<sql id="pagenation_faq">
+		WHERE rn between #{startRow} and #{endRow}
+	</sql>
+	
+	<sql id="whereFaqList">
+	
+		<!-- 전체 또는 searchType이 비어있는 경우: 제목, 답변, 작성자 모두 검색 -->
+		<if test="(searchType == null or searchType == '') and searchValue != null and searchValue != ''">
+			AND (
+				QUESTION LIKE CONCAT('%', #{searchValue}, '%')
+				OR ANSWER LIKE CONCAT('%', #{searchValue}, '%')
+				OR REG_USER LIKE CONCAT('%', #{searchValue}, '%')
+			)
+		</if>
+	
+		<!-- 특정 조건 검색 -->
+		<if test="searchType != null and searchType != '' and searchValue != null and searchValue != ''">
+			<choose>
+				<when test="searchType == 'searchQuestion'">
+					AND QUESTION LIKE CONCAT('%', #{searchValue}, '%')
+				</when>
+				<when test="searchType == 'searchAnswer'">
+					AND ANSWER LIKE CONCAT('%', #{searchValue}, '%')
+				</when>
+				<otherwise>
+					AND (
+						QUESTION LIKE CONCAT('%', #{searchValue}, '%')
+						OR ANSWER LIKE CONCAT('%', #{searchValue}, '%')
+						OR REG_USER LIKE CONCAT('%', #{searchValue}, '%')
+					)
+				</otherwise>
+			</choose>
+		</if>
+	
+		<!-- 카테고리 필터 -->
+		<if test="searchFaqType != null and searchFaqType != '' ">
+			AND CATEGORY = #{searchFaqType}
+		</if>
+	
+		<!-- 날짜 필터 -->
+		<if test="searchStartDate != null and searchStartDate != '' and searchEndDate != null and searchEndDate != ''">
+			AND DATE(REG_DATE) BETWEEN #{searchStartDate} AND #{searchEndDate}
+		</if>
+	
+	</sql>
+
+
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+		/* faq.selectHistory */
+		SELECT 
+			lh.DOC_IDX
+			, lh.HISTORY_TYPE
+			, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+				WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+				WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+				WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+				WHEN lh.HISTORY_TYPE  = 'U' then '임시저장'
+				END HISTORY_TYPE_TXT 
+			, lp.TITLE
+			, lh.USER_ID 
+			, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+			, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+		FROM lab_history lh ,
+			lab_board_faq lp 
+		WHERE 1 = 1
+			AND lh.DOC_IDX IN (SELECT BFAQ_IDX FROM lab_board_faq WHERE 1 = 1 AND BFAQ_IDX = #{docNo})
+			AND lh.DOC_TYPE = #{docType}
+			AND lh.DOC_IDX = lp.BFAQ_IDX
+		ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<select id="selectFaqCount" resultType="int">
+		/* faq.selectFaqCount */
+		SELECT count(1) 
+		FROM lab_board_faq
+		WHERE 1=1
+			  AND IS_DELETE != 'Y'
+		  <include refid="faq.whereFaqList"/>
+	</select>
+	
+	<select id="selectFaqList" parameterType="map" resultType="map">
+		/* faq.selectFaqList */
+		SELECT *
+		FROM (
+			SELECT 
+				ROW_NUMBER() OVER (ORDER BY BFAQ_IDX DESC) AS rn,
+				BFAQ_IDX,
+				QUESTION,
+				ANSWER,
+				REG_USER,
+				FN_GET_USER_NAME(REG_USER) AS REG_USER_NAME,
+				DATE_FORMAT(REG_DATE, '%Y-%m-%d') AS REG_DATE,
+				CATEGORY,
+				FN_GET_CODE_NAME('FAQ_CATEGORY', CATEGORY) AS CATEGORY_NAME
+			FROM lab_board_faq
+			WHERE 1 = 1
+			  AND IS_DELETE != 'Y'
+			<include refid="faq.whereFaqList"/>
+		) sub
+		<include refid="pagenation_faq"/>
+	</select>
+	
+	<select id="selectFaqData" parameterType="map" resultType="map">
+	/* faq.selectFaqData */
+		SELECT 
+			BFAQ_IDX,
+			TITLE,
+			CONTENT,
+			REG_USER,
+			DATE_FORMAT(REG_DATE, '%Y-%m-%d') as REG_DATE,
+			CATEGORY,
+			IS_DELETE
+		FROM lab_board_faq
+		WHERE BFAQ_IDX = #{idx}
+		  AND IS_DELETE != 'Y'
+	</select>
+	
+	<select id="selectFaqSeq" resultType="int">
+	/* faq.selectFaqSeq */
+		SELECT FN_NEXTVAL('lab_board_faq_seq') as seq
+	</select>
+	
+	<insert id="insertFaq" parameterType="map">
+		/* faq.insertFaq */
+        INSERT INTO lab_board_faq (
+        	BFAQ_IDX,
+            QUESTION,
+            ANSWER,
+            REG_USER,
+            REG_DATE,
+            IS_DELETE,
+            CATEGORY
+        ) VALUES (
+        	#{idx},
+            #{question},
+            #{answer},
+            #{userId},
+            NOW(),
+            'N',
+            #{category}
+        )
+    </insert>
+	
+	<update id="updateFaq" parameterType="map">
+		/* faq.updateFaq */
+	    UPDATE lab_board_faq
+	    SET 
+	        QUESTION = #{question},
+	        ANSWER = #{answer},
+	        CATEGORY = #{category},
+	        REG_USER = #{userId},
+	        REG_DATE = NOW()
+	    WHERE BFAQ_IDX = #{idx}
+	</update>
+	
+	
+	<update id="updateIsDeleteY" parameterType="map">
+		/* faq.updateIsDeleteY */
+	    UPDATE lab_board_faq
+	    SET IS_DELETE = 'Y',
+	        REG_USER = #{userId},
+	        REG_DATE = NOW()
+	    WHERE BFAQ_IDX = #{idx}
+	</update>
+</mapper>

@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %level - %m%n%ex%n"/>
+        </Console>
+        <RollingFile name="rolling_error" fileName="E:/develop/logs/error/error.log" filePattern="E:/develop/logs/error/error-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="[%-5p] %d{yy-MM-dd HH:mm:ss} [%C{2}][%M][%L] - %m%n" />
+            <Policies>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="5MB" />
+                    <TimeBasedTriggeringPolicy interval="1"/>
+                </Policies>
+    		</Policies>
+    		<DefaultRolloverStrategy>
+    			<Delete basePath="E:/develop/logs/error" maxDepth="1">
+                   <IfAccumulatedFileCount exceeds="100"/>
+               </Delete>
+    		</DefaultRolloverStrategy>
+       </RollingFile>
+       
+       <RollingFile name="rolling_debug" fileName="E:/develop/logs/debug/debug.log" filePattern="E:/develop/logs/debug/debug-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="[%-5p] %d{yy-MM-dd HH:mm:ss} [%C{2}][%M][%L] - %m%n" />
+            <Policies>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="5MB" />
+                    <TimeBasedTriggeringPolicy interval="1"/>
+                </Policies>
+    		</Policies>
+    		<DefaultRolloverStrategy>
+    			<Delete basePath="E:/develop/logs/debug" maxDepth="1">
+                   <IfAccumulatedFileCount exceeds="100"/>
+               </Delete>
+    		</DefaultRolloverStrategy>
+       </RollingFile>
+       
+       <RollingFile name="rolling_jdbc" fileName="E:/develop/logs/jdbc/jdbc.log" filePattern="E:/develop/logs/jdbc/jdbc-%d{yyyy-MM-dd}.log">
+            <PatternLayout pattern="[%-5p] %d{yy-MM-dd HH:mm:ss} [%C{2}][%M][%L] - %m%n" />
+            <Policies>
+                <Policies>
+                    <SizeBasedTriggeringPolicy size="5MB" />
+                    <TimeBasedTriggeringPolicy interval="1"/>
+                </Policies>
+    		</Policies>
+    		<DefaultRolloverStrategy>
+    			<Delete basePath="E:/develop/logs/jdbc" maxDepth="1">
+                   <IfAccumulatedFileCount exceeds="100"/>
+               </Delete>
+    		</DefaultRolloverStrategy>
+       </RollingFile>
+	</Appenders>
+
+        
+       
+	<loggers>
+        <Root level="debug" additivity="false" >
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rolling_debug" level = "DEBUG"/>
+            <AppenderRef ref="rolling_error" level = "ERROR"/>
+        </Root>
+       <!-- 
+        <Logger name="kr.co.genesiskorea.controller" level="debug" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rolling_debug"/>
+        </Logger>
+        <Logger name="kr.co.genesiskorea.controller" level="error" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rolling_error"/>
+        </Logger>
+        <Logger name="kr.co.genesiskorea.service" level="debug" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rolling_debug"/>
+        </Logger>
+        <Logger name="kr.co.genesiskorea.service" level="error" additivity="false">
+            <AppenderRef ref="console" />
+            <AppenderRef ref="rolling_error"/>
+        </Logger>
+         -->
+        <!-- log4j2 -->
+        <logger name="log4jdbc.log4j2" level="info" additivity="false">
+            <appender-ref ref="console" />
+            <appender-ref ref="rolling_jdbc" />
+        </logger>
+        
+        <!-- QUERY LOG -->
+        <logger name="jdbc.sqlonly" additivity="false">
+            <level value="info" />
+	        <appender-ref ref="console" />
+	        <appender-ref ref="rolling_jdbc" />
+        </logger>
+
+		<!-- RESULTSET TABLE -->
+        <logger name="jdbc.resultsettable" additivity="false">
+            <level value="info" />
+	        <appender-ref ref="console" />
+	        <appender-ref ref="rolling_jdbc" />
+        </logger>
+
+ 		<!-- query + time -->
+        <logger name="jdbc.sqltiming" level="off"/>
+        
+         <!-- 전체 로그 ( 양 상당히 많아짐 ) -->
+        <logger name="jdbc.audit" level="off"/>
+        
+         <!-- resultsettable + resultset (parameter) -->
+        <logger name="jdbc.resultset" level="off"/>
+        
+        <!-- connection log -->
+        <logger name="jdbc.connection" level="off"/>
+        
+        
+
+    </loggers>
+</Configuration>

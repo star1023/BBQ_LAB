@@ -1,0 +1,862 @@
+@charset "utf-8";
+
+/*
+ * Project		:	eAccounting Color Skin Switcher
+ * File			:	skinSwitcher.css
+ * Author		:	YoungJae Lee
+ * Date			:	July. 2021
+ * Description	:	색상 관련 스타일
+ */
+
+
+
+/* --
+	스킨 변경 버튼 :: header in main.jsp
+---------------------------------------------------------- */
+.color-tab.skin_basic .color-circle .left {background: rgba(65,102,216,1);
+															background: -moz-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+															background: -webkit-gradient(left top, right top, color-stop(0%, rgba(65,102,216,1)), color-stop(100%, rgba(168,102,176,1)));
+															background: -webkit-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+															background: -o-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+															background: -ms-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+															background: linear-gradient(to right, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+															filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4166d8', endColorstr='#a866b0', GradientType=1 );}
+.color-tab.skin_blue .color-circle .left {background-color: #4166d8;}
+.color-tab.skin_yellow .color-circle .left {background-color: #ffc10a;}
+.color-tab.skin_green .color-circle .left {background-color: #41b883;}
+.color-tab.skin_red .color-circle .left {background-color: #d9230f;}
+
+
+
+.color-tab.skin_basic .color-circle .right,
+.color-tab.skin_blue .color-circle .right,
+.color-tab.skin_yellow .color-circle .right,
+.color-tab.skin_green .color-circle .right,
+.color-tab.skin_red .color-circle .right {background: #fff; border: 1px solid #c5c5c5; border-left: none;}
+
+
+
+
+ 
+/* --
+	:: skin_basic
+---------------------------------------------------------- */
+
+/* color */
+.bgLightGray {background-color: #f4f4fc;} /* rgba(244, 244, 252, 1) */
+.bgLightGray1 {background-color: #f5f4f8;}
+.bgLightHover {background-color: #e7e7f3;}
+
+.mainColor {color: #fff; background: rgba(65,102,216,1);
+				background: -moz-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+				background: -webkit-gradient(left top, right top, color-stop(0%, rgba(65,102,216,1)), color-stop(100%, rgba(168,102,176,1)));
+				background: -webkit-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+				background: -o-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+				background: -ms-linear-gradient(left, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+				background: linear-gradient(to right, rgba(65,102,216,1) 0%, rgba(168,102,176,1) 100%);
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4166d8', endColorstr='#a866b0', GradientType=1 );}
+.mainColorReverse {color: #fff; background: rgba(168,102,176,1);
+				background: -moz-linear-gradient(left, rgba(168,102,176,1) 0%, rgba(65,102,216,1) 100%);
+				background: -webkit-gradient(left top, right top, color-stop(0%, rgba(168,102,176,1)), color-stop(100%, rgba(65,102,216,1)));
+				background: -webkit-linear-gradient(left, rgba(168,102,176,1) 0%, rgba(65,102,216,1) 100%);
+				background: -o-linear-gradient(left, rgba(168,102,176,1) 0%, rgba(65,102,216,1) 100%);
+				background: -ms-linear-gradient(left, rgba(168,102,176,1) 0%, rgba(65,102,216,1) 100%);
+				background: linear-gradient(to right, rgba(168,102,176,1) 0%, rgba(65,102,216,1) 100%);
+				filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a866b0', endColorstr='#4166d8', GradientType=1 );}
+.mainColor1 {background: #8a6c9e;}
+.mainColor2 {background: #a866b0;}
+.mainColor3 {background: #7836a5;}
+.mainColor4 {background: #8f71bd;}
+.mainColor5 {background: #6f5198;}
+.mainColor6 {background: #665880;}
+
+
+
+/* --
+	:: skin_blue
+---------------------------------------------------------- */
+
+/* color */
+.skin_blue .bgLightGray {background-color: #f2f4f9;}
+.skin_blue .bgLightHover {background-color: #ced1d8;}
+
+.skin_blue .mainColor {background:#4166d8;}
+.skin_blue .mainColor1 {background:#616880;}
+
+/* 
+*	 common.css
+*/
+.skin_blue .gldp-flatwhite .dow,
+.skin_blue .ui-datepicker table td:hover {background-color: #f2f4f9;}
+
+.skin_blue .gldp-flatwhite .mon:hover,
+.skin_blue .gldp-flatwhite .tue:hover,
+.skin_blue .gldp-flatwhite .wed:hover,
+.skin_blue .gldp-flatwhite .thu:hover,
+.skin_blue .gldp-flatwhite .fri:hover,
+.skin_blue .gldp-flatwhite .sat:hover,
+.skin_blue .gldp-flatwhite .sun:hover {background-color: #ced1d8;}
+
+.skin_blue .gldp-flatwhite .selected,
+.skin_blue .ui-datepicker .ui-datepicker-header {background: #4166d8;}
+
+.skin_blue .gldp-flatwhite .today,
+.skin_blue .ui-state-active,
+.skin_blue .ui-widget-content .ui-state-active,
+.skin_blue .ui-widget-header .ui-state-active {background: #f2f4f9 !important; color: #4166d8 !important;}
+
+.skin_blue .loading-wrap .loader {background-color: #4166d8; box-shadow: -14px 0px 0px rgba(65, 102, 216, .4);}
+.skin_blue .preloader-bar {border-top-color: #9ab3ff;}
+.skin_blue .preloader-bar:before {border-top-color: #d3deff;}
+.skin_blue .preloader-bar:after {border-top-color: #4166d8;}
+
+/* 
+*	 component.css
+*/
+.skin_blue .reportStatusWrap li,
+.skin_blue .tb-st th {background:#f2f4f9;}
+
+.skin_blue .tit-inq:before,
+.skin_blue .bullet-tit:before,
+.skin_blue .reportStatusWrap li.active,
+.skin_blue .tab-depth03 .on .btn-tab {background:#4166d8;}
+
+.skin_blue .radio-wrap input[type="radio"]:checked + label span,
+.skin_blue .chk-wrap input[type="checkbox"]:checked + label span {border-color:#4166d8; background-color:#4166d8;}
+
+.skin_blue .tab-depth01 .on .btn-tab{border-bottom:3px solid #4166d8; color: #4166d8;}
+
+.skin_blue .tb-wrap.type02 {border-top:2px solid #4166d8;}
+
+.skin_blue .btn.comm.st01 {background-color: #4166d8;}
+.skin_blue .btn.comm.st01:hover {background-color: #324fa9;}
+.skin_blue .btn.comm.st02,
+.skin_blue .btn.evn-st01 {border: 1px solid #4166d8; color: #4166d8;}
+.skin_blue .btn.comm.st02:hover,
+.skin_blue .btn.comm.st03:hover,
+.skin_blue .btn.evn-st01:hover {background-color: #f2f4f9;}
+
+.skin_blue .treeButton {background-color: rgba(242, 244, 249, .3);}
+.skin_blue .treeButton:hover {box-shadow: inset 0px 1px 0px 0px rgba(242, 244, 249, 1) !important; background-color: rgba(242, 244, 249, 1);}
+
+.skin_blue .receiptTooltip:after {border-bottom: 50px solid #f2f4f9;}
+.skin_blue .receiptTooltip:before {border-top: 50px solid #f2f4f9;}
+
+/* 
+*	 layout.css
+*/
+.skin_blue .dropdownWrap .dropdownCon li:hover,
+.skin_blue .setMenu:hover,
+.skin_blue .skinSwitcherCon h4 ,
+.skin_blue .skinSwitcherCon .color-tab.active,
+.skin_blue .skinSwitcherClose:hover,
+.skin_blue .statusDtlWrap .statusDtl:hover,
+.skin_blue .titleFixed,
+.skin_blue .portletSetPanel .onoffswitchWrap,
+.skin_blue .portletSetPanel .btnArea,
+.skin_blue .portletSetPanel .btnArea a.resetPortlet:hover {background: #f2f4f9;}
+
+.skin_blue ul#gnb > li.selected > a,
+.skin_blue ul#gnb > li > a:hover,
+.skin_blue ul#gnb > li:hover > a,
+.skin_blue ul#gnb > li.iehover > a,
+.skin_blue .onoffswitch-inner:before {background:#4166d8;}
+
+.skin_blue ul#gnb > li:hover > ul > li > a:hover,
+.skin_blue ul#gnb > li:hover > ul > li:hover > a,
+.skin_blue ul#gnb > li.iehover > ul > li > a:hover,
+.skin_blue ul#gnb > li.iehover > ul > li.iehover > a {color:#4166d8; border-left:3px solid #4166d8;}
+
+.skin_blue .summaryWrapIn {border-bottom: 1px solid #9eb1e2;}
+.skin_blue .titleFixed .panel-tit,
+.skin_blue .panel-tit02 {border-left: 3px solid #4166d8;}
+
+.skin_blue .statusDtlWrap .statusDtl:hover .statusCont {color: #4166d8;}
+
+/* 
+*	 page.css
+*/
+/* 로그인 */
+.skin_blue .css-arrow-multicolor {border-color: transparent transparent #4166d8 transparent;}
+.skin_blue .fullOverlay {background: rgba(242, 244, 249, .8);}
+.skin_blue .loginInputLst li.inputFocusIn {background:#f2f4f9;}
+.skin_blue .loginInputLst li.company > div {background-image:url("/images/login/web/blue_login_company_icon.png");}
+.skin_blue .loginInputLst li.id > div {background-image:url("/images/login/web/blue_login_user_icon.png");}
+.skin_blue .loginInputLst li.pw > div {background-image:url("/images/login/web/blue_login_pw_icon.png");}
+.skin_blue .capslock-alert,
+.skin_blue .loginHeader:before,
+.skin_blue .loginFooter-btn {background: #4166d8;}
+.skin_blue .loginFooter-btn:hover {background: #324fa9;}
+
+.skin_blue .errorTitle span:after,
+.skin_blue .errorButton:before {background: #4166d8;}
+
+.skin_blue .attachFileLstWrap .attachFileLst:hover,
+.skin_blue .noticePopTit,
+.skin_blue .profilePopTit,
+.skin_blue .comWrap .cke_1 .cke_bottom,
+.skin_blue .cmt-regBtn,
+.skin_blue .cmt-btn,
+.skin_blue .viewBoardIntro div,
+.skin_blue .approval-tb-st th,
+.skin_blue .appr-stamp-th,
+.skin_blue .expnSignLst li:hover {background:#f2f4f9;}
+
+.skin_blue .noti-slider-wrap .noti-cont-list li.active span,
+.skin_blue .comBtn {background-color: #4166d8;}
+
+.skin_blue .notiFooter,
+.skin_blue .profilePopFooter {background: #5e626f;}
+
+.skin_blue .viewBoardTit {border-top:2px solid #4166d8; background:#f2f4f9;}
+
+/* 
+*	 lobipanel.css
+*/
+.skin_blue #lobipanelWrap,
+.skin_blue .tb-wrap.main .tb-st tr:nth-child(odd) td,
+.skin_blue .expandPortletWrap.type01,
+.skin_blue .expand-billStatus .maxPortletChartWrap,
+.skin_blue .expand-cardMajorList .cardMajorListDtl:hover td,
+.skin_blue .dropdown-menu > li > a:hover,
+.skin_blue .dropdown-menu > li > a:focus,
+.skin_blue .panel-footer {background:#f2f4f9;}
+
+.skin_blue .lobipanel-list > li:hover {background-color:#f2f4f9; border-left:4px solid #4166d8;}
+.skin_blue .lobipanel-list > li:nth-child(even) {background:#f2f4f9; border-left:4px solid #f2f4f9;}
+.skin_blue .lobipanel-list > li:nth-child(even):hover {border-left:4px solid #4166d8;}
+.skin_blue .lobipanel-list li .purpleTxt {color:#4166d8;}
+
+.skin_blue .tb-wrap.main .tb-st tbody tr:nth-child(odd) td:first-child {border-left:8px solid #f2f4f9;}
+.skin_blue .tb-wrap.main .tb-st tbody tr:hover td:first-child {border-left:8px solid #4166d8;}
+.skin_blue .tb-wrap.main .tb-st tbody tr:hover td {background:#f2f4f9;}
+
+.skin_blue .cardMajorDtlWrap .portletStatementCon span,
+.skin_blue .portletStatementBtm .portletStatementCon span {color:#4166d8;}
+
+/* 
+*	 cnc_treegrid.css
+*/
+.skin_blue .GridMain1.GridMain2 .TSRowSpace2 .TSSolidRow {background: #f2f4f9;}
+.skin_blue .GridMain1.GridMain2 .TSRowSpace4 .TSSolidRow {background:#f2f4f9;  border-top:2px solid #4166d8 !important;}
+.skin_blue .GridMain1.GridMain2 .TSColorChanged {background-color:#fff;} /* 내용 변경된 cell 색상 */
+.skin_blue .GridMain1.GridMain2 .TSColorAlternate {background-color:#f2f4f9;} /* Color for <Cfg Alternate/>, can be changed by <I AlternateColor /> */
+.skin_blue .GridMain1.GridMain2 .TSCellHeader {background: #5e626f;}
+
+/* 
+*	 modalpopup.css
+*/
+.skin_blue .modal-footer {background: #f2f4f9;}
+
+.skin_blue .modalPaging {border-top: 1px solid #4166d8; background: #f2f4f9;}
+.skin_blue .modalPagingTit span {color: #4166d8;}
+					
+/* 
+*	 attachUpload.css
+*/
+.skin_blue .basicFileWrap .filebox{background: #4965d1;}
+.skin_blue .viewAttachLstTit {background:#f2f4f9;}
+.skin_blue .attachUpLst:hover {border-left:3px solid #4166d8; background:#f2f4f9;}
+.skin_blue .attachUpLst:nth-child(even) {border-left:3px solid #f2f4f9; background-color:#f2f4f9;}
+.skin_blue .attachzone .dragdropInfoCopy {color:#4166d8;}
+.skin_blue .attachzone .attachicon {background-color:#4166d8;}
+.skin_blue .attachzone .attachicon:hover {background-color:#324fa9;}
+
+
+
+/* --
+	:: skin_yellow
+---------------------------------------------------------- */
+
+/* color */
+.skin_yellow .bgLightGray {background-color: #f5f5f5;}
+.skin_yellow .bgLightHover {background-color: #ebebeb;}
+
+.skin_yellow .mainColor {background: #ffbd00;}
+.skin_yellow .mainColor1 {background: #fff103;}
+.skin_yellow .mainColor2 {background: #e6da00;}
+.skin_yellow .mainColor3 {background: #f7a033;}
+.skin_yellow .mainColor4 {background: #fda716;}
+.skin_yellow .mainColor5 {background: #4e4e4e;}
+
+/* 
+*	 common.css
+*/
+.skin_yellow .gldp-flatwhite .dow,
+.skin_yellow .ui-datepicker table td:hover {background-color: #f5f5f5;}
+
+.skin_yellow .gldp-flatwhite .mon:hover,
+.skin_yellow .gldp-flatwhite .tue:hover,
+.skin_yellow .gldp-flatwhite .wed:hover,
+.skin_yellow .gldp-flatwhite .thu:hover,
+.skin_yellow .gldp-flatwhite .fri:hover,
+.skin_yellow .gldp-flatwhite .sat:hover,
+.skin_yellow .gldp-flatwhite .sun:hover {background-color: #ebebeb;}
+
+.skin_yellow .gldp-flatwhite .selected,
+.skin_yellow .ui-datepicker .ui-datepicker-header {background: #ffbd00;}
+
+.skin_yellow .gldp-flatwhite .today,
+.skin_yellow .ui-state-active,
+.skin_yellow .ui-widget-content .ui-state-active,
+.skin_yellow .ui-widget-header .ui-state-active {background: #f5f5f5 !important; color: #ffbd00 !important;}
+
+.skin_yellow .loading-wrap .loader {background-color: #ffbd00; box-shadow: -14px 0px 0px #4e4e4e;}
+.skin_yellow .preloader-bar {border-top-color: #fff103;}
+.skin_yellow .preloader-bar:before {border-top-color: #fdf2d2;}
+.skin_yellow .preloader-bar:after {border-top-color: #ffbd00;}
+
+/* 
+*	 component.css
+*/
+.skin_yellow .reportStatusWrap li,
+.skin_yellow .tb-st th {background:#f5f5f5;}
+
+.skin_yellow .tit-inq:before,
+.skin_yellow .bullet-tit:before,
+.skin_yellow .reportStatusWrap li.active,
+.skin_yellow .tab-depth03 .on .btn-tab {background:#ffbd00;}
+
+.skin_yellow .radio-wrap input[type="radio"]:checked + label span,
+.skin_yellow .chk-wrap input[type="checkbox"]:checked + label span {border-color:#ffbd00; background-color:#ffbd00;}
+
+.skin_yellow .tab-depth01 .on .btn-tab {border-bottom:3px solid #ffbd00; color: #ffbd00;}
+
+.skin_yellow .tb-wrap.type02 {border-top:2px solid #ffbd00;}
+
+.skin_yellow .btn.comm.st01 {background-color: #fda716;}
+.skin_yellow .btn.comm.st01:hover {background-color: #e69813;}
+.skin_yellow .btn.comm.st02,
+.skin_yellow .btn.evn-st01 {border: 1px solid #ffbd00; color: #414141;}
+.skin_yellow .btn.comm.st02:hover,
+.skin_yellow .btn.evn-st01:hover {background-color: #fff8ed;}
+.skin_yellow .btn.comm.st03:hover {background-color: #f5f5f5;}
+
+.skin_yellow .treeButton {background-color: rgba(245, 245, 245, .6);}
+.skin_yellow .treeButton:hover {box-shadow: inset 0px 1px 0px 0px rgba(245, 245, 245, 1) !important; background-color: rgba(245, 245, 245, 1);}
+
+.skin_yellow .receiptTooltip:after {border-bottom: 50px solid #f5f5f5;}
+.skin_yellow .receiptTooltip:before {border-top: 50px solid #f5f5f5;}
+
+/* 
+*	 layout.css
+*/
+.skin_yellow .dropdownWrap .dropdownCon li:hover,
+.skin_yellow .setMenu:hover,
+.skin_yellow .skinSwitcherCon h4 ,
+.skin_yellow .skinSwitcherCon .color-tab.active,
+.skin_yellow .skinSwitcherClose:hover,
+.skin_yellow .statusDtlWrap .statusDtl:hover,
+.skin_yellow .portletSetPanel .onoffswitchWrap,
+.skin_yellow .portletSetPanel .btnArea,
+.skin_yellow .portletSetPanel .btnArea a.resetPortlet:hover {background: #f5f5f5;}
+
+.skin_yellow .titleFixed {background: rgba(245,245,245,.3);}
+
+.skin_yellow ul#gnb > li.selected > a,
+.skin_yellow ul#gnb > li > a:hover,
+.skin_yellow ul#gnb > li:hover > a,
+.skin_yellow ul#gnb > li.iehover > a,
+.skin_yellow .onoffswitch-inner:before {background:#ffbd00;}
+
+.skin_yellow ul#gnb > li:hover > ul > li > a:hover,
+.skin_yellow ul#gnb > li:hover > ul > li:hover > a,
+.skin_yellow ul#gnb > li.iehover > ul > li > a:hover,
+.skin_yellow ul#gnb > li.iehover > ul > li.iehover > a {color:#f7a033; border-left:3px solid #ffbd00;}
+
+.skin_yellow .summaryWrapIn {border-bottom: 1px solid rgba(78, 78, 78, .4);}
+.skin_yellow .titleFixed .panel-tit,
+.skin_yellow .panel-tit02 {border-left: 3px solid #ffbd00;}
+
+.skin_yellow .statusDtlWrap .statusDtl:hover .statusCont {color: #f7a033;}
+
+/* 
+*	 page.css
+*/
+/* 로그인 */
+.skin_yellow .css-arrow-multicolor {border-color: transparent transparent #4e4e4e transparent;}
+.skin_yellow .fullOverlay {background: rgba(245, 245, 245, .75);}
+.skin_yellow .loginInputLst li.inputFocusIn {background:#f5f5f5;}
+.skin_yellow .loginInputLst li.company > div {background-image:url("/images/login/web/yellow_login_company_icon.png");}
+.skin_yellow .loginInputLst li.id > div {background-image:url("/images/login/web/yellow_login_user_icon.png");}
+.skin_yellow .loginInputLst li.pw > div {background-image:url("/images/login/web/yellow_login_pw_icon.png");}
+.skin_yellow .capslock-alert,
+.skin_yellow .loginHeader:before  {background: #4e4e4e;}
+.skin_yellow .loginFooter-btn {background: #fff103; color:#414141;}
+.skin_yellow .loginFooter-btn:hover {background: #e6da00;}
+
+.skin_yellow .errorTitle span:after,
+.skin_yellow .errorButton:before {background: #ffbd00;}
+
+.skin_yellow .attachFileLstWrap .attachFileLst:hover,
+.skin_yellow .noticePopTit,
+.skin_yellow .profilePopTit,
+.skin_yellow .comWrap .cke_1 .cke_bottom,
+.skin_yellow .cmt-regBtn,
+.skin_yellow .cmt-btn,
+.skin_yellow .viewBoardIntro div,
+.skin_yellow .approval-tb-st th,
+.skin_yellow .appr-stamp-th,
+.skin_yellow .expnSignLst li:hover {background:#f5f5f5;}
+
+.skin_yellow .noti-slider-wrap .noti-cont-list li.active span,
+.skin_yellow .comBtn {background-color: #ffbd00;}
+
+.skin_yellow .notiFooter,
+.skin_yellow .profilePopFooter {background: #4e4e4e;}
+
+.skin_yellow .viewBoardTit {border-top:2px solid #ffbd00; background: rgba(245,245,245,.3);}
+
+/* 
+*	 lobipanel.css
+*/
+.skin_yellow #lobipanelWrap,
+.skin_yellow .tb-wrap.main .tb-st tr:nth-child(odd) td,
+.skin_yellow .expandPortletWrap.type01,
+.skin_yellow .expand-billStatus .maxPortletChartWrap,
+.skin_yellow .expand-cardMajorList .cardMajorListDtl:hover td,
+.skin_yellow .dropdown-menu > li > a:hover,
+.skin_yellow .dropdown-menu > li > a:focus,
+.skin_yellow .panel-footer {background:#f5f5f5;}
+
+.skin_yellow .lobipanel-list > li:hover {background-color:#f5f5f5; border-left:4px solid #ffbd00;}
+.skin_yellow .lobipanel-list > li:nth-child(even) {background:#f5f5f5; border-left:4px solid #f5f5f5;}
+.skin_yellow .lobipanel-list > li:nth-child(even):hover {border-left:4px solid #ffbd00;}
+.skin_yellow .lobipanel-list li .purpleTxt {color:#414141;}
+
+.skin_yellow .tb-wrap.main .tb-st tbody tr:nth-child(odd) td:first-child {border-left:8px solid #f5f5f5;}
+.skin_yellow .tb-wrap.main .tb-st tbody tr:hover td:first-child {border-left:8px solid #ffbd00;}
+.skin_yellow .tb-wrap.main .tb-st tbody tr:hover td {background:#f5f5f5;}
+
+.skin_yellow .cardMajorDtlWrap .portletStatementCon span,
+.skin_yellow .portletStatementBtm .portletStatementCon span {color:#f7a033;}
+
+/* 
+*	 cnc_treegrid.css
+*/
+.skin_yellow .GridMain1.GridMain2 .TSRowSpace2 .TSSolidRow {background: #f5f5f5;}
+.skin_yellow .GridMain1.GridMain2 .TSRowSpace4 .TSSolidRow {background:#f5f5f5;  border-top:2px solid #ffbd00 !important;}
+.skin_yellow .GridMain1.GridMain2 .TSColorChanged {background-color:#fff;} /* 내용 변경된 cell 색상 */
+.skin_yellow .GridMain1.GridMain2 .TSColorAlternate {background-color:#f5f5f5;} /* Color for <Cfg Alternate/>, can be changed by <I AlternateColor /> */
+.skin_yellow .GridMain1.GridMain2 .TSCellHeader {background: #4e4e4e;}
+
+/* 
+*	 modalpopup.css
+*/
+.skin_yellow .modal-footer {background: #f5f5f5;}
+
+.skin_yellow .modalPaging {border-top: 1px solid #ffbd00; background: #f5f5f5;}
+.skin_yellow .modalPagingTit span {color: #ffbd00;}
+					
+/* 
+*	 attachUpload.css
+*/
+.skin_yellow .basicFileWrap .filebox{background: #ffbd00;}
+.skin_yellow .viewAttachLstTit {background:#f5f5f5;}
+.skin_yellow .attachUpLst:hover {border-left:3px solid #ffbd00; background:#f5f5f5;}
+.skin_yellow .attachUpLst:nth-child(even) {border-left:3px solid #f5f5f5; background-color:#f5f5f5;}
+.skin_yellow .attachzone .dragdropInfoCopy {color:#414141;}
+.skin_yellow .attachzone .attachicon {background-color:#ffbd00;}
+.skin_yellow .attachzone .attachicon:hover {background-color:#d09a00;}
+
+
+
+/* --
+	:: skin_green
+---------------------------------------------------------- */
+
+/* color */
+.skin_green .bgLightGray {background-color: #f3f3f3;}
+.skin_green .bgDarkGray {background-color: #999999;}
+
+.skin_green .mainColor {background:#41b883;}
+
+/* 
+*	 common.css
+*/
+.skin_green .gldp-flatwhite .dow,
+.skin_green .ui-datepicker table td:hover {background-color: #f3f3f3; color: #41b883;}
+
+.skin_green .gldp-flatwhite .mon:hover,
+.skin_green .gldp-flatwhite .tue:hover,
+.skin_green .gldp-flatwhite .wed:hover,
+.skin_green .gldp-flatwhite .thu:hover,
+.skin_green .gldp-flatwhite .fri:hover,
+.skin_green .gldp-flatwhite .sat:hover,
+.skin_green .gldp-flatwhite .sun:hover {background-color: #f3f3f3; color: #41b883;}
+
+.skin_green .gldp-flatwhite .selected,
+.skin_green .ui-datepicker .ui-datepicker-header {background: #41b883;}
+
+.skin_green .gldp-flatwhite .today,
+.skin_green .ui-state-active,
+.skin_green .ui-widget-content .ui-state-active,
+.skin_green .ui-widget-header .ui-state-active {background: #f3f3f3 !important; color: #41b883 !important;}
+
+.skin_green .loading-wrap .loader {background-color: #41b883; box-shadow: -14px 0px 0px #999;}
+.skin_green .preloader-bar {border-top-color: #41b883;}
+.skin_green .preloader-bar:before {border-top-color: #e3ece8;}
+.skin_green .preloader-bar:after {border-top-color: #6e9081;}
+
+/* 
+*	 component.css
+*/
+.skin_green .reportStatusWrap li,
+.skin_green .tb-st th {background:#f3f3f3;}
+
+.skin_green .tit-inq:before,
+.skin_green .bullet-tit:before,
+.skin_green .reportStatusWrap li.active,
+.skin_green .tab-depth03 .on .btn-tab {background:#41b883;}
+
+.skin_green .radio-wrap input[type="radio"]:checked + label span,
+.skin_green .chk-wrap input[type="checkbox"]:checked + label span {border-color:#41b883; background-color:#41b883;}
+
+.skin_green .tab-depth01 .on .btn-tab{border-bottom:3px solid #41b883; color: #41b883;}
+
+.skin_green .tb-wrap.type02 {border-top:2px solid #41b883;}
+
+.skin_green .btn.comm.st01 {background-color: #41b883;}
+.skin_green .btn.comm.st01:hover {background-color: #298d61;}
+.skin_green .btn.comm.st02,
+.skin_green .btn.evn-st01 {border: 1px solid #41b883; color: #41b883;}
+.skin_green .btn.comm.st02:hover,
+.skin_green .btn.comm.st03:hover,
+.skin_green .btn.evn-st01:hover {background-color: #f3f3f3;}
+
+.skin_green .treeButton {background-color: rgba(250, 250, 250, .3);}
+.skin_green .treeButton:hover {box-shadow: inset 0px 1px 0px 0px rgba(250, 250, 250, 1) !important; background-color: rgba(250, 250, 250, 1);}
+
+.skin_green .receiptTooltip:after {border-bottom: 50px solid #f3f3f3;}
+.skin_green .receiptTooltip:before {border-top: 50px solid #f3f3f3;}
+
+/* 
+*	 layout.css
+*/
+.skin_green .dropdownWrap .dropdownCon li:hover,
+.skin_green .setMenu:hover,
+.skin_green .skinSwitcherCon h4 ,
+.skin_green .skinSwitcherCon .color-tab.active,
+.skin_green .skinSwitcherClose:hover,
+.skin_green .statusDtlWrap .statusDtl:hover,
+.skin_green .titleFixed,
+.skin_green .portletSetPanel .onoffswitchWrap,
+.skin_green .portletSetPanel .btnArea,
+.skin_green .portletSetPanel .btnArea a.resetPortlet:hover {background: #f3f3f3;}
+
+.skin_green ul#gnb > li.selected > a,
+.skin_green ul#gnb > li > a:hover,
+.skin_green ul#gnb > li:hover > a,
+.skin_green ul#gnb > li.iehover > a,
+.skin_green .onoffswitch-inner:before {background:#41b883;}
+
+.skin_green ul#gnb > li:hover > ul > li > a:hover,
+.skin_green ul#gnb > li:hover > ul > li:hover > a,
+.skin_green ul#gnb > li.iehover > ul > li > a:hover,
+.skin_green ul#gnb > li.iehover > ul > li.iehover > a {color:#41b883; border-left:3px solid #41b883;}
+
+.skin_green .summaryWrapIn {border-bottom: 1px solid rgba(65, 184, 131, .5);}
+.skin_green .titleFixed .panel-tit,
+.skin_green .panel-tit02 {border-left: 3px solid #41b883;}
+
+.skin_green .statusDtlWrap .statusDtl:hover .statusCont {color: #41b883;}
+
+/* 
+*	 page.css
+*/
+/* 로그인 */
+.skin_green .css-arrow-multicolor {border-color: transparent transparent #41b883 transparent;}
+.skin_green .fullOverlay {background: rgba(250, 250, 250, .8);}
+.skin_green .loginInputLst li.inputFocusIn {background:#f3f3f3;}
+.skin_green .loginInputLst li.company > div {background-image:url("/images/login/web/green_login_company_icon.png");}
+.skin_green .loginInputLst li.id > div {background-image:url("/images/login/web/green_login_user_icon.png");}
+.skin_green .loginInputLst li.pw > div {background-image:url("/images/login/web/green_login_pw_icon.png");}
+.skin_green .capslock-alert,
+.skin_green .loginFooter-btn {background: #41b883;}
+.skin_green .loginHeader:before {background:#3f4442;}
+.skin_green .loginFooter-btn:hover {background: #298d61;}
+
+.skin_green .errorTitle span:after,
+.skin_green .errorButton:before {background: #41b883;}
+
+.skin_green .attachFileLstWrap .attachFileLst:hover,
+.skin_green .noticePopTit,
+.skin_green .profilePopTit,
+.skin_green .comWrap .cke_1 .cke_bottom,
+.skin_green .cmt-regBtn,
+.skin_green .cmt-btn,
+.skin_green .viewBoardIntro div,
+.skin_green .approval-tb-st th,
+.skin_green .appr-stamp-th,
+.skin_green .expnSignLst li:hover {background:#f3f3f3;}
+
+.skin_green .noti-slider-wrap .noti-cont-list li.active span,
+.skin_green .comBtn {background-color: #41b883;}
+
+.skin_green .notiFooter,
+.skin_green .profilePopFooter {background: #404040;}
+
+.skin_green .viewBoardTit {border-top:2px solid #41b883; background:#f3f3f3;}
+
+/* 
+*	 lobipanel.css
+*/
+.skin_green #lobipanelWrap {background:#f5f5f5;}
+
+.skin_green .tb-wrap.main .tb-st tr:nth-child(odd) td,
+.skin_green .expandPortletWrap.type01,
+.skin_green .expand-billStatus .maxPortletChartWrap,
+.skin_green .expand-cardMajorList .cardMajorListDtl:hover td,
+.skin_green .dropdown-menu > li > a:hover,
+.skin_green .dropdown-menu > li > a:focus,
+.skin_green .panel-footer {background:#f3f3f3;}
+
+.skin_green .lobipanel-list > li:hover {background-color:#f3f3f3; border-left:4px solid #41b883;}
+.skin_green .lobipanel-list > li:nth-child(even) {background:#f3f3f3; border-left:4px solid #f3f3f3;}
+.skin_green .lobipanel-list > li:nth-child(even):hover {border-left:4px solid #41b883;}
+.skin_green .lobipanel-list li .purpleTxt {color:#41b883;}
+
+.skin_green .tb-wrap.main .tb-st tbody tr:nth-child(odd) td:first-child {border-left:8px solid #f3f3f3;}
+.skin_green .tb-wrap.main .tb-st tbody tr:hover td:first-child {border-left:8px solid #41b883;}
+.skin_green .tb-wrap.main .tb-st tbody tr:hover td {background:#f3f3f3;}
+
+.skin_green .cardMajorDtlWrap .portletStatementCon span,
+.skin_green .portletStatementBtm .portletStatementCon span {color:#41b883;}
+
+/* 
+*	 cnc_treegrid.css
+*/
+.skin_green .GridMain1.GridMain2 .TSRowSpace2 .TSSolidRow {background: #f3f3f3;}
+.skin_green .GridMain1.GridMain2 .TSRowSpace4 .TSSolidRow {background:#f3f3f3;  border-top:2px solid #41b883 !important;}
+.skin_green .GridMain1.GridMain2 .TSColorChanged {background-color:#fff;} /* 내용 변경된 cell 색상 */
+.skin_green .GridMain1.GridMain2 .TSColorAlternate {background-color:#f3f3f3;} /* Color for <Cfg Alternate/>, can be changed by <I AlternateColor /> */
+.skin_green .GridMain1.GridMain2 .TSCellHeader {background: #636966;}
+
+/* 
+*	 modalpopup.css
+*/
+.skin_green .modal-footer {background: #f3f3f3;}
+
+.skin_green .modalPaging {border-top: 1px solid #41b883; background: #f3f3f3;}
+.skin_green .modalPagingTit span {color: #41b883;}
+					
+/* 
+*	 attachUpload.css
+*/
+.skin_green .basicFileWrap .filebox{background: #f3f3f3;}
+.skin_green .viewAttachLstTit {background:#f3f3f3;}
+.skin_green .attachUpLst:hover {border-left:3px solid #41b883; background:#f3f3f3;}
+.skin_green .attachUpLst:nth-child(even) {border-left:3px solid #f3f3f3; background-color:#f3f3f3;}
+.skin_green .attachzone .dragdropInfoCopy {color:#41b883;}
+.skin_green .attachzone .attachicon {background-color:#41b883;}
+.skin_green .attachzone .attachicon:hover {background-color:#298d61;}
+
+
+
+/* --
+	:: skin_red
+---------------------------------------------------------- */
+
+/* color */
+.skin_red .bgLightGray {background-color: #f2f2f5;}
+.skin_red .bgLightHover {background-color: #e3e3e6;}
+
+.skin_red .mainColor {background:#d9230f;}
+.skin_red .mainColor1 {background:#777777;}
+.skin_red .mainColor2 {background:#222222;}
+.skin_red .mainColor3 {background: linear-gradient(135deg, #373549 1%,#4e4d5e 100%);}
+.skin_red .mainColor4 {background: #525256;}
+
+/* 
+*	 common.css
+*/
+.skin_red .gldp-flatwhite .dow,
+.skin_red .ui-datepicker table td:hover {background-color: #f2f2f5;}
+
+.skin_red .gldp-flatwhite .mon:hover,
+.skin_red .gldp-flatwhite .tue:hover,
+.skin_red .gldp-flatwhite .wed:hover,
+.skin_red .gldp-flatwhite .thu:hover,
+.skin_red .gldp-flatwhite .fri:hover,
+.skin_red .gldp-flatwhite .sat:hover,
+.skin_red .gldp-flatwhite .sun:hover {background-color: #e3e3e6;}
+
+.skin_red .gldp-flatwhite .selected,
+.skin_red .ui-datepicker .ui-datepicker-header {background: #d9230f;}
+
+.skin_red .gldp-flatwhite .today,
+.skin_red .ui-state-active,
+.skin_red .ui-widget-content .ui-state-active,
+.skin_red .ui-widget-header .ui-state-active {background: #f2f2f5 !important; color: #d9230f !important;}
+
+.skin_red .loading-wrap .loader {background-color: #d9230f; box-shadow: -14px 0px 0px #222222;}
+.skin_red .preloader-bar {border-top-color: #d9230f;}
+.skin_red .preloader-bar:before {border-top-color: #eaeaea;}
+.skin_red .preloader-bar:after {border-top-color: #e9c3be;}
+
+/* 
+*	 component.css
+*/
+.skin_red .reportStatusWrap li,
+.skin_red .tb-st th {background:#f2f2f5;}
+
+.skin_red .tit-inq:before,
+.skin_red .bullet-tit:before,
+.skin_red .reportStatusWrap li.active,
+.skin_red .tab-depth03 .on .btn-tab {background:#d9230f;}
+
+.skin_red .radio-wrap input[type="radio"]:checked + label span,
+.skin_red .chk-wrap input[type="checkbox"]:checked + label span {border-color:#d9230f; background-color:#d9230f;}
+
+.skin_red .tab-depth01 .on .btn-tab{border-bottom:3px solid #d9230f; color: #d9230f;}
+
+.skin_red .tb-wrap.type02 {border-top:2px solid #d9230f;}
+
+.skin_red .btn.comm.st01 {background-color: #d9230f;}
+.skin_red .btn.comm.st01:hover {background-color: #bd1e0c;}
+.skin_red .btn.comm.st02,
+.skin_red .btn.evn-st01 {border: 1px solid #d9230f; color: #d9230f;}
+.skin_red .btn.comm.st02:hover,
+.skin_red .btn.comm.st03:hover,
+.skin_red .btn.evn-st01:hover {background-color: #f2f2f5;}
+
+.skin_red .treeButton {background-color: rgba(242, 244, 249, .3);}
+.skin_red .treeButton:hover {box-shadow: inset 0px 1px 0px 0px rgba(242, 244, 249, 1) !important; background-color: rgba(242, 244, 249, 1);}
+
+.skin_red .receiptTooltip:after {border-bottom: 50px solid #f2f2f5;}
+.skin_red .receiptTooltip:before {border-top: 50px solid #f2f2f5;}
+
+/* 
+*	 layout.css
+*/
+.skin_red .dropdownWrap .dropdownCon li:hover,
+.skin_red .setMenu:hover,
+.skin_red .skinSwitcherCon h4 ,
+.skin_red .skinSwitcherCon .color-tab.active,
+.skin_red .skinSwitcherClose:hover,
+.skin_red .statusDtlWrap .statusDtl:hover,
+.skin_red .titleFixed,
+.skin_red .portletSetPanel .onoffswitchWrap,
+.skin_red .portletSetPanel .btnArea,
+.skin_red .portletSetPanel .btnArea a.resetPortlet:hover {background: #f2f2f5;}
+
+.skin_red ul#gnb > li.selected > a,
+.skin_red ul#gnb > li > a:hover,
+.skin_red ul#gnb > li:hover > a,
+.skin_red ul#gnb > li.iehover > a,
+.skin_red .onoffswitch-inner:before {background:#d9230f;}
+
+.skin_red ul#gnb > li:hover > ul > li > a:hover,
+.skin_red ul#gnb > li:hover > ul > li:hover > a,
+.skin_red ul#gnb > li.iehover > ul > li > a:hover,
+.skin_red ul#gnb > li.iehover > ul > li.iehover > a {color:#d9230f; border-left:3px solid #d9230f;}
+
+.skin_red .summaryWrapIn {border-bottom: 1px solid #777777;}
+.skin_red .titleFixed .panel-tit,
+.skin_red .panel-tit02 {border-left: 3px solid #d9230f;}
+
+.skin_red .statusDtlWrap .statusDtl:hover .statusCont {color: #d9230f;}
+
+/* 
+*	 page.css
+*/
+/* 로그인 */
+.skin_red .css-arrow-multicolor {border-color: transparent transparent #222222 transparent;}
+.skin_red .fullOverlay {background: rgba(242, 244, 249, .8);}
+.skin_red .loginInputLst li.inputFocusIn {background:#f2f2f5;}
+.skin_red .loginInputLst li.company > div {background-image:url("/images/login/web/red_login_company_icon.png");}
+.skin_red .loginInputLst li.id > div {background-image:url("/images/login/web/red_login_user_icon.png");}
+.skin_red .loginInputLst li.pw > div {background-image:url("/images/login/web/red_login_pw_icon.png");}
+.skin_red .capslock-alert,
+.skin_red .loginHeader:before  {background: linear-gradient(135deg, #373549 1%,#4e4d5e 100%);}
+.skin_red .loginFooter-btn {background: #d9230f;}
+.skin_red .loginFooter-btn:hover {background: #bd1e0c;}
+
+.skin_red .errorTitle span:after,
+.skin_red .errorButton:before {background: #d9230f;}
+
+.skin_red .attachFileLstWrap .attachFileLst:hover,
+.skin_red .noticePopTit,
+.skin_red .profilePopTit,
+.skin_red .comWrap .cke_1 .cke_bottom,
+.skin_red .cmt-regBtn,
+.skin_red .cmt-btn,
+.skin_red .viewBoardIntro div,
+.skin_red .approval-tb-st th,
+.skin_red .appr-stamp-th,
+.skin_red .expnSignLst li:hover {background:#f2f2f5;}
+
+.skin_red .noti-slider-wrap .noti-cont-list li.active span,
+.skin_red .comBtn {background-color: #d9230f;}
+
+.skin_red .notiFooter,
+.skin_red .profilePopFooter {background: linear-gradient(135deg, #373549 1%,#4e4d5e 100%);}
+
+.skin_red .viewBoardTit {border-top:2px solid #d9230f; background:#f2f2f5;}
+
+/* 
+*	 lobipanel.css
+*/
+.skin_red #lobipanelWrap,
+.skin_red .tb-wrap.main .tb-st tr:nth-child(odd) td,
+.skin_red .expandPortletWrap.type01,
+.skin_red .expand-billStatus .maxPortletChartWrap,
+.skin_red .expand-cardMajorList .cardMajorListDtl:hover td,
+.skin_red .dropdown-menu > li > a:hover,
+.skin_red .dropdown-menu > li > a:focus,
+.skin_red .panel-footer {background:#f2f2f5;}
+
+.skin_red .lobipanel-list > li:hover {background-color:#f2f2f5; border-left:4px solid #d9230f;}
+.skin_red .lobipanel-list > li:nth-child(even) {background:#f2f2f5; border-left:4px solid #f2f2f5;}
+.skin_red .lobipanel-list > li:nth-child(even):hover {border-left:4px solid #d9230f;}
+.skin_red .lobipanel-list li .purpleTxt {color:#d9230f;}
+
+.skin_red .tb-wrap.main .tb-st tbody tr:nth-child(odd) td:first-child {border-left:8px solid #f2f2f5;}
+.skin_red .tb-wrap.main .tb-st tbody tr:hover td:first-child {border-left:8px solid #d9230f;}
+.skin_red .tb-wrap.main .tb-st tbody tr:hover td {background:#f2f2f5;}
+
+.skin_red .cardMajorDtlWrap .portletStatementCon span,
+.skin_red .portletStatementBtm .portletStatementCon span {color:#d9230f;}
+
+/* 
+*	 cnc_treegrid.css
+*/
+.skin_red .GridMain1.GridMain2 .TSRowSpace2 .TSSolidRow {background: #f2f2f5;}
+.skin_red .GridMain1.GridMain2 .TSRowSpace4 .TSSolidRow {background:#f2f2f5;  border-top:2px solid #d9230f !important;}
+.skin_red .GridMain1.GridMain2 .TSColorChanged {background-color:#fff;} /* 내용 변경된 cell 색상 */
+.skin_red .GridMain1.GridMain2 .TSColorAlternate {background-color:#f2f2f5;} /* Color for <Cfg Alternate/>, can be changed by <I AlternateColor /> */
+.skin_red .GridMain1.GridMain2 .TSCellHeader {background: #525256;}
+
+/* 
+*	 modalpopup.css
+*/
+.skin_red .modal-footer {background: #f2f2f5;}
+
+.skin_red .modalPaging {border-top: 1px solid #d9230f; background: #f2f2f5;}
+.skin_red .modalPagingTit span {color: #d9230f;}
+					
+/* 
+*	 attachUpload.css
+*/
+.skin_red .basicFileWrap .filebox{background: #f2f2f5;}
+.skin_red .viewAttachLstTit {background:#f2f2f5;}
+.skin_red .attachUpLst:hover {border-left:3px solid #d9230f; background:#f2f2f5;}
+.skin_red .attachUpLst:nth-child(even) {border-left:3px solid #f2f2f5; background-color:#f2f2f5;}
+.skin_red .attachzone .dragdropInfoCopy {color:#d9230f;}
+.skin_red .attachzone .attachicon {background-color:#d9230f;}
+.skin_red .attachzone .attachicon:hover {background-color:#324fa9;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

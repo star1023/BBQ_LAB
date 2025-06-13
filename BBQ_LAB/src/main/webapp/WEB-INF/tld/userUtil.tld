@@ -1,0 +1,90 @@
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="htttp://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"
+	version="2.0">
+	<tlib-version>1.1</tlib-version>
+	<short-name>userUtil</short-name>
+		<function>
+			<description>로그인 아이디</description>
+			<name>getUserId</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getUserId(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getUserId(request)}</example>
+		</function>
+		<function>
+			<description>로그인 이름</description>
+			<name>getUserName</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getUserName(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getUserName(request)}</example>
+		</function>
+		<function>
+			<description>관리자 여부</description>
+			<name>getIsAdmin</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getIsAdmin(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getIsAdmin(request)}</example>
+		</function>
+		<function>
+			<description>부서코드</description>
+			<name>getDeptCode</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getDeptCode(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getDeptCode(request)}</example>
+		</function>
+		<function>
+			<description>부서코드명</description>
+			<name>getDeptCodeName</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getDeptCodeName(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getDeptCodeName(request)}</example>
+		</function>
+		<function>
+			<description>팀코드</description>
+			<name>getTeamCode</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getTeamCode(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getTeamCode(request)}</example>
+		</function>
+		<function>
+			<description>팀코드명</description>
+			<name>getTeamCodeName</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getTeamCodeName(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getTeamCodeName(request)}</example>
+		</function>
+		<function>
+			<description>권한코드</description>
+			<name>getUserGrade</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getUserGrade(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getUserGrade(request)}</example>
+		</function>
+		<function>
+			<description>권한코드</description>
+			<name>getUserGradeName</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getUserGradeName(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getUserGradeName(request)}</example>
+		</function>
+		<function>
+			<description>메일수신여부1</description>
+			<name>getMailCheck1</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getMailCheck1(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getMailCheck1(request)}</example>
+		</function>
+		<function>
+			<description>메일수신여부2</description>
+			<name>getMailCheck2</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getMailCheck2(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getMailCheck2(request)}</example>
+		</function>
+		<function>
+			<description>메일수신여부3</description>
+			<name>getMailCheck3</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getMailCheck3(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getMailCheck3(request)}</example>
+		</function>
+</taglib>

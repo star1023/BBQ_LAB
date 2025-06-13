@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="chemicalTest">
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	/* chemicalTest.selectHistory */
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+			END HISTORY_TYPE_TXT 
+		,<choose>
+			<when test="docType.equals('DESIGN')">
+			rt.PRODUCT_NAME 
+			</when> 
+			<when test="docType.equals('TRIP')">
+			rt.TITLE
+			</when>
+			<when test="docType.equals('PLAN')">
+			rt.TITLE
+			</when>
+			<when test="docType.equals('CHEMICAL')">
+			rt.PRODUCT_NAME
+			</when>
+			<when test="docType.equals('RESULT')">
+			rt.TITLE
+			</when>
+		</choose>
+			AS TITLE
+		, lh.USER_ID 
+		, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+	<choose>
+		<when test="docType.equals('DESIGN')">
+		lab_design rt
+		</when> 
+		<when test="docType.equals('TRIP')">
+		lab_business_trip rt
+		</when>
+		<when test="docType.equals('PLAN')">
+		lab_business_trip_plan rt
+		</when>
+		<when test="docType.equals('CHEMICAL')">
+		lab_chemical_test rt
+		</when>
+		<when test="docType.equals('RESULT')">
+		lab_new_product_result rt
+		</when>
+	</choose>	
+	WHERE 1 = 1
+		AND lh.DOC_IDX = #{idx}
+		AND lh.DOC_TYPE = #{docType}
+		<choose>
+			<when test="docType.equals('DESIGN')">
+			AND lh.DOC_IDX = rt.DESIGN_IDX 
+			</when> 
+			<when test="docType.equals('TRIP')">
+			AND lh.DOC_IDX = rt.TRIP_IDX 
+			</when>
+			<when test="docType.equals('PLAN')">
+			AND lh.DOC_IDX = rt.PLAN_IDX 
+			</when>
+			<when test="docType.equals('CHEMICAL')">
+			AND lh.DOC_IDX = rt.CHEMICAL_IDX 
+			</when>
+			<when test="docType.equals('RESULT')">
+			AND lh.DOC_IDX = rt.RESULT_IDX 
+			</when>
+		</choose>		
+	ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<sql id="whereChemicalTestList">
+	    <if test="searchType != null and searchType != '' ">
+	        <choose>
+	            <when test="searchType == 'searchProduct'">
+	                AND PRODUCT_NAME LIKE CONCAT('%', #{searchValue}, '%')
+	            </when>
+	            <when test="searchType == 'searchRequestUser'">
+	                AND REQUEST_USER LIKE CONCAT('%', #{searchValue}, '%')
+	            </when>
+	            <when test="searchType == 'searchStandardContent'">
+	                AND CHEMICAL_IDX IN (
+			            SELECT DISTINCT CHEMICAL_IDX
+			            FROM lab_chemical_test_standard
+			            WHERE STANDARD_CONTENT LIKE CONCAT('%', #{searchValue}, '%')
+			        )
+	            </when>
+	            <when test="searchType == 'searchRequsetContent'">
+	                AND REQUEST_CONTENT LIKE CONCAT('%', #{searchValue}, '%')
+	            </when>
+	        </choose>
+	    </if>
+	
+	    <if test="requestDate != null and requestDate != '' ">
+	        AND DATE(REQUEST_DATE) = #{requestDate}
+	    </if>
+	
+	    <if test="completeDate != null and completeDate != '' ">
+	        AND DATE(COMPLETION_DATE) = #{completeDate}
+	    </if>
+	
+	    <if test="searchFileTxt != null and searchFileTxt != '' ">
+	        AND CHEMICAL_IDX IN (
+	            SELECT DISTINCT DOC_IDX
+	            FROM lab_file
+	            WHERE DOC_TYPE = 'CHEMICAL' 
+	              AND FILE_CONTENT LIKE CONCAT('%', #{searchFileTxt}, '%')
+	        )
+	    </if>
+	</sql>
+	
+	<select id="selectChemicalTestCount" parameterType="map" resultType="int">
+	/*	chemicalTest.selectChemicalTestCount */
+		SELECT
+			COUNT(CHEMICAL_IDX) as cnt
+		FROM 	
+			lab_chemical_test
+		WHERE 1 = 1
+			AND REG_USER = #{userId}
+			AND IS_DELETE = 'N'
+			<include refid="chemicalTest.whereChemicalTestList" />
+	</select>
+	
+	<select id="selectChemicalTestList" parameterType="map" resultType="hashmap">
+	/*	chemicalTest.selectChemicalTestList */
+		SELECT
+			tmp.CHEMICAL_IDX
+			, tmp.REQUEST_DATE
+			, tmp.COMPLETION_DATE
+			, tmp.REQUEST_USER
+			, tmp.PRODUCT_CODE
+			, tmp.PRODUCT_NAME
+			, tmp.SAP_CODE
+			, tmp.PRESERVATION
+			, tmp.REQUEST_CONTENT
+			, tmp.IS_DELETE
+			, tmp.STATUS
+			, tmp.REG_USER
+			, FN_GET_USER_NAME(tmp.REG_USER) as DOC_OWNER_NAME
+			, CASE 
+				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
+				WHEN tmp.STATUS = 'REG' THEN '등록'
+				WHEN tmp.STATUS = 'APPR' THEN '결재중'
+				WHEN tmp.STATUS = 'COMP' THEN '완료'
+				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
+				END	AS STATUS_TXT
+		FROM
+		(	
+			SELECT
+				row_number() over (order by  CHEMICAL_IDX DESC) as rnum
+				, CHEMICAL_IDX
+				, REQUEST_DATE
+				, COMPLETION_DATE
+				, REQUEST_USER
+				, PRODUCT_CODE
+				, PRODUCT_NAME
+				, SAP_CODE
+				, PRESERVATION
+				, REQUEST_CONTENT
+				, IS_DELETE
+				, STATUS
+				, REG_USER
+			FROM 	
+				lab_chemical_test
+			WHERE 1 = 1
+				AND REG_USER = #{userId}
+				AND IS_DELETE = 'N'
+				<include refid="chemicalTest.whereChemicalTestList" />
+		)tmp
+		WHERE rnum between #{startRow} and #{endRow}		
+	</select>
+	
+	<select id="selectChemicalTestSeq" resultType="int">
+		/*	chemicalTest.selectChemicalTestSeq */
+		SELECT FN_NEXTVAL('lab_chemical_test_seq') as seq
+	</select>
+	
+	<select id="selectChemicalTestItemSeq" resultType="int">
+		/*	chemicalTest.selectChemicalTestItemSeq */
+		SELECT FN_NEXTVAL('lab_chemical_test_item_seq') as seq
+	</select>
+	
+	<insert id="insertChemicalTest" parameterType="map">
+		/*	chemicalTest.insertChemicalTest */
+		INSERT INTO lab_chemical_test(
+			CHEMICAL_IDX
+			, REQUEST_DATE
+			, REQUEST_USER
+			, COMPLETION_DATE
+			, PRODUCT_CODE
+			, PRODUCT_NAME
+			, SAP_CODE
+			, PRODUCT_COUNT
+			, PRESERVATION
+			, REQUEST_CONTENT
+			, IS_DELETE
+			, STATUS
+			, REG_USER
+			, REG_DATE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		)VALUES(
+			#{idx}
+			, #{requestDate} 
+			, #{requestUser}
+			, #{completionDate}
+			, #{productCode}
+			, #{productName}
+			, #{sapCode}
+			, #{productCount}
+			, #{preservation}
+			, #{requestContent}
+			, 'N'
+			, #{status}
+			, #{userId}
+			, sysdate()
+			, #{fileName}
+			, #{orgFileName}
+			, #{filePath}
+		)
+	</insert>
+	
+	<insert id="insertChemicalTestItem" parameterType="list">
+		/*	chemicalTest.insertChemicalTestItem */
+		INSERT INTO lab_chemical_test_item (
+			ITEM_IDX,
+			CHEMICAL_IDX,
+			TYPE_CODE,
+			ITEM_CONTENT
+		)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+		( FN_NEXTVAL('lab_chemical_test_item_seq'), #{item.chemicalIdx}, #{item.typeCode}, #{item.itemContent} )
+		</foreach>
+	</insert>
+	
+	<insert id="insertChemicalTestStandard" parameterType="list">
+		/*	chemicalTest.insertChemicalTestStandard */
+		INSERT INTO lab_chemical_test_standard (
+			STANDARD_IDX,
+			CHEMICAL_IDX,
+			TYPE_CODE,
+			STANDARD_CONTENT
+		)
+		VALUES
+		<foreach collection="list" item="item" separator=",">
+		( FN_NEXTVAL('lab_chemical_test_standard_seq'), #{item.chemicalIdx}, #{item.typeCode}, #{item.standardContent} )
+		</foreach>
+	</insert>
+	
+	<select id="selectChemicalTestData" parameterType="map" resultType="hashmap">
+		/*	chemicalTest.selectChemicalTestData */
+		SELECT
+			CHEMICAL_IDX
+			, REQUEST_DATE
+			, REQUEST_USER
+			, COMPLETION_DATE
+			, PRODUCT_CODE
+			, SAP_CODE
+			, PRODUCT_NAME
+			, PRODUCT_COUNT
+			, PRESERVATION
+			, REQUEST_CONTENT
+			, IS_DELETE
+			, STATUS
+			, REG_USER
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		FROM
+			lab_chemical_test
+		WHERE 1 = 1
+			AND CHEMICAL_IDX = #{idx}		
+	</select>
+	
+	<select id="selectChemicalTestItemData" parameterType="map" resultType="hashmap">
+		/*	chemicalTest.selectChemicalTestItemData */
+		SELECT
+			ITEM_IDX
+			, CHEMICAL_IDX
+			, TYPE_CODE
+			, ITEM_CONTENT
+		FROM 
+			lab_chemical_test_item
+		WHERE 1 = 1
+			AND CHEMICAL_IDX = #{idx}
+		ORDER BY ITEM_IDX ASC			
+	</select>
+	
+	<select id="selectChemicalTestStandardList" parameterType="map" resultType="hashmap">
+		/*	chemicalTest.selectChemicalTestStandardList */
+		SELECT
+			STANDARD_IDX
+			, CHEMICAL_IDX
+			, TYPE_CODE
+			, STANDARD_CONTENT
+		FROM 
+			lab_chemical_test_standard
+		WHERE 1 = 1
+			AND CHEMICAL_IDX = #{idx}
+		ORDER BY STANDARD_IDX ASC			
+	</select>
+	
+		<select id="searchChemicalTestList" parameterType="map" resultType="hashmap">
+		/*	chemicalTest.searchChemicalTestList */
+		SELECT
+			CHEMICAL_IDX
+			, REQUEST_DATE
+			, REQUEST_USER
+			, COMPLETION_DATE
+			, PRODUCT_CODE
+			, SAP_CODE
+			, PRODUCT_NAME
+			, PRODUCT_COUNT
+			, PRESERVATION
+			, REQUEST_CONTENT
+			, IS_DELETE
+			, STATUS
+			, REG_USER
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d') as REG_DATE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+		FROM 	
+			lab_chemical_test
+		WHERE 1 = 1
+			AND REG_USER = #{userId}
+			AND IS_DELETE = 'N'
+			AND ( PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%') OR REQUEST_DATE LIKE CONCAT('%',#{searchValue},'%') OR COMPLETION_DATE LIKE CONCAT('%',#{searchValue},'%') OR REQUEST_USER LIKE CONCAT('%',#{searchValue},'%'))
+	</select>
+	
+    <update id="updateChemicalTest" parameterType="map">
+    /*	chemicalTest.updateChemicalTest */
+        UPDATE lab_chemical_test
+        SET 
+            REQUEST_DATE = #{requestDate},
+            COMPLETION_DATE = #{completionDate},
+            REQUEST_USER = #{requestUser},
+            PRODUCT_CODE = #{productCode},
+            PRODUCT_NAME = #{productName},
+            SAP_CODE = #{sapCode},
+            PRODUCT_COUNT = #{productCount},
+            PRESERVATION = #{preservation},
+            REQUEST_CONTENT = #{requestContent},
+            FILE_NAME = #{fileName},
+            FILE_PATH = #{filePath},
+            ORG_FILE_NAME = #{orgFileName}
+        WHERE CHEMICAL_IDX = #{idx}
+    </update>
+
+    <delete id="deleteChemicalTestItems" parameterType="map">
+    /*	chemicalTest.deleteChemicalTestItems */
+        DELETE FROM lab_chemical_test_item
+        WHERE CHEMICAL_IDX = #{idx}
+    </delete>
+
+    <delete id="deleteChemicalTestStandards" parameterType="map">
+    /*	chemicalTest.deleteChemicalTestStandards */
+        DELETE FROM lab_chemical_test_standard
+        WHERE CHEMICAL_IDX = #{idx}
+    </delete>
+	
+</mapper>

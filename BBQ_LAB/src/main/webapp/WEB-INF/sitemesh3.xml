@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sitemesh>
+	<mapping path="*/user/userlock" exclude="true" />
+	<mapping path="*/user/login" exclude="true" />
+	<mapping path="*/user/logout" exclude="true" />
+	<mapping path="*/user/ssoLoginFail" exclude="true" />
+	<mapping path="*/*popup*" decorator="/WEB-INF/views/decorators/layoutpopup.jsp"/>
+	<mapping path="*/**/*" decorator="/WEB-INF/views/decorators/layout.jsp"/>	
+</sitemesh>
+

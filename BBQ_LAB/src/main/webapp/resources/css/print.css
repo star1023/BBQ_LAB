@@ -1,0 +1,79 @@
+﻿@charset "utf-8";
+
+
+
+
+
+/*추가*/
+
+
+
+.watermark{ visibility:hidden; position:absolute; z-index:10;top:300px; left:340px;}
+
+
+
+.outside{ border:0; font-family:'맑은고딕',Malgun Gothic; font-size:12px;}
+.outside td{border:2px solid #666;}
+.intable_title{ border:0; table-layout:fixed;}
+.intable_title td{border:1px solid #666; text-align:center; height:22px;}
+
+.intable{ border:0; table-layout:fixed; }
+.intable td{border:1px solid #666; text-align:center; height:22px;word-break: break-all;}
+.intable th{ }
+.intable tfoot td{ background-color:#f2f2f2; border-bottom:none;}
+.intable tfoot th{ background-color:#f2f2f2; border-bottom:none;}
+
+.intable02{border:0; table-layout:fixed;}
+.intable02 tbody th,.intable02 tbody td{border-left:1px solid #666;border-right:1px solid #666; border-bottom:1px solid #CCC; border-top:1px solid #ccc; height:25px; line-height:12px; word-break: break-all; font-weight:normal;}
+ .intable02 tbody th{ background-color:#f2f4f4;}
+ .intable02 thead th{border-left:1px solid #666;border-right:1px solid #666; font-size:12px; height:25px;}
+ 
+ .intable02 tbody tr th{ border-left:none !important; text-align:left;text-indent : 10px;}
+  .intable02 thead tr th:first-child{ border-left:none !important;}
+ .intable02 thead tr th:last-child{ border-right:none !important;}
+ .intable02 tbody tr td:last-child{ border-right:none !important;}
+ 
+ .intable03{ border:0; table-layout:fixed;page-break-inside: avoid;}
+.intable03 td{ border:none; border-top:1px solid #666; height:22px; font-size:12px;}
+
+
+.intable04{ border:0; table-layout:fixed;page-break-inside: avoid;}
+.intable04 td{border:1px solid #666; text-align:center; height:22px;word-break: break-all;}
+.intable04 th{ background-color:#f2f2f2;border:1px solid #666;}
+
+.intable tr, .intable02 tr, .intable03 tr, .intable04 tr{	
+page-break-inside:avoid;
+page-break-after: auto;
+}
+.hold{page-break-inside:avoid; position:relative;}
+
+
+.water_mark{font-family:'맑은고딕',Malgun Gothic; font-size:13px; margin-top:10px; float:left;}
+
+.big_font{ font-size:20px;}
+.color01{ background-color:#eaf1dd;}
+.color02{background-color:#fde9d9;}
+.color03{background-color:#dbe5f1;}
+.color04{background-color:#ddd9c3;}
+.color05{ background-color:#ddd;}
+.color06{ background-color:#717d80; color:#fff;}
+.color07{ background-color:#7b6f65; color:#fff;}
+.print_box{ width:1046px;font-family:'맑은고딕',Malgun Gothic; font-size:12px;}
+
+.lineall{ border:2px solid #000}
+.linetop{ border:2px solid #000; border-bottom:none;}
+.lineside{border-left:2px solid #000; border-right:2px solid #000;}
+.linebottom{ border:2px solid #000; border-top:none;}
+
+
+
+@media print {
+body { background: rgb(255,255,255); } 
+	  body, page { margin: 0; box-shadow: 0; } 
+	  .print_hidden{ display:none;}
+
+.watermark{ visibility:visible;}
+		.watermark02{ visibility:visible;}
+
+
+}

@@ -1,0 +1,335 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="common">
+	<select id="company" resultType="hashmap">
+		/*common.company*/
+		SELECT
+		COMPANY_CODE
+		,COMPANY_NAME
+		,COMPANY_ORDER
+		,COMPANY_CODE AS companyCode
+		,COMPANY_NAME AS companyName
+		,COMPANY_ORDER AS companyOrder
+		FROM company
+		ORDER BY COMPANY_ORDER ASC
+	</select>
+
+	<select id="plant" resultType="hashmap" parameterType="map">
+		/*common.plant*/
+		SELECT
+		plantCode
+		,plantName
+		,companyCode
+		,companyNo
+		FROM plant
+		WHERE 1 =1
+		<if test="companyCode != null and companyCode != '' ">
+			AND companyCode = #{companyCode}
+		</if>
+		<if test="plantCode != null and plantCode != '' ">
+			AND plantCode = #{plantCode}
+		</if>
+		ORDER BY companyCode DESC , plantCode ASC
+	</select>
+
+	<select id="plantLine" resultType="hashmap">
+		/*common.plantLine*/
+		SELECT
+		companyCode
+		,plantCode
+		,lineCode
+		,lineName
+		,isDel
+		FROM plantLine
+		WHERE 1 =1
+		<if test="companyCode != null and companyCode != '' ">
+			AND companyCode = #{companyCode}
+		</if>
+		<if test="plantCode != null and plantCode != '' ">
+			AND plantCode = #{plantCode}
+		</if>
+		ORDER BY lineName ASC
+	</select>
+
+	<select id="unit" resultType="hashmap">
+	 /*common.unit*/
+		SELECT 
+			UNIT_CODE AS unitCode
+			, UNIT_NAME AS unitName
+	  	FROM lab_unit
+    </select>
+
+	<select id="codeList" parameterType="map" resultType="hashmap">
+		/*common.codeList*/
+		SELECT 
+	      	ITEM_CODE AS itemCode
+	      	,ITEM_NAME AS itemName
+		FROM lab_code_item
+		WHERE GROUP_CODE = #{groupCode}
+		<if test="itemCode != null and itemCode != '' ">
+			AND ITEM_CODE like concat(#{itemCode},'%')
+		</if>
+		AND IS_DELETE = 'N'
+		ORDER BY ORDER_NO ASC
+	</select>
+
+	<insert id="insertFileType" parameterType="java.util.List">
+		/*common.insertFileType*/
+		INSERT 
+    	INTO lab_file_type(
+			DOC_IDX
+			, DOC_TYPE
+			, FILE_TYPE
+			, FILE_TEXT
+		)values
+		<foreach collection="list" item="item" index="index" separator=",">
+		( #{item.docIdx}, #{item.docType}, #{item.fileType}, #{item.fileTypeText} )
+		</foreach>	
+	</insert>
+	
+	<insert id="insertHistory" parameterType="map">
+		/*common.insertHistory*/
+		INSERT INTO lab_history(
+			HISTORY_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, HISTORY_TYPE
+			, HISTORY_DATA
+			, USER_ID
+			, REG_DATE
+		)VALUES(
+			FN_NEXTVAL('history_seq')
+			, #{docIdx}
+			, #{docType}
+			, #{historyType}
+			, #{historyData}
+			, #{userId}
+			, sysdate()
+		)
+	</insert>
+	
+	<insert id="insertFileInfo" parameterType="map">
+		/*common.insertFileInfo*/
+		INSERT INTO lab_file(
+			FILE_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, FILE_TYPE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+			, FILE_CONTENT
+			, REG_DATE
+		)VALUES(
+			#{fileIdx}
+			, #{docIdx}
+			, #{docType}
+			, #{fileType}
+			, #{changeFileName}
+			, #{orgFileName}
+			, #{filePath}
+			, #{content}
+			, sysdate()
+		)
+	</insert>
+	
+	<select id="selectFileList" parameterType="map" resultType="hashmap">
+		/*common.selectFileList*/
+		SELECT
+			FILE_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, FILE_TYPE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+		FROM 
+			lab_file
+		WHERE 1 = 1
+			AND DOC_IDX = #{idx}
+			AND DOC_TYPE = #{docType}
+	</select>
+	
+	<select id="selectFileType" parameterType="map" resultType="hashmap">
+		/*common.selectFileType*/
+		SELECT 
+			DOC_IDX
+			, DOC_TYPE
+			, FILE_TYPE
+			, FILE_TEXT
+		FROM 
+			lab_file_type
+		WHERE 1 = 1
+			AND DOC_IDX = #{idx}
+			AND DOC_TYPE = #{docType}
+	</select>
+	
+	<select id="categoryList" parameterType="map" resultType="hashmap">
+		WITH RECURSIVE TTR (CATEGORY_IDX, DISPLAY_ORDER, P_CATEGORY_IDX, CATEGORY_LEVEL, CATEGORY_NAME ) AS
+		(
+		    SELECT 
+		    	CATEGORY_IDX
+		    	, DISPLAY_ORDER
+		    	, CASE WHEN P_CATEGORY_IDX = #{pId} then '#'
+    				ELSE P_CATEGORY_IDX
+    				END P_CATEGORY_IDX
+		    	, CATEGORY_LEVEL
+		    	, CATEGORY_NAME 
+		    FROM	lab_system_category
+		    WHERE 1 = 1 
+		    	AND P_CATEGORY_IDX = #{pId}
+		    	AND USE_YN = 'Y'
+		    UNION ALL    
+		    SELECT 
+		    	R.CATEGORY_IDX
+		    	, R.DISPLAY_ORDER
+		    	, R.P_CATEGORY_IDX
+		    	, R.CATEGORY_LEVEL
+		    	, R.CATEGORY_NAME 
+		    FROM	lab_system_category R
+		    INNER JOIN TTR ON R.P_CATEGORY_IDX = TTR.CATEGORY_IDX
+		     WHERE 1 = 1 
+				AND R.USE_YN = 'Y'
+		)
+		SELECT DISPLAY_ORDER, CATEGORY_IDX as id, P_CATEGORY_IDX as parent, CATEGORY_LEVEL, CATEGORY_NAME as text  FROM TTR R ORDER BY CATEGORY_LEVEL ASC,  DISPLAY_ORDER ASC
+	</select>
+	
+	<select id="selectCategoryByPId" parameterType="map" resultType="hashmap">
+		/*common.selectCategoryByPId*/
+		SELECT
+			CATEGORY_IDX
+			, P_CATEGORY_IDX
+			, CATEGORY_NAME
+			, USE_YN
+			, DISPLAY_ORDER
+			, CATEGORY_LEVEL
+		FROM 
+			lab_system_category
+		WHERE 1 = 1
+			AND P_CATEGORY_IDX = #{pIdx}
+			AND USE_YN = 'Y'
+		ORDER BY DISPLAY_ORDER ASC
+	</select>
+	
+	<select id="selectFileData" parameterType="map" resultType="hashmap">
+		/*common.selectFileData*/
+		SELECT
+			FILE_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, FILE_TYPE
+			, FILE_NAME
+			, ORG_FILE_NAME
+			, FILE_PATH
+			, REG_DATE
+		FROM 
+			lab_file
+		WHERE 1 = 1
+			AND FILE_IDX = #{idx}
+	</select>
+	
+	<delete id="deleteFileType" parameterType="map">
+		/* common.deleteFileType */
+		DELETE
+		FROM lab_file_type
+		WHERE 1 = 1
+			AND DOC_IDX = #{menuIdx}
+			AND DOC_TYPE = #{docType}
+	</delete>
+	
+	<select id="selectSeq" resultType="int">
+		/* common.selectNotificationSeq */
+		SELECT FN_NEXTVAL(#{seqName}) as seq
+	</select>
+	
+	<insert id="insertNotification" parameterType="map">
+		/*	common.insertNotification 알림정보 등록 */
+	    INSERT INTO lab_notification(
+	    	NOTI_IDX
+			, TARGET_USER
+			, TYPE
+			, TYPE_TXT
+			, MESSAGE
+			, IS_READ
+			, REG_USER
+			, REG_DATE
+			, DOC_IDX
+			, DOC_TYPE 
+		)VALUES(
+			#{idx}
+			, #{targetUser}
+			, #{type}
+			, #{typeTxt}
+			, #{message}
+			, 'N'
+			, #{userId}
+			, sysdate()
+			, #{docIdx}
+			, #{docType}			
+		)
+	</insert>
+	
+	<insert id="insertNotificationHistory" parameterType="map">
+		/*	common.insertNotificationHistory 알림정보 등록 */
+	    INSERT INTO lab_notification_history(
+	    	NOTI_IDX
+			, TARGET_USER
+			, TYPE
+			, TYPE_TXT
+			, MESSAGE
+			, IS_READ
+			, REG_USER
+			, REG_DATE
+			, DOC_IDX
+			, DOC_TYPE  
+		)VALUES(
+			#{idx}
+			, #{targetUser}
+			, #{type}
+			, #{typeTxt}
+			, #{message}
+			, 'N'
+			, #{userId}
+			, sysdate()
+			, #{docIdx}
+			, #{docType}
+		)
+	</insert>
+	
+	<select id="selectNotification" parameterType="map" resultType="hashmap">
+		/* common.selectNotification */
+		SELECT
+			NOTI_IDX
+			,TARGET_USER
+			,TYPE
+			,TYPE_TXT
+			,MESSAGE
+			,IS_READ
+			,REG_USER
+			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+			, DOC_IDX
+			, DOC_TYPE  
+		FROM
+			lab_notification
+		WHERE 1 = 1
+			AND TARGET_USER = #{userId}
+	</select>
+	
+	<delete id="deleteNotification" parameterType="list">
+		DELETE
+		FROM lab_notification
+		WHERE 1 = 1
+		AND NOTI_IDX IN (
+		<foreach collection="list" item="item" separator=",">
+		#{item.NOTI_IDX}
+		</foreach>
+		)
+	</delete>
+	
+	<delete id="deleteFileData" parameterType="int">
+	    DELETE FROM lab_file
+	    WHERE FILE_IDX = #{fileIdx}
+	</delete>
+	
+</mapper>

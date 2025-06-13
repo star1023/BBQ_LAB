@@ -1,0 +1,121 @@
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow:hidden;
+}
+
+#bg {
+    position: fixed; 
+    top: 0%; 
+    left: 0%;
+    width: 100%;        
+    height: 100%;
+}
+
+#bg img {
+    position:absolute; 
+    top:100px; 
+    left:100px;
+    margin:auto; 
+}	
+
+#bt {
+    position: fixed; 
+    top: 450px; 
+    left: 150px;
+}
+
+#bt img {
+    position:absolute; 
+    top:10%; 
+    left:-25%; 
+    right:0; 
+    bottom:0; 
+    margin:auto;
+}
+
+#bg1 {
+    position: fixed; 
+    top: 0%; 
+    left: 0%;
+    width: 100%;        
+    height: 100%;
+}
+
+#bg1 img {
+    position:absolute; 
+    top:100px; 
+    left:100px;
+    margin:auto; 
+}	
+
+#bt1 {
+    position: fixed; 
+    top: 380px; 
+    left: 150px;
+}
+
+#bt1 img {
+    position:absolute; 
+    top:10%; 
+    left:-25%; 
+    right:0; 
+    bottom:0; 
+    margin:auto;
+}
+
+#bg2 {
+	width: 100%;
+}
+
+#bg2 img {
+    position: relative;
+    width: 91%;
+}	
+
+#bt2 {
+    position: absolute;
+    width: 30%;
+    margin-top: -22.5%;
+    margin-left: 10%;
+}
+
+#bt2 img {
+	width: 121%;
+}
+
+#msg {
+    position:absolute;
+    top:290px; 
+    left:130px; 
+	width:500px;
+	height:65px;
+    margin:auto;
+	z-index:0;
+	background-color:white;	
+}	
+
+#msg1 {
+    position:absolute;
+    top:220px; 
+    left:150px; 
+	width:80px;
+	height:300px;
+    margin:auto;
+	z-index:0;
+	background-color:white;	
+}	
+
+#msg2 {
+	position: absolute;
+    font-size: 1.3vw;
+    font-family: '맑은고딕',sans-serif;
+    font-weight: bold;
+    width: 55%;
+    margin-top: -33.5%;
+    margin-left: 13%;
+    text-align: left;
+    z-index: 0;
+}
