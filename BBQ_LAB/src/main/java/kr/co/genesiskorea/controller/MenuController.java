@@ -279,19 +279,29 @@ public class MenuController {
 	public String versionUp( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		try {
 			logger.debug("param : {} ",param.toString());
-			Map<String, Object> menuData = menuService.selectMenuData(param);
-			model.addAttribute("menuData", menuData);
-			Map<String, Object> addInfoCount = menuService.selectAddInfoCount(param);
-			model.addAttribute("addInfoCount", addInfoCount);
-			List<Map<String, String>> addInfoList = menuService.selectAddInfo(param);
-			model.addAttribute("addInfoList", addInfoList);
-			List<Map<String, String>> imporvePurposeList = menuService.selectImporvePurposeList(param);
-			model.addAttribute("imporvePurposeList", imporvePurposeList);
-			List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
-			model.addAttribute("newDataList", newDataList);
-			model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
 			
-			return "/menu/versionUp";
+			//해당 문서가 내 문서인지 확인한다.
+			if( menuService.selectMyDataCheck(param) > 0 ) {
+				Map<String, Object> menuData = menuService.selectMenuData(param);
+				model.addAttribute("menuData", menuData);
+				Map<String, Object> addInfoCount = menuService.selectAddInfoCount(param);
+				model.addAttribute("addInfoCount", addInfoCount);
+				List<Map<String, String>> addInfoList = menuService.selectAddInfo(param);
+				model.addAttribute("addInfoList", addInfoList);
+				List<Map<String, String>> imporvePurposeList = menuService.selectImporvePurposeList(param);
+				model.addAttribute("imporvePurposeList", imporvePurposeList);
+				List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
+				model.addAttribute("newDataList", newDataList);
+				model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
+				
+				return "/menu/versionUp";
+			} else {
+				model.addAttribute("returnPage", "/menu/list");
+				return "/error/noAuth";
+			}
+			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			throw e;
@@ -506,18 +516,27 @@ public class MenuController {
 	public String menuUpdateForm( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		try {
 			logger.debug("param : {} ",param.toString());
-			Map<String, Object> menuData = menuService.selectMenuData(param);
-			model.addAttribute("menuData", menuData);
-			Map<String, Object> addInfoCount = menuService.selectAddInfoCount(param);
-			model.addAttribute("addInfoCount", addInfoCount);
-			List<Map<String, String>> addInfoList = menuService.selectAddInfo(param);
-			model.addAttribute("addInfoList", addInfoList);
-			List<Map<String, String>> imporvePurposeList = menuService.selectImporvePurposeList(param);
-			model.addAttribute("imporvePurposeList", imporvePurposeList);
-			List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
-			model.addAttribute("newDataList", newDataList);
-			model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
-			return "/menu//update";
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			//해당 문서가 내 문서인지 확인한다.
+			if( menuService.selectMyDataCheck(param) > 0 ) {
+				Map<String, Object> menuData = menuService.selectMenuData(param);
+				model.addAttribute("menuData", menuData);
+				Map<String, Object> addInfoCount = menuService.selectAddInfoCount(param);
+				model.addAttribute("addInfoCount", addInfoCount);
+				List<Map<String, String>> addInfoList = menuService.selectAddInfo(param);
+				model.addAttribute("addInfoList", addInfoList);
+				List<Map<String, String>> imporvePurposeList = menuService.selectImporvePurposeList(param);
+				model.addAttribute("imporvePurposeList", imporvePurposeList);
+				List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
+				model.addAttribute("newDataList", newDataList);
+				model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
+				return "/menu//update";
+			} else {
+				model.addAttribute("returnPage", "/menu/list");
+				return "/error/noAuth";
+			}
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			throw e;

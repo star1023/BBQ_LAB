@@ -29,5 +29,7 @@ public interface MaterialService {
 
 	void deleteMaterial(Map<String, Object> param) throws Exception;
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 
 }

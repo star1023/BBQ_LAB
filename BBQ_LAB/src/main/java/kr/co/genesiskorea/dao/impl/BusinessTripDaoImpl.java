@@ -111,4 +111,10 @@ public class BusinessTripDaoImpl implements BusinessTripDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectList("businessTrip.selectHistory", param);
 	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("businessTrip.selectMyDataCheck",param);
+	}
 }

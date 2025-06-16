@@ -76,4 +76,6 @@ public interface ProductDao {
 	Map<String, Object> selectAddInfoCount(Map<String, Object> param);
 
 	void deleteProductImporvePurpose(HashMap<String, Object> map) throws Exception;
+
+	int selectMyDataCheck(Map<String, Object> param);
 }

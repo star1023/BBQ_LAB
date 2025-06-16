@@ -145,11 +145,26 @@ public class MaterialController {
 	
 	@RequestMapping("/versionUp")
 	public String versionUpForm(HttpServletRequest request, HttpServletResponse response, Model model , @RequestParam(required=false) Map<String, Object> param) throws Exception {
-		model.addAttribute("param",param);
-		model.addAttribute("materialData", materialService.selectMaterialData(param));
-		param.put("docType", "MAT");
-		model.addAttribute("fileType", commonService.selectFileType(param));
-		return "/material/versionUp";
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			if( materialService.selectMyDataCheck(param) > 0 ) {
+				model.addAttribute("param",param);
+				model.addAttribute("materialData", materialService.selectMaterialData(param));
+				param.put("docType", "MAT");
+				model.addAttribute("fileType", commonService.selectFileType(param));
+				return "/material/versionUp";
+			} else {
+				model.addAttribute("returnPage", "/material/list");
+				return "/error/noAuth";
+			}
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+		
+		
 	}
 	
 	@RequestMapping("/insertNewVersionAjax")
@@ -183,9 +198,14 @@ public class MaterialController {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
-			param.put("userId", auth.getUserId());			
-			materialService.deleteMaterial(param);
-			returnMap.put("RESULT", "S");			
+			param.put("userId", auth.getUserId());
+			if( materialService.selectMyDataCheck(param) > 0 ) {
+				materialService.deleteMaterial(param);
+				returnMap.put("RESULT", "S");
+			} else {
+				returnMap.put("RESULT", "E");
+				returnMap.put("MESSAGE","삭제 권한이 없거나, 존재하지 않는 문서입니다.");
+			}			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			returnMap.put("RESULT", "E");

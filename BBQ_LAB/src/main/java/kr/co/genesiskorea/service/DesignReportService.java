@@ -22,4 +22,6 @@ public interface DesignReportService {
 
 	List<Map<String, Object>> selectAddInfoList(Map<String, Object> param);
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 }

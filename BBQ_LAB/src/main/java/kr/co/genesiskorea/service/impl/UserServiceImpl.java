@@ -57,8 +57,16 @@ public class UserServiceImpl implements UserService {
 			}
 			jArr.add(jObj);
 		}
+		
+		List<Map<String,Object>> userAuth = userDao.selectUserAuth(param);
+		Map<String,Object> authMap = new HashMap<String,Object>();
+		for (Map<String, Object> userAuthMap : userAuth) {
+			authMap.put(userAuthMap.get("url").toString(), userAuthMap.get("url"));
+		}
+		
 		HttpSession session = request.getSession(false);
 		session.setAttribute("USER_MENU", jArr);
+		session.setAttribute("USER_AUTH", authMap);
 		
 		Auth auth = new Auth();
 		BeanUtils.copyProperties(auth, userMap);

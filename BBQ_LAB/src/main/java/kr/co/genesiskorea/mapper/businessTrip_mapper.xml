@@ -346,4 +346,15 @@
 			</choose>		
 		ORDER BY lh.REG_DATE ASC
 	</select>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(TRIP_IDX) as cnt
+		FROM
+			lab_business_trip
+		WHERE 1 = 1
+			AND TRIP_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'		
+	</select>
 </mapper>

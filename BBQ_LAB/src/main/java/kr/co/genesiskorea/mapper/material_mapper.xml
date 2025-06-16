@@ -430,4 +430,14 @@
 		WHERE 1 = 1
 			AND DOC_NO = #{docNo}
 	</update>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(MATERIAL_IDX) AS cnt			
+		FROM 
+			lab_material
+		WHERE 1 = 1
+			AND MATERIAL_IDX = #{idx}
+			AND IS_DELETE = 'N'
+	</select>
 </mapper>

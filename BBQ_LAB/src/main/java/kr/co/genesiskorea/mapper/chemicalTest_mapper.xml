@@ -367,4 +367,14 @@
         WHERE CHEMICAL_IDX = #{idx}
     </delete>
 	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(CHEMICAL_IDX) AS cnt
+		FROM
+			lab_chemical_test
+		WHERE 1 = 1
+			AND CHEMICAL_IDX = #{idx}
+			AND REG_USER = #{userId}
+			AND IS_DELETE = 'N' 
+	</select>
 </mapper>

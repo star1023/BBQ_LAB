@@ -120,28 +120,39 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	
 	@RequestMapping(value = "/update")
 	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
-		HashMap<String,String> paramMap = new HashMap<String,String>();
-		paramMap.put("code", "KEEP_CONDITION");
-		List<HashMap<String, String>> keepConditonList = commonService.getCodeList(paramMap);
 		
-		paramMap.put("code", "FOOD_TYPE");
-		List<HashMap<String, String>> foodTypeList = commonService.getCodeList(paramMap);
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
 		
-		paramMap.put("code", "DISCHARGE_DISPLAY");
-		List<HashMap<String, String>> dischargeDisplayList = commonService.getCodeList(paramMap);
+		if( packageInfoService.selectMyDataCheck(param) > 0 ) {
+			HashMap<String,String> paramMap = new HashMap<String,String>();
+			paramMap.put("code", "KEEP_CONDITION");
+			List<HashMap<String, String>> keepConditonList = commonService.getCodeList(paramMap);
+			
+			paramMap.put("code", "FOOD_TYPE");
+			List<HashMap<String, String>> foodTypeList = commonService.getCodeList(paramMap);
+			
+			paramMap.put("code", "DISCHARGE_DISPLAY");
+			List<HashMap<String, String>> dischargeDisplayList = commonService.getCodeList(paramMap);
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("keepConditonList", keepConditonList);
+			map.put("foodTypeList", foodTypeList);
+			map.put("dischargeDisplayList", dischargeDisplayList);
+			
+			Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoData(param);
+			List<Map<String, Object>> addInfoList = packageInfoService.selectAddInfoList(param);
+			
+			model.addAttribute("codeMap", map);	
+			model.addAttribute("packageInfoData", packageInfoData);		
+			model.addAttribute("addInfoList", addInfoList);
+			return "/package/update";
+		} else {
+			model.addAttribute("returnPage", "/package/list");
+			return "/error/noAuth";
+		}
 		
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("keepConditonList", keepConditonList);
-		map.put("foodTypeList", foodTypeList);
-		map.put("dischargeDisplayList", dischargeDisplayList);
 		
-		Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoData(param);
-		List<Map<String, Object>> addInfoList = packageInfoService.selectAddInfoList(param);
-		
-		model.addAttribute("codeMap", map);	
-		model.addAttribute("packageInfoData", packageInfoData);		
-		model.addAttribute("addInfoList", addInfoList);
-		return "/package/update";
 	}
 	
 	@RequestMapping("/updatePackageInfoTmpAjax")
@@ -186,28 +197,36 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	
 	@RequestMapping(value = "/versionUp")
 	public String versionUp( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
-		HashMap<String,String> paramMap = new HashMap<String,String>();
-		paramMap.put("code", "KEEP_CONDITION");
-		List<HashMap<String, String>> keepConditonList = commonService.getCodeList(paramMap);
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
 		
-		paramMap.put("code", "FOOD_TYPE");
-		List<HashMap<String, String>> foodTypeList = commonService.getCodeList(paramMap);
-		
-		paramMap.put("code", "DISCHARGE_DISPLAY");
-		List<HashMap<String, String>> dischargeDisplayList = commonService.getCodeList(paramMap);
-		
-		Map<String,Object> map = new HashMap<String,Object>();
-		map.put("keepConditonList", keepConditonList);
-		map.put("foodTypeList", foodTypeList);
-		map.put("dischargeDisplayList", dischargeDisplayList);
-		
-		Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoData(param);
-		List<Map<String, Object>> addInfoList = packageInfoService.selectAddInfoList(param);
-		
-		model.addAttribute("codeMap", map);	
-		model.addAttribute("packageInfoData", packageInfoData);		
-		model.addAttribute("addInfoList", addInfoList);
-		return "/package/versionUp";
+		if( packageInfoService.selectMyDataCheck(param) > 0 ) {
+			HashMap<String,String> paramMap = new HashMap<String,String>();
+			paramMap.put("code", "KEEP_CONDITION");
+			List<HashMap<String, String>> keepConditonList = commonService.getCodeList(paramMap);
+			
+			paramMap.put("code", "FOOD_TYPE");
+			List<HashMap<String, String>> foodTypeList = commonService.getCodeList(paramMap);
+			
+			paramMap.put("code", "DISCHARGE_DISPLAY");
+			List<HashMap<String, String>> dischargeDisplayList = commonService.getCodeList(paramMap);
+			
+			Map<String,Object> map = new HashMap<String,Object>();
+			map.put("keepConditonList", keepConditonList);
+			map.put("foodTypeList", foodTypeList);
+			map.put("dischargeDisplayList", dischargeDisplayList);
+			
+			Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoData(param);
+			List<Map<String, Object>> addInfoList = packageInfoService.selectAddInfoList(param);
+			
+			model.addAttribute("codeMap", map);	
+			model.addAttribute("packageInfoData", packageInfoData);		
+			model.addAttribute("addInfoList", addInfoList);
+			return "/package/versionUp";
+		} else {
+			model.addAttribute("returnPage", "/package/list");
+			return "/error/noAuth";
+		}
 	}
 	
 	@RequestMapping("/insertVersionUpTmpAjax")

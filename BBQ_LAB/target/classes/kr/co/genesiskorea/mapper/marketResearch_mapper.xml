@@ -283,4 +283,15 @@
 			</choose>		
 		ORDER BY lh.REG_DATE ASC
 	</select>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(RESEARCH_IDX) AS cnt
+		FROM
+			lab_market_research
+		WHERE 1 = 1
+			AND RESEARCH_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'	
+	</select>
 </mapper>

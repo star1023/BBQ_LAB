@@ -55,4 +55,6 @@ public interface ProductService {
 	List<Map<String, Object>> selectImporvePurposeList(Map<String, Object> param);
 
 	Map<String, Object> selectAddInfoCount(Map<String, Object> param);
+
+	int selectMyDataCheck(Map<String, Object> param);
 }

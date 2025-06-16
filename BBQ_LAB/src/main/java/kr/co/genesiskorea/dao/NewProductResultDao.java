@@ -35,4 +35,6 @@ public interface NewProductResultDao {
 
 	void deleteNewProductResultItemImageByRow(Map<String, Object> deleteParam) throws Exception;
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 }

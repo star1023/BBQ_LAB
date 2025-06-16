@@ -54,6 +54,8 @@ public interface MenuService {
 
 	void updateMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
 
-	void updateMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;	
+	void updateMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
+
+	int selectMyDataCheck(Map<String, Object> param);	
 
 }

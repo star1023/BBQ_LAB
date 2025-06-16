@@ -810,4 +810,15 @@
 		WHERE 1 = 1
 			AND MENU_IDX = #{menuIdx}
 	</delete>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(MENU_IDX) as cnt
+		FROM
+			lab_menu
+		WHERE 1 = 1
+			AND MENU_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'					
+	</select>
 </mapper>

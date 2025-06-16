@@ -39,4 +39,6 @@ public interface SenseQualityDao {
 
 	List<Map<String, Object>> selectHistory(Map<String, Object> param);
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 }

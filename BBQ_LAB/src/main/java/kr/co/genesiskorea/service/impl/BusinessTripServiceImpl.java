@@ -857,4 +857,10 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 		// TODO Auto-generated method stub
 		return reportDao.selectHistory(param);
 	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return reportDao.selectMyDataCheck(param);
+	}
 }

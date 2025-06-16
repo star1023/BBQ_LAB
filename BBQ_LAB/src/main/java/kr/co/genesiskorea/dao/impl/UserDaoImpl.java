@@ -112,10 +112,16 @@ public class UserDaoImpl implements UserDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectList("user.selectUserMenu", param);
 	}
+	
+	@Override
+	public List<Map<String, Object>> selectUserAuth(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("user.selectUserAuth", param);
+	}
 
 	@Override
 	public void setPersonalization(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("user.setPersonalization", param);
-	}
+	}	
 }

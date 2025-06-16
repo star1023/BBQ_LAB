@@ -25,4 +25,6 @@ int insertPackageInfoTmp(Map<String, Object> param, MultipartFile[] file) throws
 	int insertVersionUp(Map<String, Object> param, MultipartFile[] file) throws Exception;
 
 	List<Map<String, Object>> selectHistory(Map<String, Object> param);
+
+	int selectMyDataCheck(Map<String, Object> param);
 }

@@ -479,4 +479,10 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 		}
 	}
 
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return reportDao.selectMyDataCheck(param);
+	}
+
 }

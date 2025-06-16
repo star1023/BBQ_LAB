@@ -220,4 +220,10 @@ public class MenuDaoImpl implements MenuDao {
 		sqlSessionTemplate.delete("menu.deleteMenuMaterial", param);
 	}
 
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("menu.selectMyDataCheck", param);
+	}
+
 }

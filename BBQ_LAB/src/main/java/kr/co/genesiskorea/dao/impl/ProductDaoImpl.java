@@ -227,5 +227,11 @@ public class ProductDaoImpl implements ProductDao {
 	public void deleteProductImporvePurpose(HashMap<String, Object> map) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.delete("product.deleteProductImporvePurpose", map);
+	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("product.selectMyDataCheck", param);
 	}		
 }

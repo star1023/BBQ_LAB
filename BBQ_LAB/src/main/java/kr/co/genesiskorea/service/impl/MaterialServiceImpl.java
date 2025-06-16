@@ -365,6 +365,12 @@ public class MaterialServiceImpl implements MaterialService {
 			throw e;
 		}
 		
+	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return materialDao.selectMyDataCheck(param);
 	}	
 
 }

@@ -117,14 +117,30 @@ public class DesignReportController {
 	
 	@RequestMapping(value = "/update")
 	public String designUpdateForm( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
-		Map<String, Object> designData = reportService.selectDesignData(param);
-		//lab_design 테이블 조회, lab_file 테이블 조회
-		model.addAttribute("designData", designData);
-		//lab_design_change_info 테이블 조회
-		model.addAttribute("designChangeList", reportService.selectDesignChangeList(param));
-		//lab_design_add_info 테이블 조회
-		model.addAttribute("addInfoList", reportService.selectAddInfoList(param));
-		return "/designReport/update";		
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			if( reportService.selectMyDataCheck(param) > 0 ) {
+				Map<String, Object> designData = reportService.selectDesignData(param);
+				//lab_design 테이블 조회, lab_file 테이블 조회
+				model.addAttribute("designData", designData);
+				//lab_design_change_info 테이블 조회
+				model.addAttribute("designChangeList", reportService.selectDesignChangeList(param));
+				//lab_design_add_info 테이블 조회
+				model.addAttribute("addInfoList", reportService.selectAddInfoList(param));
+				return "/designReport/update";
+			} else {
+				model.addAttribute("returnPage", "/designReport/list");
+				return "/error/noAuth";
+			}
+					
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+		
+		
 	}
 	
 	@RequestMapping("/updateDesignAjax")

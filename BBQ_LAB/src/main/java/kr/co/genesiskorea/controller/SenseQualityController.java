@@ -159,9 +159,18 @@ public class SenseQualityController {
 	
 	@RequestMapping("/update")
 	public String update(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
-		Map<String, Object> senseQualityData = reportService.selectSenseQualityData(param);
-		model.addAttribute("senseQualityData", senseQualityData);
-		return "/senseQuality/update";
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
+		
+		//해당 문서가 내 문서인지 확인한다.
+		if( reportService.selectMyDataCheck(param) > 0 ) {
+			Map<String, Object> senseQualityData = reportService.selectSenseQualityData(param);
+			model.addAttribute("senseQualityData", senseQualityData);
+			return "/senseQuality/update";
+		} else {
+			model.addAttribute("returnPage", "/senseQuality/list");
+			return "/error/noAuth";
+		}
 	}
 	
 	@RequestMapping("/updateSenseQualityTmpAjax")
