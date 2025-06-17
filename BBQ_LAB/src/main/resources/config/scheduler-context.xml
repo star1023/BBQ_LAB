@@ -10,7 +10,7 @@
 	<!--  
 	<bean id="LabSchedule" class="kr.co.genesiskorea.schedule.LabSchedule" />
 	<task:scheduled-tasks>
-		<task:scheduled ref="LabSchedule" method="test" cron="0/5 * * * * ?"/>
+		<task:scheduled ref="LabSchedule" method="erpMaterial" cron="0/5 * * * * ?"/>
 		<task:scheduled ref="LabSchedule" method="initSeq" cron="0 1 0 1 * * ?"/>		
 	</task:scheduled-tasks>
 	-->

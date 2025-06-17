@@ -27,11 +27,12 @@
 .meeting_obj_none:hover{background-image:url(../images/icon_add_file.png); background-repeat:no-repeat; background-position:center; cursor:pointer;}
 
 
-.main_top_box{display:table; width:100%; margin-top:25px; margin-bottom:40px;}
-.my_info{display:table-cell;  width:58%;min-height:100px; vertical-align:top;font-family:'맑은고딕',Malgun Gothic; }
+.main_top_box{display:table; width:100%; margin-top:25px;}
+.my_info{display:table-cell;  width:40%;min-height:100px; vertical-align:top;font-family:'맑은고딕',Malgun Gothic; }
 .main_top_box_blank{display:table-cell; width:20px;min-height:100px;vertical-align:top;}
 .main_jejo{display:table-cell; width:auto;min-height:100px;vertical-align:top; b}
-.my_info_box, .main_jejo_box{ width:100%; height:255px; border:1px solid #c8c8c8; box-sizing:border-box; float:left; vertical-align:top}
+.my_info_box, .main_jejo_box{ width:100%; height:auto; box-sizing:border-box; float:left; vertical-align:top}
+.my_info_box2{ width:100%; height:auto; box-sizing:border-box; float:left; vertical-align:top}
 .main_jejo_box{ background-color:#fafafa;font-family:'맑은고딕',Malgun Gothic; }
 .my_info_box_top{ height:115px; width:100%;box-sizing:border-box;  position:relative;}
 /*.main_logo_img{ background-image:url(../images/bg_main_logo.png); width:70px; height:70px; background-repeat:no-repeat; float:left; position:absolute; top:20px; left:30px;}*/

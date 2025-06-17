@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="main">
+	<select id="selectDocCount" resultType="map">
+		/* main.selectDocCount */
+        SELECT * FROM lab_doc_count_view WHERE DOC_OWNER = #{userId}
+    </select>
+    
+	<select id="getDocStatusCount" resultType="map">
+		/* main.getDocStatusCount */
+        SELECT * FROM lab_doc_status_view WHERE DOC_OWNER = #{userId}
+    </select>
+</mapper>

@@ -52,7 +52,7 @@
 						html += "	</td>";
 						
 						html += "	<td>"+nvl(item.MENU_CODE,'&nbsp;')+"</td>";
-						html += "	<td><div class=\"\"><a href=\"#\" onClick=\"fn_view('"+item.MENU_IDX+"')\">"+nvl(item.NAME,'&nbsp;')+"</a></div></td>";
+						html += "	<td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('"+item.MANUAL_IDX+"')\">"+nvl(item.NAME,'&nbsp;')+"</a></div></td>";
 						html += "	<td>"+nvl(item.VERSION_NO,'&nbsp;')+"</td>";
 						html += "	<td><div class=\"ellipsis_txt tgnl\">";
 						if( chkNull(item.CATEGORY_NAME1) ) {
@@ -270,7 +270,7 @@
 			processData: false,
 	        contentType: false,
 	        cache: false,
-			success: function(data){
+			success: function(result){
 				if( result.RESULT == 'S' ) {
 					alert("조리매뉴얼 등록이 완료되었습니다.");
 					$('#lab_loading').hide();
@@ -335,6 +335,8 @@
 	function downloadFile(idx){
 		location.href = '/common/fileDownload?idx='+idx;
 	}
+	
+
 </script>
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">

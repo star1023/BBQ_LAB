@@ -26,6 +26,7 @@ import kr.co.genesiskorea.service.BusinessTripService;
 import kr.co.genesiskorea.service.ChemicalTestService;
 import kr.co.genesiskorea.service.DesignReportService;
 import kr.co.genesiskorea.service.MarketResearchService;
+import kr.co.genesiskorea.service.MenuService;
 import kr.co.genesiskorea.service.NewProductResultService;
 import kr.co.genesiskorea.service.PackageInfoService;
 import kr.co.genesiskorea.service.ProductService;
@@ -42,6 +43,9 @@ public class ApprovalController {
 	
 	@Autowired
 	ProductService productService;
+	
+	@Autowired
+	MenuService menuService;
 	
 	@Autowired
 	DesignReportService designReportService;
@@ -269,6 +273,28 @@ public class ApprovalController {
 		//lab_product_materisl 테이블 조회
 		model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
 		return "/approval/productPopup";
+	}
+	
+	@RequestMapping("/menuPopup")
+	public String menuPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+		//결재 정보 조회
+		param.put("userId", AuthUtil.getAuth(request).getUserId());
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		List<Map<String, Object>> apprItem = approvalService.selectApprItemList(param);
+		List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+		Map<String, Object> menuData = menuService.selectMenuData(param);
+		List<Map<String, String>> addInfoList = menuService.selectAddInfo(param);		
+		List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
+		model.addAttribute("apprHeader", apprHeader);
+		model.addAttribute("apprItem", apprItem);
+		model.addAttribute("refList", refList);
+		model.addAttribute("menuData", menuData);
+		model.addAttribute("addInfoList", addInfoList);
+		model.addAttribute("newDataList", newDataList);
+		model.addAttribute("paramVO", param);
+		//lab_product_materisl 테이블 조회
+		model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
+		return "/approval/menuPopup";
 	}
 	
 	@RequestMapping("/designPopup")

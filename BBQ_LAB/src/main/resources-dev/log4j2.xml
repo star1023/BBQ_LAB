@@ -5,7 +5,7 @@
         <Console name="console" target="SYSTEM_OUT">
             <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %level - %m%n%ex%n"/>
         </Console>
-        <RollingFile name="rolling_error" fileName="E:/develop/logs/error/error.log" filePattern="E:/develop/logs/error/error-%d{yyyy-MM-dd}.log">
+        <RollingFile name="rolling_error" fileName="/aspn/pdm/logs/error/error.log" filePattern="/aspn/pdm/logs/error/error-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="[%-5p] %d{yy-MM-dd HH:mm:ss} [%C{2}][%M][%L] - %m%n" />
             <Policies>
                 <Policies>
@@ -14,13 +14,13 @@
                 </Policies>
     		</Policies>
     		<DefaultRolloverStrategy>
-    			<Delete basePath="E:/develop/logs/error" maxDepth="1">
+    			<Delete basePath="/aspn/pdm/logs/error" maxDepth="1">
                    <IfAccumulatedFileCount exceeds="100"/>
                </Delete>
     		</DefaultRolloverStrategy>
        </RollingFile>
        
-       <RollingFile name="rolling_debug" fileName="E:/develop/logs/debug/debug.log" filePattern="E:/develop/logs/debug/debug-%d{yyyy-MM-dd}.log">
+       <RollingFile name="rolling_debug" fileName="/aspn/pdm/logs/debug/debug.log" filePattern="/aspn/pdm/logs/debug/debug-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="[%-5p] %d{yy-MM-dd HH:mm:ss} [%C{2}][%M][%L] - %m%n" />
             <Policies>
                 <Policies>
@@ -29,13 +29,13 @@
                 </Policies>
     		</Policies>
     		<DefaultRolloverStrategy>
-    			<Delete basePath="E:/develop/logs/debug" maxDepth="1">
+    			<Delete basePath="/aspn/pdm/logs/debug" maxDepth="1">
                    <IfAccumulatedFileCount exceeds="100"/>
                </Delete>
     		</DefaultRolloverStrategy>
        </RollingFile>
        
-       <RollingFile name="rolling_jdbc" fileName="E:/develop/logs/jdbc/jdbc.log" filePattern="E:/develop/logs/jdbc/jdbc-%d{yyyy-MM-dd}.log">
+       <RollingFile name="rolling_jdbc" fileName="/aspn/pdm/logs/jdbc/jdbc.log" filePattern="/aspn/pdm/logs/jdbc/jdbc-%d{yyyy-MM-dd}.log">
             <PatternLayout pattern="[%-5p] %d{yy-MM-dd HH:mm:ss} [%C{2}][%M][%L] - %m%n" />
             <Policies>
                 <Policies>
@@ -44,7 +44,7 @@
                 </Policies>
     		</Policies>
     		<DefaultRolloverStrategy>
-    			<Delete basePath="E:/develop/logs/jdbc" maxDepth="1">
+    			<Delete basePath="/aspn/pdm/logs/jdbc" maxDepth="1">
                    <IfAccumulatedFileCount exceeds="100"/>
                </Delete>
     		</DefaultRolloverStrategy>

@@ -41,7 +41,7 @@
 			if( docType == 'PROD' ) {
 				url = "/approval/productPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();				
 			} else if( docType == 'MENU' ) {
-				url = "/approval/menuPopup?apprIdx="+apprIdx+"&idx="+docIdx;
+				url = "/approval/menuPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();;
 			} else if( docType == 'DESIGN' ) {
 				url = "/approval/designPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 			} else if( docType == 'PLAN' ) {
@@ -62,7 +62,7 @@
 			if( docType == 'PROD' ) {
 				url = "/approval/productPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			} else if( docType == 'MENU' ) {
-				url = "";
+				url = "/approval/menuPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();;
 			} else if( docType == 'DESIGN' ) {
 				url = "/approval/designPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 			} else if( docType == 'PLAN' ) {

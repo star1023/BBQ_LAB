@@ -97,7 +97,7 @@
 	</select>
 	
 	<insert id="insertManual" parameterType="map">
-		INSRET
+		INSERT
 		INTO lab_cook_manual(MANUAL_IDX, MENU_IDX, REG_YN, REG_DATE)
 		VALUES(
 			FN_NEXTVAL('lab_manual_seq')
