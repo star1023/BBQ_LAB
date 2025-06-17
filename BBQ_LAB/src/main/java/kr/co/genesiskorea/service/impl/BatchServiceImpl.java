@@ -54,6 +54,7 @@ public class BatchServiceImpl implements BatchService {
         String toDay = sdf.format(cal.getTime());        
 		importParams.put("I_DATUM", toDay);
 		List<Map<String, Object>> returnList = batchDao.selectMaterial(importParams);
+		logger.debug("전체 RFC 처리 데이터 건수 : "+returnList.size());
 		batchDao.insertMaterial(returnList);
 	}
 
@@ -61,5 +62,16 @@ public class BatchServiceImpl implements BatchService {
 	public List<Map<String, Object>> material(Map<String, Object> importParams) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public void erpMaterial(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		Map<String, Object> importParams = new HashMap<String, Object>();
+		//유저동기화 로직
+        importParams.put("I_DATUM", param.get("toDay"));
+		List<Map<String, Object>> returnList = batchDao.selectMaterial(importParams);
+		logger.debug("전체 RFC 처리 데이터 건수 : "+returnList.size());
+		batchDao.insertMaterial(returnList);
 	}
 }

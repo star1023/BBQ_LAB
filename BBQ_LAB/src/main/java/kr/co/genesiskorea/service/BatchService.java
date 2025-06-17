@@ -11,4 +11,6 @@ public interface BatchService {
 
 	void erpMaterial();
 
+	void erpMaterial(Map<String, Object> param);
+
 }

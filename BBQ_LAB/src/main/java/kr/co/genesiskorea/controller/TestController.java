@@ -123,8 +123,8 @@ public class TestController {
 	
 	@RequestMapping(value = "/erpTestAjax")
 	@ResponseBody
-	public String erpTest() {		
-		batchService.erpMaterial();
+	public String erpTest(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) {		
+		batchService.erpMaterial(param);
 		return "테스트";
 	}
 	
