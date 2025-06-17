@@ -259,6 +259,14 @@ public class ApprovalController {
 		Map<String, Object> productData = productService.selectProductData(param);
 		List<Map<String, Object>> addInfoList = productService.selectAddInfo(param);		
 		List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);
@@ -285,7 +293,14 @@ public class ApprovalController {
 		List<Map<String, Object>> designChangeList =  designReportService.selectDesignChangeList(param);
 		//lab_design_add_info 테이블 조회
 		List<Map<String, Object>> addInfoList = designReportService.selectAddInfoList(param);
-		
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);
@@ -315,7 +330,14 @@ public class ApprovalController {
 		List<Map<String, Object>> infoList = businessTripPlanService.selectBusinessTripPlanAddInfoList(param);
 		//4.lab_business_trip_plan_contents 조회
 		List<Map<String, Object>> contentsList = businessTripPlanService.selectBusinessTripPlanContentsList(param);
-		
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);
@@ -343,7 +365,14 @@ public class ApprovalController {
 		List<Map<String, Object>> infoList = businessTripService.selectBusinessTripAddInfoList(param);
 		//4.lab_business_trip_contents 조회
 		List<Map<String, Object>> contentsList = businessTripService.selectBusinessTripContentsList(param);
-		
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);
@@ -370,7 +399,14 @@ public class ApprovalController {
 		List<Map<String, Object>> userList = marketResearchService.selectMarketResearchUserList(param);
 		//3.lab_market_research_add_info 조회
 		List<Map<String, Object>> infoList = marketResearchService.selectMarketResearchAddInfoList(param);
-		
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);
@@ -390,7 +426,14 @@ public class ApprovalController {
 		List<Map<String, Object>> apprItem = approvalService.selectApprItemList(param);
 		List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
 		Map<String, Object> senseQualityData = senseQualityService.selectSenseQualityData(param);
-		
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
@@ -412,7 +455,14 @@ public class ApprovalController {
 		Map<String, Object> chemicalTestData = chemicalTestService.selectChemicalTestData(param);
 		List<Map<String, Object>> chemicalTestItemList = chemicalTestService.selectChemicalTestItemList(param);
 		List<Map<String, Object>> chemicalTestStandardList = chemicalTestService.selectChemicalTestStandardList(param);
-
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);
@@ -435,7 +485,14 @@ public class ApprovalController {
 		Map<String, Object> newProductResultData = newProductResultService.selectNewProductResultData(param);
 		List<Map<String, Object>> newProductResultItemList = newProductResultService.selectNewProductResultItemList(param);
 		List<Map<String, Object>> newProductResultImageList = newProductResultService.selectNewProductResultItemList(param);
-
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);

@@ -774,5 +774,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public Map<String, Object> selectApprItem(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return approvalDao.selectApprItem(param);
+	}
+
+	@Override
+	public void updateRefIsRead(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		approvalDao.updateRefIsRead(param);
 	}	
 }

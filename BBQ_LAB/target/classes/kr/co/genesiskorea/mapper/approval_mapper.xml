@@ -173,9 +173,10 @@
 			REF_IDX
 			, APPR_IDX
 			, TARGET_USER_ID
+			, IS_READ
 		)values
 		<foreach collection="refLine" item="item" index="index"  separator=",">
-		( FN_NEXTVAL('approval_line_reference_seq'), #{apprIdx}, #{item} )
+		( FN_NEXTVAL('approval_line_reference_seq'), #{apprIdx}, #{item}, 'N' )
 		</foreach>
 	</insert>
 	
@@ -218,7 +219,8 @@
 				   WHEN LAST_STATUS = 'A' THEN '결재중'
 				   WHEN LAST_STATUS = 'Y' THEN '결재완료'
 				   WHEN LAST_STATUS = 'R' THEN '반려' 
-				   WHEN LAST_STATUS = 'C' THEN '상신취소' 
+				   WHEN LAST_STATUS = 'C' THEN '부분승인'
+				   WHEN LAST_STATUS = 'CA' THEN '상신취소' 
 				  END LAST_STATUS_TXT
 			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
 			, DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d') AS UPDATE_DATE_TXT
@@ -290,7 +292,8 @@
 				   WHEN LAST_STATUS = 'A' THEN '결재중'
 				   WHEN LAST_STATUS = 'Y' THEN '결재완료'
 				   WHEN LAST_STATUS = 'R' THEN '반려' 
-				   WHEN LAST_STATUS = 'C' THEN '상신취소' 
+				   WHEN LAST_STATUS = 'C' THEN '부분승인'
+				   WHEN LAST_STATUS = 'CA' THEN '상신취소' 
 				  END LAST_STATUS_TXT
 			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
 			, DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d') AS UPDATE_DATE_TXT
@@ -368,7 +371,8 @@
 				   WHEN LAST_STATUS = 'A' THEN '결재중'
 				   WHEN LAST_STATUS = 'Y' THEN '결재완료'
 				   WHEN LAST_STATUS = 'R' THEN '반려' 
-				   WHEN LAST_STATUS = 'C' THEN '상신취소' 
+				   WHEN LAST_STATUS = 'C' THEN '부분승인'
+				   WHEN LAST_STATUS = 'CA' THEN '상신취소' 
 				  END LAST_STATUS_TXT
 			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
 			, DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d') AS UPDATE_DATE_TXT
@@ -431,7 +435,8 @@
 				   WHEN LAST_STATUS = 'A' THEN '결재중'
 				   WHEN LAST_STATUS = 'Y' THEN '결재완료'
 				   WHEN LAST_STATUS = 'R' THEN '반려' 
-				   WHEN LAST_STATUS = 'C' THEN '상신취소' 
+				   WHEN LAST_STATUS = 'C' THEN '부분승인'
+				   WHEN LAST_STATUS = 'CA' THEN '상신취소' 
 				  END LAST_STATUS_TXT
 			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
 			, DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d') AS UPDATE_DATE_TXT
@@ -788,4 +793,13 @@
 		WHERE 1 = 1
 			AND APPR_IDX = #{APPR_IDX}
 	</delete>
+	
+	<update id="updateRefIsRead" parameterType="map">
+		UPDATE
+			lab_approval_reference
+		SET
+			IS_READ = 'Y'
+		WHERE 1 = 1
+			AND REF_IDX = #{refIdx}		
+	</update>
 </mapper>

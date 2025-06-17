@@ -215,5 +215,11 @@ public class ApprovalDaoImpl implements ApprovalDao {
 	public void deleteApprReference(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.delete("approval.deleteApprReference", param);
+	}
+
+	@Override
+	public void updateRefIsRead(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("approval.updateRefIsRead", param);
 	}	
 }
