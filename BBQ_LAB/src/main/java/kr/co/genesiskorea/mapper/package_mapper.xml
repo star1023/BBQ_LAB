@@ -367,4 +367,15 @@
 			AND lh.DOC_IDX = lp.PACKAGE_IDX 
 		ORDER BY lh.REG_DATE ASC
 	</select>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(PACKAGE_IDX) AS cnt
+		FROM 
+			lab_package_info
+		WHERE 1 = 1
+			AND PACKAGE_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'	
+	</select>
 </mapper>

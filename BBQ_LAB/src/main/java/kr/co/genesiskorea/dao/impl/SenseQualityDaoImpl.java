@@ -112,4 +112,10 @@ public class SenseQualityDaoImpl implements SenseQualityDao {
 		return sqlSessionTemplate.selectList("senseQuality.selectHistory", param);
 	}
 
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("senseQuality.selectMyDataCheck",param);
+	}
+
 }

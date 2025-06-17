@@ -69,4 +69,6 @@ public interface ApprovalDao {
 	void deleteApprHeader(Map<String, Object> param) throws Exception;
 
 	void deleteApprReference(Map<String, Object> headerData) throws Exception;
+
+	void updateRefIsRead(Map<String, Object> param) throws Exception;
 }

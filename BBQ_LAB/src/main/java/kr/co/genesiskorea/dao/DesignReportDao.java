@@ -33,4 +33,6 @@ public interface DesignReportDao {
 
 	void deleteAddInfo(Map<String, Object> param) throws Exception;
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 }

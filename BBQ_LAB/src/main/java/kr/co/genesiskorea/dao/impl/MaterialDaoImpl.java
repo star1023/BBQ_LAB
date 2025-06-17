@@ -98,5 +98,11 @@ public class MaterialDaoImpl implements MaterialDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("material.deleteMaterial",param);
 	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("material.selectMyDataCheck", param);
+	}
 	
 }

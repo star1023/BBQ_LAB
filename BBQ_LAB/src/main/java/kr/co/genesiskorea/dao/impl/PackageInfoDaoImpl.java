@@ -87,4 +87,10 @@ public class PackageInfoDaoImpl implements PackageInfoDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectList("package.selectHistory", param);
 	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("package.selectMyDataCheck", param);
+	}
 }

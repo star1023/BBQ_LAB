@@ -333,4 +333,15 @@
 		</choose>		
 	ORDER BY lh.REG_DATE ASC
 	</select>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(REPORT_IDX) AS cnt
+		FROM 
+			lab_sense_quality_report
+		WHERE 1 = 1
+			AND REPORT_IDX = #{idx}	
+			AND REG_USER = #{userId}
+			AND IS_DELETE = 'N' 
+	</select>
 </mapper>

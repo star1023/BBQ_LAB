@@ -26,4 +26,6 @@ public interface NewProductResultService {
 
 	Map<String, Object> selectNewProductResultData(Map<String, Object> param);
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 }

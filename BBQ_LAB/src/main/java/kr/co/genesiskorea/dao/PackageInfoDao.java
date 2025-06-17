@@ -29,4 +29,6 @@ public interface PackageInfoDao {
 	void insertVersionUp(Map<String, Object> param) throws Exception;
 
 	List<Map<String, Object>> selectHistory(Map<String, Object> param);
+
+	int selectMyDataCheck(Map<String, Object> param);
 }

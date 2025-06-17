@@ -126,18 +126,35 @@ public class ChemicalTestController {
 	
 	@RequestMapping("/update")
 	public String chemicalTestUpdate(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
-		//1. lab_chemical_test 테이블 조회, lab_chemical_test 테이블 조회
-		Map<String, Object> chemicalData = reportService.selectChemicalTestData(param);
-		//2. lab_chemical_test_item 조회
-		List<Map<String, Object>> itemList = reportService.selectChemicalTestItemList(param);
-		//3. lab_chemical_test_standard 조회
-		List<Map<String, Object>> standardList = reportService.selectChemicalTestStandardList(param);
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			if( reportService.selectMyDataCheck(param) > 0 ) {
+				//1. lab_chemical_test 테이블 조회, lab_chemical_test 테이블 조회
+				Map<String, Object> chemicalData = reportService.selectChemicalTestData(param);
+				//2. lab_chemical_test_item 조회
+				List<Map<String, Object>> itemList = reportService.selectChemicalTestItemList(param);
+				//3. lab_chemical_test_standard 조회
+				List<Map<String, Object>> standardList = reportService.selectChemicalTestStandardList(param);
+				
+				model.addAttribute("chemicalTestData", chemicalData);
+				model.put("itemList", itemList);
+				model.put("standardList", standardList);
+				
+				return "/chemicalTest/update";
+			} else {
+				model.addAttribute("returnPage", "/chemicalTest/list");
+				return "/error/noAuth";
+			}
+			
+			
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 		
-		model.addAttribute("chemicalTestData", chemicalData);
-		model.put("itemList", itemList);
-		model.put("standardList", standardList);
 		
-		return "/chemicalTest/update";
 	}
 	
 	@RequestMapping("/searchChemicalTestAjax")

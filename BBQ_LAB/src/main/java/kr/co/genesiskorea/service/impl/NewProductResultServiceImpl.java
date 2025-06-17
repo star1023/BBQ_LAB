@@ -444,4 +444,10 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 			throw e;
 	    }
 	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return newProductResultDao.selectMyDataCheck(param);
+	}
 }

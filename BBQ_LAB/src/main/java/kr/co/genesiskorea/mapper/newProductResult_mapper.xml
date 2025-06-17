@@ -323,4 +323,14 @@
 	      AND ROW_NO = #{rowNo}
 	</delete>
 	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(RESULT_IDX) AS cnt
+		FROM
+			lab_new_product_result
+		WHERE 1 = 1
+			AND RESULT_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'	
+	</select>
 </mapper>

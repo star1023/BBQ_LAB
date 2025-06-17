@@ -26,4 +26,6 @@ public interface ChemicalTestService {
 	void updateChemicalTest(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file,
 			MultipartFile imageFile) throws Exception;
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 }

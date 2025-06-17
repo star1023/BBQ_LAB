@@ -149,20 +149,29 @@ public class NewProductResultController {
 	@RequestMapping("/update")
 	public String newProductResultUpdate(HttpSession session, HttpServletRequest request, HttpServletResponse response,
 	                                     @RequestParam Map<String, Object> param, ModelMap model) throws Exception {
-	    // 1. lab_new_product_result 테이블 조회
-	    Map<String, Object> newProductResultData = newProductResult.selectNewProductResultData(param);
-	    // 2. lab_new_product_result_item 조회
-	    List<Map<String, Object>> itemList = newProductResult.selectNewProductResultItemList(param);
-	    // 3. lab_new_product_result_item_images 조회
-	    List<Map<String, Object>> itemImageList = newProductResult.selectNewProductResultItemImageList(param);
+	    
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
+		if( newProductResult.selectMyDataCheck(param) > 0 ) {
+			// 1. lab_new_product_result 테이블 조회
+		    Map<String, Object> newProductResultData = newProductResult.selectNewProductResultData(param);
+		    // 2. lab_new_product_result_item 조회
+		    List<Map<String, Object>> itemList = newProductResult.selectNewProductResultItemList(param);
+		    // 3. lab_new_product_result_item_images 조회
+		    List<Map<String, Object>> itemImageList = newProductResult.selectNewProductResultItemImageList(param);
 
-	    // 5. 모델에 데이터 추가
-	    model.addAttribute("newProductResultData", newProductResultData);
-	    model.addAttribute("itemList", itemList);
-	    model.addAttribute("itemImageList", itemImageList);
+		    // 5. 모델에 데이터 추가
+		    model.addAttribute("newProductResultData", newProductResultData);
+		    model.addAttribute("itemList", itemList);
+		    model.addAttribute("itemImageList", itemImageList);
 
-	    // 6. update 화면 JSP로 이동
-	    return "/newProductResult/update";
+		    // 6. update 화면 JSP로 이동
+		    return "/newProductResult/update";
+		} else {
+			model.addAttribute("returnPage", "/newProductResult/list");
+			return "/error/noAuth";
+		}
+		
 	}
 	
 	@RequestMapping("/updateNewProductResult")

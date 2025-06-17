@@ -667,4 +667,10 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		// TODO Auto-generated method stub
 		return packageInfoDao.selectHistory(param);
 	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return packageInfoDao.selectMyDataCheck(param);
+	}
 }

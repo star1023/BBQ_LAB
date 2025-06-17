@@ -119,20 +119,30 @@ public class BusinessTripController {
 	
 	@RequestMapping(value = "/update")
 	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
-		//lab_design 테이블 조회, lab_file 테이블 조회
-		Map<String, Object> businessTripData = reportService.selectBusinessTripData(param);
-		//2.lab_business_trip_user 조회
-		List<Map<String, Object>> userList = reportService.selectBusinessTripUserList(param);
-		//3.lab_business_trip_add_info 조회
-		List<Map<String, Object>> infoList = reportService.selectBusinessTripAddInfoList(param);
-		//4.lab_business_trip_contents 조회
-		List<Map<String, Object>> contentsList = reportService.selectBusinessTripContentsList(param);
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
 		
-		model.addAttribute("businessTripData", businessTripData);
-		model.put("userList", userList);
-		model.put("infoList", infoList);
-		model.put("contentsList", contentsList);
-		return "/businessTrip/update";		
+		if( reportService.selectMyDataCheck(param) > 0 ) {
+			//lab_design 테이블 조회, lab_file 테이블 조회
+			Map<String, Object> businessTripData = reportService.selectBusinessTripData(param);
+			//2.lab_business_trip_user 조회
+			List<Map<String, Object>> userList = reportService.selectBusinessTripUserList(param);
+			//3.lab_business_trip_add_info 조회
+			List<Map<String, Object>> infoList = reportService.selectBusinessTripAddInfoList(param);
+			//4.lab_business_trip_contents 조회
+			List<Map<String, Object>> contentsList = reportService.selectBusinessTripContentsList(param);
+			
+			model.addAttribute("businessTripData", businessTripData);
+			model.put("userList", userList);
+			model.put("infoList", infoList);
+			model.put("contentsList", contentsList);
+			return "/businessTrip/update";	
+		} else {
+			model.addAttribute("returnPage", "/businessTrip/list");
+			return "/error/noAuth";
+		}
+		
+			
 	}
 	
 	@RequestMapping("/updateBusinessTripTmpAjax")

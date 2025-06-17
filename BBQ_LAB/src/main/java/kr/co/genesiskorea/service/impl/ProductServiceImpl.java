@@ -1945,5 +1945,11 @@ public class ProductServiceImpl implements ProductService {
 	public Map<String, Object> selectAddInfoCount(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return productDao.selectAddInfoCount(param);
+	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return productDao.selectMyDataCheck(param);
 	}	
 }

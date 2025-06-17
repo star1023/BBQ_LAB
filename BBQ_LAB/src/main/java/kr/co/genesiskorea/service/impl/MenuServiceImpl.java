@@ -2000,4 +2000,11 @@ public class MenuServiceImpl implements MenuService {
 		}
 	}
 
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return menuDao.selectMyDataCheck(param);
+	}
+
 }

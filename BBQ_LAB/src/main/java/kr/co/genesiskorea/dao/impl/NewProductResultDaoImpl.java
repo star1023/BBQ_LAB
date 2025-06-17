@@ -104,4 +104,10 @@ public class NewProductResultDaoImpl implements NewProductResultDao {
 		sqlSessionTemplate.delete("newProductResult.deleteNewProductResultItemImageByRow", deleteParam);
 	}
 
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("newProductResult.selectMyDataCheck",param);
+	}
+
 }

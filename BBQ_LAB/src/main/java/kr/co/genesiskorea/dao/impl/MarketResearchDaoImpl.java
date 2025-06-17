@@ -93,4 +93,10 @@ public class MarketResearchDaoImpl implements MarketResearchDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectList("marketResearch.selectHistory", param);
 	}
+
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("marketResearch.selectMyDataCheck",param);
+	}
 }

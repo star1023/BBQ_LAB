@@ -416,4 +416,10 @@ public class DesignReportServiceImpl implements DesignReportService {
 		return reportDao.selectAddInfoList(param);
 	}
 
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return reportDao.selectMyDataCheck(param);
+	}
+
 }

@@ -113,18 +113,33 @@ private Logger logger = LogManager.getLogger(MarketResearchController.class);
 	}
 	
 	@RequestMapping(value = "/update")
-	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) {
-		//1.lab_market_research 조회
-		Map<String, Object> researchData = reportService.selectMarketResearchData(param);
-		//2.lab_market_research_user 조회
-		List<Map<String, Object>> userList = reportService.selectMarketResearchUserList(param);
-		//3.lab_market_research_add_info 조회
-		List<Map<String, Object>> infoList = reportService.selectMarketResearchAddInfoList(param);
+	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			if( reportService.selectMyDataCheck(param) > 0 ) {
+				//1.lab_market_research 조회
+				Map<String, Object> researchData = reportService.selectMarketResearchData(param);
+				//2.lab_market_research_user 조회
+				List<Map<String, Object>> userList = reportService.selectMarketResearchUserList(param);
+				//3.lab_market_research_add_info 조회
+				List<Map<String, Object>> infoList = reportService.selectMarketResearchAddInfoList(param);
+				
+				model.addAttribute("researchData", researchData);
+				model.addAttribute("userList", userList);
+				model.addAttribute("infoList", infoList);
+				return "/marketResearch/update";
+			} else {
+				model.addAttribute("returnPage", "/marketResearch/list");
+				return "/error/noAuth";
+			}
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 		
-		model.addAttribute("researchData", researchData);
-		model.addAttribute("userList", userList);
-		model.addAttribute("infoList", infoList);
-		return "/marketResearch/update";
+		
 	}
 	
 	@RequestMapping("/updateMarketResearchTmpAjax")

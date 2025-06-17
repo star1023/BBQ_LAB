@@ -35,4 +35,6 @@ public interface ChemicalTestDao {
 
 	void deleteChemicalTestStandards(Map<String, Object> param) throws Exception;
 
+	int selectMyDataCheck(Map<String, Object> param);
+
 }

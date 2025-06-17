@@ -118,4 +118,10 @@ public class BusinessTripPlanDaoImpl implements BusinessTripPlanDao {
 		return sqlSessionTemplate.selectList("businessTripPlan.selectHistory", param);
 	}
 
+	@Override
+	public int selectMyDataCheck(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("businessTripPlan.selectMyDataCheck", param);
+	}
+
 }

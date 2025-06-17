@@ -828,4 +828,15 @@
 		WHERE 1 = 1
 			AND PRODUCT_IDX = #{productIdx}
 	</delete>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(PRODUCT_IDX) AS cnt
+		FROM 
+			lab_product
+		WHERE 1 = 1
+			AND PRODUCT_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+	</select>
 </mapper>

@@ -38,4 +38,6 @@ public interface UserDao {
 	public List<Map<String, Object>> selectUserMenu(Map<String, Object> param);
 
 	public void setPersonalization(Map<String, Object> param) throws Exception;
+
+	public List<Map<String, Object>> selectUserAuth(Map<String, Object> param) throws Exception;
 }

@@ -11,6 +11,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
@@ -35,6 +36,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 	@SuppressWarnings({ "static-access", "unchecked" })
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+		HttpSession session = request.getSession();
+		Map<String,Object> authMap = (HashMap<String,Object>)session.getAttribute("USER_AUTH");
+		
 		String sRequestUri = request.getRequestURI();
 		String sRefUri = request.getHeader("referer");
 		String baseUri = "";
@@ -49,6 +53,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		exceptUriList.add("Ajax");
 		exceptUriList.add("/user/login");
 		exceptUriList.add("/user/logout");
+		exceptUriList.add("/subscribe");
 		exceptUriList.add("send-data");
 		exceptUriList.add("resources");
 
@@ -70,6 +75,12 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				MessageUtil.showAlert(request, response, msa.getMessage("login.ing.use"), "/user/logout");
 				return false;	
 			}
+			
+			/*if( authMap != null && authMap.get(sRequestUri) == null ) {
+				logger.debug("메뉴 사용권한 없음.");
+				MessageUtil.showAlert(request, response, "권한이 없습니다.", sRefUri);
+				return false;
+			}*/
 		}
 		
 		

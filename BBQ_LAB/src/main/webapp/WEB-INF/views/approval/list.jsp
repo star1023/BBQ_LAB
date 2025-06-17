@@ -78,27 +78,6 @@
 			} else if( docType == 'CHEMICAL' ) {
 				url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			}
-		} else if( $("#listType").val() == 'myRefList' ) {
-			mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
-			if( docType == 'PROD' ) {
-				url = "";
-			} else if( docType == 'MENU' ) {
-				url = "";
-			} else if( docType == 'DESIGN' ) {
-				url = "";
-			} else if( docType == 'PLAN' ) {
-				url = "";
-			} else if( docType == 'TRIP' ) {
-				url = "";
-			} else if( docType == 'RESEARCH' ) {
-				url = "";
-			} else if( docType == 'SENSE_QUALITY' ) {
-				url = "";	
-			} else if( docType == 'RESULT' ) {
-				url = "";	
-			} else if( docType == 'CHEMICAL' ) {
-				url = "";	
-			}
 		} else if( $("#listType").val() == 'myCompList' ) {
 			mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
 			if( docType == 'PROD' ) {
@@ -123,6 +102,31 @@
 		}
 		
 		window.open(url, "ApprovalPopup", mode );
+	}
+	
+	function fn_refInfo( apprIdx, refIdx,  docType, docIdx ) {
+		var url = "";
+		var mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
+		if( docType == 'PROD' ) {
+			url = "/approval/productPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+		} else if( docType == 'MENU' ) {
+			url = "";
+		} else if( docType == 'DESIGN' ) {
+			url = "/approval/designPopup?apprIdx="+apprId+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+		} else if( docType == 'PLAN' ) {
+			url = "/approval/businessTripPlanPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+		} else if( docType == 'TRIP' ) {
+			url = "/approval/businessTripPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+		} else if( docType == 'RESEARCH' ) {
+			url = "/approval/marketResearchPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+		} else if( docType == 'SENSE_QUALITY' ) {
+			url = "/approval/senseQualityReportPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+		} else if( docType == 'RESULT' ) {
+			url = "/approval/newProductResultPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+		} else if( docType == 'CHEMICAL' ) {
+			url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+		}
+		window.open(url, "RefPopup", mode );
 	}
 	
 	function loadCount() {
@@ -202,7 +206,7 @@
 						html += "		<ul class=\"list_ul\">";
 						if( item.LAST_STATUS == 'N' ) {
 							html += "			<li><button class=\"btn_doc\" onClick=\"cancelAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"')\"><img src=\"/resources/images/icon_doc06.png\"> 상신취소</button></li>";
-						} else if( item.LAST_STATUS == 'C' ) {
+						} else if( item.LAST_STATUS == 'CA' ) {
 							html += "			<li><button type=\"button\" class=\"btn_doc\" onClick=\"reAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"');\"><img src=\"/resources/images/icon_doc03.png\"> 재상신</button></li>";
 						}
 						html += "		</ul>";
@@ -353,7 +357,7 @@
 						html += "<tr>";
 						html += "	<td>"+item.APPR_IDX+"</td>";
 						html += "	<td>"+item.DOC_TYPE_NAME+"</td>";
-						html += "	<td><a href=\"#\" onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
+						html += "	<td><a href=\"#\" onclick=\"fn_refInfo('"+item.APPR_IDX+"', '"+item.REF_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
 						html += "	<td>"+item.REG_USER_NAME+"</td>";
 						html += "	<td>"+item.REG_DATE_TXT+"</td>";
 						html += "</tr>";
@@ -479,7 +483,7 @@
 				"apprIdx" : apprIdx
 				, "docType" : docType
 				, "docIdx" : docIdx
-				, "status" : 'C'
+				, "status" : 'CA'
 				, "docStatus" : 'REG'
 			},
 			dataType:"json",

@@ -289,19 +289,28 @@ public class ProductController {
 	public String versionUpProductForm( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		try {
 			logger.debug("param : {} ",param.toString());
-			Map<String, Object> productData = productService.selectProductData(param);
-			model.addAttribute("productData", productData);
-			Map<String, Object> addInfoCount = productService.selectAddInfoCount(param);
-			model.addAttribute("addInfoCount", addInfoCount);
-			List<Map<String, Object>> addInfoList = productService.selectAddInfo(param);
-			model.addAttribute("addInfoList", addInfoList);
-			List<Map<String, Object>> imporvePurposeList = productService.selectImporvePurposeList(param);
-			model.addAttribute("imporvePurposeList", imporvePurposeList);
-			List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
-			model.addAttribute("newDataList", newDataList);
-			model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
 			
-			return "/product/versionUp";
+			//해당 문서가 내 문서인지 확인한다.
+			if( productService.selectMyDataCheck(param) > 0 ) {
+				Map<String, Object> productData = productService.selectProductData(param);
+				model.addAttribute("productData", productData);
+				Map<String, Object> addInfoCount = productService.selectAddInfoCount(param);
+				model.addAttribute("addInfoCount", addInfoCount);
+				List<Map<String, Object>> addInfoList = productService.selectAddInfo(param);
+				model.addAttribute("addInfoList", addInfoList);
+				List<Map<String, Object>> imporvePurposeList = productService.selectImporvePurposeList(param);
+				model.addAttribute("imporvePurposeList", imporvePurposeList);
+				List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
+				model.addAttribute("newDataList", newDataList);
+				model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
+				
+				return "/product/versionUp";
+			} else {
+				model.addAttribute("returnPage", "/product/list");
+				return "/error/noAuth";
+			}
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			throw e;
@@ -547,18 +556,28 @@ public class ProductController {
 	public String productUpdateForm( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		try {
 			logger.debug("param : {} ",param.toString());
-			Map<String, Object> productData = productService.selectProductData(param);
-			model.addAttribute("productData", productData);
-			Map<String, Object> addInfoCount = productService.selectAddInfoCount(param);
-			model.addAttribute("addInfoCount", addInfoCount);
-			List<Map<String, Object>> addInfoList = productService.selectAddInfo(param);
-			model.addAttribute("addInfoList", addInfoList);
-			List<Map<String, Object>> imporvePurposeList = productService.selectImporvePurposeList(param);
-			model.addAttribute("imporvePurposeList", imporvePurposeList);
-			List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
-			model.addAttribute("newDataList", newDataList);
-			model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
-			return "/product/update";
+			
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			//해당 문서가 내 문서인지 확인한다.
+			if( productService.selectMyDataCheck(param) > 0 ) {
+				Map<String, Object> productData = productService.selectProductData(param);
+				model.addAttribute("productData", productData);
+				Map<String, Object> addInfoCount = productService.selectAddInfoCount(param);
+				model.addAttribute("addInfoCount", addInfoCount);
+				List<Map<String, Object>> addInfoList = productService.selectAddInfo(param);
+				model.addAttribute("addInfoList", addInfoList);
+				List<Map<String, Object>> imporvePurposeList = productService.selectImporvePurposeList(param);
+				model.addAttribute("imporvePurposeList", imporvePurposeList);
+				List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
+				model.addAttribute("newDataList", newDataList);
+				model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
+				return "/product/update";
+			} else {
+				model.addAttribute("returnPage", "/product/list");
+				return "/error/noAuth";
+			}
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			throw e;

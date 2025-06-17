@@ -429,6 +429,7 @@
 				AND t1.pMenuId is null
 				AND role_menu.pMenuId = t1.menuId 
 				and t1.useYn = 'Y'
+				and t1.displayYn = 'Y'
 			
 			UNION ALL
 	
@@ -448,9 +449,28 @@
 			INNER JOIN tmp ON t2.pMenuId = tmp.menuId
 			INNER JOIN lab_system_role_menu lm ON t2.menuId = lm.MENU_IDX and lm.ROLE_IDX = #{roleCode}
 			where t2.useYn = 'Y'
+				and t2.displayYn = 'Y'
 		)
 		SELECT * FROM tmp
 		ORDER BY tmp.level, tmp.displayOrder
 		)t
+	</select>
+	
+	<select id="selectUserAuth" parameterType="map" resultType="hashmap">
+		SELECT 
+			t2.menuId
+			, t2.pMenuId
+			, t2.menuName
+			, t2.eMenuName
+			, t2.level
+			, t2.displayOrder
+			, t2.displayYn
+			, t2.url
+			, t2.useYn
+			, t2.regUserId
+			, DATE_FORMAT(t2.regDate,'%Y-%m-%d') as regDate
+		FROM lab_system_menu t2
+		INNER JOIN lab_system_role_menu lm ON t2.menuId = lm.MENU_IDX and lm.ROLE_IDX = '1'
+		where t2.useYn = 'Y'
 	</select>
 </mapper>

@@ -116,21 +116,36 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 	}
 	
 	@RequestMapping(value = "/update")
-	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) {
-		//1.lab_business_trip_plan 조회
-		Map<String, Object> planData = reportService.selectBusinessTripPlanData(param);
-		//2.lab_business_trip_plan_user 조회
-		List<Map<String, Object>> userList = reportService.selectBusinessTripPlanUserList(param);
-		//3.lab_business_trip_plan_add_info 조회
-		List<Map<String, Object>> infoList = reportService.selectBusinessTripPlanAddInfoList(param);
-		//4.lab_business_trip_plan_contents 조회
-		List<Map<String, Object>> contentsList = reportService.selectBusinessTripPlanContentsList(param);
+	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			if( reportService.selectMyDataCheck(param) > 0 ) {
+				//1.lab_business_trip_plan 조회
+				Map<String, Object> planData = reportService.selectBusinessTripPlanData(param);
+				//2.lab_business_trip_plan_user 조회
+				List<Map<String, Object>> userList = reportService.selectBusinessTripPlanUserList(param);
+				//3.lab_business_trip_plan_add_info 조회
+				List<Map<String, Object>> infoList = reportService.selectBusinessTripPlanAddInfoList(param);
+				//4.lab_business_trip_plan_contents 조회
+				List<Map<String, Object>> contentsList = reportService.selectBusinessTripPlanContentsList(param);
+				
+				model.addAttribute("planData", planData);
+				model.addAttribute("userList", userList);
+				model.addAttribute("infoList", infoList);
+				model.addAttribute("contentsList", contentsList);
+				return "/businessTripPlan/update";
+			} else {
+				model.addAttribute("returnPage", "/businessTripPlan/list");
+				return "/error/noAuth";
+			}
+			
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 		
-		model.addAttribute("planData", planData);
-		model.addAttribute("userList", userList);
-		model.addAttribute("infoList", infoList);
-		model.addAttribute("contentsList", contentsList);
-		return "/businessTripPlan/update";
 	}
 	
 	@RequestMapping("/updateBusinessTripPlanTmpAjax")

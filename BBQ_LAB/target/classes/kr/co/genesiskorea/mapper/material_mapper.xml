@@ -140,6 +140,8 @@
 			, STANDARD
 			, ORIGIN
 			, EXPIRATION_DATE
+			, REG_USER
+			, DOC_OWNER
 		)VALUES(
 			#{idx}
 			, #{matCode}
@@ -174,6 +176,8 @@
 			, #{standard}
 			, #{origin}
 			, #{expireDate}
+			, #{userId}
+			, #{userId}
 		)
 	</insert>
 	
@@ -210,6 +214,8 @@
 			, STANDARD
 			, ORIGIN
 			, EXPIRATION_DATE
+			, REG_USER
+			, DOC_OWNER
 		FROM 
 			lab_material
 		WHERE 1 = 1
@@ -360,6 +366,8 @@
 			, STANDARD
 			, ORIGIN
 			, EXPIRATION_DATE
+			, REG_USER
+			, DOC_OWNER
 		)VALUES(
 			#{idx}
 			, #{matCode}
@@ -394,6 +402,8 @@
 			, #{standard}
 			, #{origin}
 			, #{expireDate}
+			, #{userId}
+			, #{userId}
 		)
 	</insert>
 	
@@ -430,4 +440,15 @@
 		WHERE 1 = 1
 			AND DOC_NO = #{docNo}
 	</update>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(MATERIAL_IDX) AS cnt			
+		FROM 
+			lab_material
+		WHERE 1 = 1
+			AND MATERIAL_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+	</select>
 </mapper>
