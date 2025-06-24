@@ -21,4 +21,183 @@
     	lab_test( TEST_IDX, TEST_TEXT )
     	VALUES( #{idx}, #{text} )    	
     </insert>
+    
+    <select id="selectOrg" resultType="hashmap">
+    	SELECT
+    		OBJTID
+			, OBJTTX
+			, TOBJID
+			, SEQUEN
+			, PRIORT
+			, CSTCNT
+			, BUKRS
+    	FROM
+    		V_HR1010
+    	WHERE 1 = 1		
+    </select>
+    
+     <select id="selectHrInfo" resultType="hashmap">
+    	SELECT
+    		EMPNUM
+			, SBTYPE
+			, IPSAIL
+			, RETIRE
+			, NAMEKO
+			, BIRDAY
+			, ORGAID
+			, TITLCD
+			, LEVLCD
+			, RESPCD
+			, JOBOID
+			, EMAIL
+			, MOBILE
+			, OFFICE
+			, EMPGB1
+			, EMPGB2
+			, EMSTAT
+			, SEXGUB
+			, CSTCNT
+			, BUKRS
+			, WORKCD
+    	FROM
+    		V_HR2000
+    	WHERE 1 = 1		
+    </select>
+    
+    <select id="selectMasterCode" resultType="hashmap">
+    	SELECT
+    		CDTYPE
+			, CDVALU
+			, CDTEXT
+			, SEQUEN
+			, USEDYN
+    	FROM	
+    		V_HR9001
+    	WHERE 1 = 1	
+    </select>
+    
+    <insert id="insertOrg" parameterType="list">
+		INSERT INTO lab_interface_hr1010 ( 
+			OBJTID
+			, OBJTTX
+			, TOBJID
+			, SEQUEN
+			, PRIORT
+			, CSTCNT
+			, BUKRS
+		) VALUES 
+	    <foreach collection = "list" item = "item" separator = ","> 
+	    (
+	    	#{item.OBJTID}
+	        , #{item.OBJTTX}
+	        , #{item.TOBJID}
+	        , #{item.SEQUEN}
+	        , #{item.PRIORT}
+	        , #{item.CSTCNT}
+	        , #{item.BUKRS}	       
+	     ) 
+	    </foreach> 
+	  ON DUPLICATE KEY UPDATE     
+	    OBJTTX = VALUES(OBJTTX)
+		, TOBJID = VALUES(TOBJID)
+		, SEQUEN = VALUES(SEQUEN)
+		, PRIORT = VALUES(PRIORT)
+		, CSTCNT = VALUES(CSTCNT)
+		, BUKRS = VALUES(BUKRS)		
+	</insert>
+	
+	<insert id="insertHrInfo" parameterType="list">
+		INSERT INTO lab_interface_hr2000 ( 
+			EMPNUM
+			, SBTYPE
+			, IPSAIL
+			, RETIRE
+			, NAMEKO
+			, BIRDAY
+			, ORGAID
+			, TITLCD
+			, LEVLCD
+			, RESPCD
+			, JOBOID
+			, EMAIL
+			, MOBILE
+			, OFFICE
+			, EMPGB1
+			, EMPGB2
+			, EMSTAT
+			, SEXGUB
+			, CSTCNT
+			, BUKRS
+			, WORKCD
+		) VALUES 
+	    <foreach collection = "list" item = "item" separator = ","> 
+	    (
+		#{item.EMPNUM}
+		, #{item.SBTYPE}
+		, #{item.IPSAIL}
+		, #{item.RETIRE}
+		, #{item.NAMEKO}
+		, #{item.BIRDAY}
+		, #{item.ORGAID}
+		, #{item.TITLCD}
+		, #{item.LEVLCD}
+		, #{item.RESPCD}
+		, #{item.JOBOID}
+		, #{item.EMAIL}
+		, #{item.MOBILE}
+		, #{item.OFFICE}
+		, #{item.EMPGB1}
+		, #{item.EMPGB2}
+		, #{item.EMSTAT}
+		, #{item.SEXGUB}
+		, #{item.CSTCNT}
+		, #{item.BUKRS}
+		, #{item.WORKCD}
+	     ) 
+	    </foreach> 
+	  ON DUPLICATE KEY UPDATE     
+		SBTYPE = VALUES(SBTYPE)
+		, IPSAIL = VALUES(IPSAIL)
+		, RETIRE = VALUES(RETIRE)
+		, NAMEKO = VALUES(NAMEKO)
+		, BIRDAY = VALUES(BIRDAY)
+		, ORGAID = VALUES(ORGAID)
+		, TITLCD = VALUES(TITLCD)
+		, LEVLCD = VALUES(LEVLCD)
+		, RESPCD = VALUES(RESPCD)
+		, JOBOID = VALUES(JOBOID)
+		, EMAIL = VALUES(EMAIL)
+		, MOBILE = VALUES(MOBILE)
+		, OFFICE = VALUES(OFFICE)
+		, EMPGB1 = VALUES(EMPGB1)
+		, EMPGB2 = VALUES(EMPGB2)
+		, EMSTAT = VALUES(EMSTAT)
+		, SEXGUB = VALUES(SEXGUB)
+		, CSTCNT = VALUES(CSTCNT)
+		, BUKRS = VALUES(BUKRS)
+		, WORKCD = VALUES(WORKCD)
+	</insert>
+	
+	<insert id="insertMasterCode" parameterType="list">
+		INSERT INTO lab_interface_hr9001 ( 
+			CDTYPE
+			, CDVALU
+			, CDTEXT
+			, SEQUEN
+			, USEDYN
+		) VALUES 
+	    <foreach collection = "list" item = "item" separator = ","> 
+	    (
+		#{item.CDTYPE}
+		, #{item.CDVALU}
+		, #{item.CDTEXT}
+		, #{item.SEQUEN}
+		, #{item.USEDYN}
+	     ) 
+	    </foreach> 
+	  ON DUPLICATE KEY UPDATE     
+	    CDTEXT = VALUES(CDTEXT)
+		, SEQUEN = VALUES(SEQUEN)
+		, USEDYN = VALUES(USEDYN)
+	</insert>
 </mapper>

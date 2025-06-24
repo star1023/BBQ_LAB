@@ -10,8 +10,12 @@
 	<!--  
 	<bean id="LabSchedule" class="kr.co.genesiskorea.schedule.LabSchedule" />
 	<task:scheduled-tasks>
-		<task:scheduled ref="LabSchedule" method="erpMaterial" cron="0/5 * * * * ?"/>
-		<task:scheduled ref="LabSchedule" method="initSeq" cron="0 1 0 1 * * ?"/>		
+		<task:scheduled ref="LabSchedule" method="erpMaterial" cron="0 0 1 * * * ?"/>
+		<task:scheduled ref="LabSchedule" method="initSeq" cron="0 1 0 1 * * ?"/>
+		<task:scheduled ref="LabSchedule" method="hrOrgMaster" cron="0 10 0 * * * ?"/>
+		<task:scheduled ref="LabSchedule" method="hrUserMaster" cron="0 30 0 * * * ?"/>
+		<task:scheduled ref="LabSchedule" method="hrCodeMaster" cron="0 20 0 * * * ?"/>
+		<task:scheduled ref="LabSchedule" method="hrUserSync" cron="0 40 0 * * * ?"/>
 	</task:scheduled-tasks>
 	-->
 </beans>

@@ -72,6 +72,33 @@ public class BatchServiceImpl implements BatchService {
         importParams.put("I_DATUM", param.get("toDay"));
 		List<Map<String, Object>> returnList = batchDao.selectMaterial(importParams);
 		logger.debug("전체 RFC 처리 데이터 건수 : "+returnList.size());
-		batchDao.insertMaterial(returnList);
+		//batchDao.insertMaterial(returnList);
+	}
+
+	@Override
+	public void hrOrgMaster() {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> dataList = batchDao.selectHrOrgMaster();
+		batchDao.insertHrOrgMaster(dataList);
+	}
+
+	@Override
+	public void hrUserMaster() {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> dataList = batchDao.selectHrUserMaster();
+		batchDao.insertHrUserMaster(dataList);
+	}
+
+	@Override
+	public void hrCodeMaster() {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> dataList = batchDao.selectHrCodeMaster();
+		batchDao.insertHrCodeMaster(dataList);
+	}
+
+	@Override
+	public void hrUserSync() {
+		// TODO Auto-generated method stub
+		batchDao.insertHrUser();
 	}
 }

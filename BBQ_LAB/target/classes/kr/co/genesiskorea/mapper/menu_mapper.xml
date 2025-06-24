@@ -299,7 +299,7 @@
 			, IFNULL(lf.FILE_CNT50,0) as FILE_CNT50
 			, IFNULL(lf.FILE_CNT60,0) as FILE_CNT60
 			, (SELECT COUNT(*) FROM lab_menu WHERE 1 = 1 AND MENU_CODE = lp.MENU_CODE AND IS_LAST = 'N' AND VERSION_NO <![CDATA[<]]> lp.VERSION_NO AND IS_DELETE = 'N' ) as CHILD_CNT
-			, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lp.DOC_OWNER) as USER_NAME 
+			, FN_GET_USER_NAME(lp.DOC_OWNER) as USER_NAME
 		FROM 
 			lab_menu lp
 			left outer join (
@@ -407,7 +407,7 @@
 		, lp.NAME 
 		, lp.MENU_CODE 
 		, lh.USER_ID 
-		, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+		, FN_GET_USER_NAME(lh.USER_ID) as USER_NAME
 		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
 	FROM lab_history lh ,
 		lab_menu lp 

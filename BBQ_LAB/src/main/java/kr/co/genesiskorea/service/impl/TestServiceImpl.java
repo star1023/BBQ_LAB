@@ -2,6 +2,7 @@ package kr.co.genesiskorea.service.impl;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.Resource;
 
@@ -60,6 +61,25 @@ public class TestServiceImpl implements TestService {
 			//txManager.rollback(status);
 			throw new RuntimeException("강제 예외");
 		}		
+	}
+
+	public void selectOrg() {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> dataList = testDao.selectOrg();
+		testDao.insertOrg(dataList);
+	}
+
+	public void selectHrInfo() {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> dataList = testDao.selectHrInfo();
+		testDao.insertHrInfo(dataList);
+	}
+
+
+	public void selectMasterCode() {
+		// TODO Auto-generated method stub
+		List<Map<String,Object>> dataList = testDao.selectMasterCode();
+		testDao.insertMasterCode(dataList);
 	}
 
 }

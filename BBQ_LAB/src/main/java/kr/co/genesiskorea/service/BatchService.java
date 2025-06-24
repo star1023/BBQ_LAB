@@ -13,4 +13,12 @@ public interface BatchService {
 
 	void erpMaterial(Map<String, Object> param);
 
+	void hrOrgMaster();
+
+	void hrUserMaster();
+
+	void hrCodeMaster();
+
+	void hrUserSync();
+
 }

@@ -4,67 +4,88 @@
 	<select id="selectUser" parameterType="map" resultType="hashmap">
 	/*	user.selectUser 사용자 정보 조회 */
 	SELECT 
-	  USER_ID AS userId
-      ,USER_NAME AS userName
-      ,USER_GRAD AS userGrade
-      ,getCodeName('GRADE',USER_GRAD) AS userGradeName
-      ,REG_DATE AS regDate
-      ,USER_CODE AS userCode
-      ,EMAIL AS email
-      ,DEPT_CODE AS deptCode
-      ,getCodeName('DEPT',DEPT_CODE) AS deptCodeName
-      ,TEAM_CODE AS teamCode
-      ,getCodeName('TEAM',TEAM_CODE) AS teamCodeName	
-      ,TITLE_CODE AS titleCode
-      ,USER_TYPE AS userType
-      ,IS_ADMIN AS isAdmin
-      ,IS_DELETE AS isDelete
-      ,THEME AS theme
-      ,CONTENT_MODE AS contentMode
-      ,WIDTH_MODE AS widthMode
-      ,MAIL_CHECK1 AS mailCheck1
-      ,MAIL_CHECK2 AS mailCheck2
-      ,MAIL_CHECK3 AS mailCheck3
-      ,IS_LOCK AS isLock
-      ,ROLE_CODE AS roleCode
+		lu.USER_ID AS userId
+	    , lu.USER_NAME AS userName
+	    , lu.USER_GRAD AS userGrade
+	    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
+	    , lu.REG_DATE AS regDate
+	    , lu.USER_CODE AS userCode
+	    , lu.EMAIL AS email
+	    , lu.DEPT_CODE AS deptCode
+	    , getCodeName('DEPT',lu.DEPT_CODE) AS deptCodeName
+	    , lu.TEAM_CODE AS teamCode
+	    , getCodeName('TEAM',lu.TEAM_CODE) AS teamCodeName	
+	    , lu.TITLE_CODE AS titleCode
+	    , lu.USER_TYPE AS userType
+	    , lu.IS_ADMIN AS isAdmin
+	    , lu.IS_DELETE AS isDelete
+	    , lu.THEME AS theme
+	    , lu.CONTENT_MODE AS contentMode
+	    , lu.WIDTH_MODE AS widthMode
+	    , lu.MAIL_CHECK1 AS mailCheck1
+	    , lu.MAIL_CHECK2 AS mailCheck2
+	    , lu.MAIL_CHECK3 AS mailCheck3
+	    , lu.IS_LOCK AS isLock
+	    , lu.ROLE_CODE AS roleCode
+	    , lu.ORGAID
+		, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+		, lu.TITLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+		, lu.LEVLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+		, lu.RESPCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
+		, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as TOBJID 
+		, lu.EMSTAT
     FROM 
-    	lab_user
+    	lab_user lu
 	WHERE	1 = 1
-	    AND IS_DELETE != 'Y'         
-		AND USER_ID = #{userId, jdbcType=VARCHAR}
+	    AND lu.IS_DELETE != 'Y'         
+		AND lu.USER_ID = #{userId, jdbcType=VARCHAR}
     </select>
     
     <select id="loginCheck" parameterType="map" resultType="hashmap">
 	/*	user.loginCheck 로그인 체크 */
 	SELECT 
-		USER_ID AS userId
-		,USER_NAME AS userName
-	    ,USER_GRAD AS userGrade
-	    ,getCodeName('GRADE',USER_GRAD) AS userGradeName
-	    ,REG_DATE AS regDate
-	    ,USER_CODE AS userCode
-	    ,EMAIL AS email
-	    ,DEPT_CODE AS deptCode
-	    ,getCodeName('DEPT',DEPT_CODE) AS deptCodeName
-	    ,TEAM_CODE AS teamCode
-	    ,getCodeName('TEAM',TEAM_CODE) AS teamCodeName	
-	    ,TITLE_CODE AS titleCode
-	    ,USER_TYPE AS userType
-	    ,IS_ADMIN AS isAdmin
-	    ,IS_DELETE AS isDelete
-	    ,THEME AS theme
-	    ,CONTENT_MODE AS contentMode
-	    ,WIDTH_MODE AS widthMode
-	    ,MAIL_CHECK1 AS mailCheck1
-	    ,MAIL_CHECK2 AS mailCheck2
-	    ,MAIL_CHECK3 AS mailCheck3
-	    ,IS_LOCK AS isLock
-	    ,ROLE_CODE AS roleCode
+		lu.USER_ID AS userId
+		, lu.USER_NAME AS userName
+	    , lu.USER_GRAD AS userGrade
+	    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
+	    , lu.REG_DATE AS regDate
+	    , lu.USER_CODE AS userCode
+	    , lu.EMAIL AS email
+	    , lu.DEPT_CODE AS deptCode
+	    , getCodeName('DEPT',lu.DEPT_CODE) AS deptCodeName
+	    , lu.TEAM_CODE AS teamCode
+	    , getCodeName('TEAM',lu.TEAM_CODE) AS teamCodeName	
+	    , lu.TITLE_CODE AS titleCode
+	    , lu.USER_TYPE AS userType
+	    , lu.IS_ADMIN AS isAdmin
+	    , lu.IS_DELETE AS isDelete
+	    , lu.THEME AS theme
+	    , lu.CONTENT_MODE AS contentMode
+	    , lu.WIDTH_MODE AS widthMode
+	    , lu.MAIL_CHECK1 AS mailCheck1
+	    , lu.MAIL_CHECK2 AS mailCheck2
+	    , lu.MAIL_CHECK3 AS mailCheck3
+	    , lu.IS_LOCK AS isLock
+	    , lu.ROLE_CODE AS roleCode
+	    , lu.ORGAID
+		, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+		, lu.TITLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+		, lu.LEVLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+		, lu.RESPCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
+		, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as TOBJID 
+		, lu.EMSTAT
     FROM 
-    	lab_user
+    	lab_user lu
 	WHERE	1 = 1
-		AND USER_ID = #{userId}
-		AND USER_PWD = #{userEncPwd}
+		AND lu.USER_ID = #{userId}
+		AND lu.USER_PWD = #{userEncPwd}
+		AND lu.EMSTAT = 1
     </select>
     
     <select id="userCount" parameterType="map" resultType="int">
@@ -72,6 +93,7 @@
 			SELECT	COUNT(*)
 			FROM	lab_user	
 			WHERE 1=1
+				AND EMSTAT = 1
 			<if test="searchValue != null and searchValue != '' ">
 				AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
 			</if>
@@ -89,6 +111,11 @@
 	<select id="userList" parameterType="map" resultType="hashmap">
 		/* user.userList 리스트 */
 			SELECT		t.*
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = t.ORGAID ) as OBJTTX 
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = t.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = t.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = t.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
+			, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = t.ORGAID ) as TOBJID 
 			FROM	
 					(
 						SELECT	row_number() over (order by USER_ID desc) as rnum
@@ -109,8 +136,14 @@
 					      ,IS_ADMIN AS isAdmin	
 					      ,IS_DELETE AS isDelete
 					      ,IS_LOCK AS isLock
+					      , ORGAID
+						  , TITLCD
+						  , LEVLCD
+						  , RESPCD
+						  , EMSTAT
 						FROM	lab_user	
 						WHERE 1=1
+							AND EMSTAT = 1
 						<if test="searchValue != null and searchValue != '' ">
 							AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
 						</if>
@@ -125,7 +158,7 @@
 						</if>
 					) t WHERE rnum between #{startRow} and #{endRow}
 		<![CDATA[
-			ORDER BY USER_ID desc
+			ORDER BY t.userId desc
 		]]>
 	</select>
 	<insert id="insert" parameterType="map">
@@ -167,23 +200,32 @@
     <select id="getUserData" parameterType="map" resultType="hashmap">
 	/*	user.getUserData 사용자 정보 조회 */
 	SELECT 
-		USER_ID AS userId
-      ,USER_PWD AS userPwd
-      ,USER_NAME AS userName
-      ,USER_GRAD AS userGrade
-      ,REG_DATE AS regDate
-      ,USER_CODE AS userCode
-      ,EMAIL AS email
-      ,DEPT_CODE AS deptCode
-      ,TEAM_CODE AS teamCode
-      ,TITLE_CODE AS titleCode
-      ,USER_TYPE AS userType
-      ,IS_ADMIN AS isAdmin
-      ,IS_DELETE AS isDelete
+		lu.USER_ID AS userId
+		, lu.USER_PWD AS userPwd
+		, lu.USER_NAME AS userName
+		, lu.USER_GRAD AS userGrade
+		, lu.REG_DATE AS regDate
+		, lu.USER_CODE AS userCode
+		, lu.EMAIL AS email
+		, lu.DEPT_CODE AS deptCode
+		, lu.TEAM_CODE AS teamCode
+		, lu.TITLE_CODE AS titleCode
+		, lu.USER_TYPE AS userType
+		, lu.IS_ADMIN AS isAdmin
+		, lu.IS_DELETE AS isDelete
+		, lu.ORGAID
+		, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+		, lu.TITLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+		, lu.LEVLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+		, lu.RESPCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
+		, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as TOBJID 
     FROM 
-    	lab_user
+    	lab_user lu
 	WHERE	1 = 1
-		AND USER_ID = #{userId}
+		AND lu.USER_ID = #{userId}
     </select>
     
     <update id="update" parameterType="map">

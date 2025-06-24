@@ -6,6 +6,7 @@ import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Repository;
 
 import com.sap.conn.jco.JCoDestination;
@@ -18,8 +19,13 @@ import kr.co.genesiskorea.util.RfcDataHandler;
 
 @Repository
 public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
-	@Autowired
-	SqlSessionTemplate sqlSessionTemplate;
+	@Autowired(required=true)
+	@Qualifier("sqlSessionTemplate")
+	private SqlSessionTemplate sqlSessionTemplate;
+	
+	@Autowired(required=true)
+	@Qualifier("sqlSessionTemplateMSSQL")
+	private SqlSessionTemplate sqlSessionTemplateMSSQL;
 	
 	@Override
 	public List<Map<String, Object>> selectMaterial(Map<String, Object> importParams) {
@@ -87,6 +93,48 @@ public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
 	public void initSeq() {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("batch.initSeq");
+	}
+
+	@Override
+	public List<Map<String, Object>> selectHrOrgMaster() {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplateMSSQL.selectList("batch.selectHrOrgMaster");
+	}
+
+	@Override
+	public void insertHrOrgMaster(List<Map<String, Object>> dataList) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("batch.insertHrOrgMaster", dataList);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectHrUserMaster() {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplateMSSQL.selectList("batch.selectHrUserMaster");
+	}
+
+	@Override
+	public void insertHrUserMaster(List<Map<String, Object>> dataList) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("batch.insertHrUserMaster", dataList);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectHrCodeMaster() {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplateMSSQL.selectList("batch.selectHrCodeMaster");
+	}
+
+	@Override
+	public void insertHrCodeMaster(List<Map<String, Object>> dataList) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("batch.insertHrCodeMaster", dataList);
+	}
+
+	@Override
+	public void insertHrUser() {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("batch.insertHrUser");
 	}
 
 }
