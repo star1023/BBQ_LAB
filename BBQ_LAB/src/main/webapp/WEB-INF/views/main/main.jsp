@@ -2,6 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+<%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ page session="false" %>
 <title>연구개발시스템</title>
 <link href="../resources/css/main.css" rel="stylesheet" type="text/css" />
@@ -203,10 +204,11 @@
 
 .chart-title {
   color: #fff;
-  font-size: 18px;
+  font-size: 20px;
   font-weight: bold;
   margin-bottom: 8px;
   display: flex;
+  justify-content : space-between;
   align-items: center;
   gap: 8px;
 }
@@ -219,7 +221,7 @@
   padding-left: 46px;
   color: #fff;
   line-height: 34px;
-  margin: 10px 15px;
+  margin: 7px 15px 10px;
   height: 34px;
 
   /* ✅ 아이콘을 흰색처럼 보이게 하는 필터 */
@@ -233,7 +235,7 @@
   padding-left: 46px;
   color: #fff;
   line-height: 34px;
-  margin: 10px 15px;
+  margin: 7px 15px 10px;
   height: 34px;
 
   /* ✅ 아이콘을 흰색처럼 보이게 하는 필터 */
@@ -242,13 +244,14 @@
 .chart-card-wrapper {
   background: #b92c35;           /* ✅ 붉은 배경 */
   border-radius: 10px;
-  padding: 10px;
-  margin: 0 auto 20px;
+  padding: 8px;
+  margin: 0 0 10px;
+  width: auto;
 }
 
 .tab-menu {
   display: flex;
-  padding: 0 8px;
+  padding: 0 8px 0 0;
   list-style: none;
   margin: 0;
   gap: 4px;
@@ -280,15 +283,66 @@
 
 .chart-area {
   background: white;
-  border-radius: 6px;
+  border-radius: 0px 6px 6px 6px;
   position: relative;
   padding: 20px;
   z-index: 1;
 }
 
+.chart-area.pie {
+  border-radius: 6px;
+  padding: 0;
+}
+
 #reportBarChart {
   width: 100%;
   height: 275px;
+}
+
+.my_noti_box {
+	margin: 1px 10px 1px 0;
+	padding : 10px;
+	border : 2px #b92c35 solid;
+	height: 348px;
+	border-radius : 10px;
+}
+.wd40{
+	width: 40%;
+}
+.wd60{
+	width: 60%;
+}
+.noti_box_table{
+	width: 100%;
+	display: table;
+}
+.noti_box_title{
+	padding-left:54px; 
+	background-image:url(/resources/images/img_proc_list01.png);
+	background-size:38px; 
+	background-repeat:no-repeat; 
+	background-position:0 2px; 
+	height:42px; 
+	font-weight: bold;
+	line-height: 42px;
+	color: grey;
+	display:block;
+	font-size: 20px;
+	margin : 4px 15px 10px;
+}
+.board_box {
+	margin: 10px 0; 
+}
+.barChartBtnBox{
+	display: flex;
+	gap:15px;
+	font-size: 16px;
+	margin-right: 20px;
+	line-height: 42px; 
+}
+
+.barChartBtn {
+	cursor: pointer;
 }
 /* 차트 */
 </style>
@@ -504,26 +558,83 @@ function goToDetail() {
 			<span class="title">제너시스 BBQ연구소</span>
 		</h2>
 		<div class="group01" >
+		
 		<!-- 내정보 start -->
 			<div class="main_top_box">
-			<div class="my_info">
 					<div class="my_info_box">
-						<div class="chart-card-wrapper">
-							<div class="chart-title">
-								<span class="txt pieChart">내 보고서 현황</span>
-							</div>
-							<div class="chart-area">
-								<div id="reportPieChart" style="width: 400px; height: 290px; margin: auto; padding : 5px 0;"></div>
+						<div class="wd60">
+							<div class="my_noti_box">
+							<span class="noti_box_title">내 정보</span>
+							<div class="noti_box_table">
+								<div class="my_info_box_top">
+									<div class="main_logo_img"></div>
+									<span class="user_name">${userUtil:getUserName(pageContext.request)}<strong class="ml5"></strong></span>
+									<span class="user_sub_info">제품 설계서 <strong id="countDesignDoc">0</strong> 건 <em>&nbsp;|&nbsp;</em> 제조공정서 <strong  id="countManufacturingDoc"></strong> 건</span>
+									<div class="main_bell" onClick="showLeftMain()"><span class="bell01" id="main_bell">1</span></div>
+									<span class="logout_txt">최근알림</span>
+								</div>
+								<div class="my_info_box_bottom">
+									<div class="fl" style="width:70%; border-right:1px solid #c8c8c8;  box-sizing:border-box; ">
+										<div class="title">결재함</div>
+											<div class="bottom_box_con01">
+												<ul>
+												  <li>
+												    <span>
+												      <strong><a href="../approval/list" id="my_reg">0</a></strong>
+												      <em>/</em>
+												      <a href="#" id="my_ret">0</a>
+												      <em>/</em>
+												      <span id="my_comp">0</span>
+												    </span>
+												    <br/>올린 결재 문서<br/><em>(대기/반려/완료)</em>
+												  </li>
+												  <li>
+												    <span>
+												      <strong><a href="../approval/approvalList" id="appr_reg">0</a></strong>
+												      <em>/</em>
+												      <a href="#" id="appr_ret">0</a>
+												      <em>/</em>
+												      <span id="appr_comp">0</span>
+												    </span>
+												    <br/>받은 결재 문서<br/><em>(대기/반려/완료)</em>
+												  </li>
+												  <li>
+												    <span>
+												      <strong><a href="../approval/refList" id="ref_today">0</a></strong>
+												      <em>/</em>
+												      <a href="#" id="ref_total">0</a>
+												    </span>
+												    <br/>받은 참조 문서<br/><em>(미열람/전체)</em>
+												  </li>
+												</ul>
+											</div>
+										</div>
+											<div class="fl" style="width:30%">
+											<div class="title">메일 수신함 설정</div>
+											<div class="bottom_box_con02">
+												<ul>
+													<li><span>BOM 반영수신</span><button type="button" class="check_on" onClick="setPersonalizationMain('mailCheck1')" id="mailCheck1"></button><input type="hidden" name="mailCheck1Value" id="mailCheck1Value" value="Y"></li>
+													<li><span>제조공정 변경수신</span><button type="button" class="check_off" onClick="setPersonalizationMain('mailCheck2')" id="mailCheck2"></button><input type="hidden" name="mailCheck2Value" id="mailCheck2Value" value="Y"></li>
+													<li><span>결재요청수신</span><button type="button" class="check_off" onClick="setPersonalizationMain('mailCheck3')" id="mailCheck3"></button><input type="hidden" name="mailCheck3Value" id="mailCheck3Value" value="Y"></li>
+												</ul>
+											</div>
+										</div>
+									</div>
+								</div>
+						  </div>
+						</div>
+						<div class="wd40">
+							<div class="chart-card-wrapper">
+								<div class="chart-title">
+									<span class="txt pieChart">내 보고서 현황</span>
+								</div>
+								<div class="chart-area pie">
+									<div id="reportPieChart" style="width: 400px; height: 290px; margin: auto; padding : 5px 0;"></div>
+								</div>
 							</div>
 						</div>
 					</div>
-			</div>
-			
 			<!-- 내정보 close-->
-			<!-- 사이공백 -->
-			<div class="main_top_box_blank"></div>
-
-			</div>
 			
 			<div class="main_middle_box">
 				<div class="my_info_box2">
@@ -531,6 +642,15 @@ function goToDetail() {
 						<div class="chart-card-wrapper">
 						    <div class="chart-title">
 							  <span class="txt-icon barChart">내 보고서 상태별 현황</span>
+							  <div class="barChartBtnBox">
+							  	<span class="barChartBtn">${userUtil:getUserName(pageContext.request)}</span>
+							  	<span>|</span>
+							  	<span class="barChartBtn">팀&파트</span>
+							  	<span>|</span>
+							  	<span class="barChartBtn">부서</span>
+							  	<span>|</span>
+							  	<span class="barChartBtn">본부</span>
+							  </div>
 							</div>
 							<ul class="tab-menu">
 						        <li class="tab-item active" data-doc="PROD">제품개발</li>
@@ -545,16 +665,18 @@ function goToDetail() {
 						        <li class="tab-item" data-doc="PACKAGE">표시사항기재</li>
 							  </ul>
 							  <div class="chart-area">
-								  <div id="reportBarChart" style="width: 1000px; height: 275px; margin: auto;"></div>
+								  <div id="reportBarChart" style="width: 100%; height: 275px; margin: auto;"></div>
 							  </div>
 						</div>
 					</div>
 				</div>
 			</div>
-			
-			<div class="title2 mt10"><span class="txt">공지사항</span></div>
-			<div class="dashboard02">
-				
+			</div>
+			<div class="board_box">			
+				<span class="noti_box_title">공지사항</span>
+				<div class="dashboard02">
+					
+				</div>
 			</div>
 			<!-- 품목제조공정서 검색 close -->			
 			<div class="title2 mt30"><span class="txt">내문서 현황</span></div>
@@ -564,6 +686,7 @@ function goToDetail() {
 			<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>
 		<!-- 컨텐츠 close-->	
+		
 	</section>
 </div>
 

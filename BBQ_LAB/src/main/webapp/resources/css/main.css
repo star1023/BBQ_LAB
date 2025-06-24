@@ -31,7 +31,7 @@
 .my_info{display:table-cell;  width:40%;min-height:100px; vertical-align:top;font-family:'맑은고딕',Malgun Gothic; }
 .main_top_box_blank{display:table-cell; width:20px;min-height:100px;vertical-align:top;}
 .main_jejo{display:table-cell; width:auto;min-height:100px;vertical-align:top; b}
-.my_info_box, .main_jejo_box{ width:100%; height:auto; box-sizing:border-box; float:left; vertical-align:top}
+.my_info_box, .main_jejo_box{ display : flex; width:100%; height:auto; box-sizing:border-box; float:left; vertical-align:top}
 .my_info_box2{ width:100%; height:auto; box-sizing:border-box; float:left; vertical-align:top}
 .main_jejo_box{ background-color:#fafafa;font-family:'맑은고딕',Malgun Gothic; }
 .my_info_box_top{ height:115px; width:100%;box-sizing:border-box;  position:relative;}
