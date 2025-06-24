@@ -111,4 +111,274 @@
 		WHERE 1 = 1 
 			AND (SEQ_NAME = 'product_code_seq' OR SEQ_NAME = 'menu_code_seq' OR SEQ_NAME = 'material_code_seq')
 	</update>
+	
+	<select id="selectHrOrgMaster" resultType="hashmap">
+    	/* batch.selectHrOrgMaster */
+    	SELECT
+    		OBJTID
+			, OBJTTX
+			, TOBJID
+			, SEQUEN
+			, PRIORT
+			, CSTCNT
+			, BUKRS
+    	FROM
+    		V_HR1010
+    	WHERE 1 = 1		
+    </select>
+    
+     <select id="selectHrUserMaster" resultType="hashmap">
+    	/* batch.selectHrUserMaster */
+    	SELECT
+    		EMPNUM
+			, SBTYPE
+			, IPSAIL
+			, RETIRE
+			, NAMEKO
+			, BIRDAY
+			, ORGAID
+			, TITLCD
+			, LEVLCD
+			, RESPCD
+			, JOBOID
+			, EMAIL
+			, MOBILE
+			, OFFICE
+			, EMPGB1
+			, EMPGB2
+			, EMSTAT
+			, SEXGUB
+			, CSTCNT
+			, BUKRS
+			, WORKCD
+    	FROM
+    		V_HR2000
+    	WHERE 1 = 1		
+    </select>
+    
+    <select id="selectHrCodeMaster" resultType="hashmap">
+    	/* batch.selectHrCodeMaster */
+    	SELECT
+    		CDTYPE
+			, CDVALU
+			, CDTEXT
+			, SEQUEN
+			, USEDYN
+    	FROM	
+    		V_HR9001
+    	WHERE 1 = 1	
+    </select>
+    
+    <insert id="insertHrOrgMaster" parameterType="list">
+		/* batch.insertHrOrgMaster */
+		INSERT INTO lab_interface_hr1010 ( 
+			OBJTID
+			, OBJTTX
+			, TOBJID
+			, SEQUEN
+			, PRIORT
+			, CSTCNT
+			, BUKRS
+		) VALUES 
+	    <foreach collection = "list" item = "item" separator = ","> 
+	    (
+	    	#{item.OBJTID}
+	        , #{item.OBJTTX}
+	        , #{item.TOBJID}
+	        , #{item.SEQUEN}
+	        , #{item.PRIORT}
+	        , #{item.CSTCNT}
+	        , #{item.BUKRS}	       
+	     ) 
+	    </foreach> 
+	  ON DUPLICATE KEY UPDATE     
+	    OBJTTX = VALUES(OBJTTX)
+		, TOBJID = VALUES(TOBJID)
+		, SEQUEN = VALUES(SEQUEN)
+		, PRIORT = VALUES(PRIORT)
+		, CSTCNT = VALUES(CSTCNT)
+		, BUKRS = VALUES(BUKRS)		
+	</insert>
+	
+	<insert id="insertHrUserMaster" parameterType="list">
+		/* batch.insertHrUserMaster */
+		INSERT INTO lab_interface_hr2000 ( 
+			EMPNUM
+			, SBTYPE
+			, IPSAIL
+			, RETIRE
+			, NAMEKO
+			, BIRDAY
+			, ORGAID
+			, TITLCD
+			, LEVLCD
+			, RESPCD
+			, JOBOID
+			, EMAIL
+			, MOBILE
+			, OFFICE
+			, EMPGB1
+			, EMPGB2
+			, EMSTAT
+			, SEXGUB
+			, CSTCNT
+			, BUKRS
+			, WORKCD
+		) VALUES 
+	    <foreach collection = "list" item = "item" separator = ","> 
+	    (
+		#{item.EMPNUM}
+		, #{item.SBTYPE}
+		, #{item.IPSAIL}
+		, #{item.RETIRE}
+		, #{item.NAMEKO}
+		, #{item.BIRDAY}
+		, #{item.ORGAID}
+		, #{item.TITLCD}
+		, #{item.LEVLCD}
+		, #{item.RESPCD}
+		, #{item.JOBOID}
+		, #{item.EMAIL}
+		, #{item.MOBILE}
+		, #{item.OFFICE}
+		, #{item.EMPGB1}
+		, #{item.EMPGB2}
+		, #{item.EMSTAT}
+		, #{item.SEXGUB}
+		, #{item.CSTCNT}
+		, #{item.BUKRS}
+		, #{item.WORKCD}
+	     ) 
+	    </foreach> 
+	  ON DUPLICATE KEY UPDATE     
+		SBTYPE = VALUES(SBTYPE)
+		, IPSAIL = VALUES(IPSAIL)
+		, RETIRE = VALUES(RETIRE)
+		, NAMEKO = VALUES(NAMEKO)
+		, BIRDAY = VALUES(BIRDAY)
+		, ORGAID = VALUES(ORGAID)
+		, TITLCD = VALUES(TITLCD)
+		, LEVLCD = VALUES(LEVLCD)
+		, RESPCD = VALUES(RESPCD)
+		, JOBOID = VALUES(JOBOID)
+		, EMAIL = VALUES(EMAIL)
+		, MOBILE = VALUES(MOBILE)
+		, OFFICE = VALUES(OFFICE)
+		, EMPGB1 = VALUES(EMPGB1)
+		, EMPGB2 = VALUES(EMPGB2)
+		, EMSTAT = VALUES(EMSTAT)
+		, SEXGUB = VALUES(SEXGUB)
+		, CSTCNT = VALUES(CSTCNT)
+		, BUKRS = VALUES(BUKRS)
+		, WORKCD = VALUES(WORKCD)
+	</insert>
+	
+	<insert id="insertHrCodeMaster" parameterType="list">
+		/* batch.insertHrCodeMaster */
+		INSERT INTO lab_interface_hr9001 ( 
+			CDTYPE
+			, CDVALU
+			, CDTEXT
+			, SEQUEN
+			, USEDYN
+		) VALUES 
+	    <foreach collection = "list" item = "item" separator = ","> 
+	    (
+		#{item.CDTYPE}
+		, #{item.CDVALU}
+		, #{item.CDTEXT}
+		, #{item.SEQUEN}
+		, #{item.USEDYN}
+	     ) 
+	    </foreach> 
+	  ON DUPLICATE KEY UPDATE     
+	    CDTEXT = VALUES(CDTEXT)
+		, SEQUEN = VALUES(SEQUEN)
+		, USEDYN = VALUES(USEDYN)
+	</insert>
+	
+	<insert id="insertHrUser">
+		/* batch.insertHrUser */
+		INSERT INTO lab_user( 
+			USER_ID
+			, USER_NAME
+			, REG_DATE
+			, EMAIL
+			, IS_ADMIN
+			, IS_DELETE
+			, THEME
+			, IS_LOCK
+			, ROLE_CODE
+			, ORGAID
+			, TITLCD
+			, LEVLCD
+			, RESPCD
+			, EMSTAT)
+		SELECT user_data.* FROM (
+			WITH ORG_INFO AS (
+				SELECT lih.*, org.OBJTTX, org.TOBJID, org.level FROM lab_interface_hr2000 lih, (
+					WITH RECURSIVE org_path(OBJTID, OBJTTX, TOBJID, SEQUEN, PRIORT, CSTCNT, BUKRS, level) AS 
+					(
+					SELECT 
+						hr1010.OBJTID
+						, hr1010.OBJTTX 
+						, hr1010.TOBJID 
+						, hr1010.SEQUEN
+						, hr1010.PRIORT 
+						, hr1010.CSTCNT 
+						, hr1010.BUKRS
+						, 1 as level
+					FROM lab_interface_hr1010 hr1010
+					WHERE hr1010.OBJTID = '10000065'
+					UNION ALL
+					SELECT 
+						hr1010_tmp.OBJTID
+						, hr1010_tmp.OBJTTX 
+						, hr1010_tmp.TOBJID 
+						, hr1010_tmp.SEQUEN
+						, hr1010_tmp.PRIORT 
+						, hr1010_tmp.CSTCNT 
+						, hr1010_tmp.BUKRS
+						, op.level+1 as level
+					FROM lab_interface_hr1010 hr1010_tmp
+					INNER JOIN org_path op ON hr1010_tmp.TOBJID = op.OBJTID
+					)
+					SELECT OBJTID, OBJTTX, TOBJID, SEQUEN, PRIORT, CSTCNT, BUKRS, level
+					FROM org_path
+				)org
+				WHERE 1 = 1
+					AND lih.ORGAID = org.OBJTID
+			)
+			SELECT 
+				EMPNUM
+				, NAMEKO
+				, sysdate()
+				, EMAIL
+				, 'N' as IS_ADMIN
+				, 'N' as IS_DELETE
+				, 'theme02' as THEME
+				, 'N' as IS_LOCK
+				, 1 as ROLE_CODE
+				, ORGAID
+				, TITLCD
+				, LEVLCD
+				, RESPCD
+				, EMSTAT
+			FROM ORG_INFO
+		)user_data
+		ON DUPLICATE KEY UPDATE     
+			USER_NAME = VALUES(USER_NAME)
+			, EMAIL = VALUES(EMAIL)
+			, IS_ADMIN = VALUES(IS_ADMIN)
+			, IS_DELETE = VALUES(IS_DELETE)
+			, THEME = VALUES(THEME)
+			, IS_LOCK = VALUES(IS_LOCK)
+			, ROLE_CODE = VALUES(ROLE_CODE)
+			, ORGAID = VALUES(ORGAID)
+			, TITLCD = VALUES(TITLCD)
+			, LEVLCD = VALUES(LEVLCD)
+			, RESPCD = VALUES(RESPCD)
+			, EMSTAT = VALUES(EMSTAT)
+	</insert>
+	
 </mapper>

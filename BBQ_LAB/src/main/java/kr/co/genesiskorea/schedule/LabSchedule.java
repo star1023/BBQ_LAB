@@ -27,4 +27,20 @@ public class LabSchedule {
 	public void initSeq() {
 		batchService.initSeq();
 	}
+	
+	public void hrOrgMaster() {
+		batchService.hrOrgMaster();
+	}
+	
+	public void hrUserMaster() {
+		batchService.hrUserMaster();
+	}
+	
+	public void hrCodeMaster() {
+		batchService.hrCodeMaster();
+	}
+	
+	public void hrUserSync() {
+		batchService.hrUserSync();
+	}
 }

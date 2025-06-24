@@ -15,4 +15,18 @@ public interface BatchDao {
 
 	void initSeq();
 
+	List<Map<String, Object>> selectHrOrgMaster();
+
+	void insertHrOrgMaster(List<Map<String, Object>> dataList);
+
+	List<Map<String, Object>> selectHrUserMaster();
+
+	void insertHrUserMaster(List<Map<String, Object>> dataList);
+
+	List<Map<String, Object>> selectHrCodeMaster();
+
+	void insertHrCodeMaster(List<Map<String, Object>> dataList);
+
+	void insertHrUser();
+
 }

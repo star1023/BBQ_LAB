@@ -134,4 +134,25 @@ public class TestController {
 		testServiceImpl.insertTrText();
 		return "테스트";
 	}
+	
+	@RequestMapping("/selectOrgAjax")
+	@ResponseBody
+	public String selectOrgAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		testServiceImpl.selectOrg();
+		return "테스트";
+	}
+	
+	@RequestMapping("/selectHrInfoAjax")
+	@ResponseBody
+	public String selectHrInfoAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		testServiceImpl.selectHrInfo();
+		return "테스트";
+	}
+	
+	@RequestMapping("/selectMasterCodeAjax")
+	@ResponseBody
+	public String selectMasterCodeAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		testServiceImpl.selectMasterCode();
+		return "테스트";
+	}
 }

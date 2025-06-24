@@ -63,7 +63,7 @@
 				END HISTORY_TYPE_TXT 
 			, lp.TITLE
 			, lh.USER_ID 
-			, (SELECT USER_NAME FROM lab_user u WHERE 1 = 1 AND u.USER_ID = lh.USER_ID) as USER_NAME
+			, FN_GET_USER_NAME(lh.USER_ID) as USER_NAME
 			, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
 		FROM lab_history lh ,
 			lab_board_faq lp 

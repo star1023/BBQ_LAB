@@ -35,6 +35,21 @@
 	    <property name="timeBetweenEvictionRunsMillis" value="300000"/>
 	</bean>
 	
+	<bean id="dataSourceMSSQL" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="net.sf.log4jdbc.sql.jdbcapi.DriverSpy" />
+		<property name="url" value="${jdbc.mssql.Url}" />
+		<property name="username" value="${jdbc.mssql.UserName}" />
+		<property name="password" value="${jdbc.mssql.Password}" />
+		<property name="maxTotal" value="${jdbc.mssql.MaxActive}" />
+		<property name="maxIdle" value="${jdbc.mssql.MaxIdle}" />
+		<property name="minIdle" value="${jdbc.mssql.MinIdle}" />
+		<property name="maxWaitMillis" value="${jdbc.mssql.MaxWait}" />
+		<property name="validationQuery" value="select 0"/>
+	    <property name="testOnBorrow" value="false"/>
+	    <property name="testWhileIdle" value="true"/>
+	    <property name="timeBetweenEvictionRunsMillis" value="300000"/>
+	</bean>
+	
 	<tx:annotation-driven transaction-manager="transactionManager" />
 
 	
@@ -53,10 +68,24 @@
 			</list>
 		</property>
 	</bean>
+	
+	<bean id="sqlSessionFactoryMSSQL" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSourceMSSQL" />
+		<property name="configLocation" value="classpath:/config/mybatis/mybatis-config.xml" />
+		<property name="mapperLocations">
+			<list>
+				<value>classpath*:/**/*mapper.xml</value>
+			</list>
+		</property>
+	</bean>
 
 	<bean id="sqlSessionTemplate" class="org.mybatis.spring.SqlSessionTemplate">
 		<constructor-arg ref="sqlSessionFactory" />
-	</bean>	
+	</bean>
+	
+	<bean id="sqlSessionTemplateMSSQL" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="sqlSessionFactoryMSSQL" />
+	</bean>		
 
 	
 	<!-- Properties 초기화 -->
