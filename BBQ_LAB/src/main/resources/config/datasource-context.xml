@@ -8,7 +8,7 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
 	<bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
-		<property name="location" value="classpath:/prop/jdbc.properties" />
+ 		<property name="location" value="classpath:/prop/jdbc.properties" />
 	</bean>
 
 	<!-- JNDI -->

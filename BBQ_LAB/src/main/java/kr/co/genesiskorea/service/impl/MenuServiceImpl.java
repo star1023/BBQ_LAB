@@ -198,7 +198,7 @@ public class MenuServiceImpl implements MenuService {
 		try {
 			
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");			
+			String customUsage = (String)listMap.get("customUsage");			
 			
 			ArrayList<String> menuType = (ArrayList<String>)listMap.get("menuType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
@@ -264,14 +264,22 @@ public class MenuServiceImpl implements MenuService {
 				}
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", menuIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", menuIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -463,7 +471,7 @@ public class MenuServiceImpl implements MenuService {
 		status = txManager.getTransaction(def);
 		try{
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");			
+			String customUsage = (String)listMap.get("customUsage");			
 			
 			ArrayList<String> menuType = (ArrayList<String>)listMap.get("menuType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
@@ -528,14 +536,22 @@ public class MenuServiceImpl implements MenuService {
 				}
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", menuIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", menuIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -754,7 +770,7 @@ public class MenuServiceImpl implements MenuService {
 		status = txManager.getTransaction(def);
 		try {
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			
 			ArrayList<String> menuType = (ArrayList<String>)listMap.get("menuType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
@@ -850,14 +866,22 @@ public class MenuServiceImpl implements MenuService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", menuIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", menuIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -1041,7 +1065,7 @@ public class MenuServiceImpl implements MenuService {
 		status = txManager.getTransaction(def);
 		try {
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			
 			ArrayList<String> menuType = (ArrayList<String>)listMap.get("menuType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
@@ -1137,14 +1161,22 @@ public class MenuServiceImpl implements MenuService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", menuIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", menuIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -1359,7 +1391,7 @@ public class MenuServiceImpl implements MenuService {
 		status = txManager.getTransaction(def);
 		try{
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			
 			ArrayList<String> menuType = (ArrayList<String>)listMap.get("menuType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
@@ -1475,14 +1507,22 @@ public class MenuServiceImpl implements MenuService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", menuIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", menuIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -1687,7 +1727,7 @@ public class MenuServiceImpl implements MenuService {
 		status = txManager.getTransaction(def);
 		try{
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			
 			ArrayList<String> menuType = (ArrayList<String>)listMap.get("menuType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
@@ -1808,14 +1848,22 @@ public class MenuServiceImpl implements MenuService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", menuIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", menuIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -2005,6 +2053,12 @@ public class MenuServiceImpl implements MenuService {
 	public int selectMyDataCheck(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return menuDao.selectMyDataCheck(param);
+	}
+	
+	@Override
+	public int selectMyDataCount(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return menuDao.selectMyDataCount(param);
 	}
 
 }

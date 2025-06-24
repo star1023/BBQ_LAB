@@ -4,7 +4,7 @@
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
-<title>신제품 품질 결과 보고서 생성</title>
+<title>메뉴 품질 점검 결과 보고서 생성</title>
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
 <link href="../resources/css/common.css" rel="stylesheet" type="text/css" />
 <link href="../resources/css/tree.css" rel="stylesheet" type="text/css" />
@@ -31,6 +31,7 @@
 </style>
 
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
+<link href="../resources/css/common.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="/resources/editor/build/ckeditor.js"></script>
 <script type="text/javascript" src="/resources/js/appr/apprClass.js?v=<%= System.currentTimeMillis()%>"></script>
 <script src="/resources/js/jquery.ui.monthpicker.js"></script>
@@ -81,6 +82,7 @@
 	    });
 	    	
     	fn.autoComplete($("#keyword"));
+    	$("#dynamicTableSection").hide();  // 업로드 모드일 때 기본 숨김
 	});
 	
 	/* 파일첨부 관련 함수 START */
@@ -234,6 +236,7 @@
 		const itemImageArr = [];
 	    var title = document.getElementById("title").value.trim();
 	    var excuteDate = document.getElementById("excuteDate").value.trim();
+	    const inputMode = document.querySelector('input[name="inputMode"]:checked')?.value;
 	    // var storeCodes = document.getElementById("storeCodeValues_1").value.trim();
 	    // var productCodes = document.getElementById("productCodeValues_1") ? document.getElementById("productCodeValues_1").value.trim() : "";
 
@@ -253,9 +256,9 @@
 	        alert("제품을 입력해 주세요.");
 	        return;
 	        */
-	    } else if (document.querySelectorAll('#columnBodyRows tr').length === 0) {
-            alert("내용 테이블에 최소 한 개의 행이 필요합니다.");
-            return;
+	    } else if (inputMode === 'manual' && document.querySelectorAll('#columnBodyRows tr').length === 0) {
+	        alert("내용 테이블에 최소 한 개의 행이 필요합니다.");
+	        return;
 	    } else if (attatchFileArr.length == 0) {
 	        alert("첨부파일을 등록해주세요.");
 	        return;
@@ -263,12 +266,14 @@
 
 	 	// 1. 유효성 검사: 선택되지 않은 컬럼이 있는지 확인
 	    const columnSelects = document.querySelectorAll('#columnHeaderRow select');
-	    for (let select of columnSelects) {
-	      if (select.value === "") {
-	        alert("모든 컬럼의 항목을 선택해 주세요.");
-	        select.focus();
-	        return;
-	      }
+	    if(inputMode === 'manual'){
+		    for (let select of columnSelects) {
+		      if (select.value === "") {
+		        alert("모든 컬럼의 항목을 선택해 주세요.");
+		        select.focus();
+		        return;
+		      }
+		    }	    	
 	    }
 	    
 	    var formData = new FormData();
@@ -282,12 +287,18 @@
 	    }
 	    
 	 	// 1. 컬럼 코드 순서 추출
-	    const columnCodes = Array.from(columnSelects).map(select => select.value);
-	    formData.append("columnStates", columnCodes.join(','));
+	    let columnCodes = Array.from(columnSelects).map(select => select.value);
+
+		// 업로드 모드이고, 컬럼 선택된 게 하나도 없거나 모두 빈값일 경우
+		if (inputMode === 'upload') {
+		  formData.append("columnStates", ""); // ✅ 완전히 빈 문자열로 서버 전송
+		} else {
+		  formData.append("columnStates", columnCodes.join(','));
+		}
 	    
 	    // 2. 셀데이터 추출
 	    const rows = document.querySelectorAll('#columnBodyRows tr');
-	 // 테이블 데이터 loop
+	 	// 테이블 데이터 loop
 	    rows.forEach((row, rowIndex) => {
 	      const rowItems = [];
 	      const cells = row.querySelectorAll('td');
@@ -1348,16 +1359,25 @@ function handleColumnSelectChange(select) {
 	  select.dataset.prevIndex = select.selectedIndex;
 	}
 // 동적 테이블 관련 함수 끝
+
+function toggleInputMode(mode) {
+  const tableSection = document.getElementById("dynamicTableSection");
+  if (mode === 'manual') {
+    tableSection.style.display = '';
+  } else {
+    tableSection.style.display = 'none';
+  }
+}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		신제품 품질 결과 보고서&nbsp;&nbsp;
+		메뉴 품질 점검 결과 보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position:relative">
-			<span class="title_s">New Product Result Report</span><span class="title">신제품 품질 결과 보고서</span>
+			<span class="title_s">Menu Quality Test Report</span><span class="title">메뉴 품질 점검 결과 보고서</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -1426,32 +1446,43 @@ function handleColumnSelectChange(select) {
 								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
+						<tr>
+						  <th style="border-left: none;">입력 방식</th>
+						  <td colspan="3">
+						    <input type="radio" name="inputMode" id="upload" value="upload" checked onchange="toggleInputMode(this.value)">
+						    <label for="upload"><span></span>업로드</label>
+						    <input type="radio" name="inputMode" id="manual" value="manual" onchange="toggleInputMode(this.value)">
+						    <label for="manual"><span></span>직접 입력</label>
+						  </td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
 			
-			<div class="title2 mt20"  style="width:100%; display: flex; justify-content: space-between;">
-				<span class="txt">내용</span>
-				<div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
-				  <button class="btn_con_search" onclick="createColumn()">컬럼 추가</button>
-				  <span style="color: #9a9a9a; padding: 0 10px;">|</span>
-				  <button class="btn_con_search" onclick="createRow()">로우 추가</button>
-				  <button class="btn_con_search" onclick="deleteRow()">로우 삭제</button>
+			<div id="dynamicTableSection">
+				<div class="title2 mt20"  style="width:100%; display: flex; justify-content: space-between;">
+					<span class="txt">내용</span>
+					<div style="display: flex; align-items: center; justify-content: flex-end; gap: 6px;">
+					  <button class="btn_con_search" onclick="createColumn()">컬럼 추가</button>
+					  <span style="color: #9a9a9a; padding: 0 10px;">|</span>
+					  <button class="btn_con_search" onclick="createRow()">로우 추가</button>
+					  <button class="btn_con_search" onclick="deleteRow()">로우 삭제</button>
+					</div>
 				</div>
-			</div>
-			<div class="main_tbl">
-				<table id="dynamicTable" class="tbl05 insert_proc01">
-				  <colgroup>
-				  	<col width="26px">
-				  </colgroup>
-				  <thead>
-				    <tr id="columnHeaderRow">
-				    </tr>
-				  </thead>
-				  <tbody id="columnBodyRows">
-
-				  </tbody>
-				</table>
+				<div class="main_tbl">
+					<table id="dynamicTable" class="tbl05 insert_proc01">
+					  <colgroup>
+					  	<col width="26px">
+					  </colgroup>
+					  <thead>
+					    <tr id="columnHeaderRow">
+					    </tr>
+					  </thead>
+					  <tbody id="columnBodyRows">
+	
+					  </tbody>
+					</table>
+				</div>
 			</div>
 			
 			<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
@@ -1645,7 +1676,7 @@ function handleColumnSelectChange(select) {
 <div class="white_content" id="dialog_search">
 	<div class="modal" style="	width: 700px;margin-left:-360px;height: 550px;margin-top:-300px;">
 		<h5 style="position:relative">
-			<span class="title">신제품 품질 결과 보고서 검색</span>
+			<span class="title">메뉴 품질 점검 결과 보고서 검색</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>

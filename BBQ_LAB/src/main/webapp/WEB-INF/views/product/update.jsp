@@ -12,6 +12,9 @@
 	transform: translate(-50%, -45%);
 }
 .ck-editor__editable { max-height: 200px; min-height:200px;}
+li {
+	list-style:none;
+}
 </style>
 
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
@@ -46,6 +49,15 @@ var selectedArr = new Array();
 		});
 		
 		fn.autoComplete($("#keyword"));
+		
+		document.querySelectorAll('.brand-token').forEach(token => {
+		    token.addEventListener('click', function (e) {
+		        if (e.target.textContent === '✕') {
+		            token.remove();
+		            updateHiddenBrandCodes(1);
+		        }
+		    });
+		});
 	});
 	
 	let _brandFullList = []; // 전체 브랜드 저장용 전역변수
@@ -754,42 +766,50 @@ var selectedArr = new Array();
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));	
 			
-			var itemImproveArr = new Array();
-			var itemExistArr = new Array();
-			var itemNoteArr = new Array();
-			$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				itemImproveArr.push($('#'+ rowId + ' input[name=itemImprove]').val());
-				itemExistArr.push($('#'+ rowId + ' input[name=itemExist]').val());
-				itemNoteArr.push($('#'+ rowId + ' input[name=itemNote]').val());
-			});		
-			formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
-			formData.append("itemExistArr", JSON.stringify(itemExistArr));	
-			formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
+			var version = parseInt($("#version").val() || "1");
 			
-			
-			var improveArr = new Array();
-			$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				improveArr.push($('#'+ rowId + ' input[name=improve]').val());
-			});		
-			formData.append("improveArr", JSON.stringify(improveArr));
-			
-			// 용도
-			const usageType = $('select[name=usageSelect]').val();
-
-			if (usageType === 'BRAND') {
-			    const brandCodes = $('#brandCodeValues_1').val();
-			    if (brandCodes) {
-			        formData.append("usageArr", brandCodes);
-			    }
-			} else if (usageType === 'CUSTOM') {
-			    const customText = $('#customUsage_1').val();
-			    if (customText) {
-			        formData.append("usageArr", customText.trim());
-			    }
+			// (버전 > 1일 때만 전송)
+			if (version > 1) {
+				// 개선 목적
+				var itemImproveArr = [];
+				var itemExistArr = [];
+				var itemNoteArr = [];
+				// 개선사항 (항상 포함 — 공통 항목)
+				var improveArr = [];
+				
+				$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					itemImproveArr.push($('#' + rowId + ' input[name=itemImprove]').val().trim());
+					itemExistArr.push($('#' + rowId + ' input[name=itemExist]').val().trim());
+					itemNoteArr.push($('#' + rowId + ' input[name=itemNote]').val().trim());
+				});
+				formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
+				formData.append("itemExistArr", JSON.stringify(itemExistArr));	
+				formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
+				
+				$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					improveArr.push($('#' + rowId + ' input[name=improve]').val().trim());
+				});
+				formData.append("improveArr", JSON.stringify(improveArr));
+			} else {
+				// 버전이 1이면 빈 배열로 초기화
+				formData.append("itemImproveArr", JSON.stringify([]));
+				formData.append("itemExistArr", JSON.stringify([]));	
+				formData.append("itemNoteArr", JSON.stringify([]));	
+				formData.append("improveArr", JSON.stringify([]));
 			}
-			formData.append("usageType", usageType);
+			
+			// 용도 분리 입력 처리
+			var brandCodes = $('#brandCodeValues_1').val();
+			var customUsage = $('#customUsage_1').val();
+
+			if (brandCodes) {
+				formData.append("usageArr", brandCodes); // USB
+			}
+			if (customUsage) {
+				formData.append("customUsage", customUsage.trim()); // USC
+			}
 			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
@@ -944,29 +964,68 @@ var selectedArr = new Array();
 		}
 	}
 	
+	function validatePurposeAndFeature() {
+		// ✅ 개발 목적 유효성 체크
+		var isValidPurpose = false;
+		$('tr[id^=purpose_tr]').each(function () {
+			var val = $(this).find('input[name=purpose]').val();
+			if ($.trim(val) !== '') isValidPurpose = true;
+		});
+		if (!isValidPurpose) {
+			alert("개발 목적을 하나 이상 입력해 주세요.");
+			return false;
+		}
+
+		// ✅ 메뉴 특징 유효성 체크
+		var isValidFeature = false;
+		$('tr[id^=feature_tr]').each(function () {
+			var val = $(this).find('input[name=feature]').val();
+			if ($.trim(val) !== '') isValidFeature = true;
+		});
+		if (!isValidFeature) {
+			alert("메뉴 특징을 하나 이상 입력해 주세요.");
+			return false;
+		}
+
+		return true;
+	}
+	
 	//입력확인
 	function fn_update(){
 		var contents = editor.getData();
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
+			tabChange('tab1');
 			$("#title").focus();
 			return;
 		} else if( !chkNull($("#productName").val()) ) {
 			alert("제품명을 입력해 주세요.");
+			tabChange('tab1');
 			$("#productName").focus();
 			return;
 		} else if( !chkNull($("#productCode").val()) ) {
 			alert("제품 코드를 입력해 주세요.");
+			tabChange('tab2');
 			$("#productCode").focus();
+			return;
+		} else if(!validatePurposeAndFeature()){
+			tabChange('tab1');
+			return;
+		} else if(!$.trim($('#brandCodeValues_1').val())){
+			alert("브랜드를 선택해 주세요.");
+			tabChange('tab1');
 			return;
 		} else if( !chkNull($("#selectTxtFull").val()) ) {
 			alert("제품유형을 선택해 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( selectedArr.length == 0 ) {
-			alert("제품유형을 선택하여 주세요.");		
+			alert("제품유형을 선택하여 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( $("#temp_attatch_file").children("li").length == 0 && attatchFileArr.length == 0 ) {
 			alert("첨부파일을 등록해주세요.");		
+			tabChange('tab1');
 			return;
 		} else {
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
@@ -1015,42 +1074,50 @@ var selectedArr = new Array();
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));
 			
-			// 용도
-			const usageType = $('select[name=usageSelect]').val();
-
-			if (usageType === 'BRAND') {
-			    const brandCodes = $('#brandCodeValues_1').val();
-			    if (brandCodes) {
-			        formData.append("usageArr", brandCodes);
-			    }
-			} else if (usageType === 'CUSTOM') {
-			    const customText = $('#customUsage_1').val();
-			    if (customText) {
-			        formData.append("usageArr", customText.trim());
-			    }
+			var version = parseInt($("#version").val() || "1");
+			
+			// (버전 > 1일 때만 전송)
+			if (version > 1) {
+				// 개선 목적
+				var itemImproveArr = [];
+				var itemExistArr = [];
+				var itemNoteArr = [];
+				// 개선사항 (항상 포함 — 공통 항목)
+				var improveArr = [];
+				
+				$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					itemImproveArr.push($('#' + rowId + ' input[name=itemImprove]').val().trim());
+					itemExistArr.push($('#' + rowId + ' input[name=itemExist]').val().trim());
+					itemNoteArr.push($('#' + rowId + ' input[name=itemNote]').val().trim());
+				});
+				formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
+				formData.append("itemExistArr", JSON.stringify(itemExistArr));	
+				formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
+				
+				$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					improveArr.push($('#' + rowId + ' input[name=improve]').val().trim());
+				});
+				formData.append("improveArr", JSON.stringify(improveArr));
+			} else {
+				// 버전이 1이면 빈 배열로 초기화
+				formData.append("itemImproveArr", JSON.stringify([]));
+				formData.append("itemExistArr", JSON.stringify([]));	
+				formData.append("itemNoteArr", JSON.stringify([]));	
+				formData.append("improveArr", JSON.stringify([]));
 			}
-			formData.append("usageType", usageType);
 			
-			var itemImproveArr = new Array();
-			var itemExistArr = new Array();
-			var itemNoteArr = new Array();
-			$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				itemImproveArr.push($('#'+ rowId + ' input[name=itemImprove]').val());
-				itemExistArr.push($('#'+ rowId + ' input[name=itemExist]').val());
-				itemNoteArr.push($('#'+ rowId + ' input[name=itemNote]').val());
-			});		
-			formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
-			formData.append("itemExistArr", JSON.stringify(itemExistArr));	
-			formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
-			
-			
-			var improveArr = new Array();
-			$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				improveArr.push($('#'+ rowId + ' input[name=improve]').val());
-			});		
-			formData.append("improveArr", JSON.stringify(improveArr));
+			// 용도 분리 입력 처리
+			var brandCodes = $('#brandCodeValues_1').val();
+			var customUsage = $('#customUsage_1').val();
+
+			if (brandCodes) {
+				formData.append("usageArr", brandCodes); // USB
+			}
+			if (customUsage) {
+				formData.append("customUsage", customUsage.trim()); // USC
+			}
 			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
@@ -1210,33 +1277,25 @@ var selectedArr = new Array();
 									if(data.RESULT == 'S') {
 										alert("결재상신이 완료되었습니다.");
 										$('#lab_loading').hide();
-										fn_goList();
+										fn_list();
 									} else {
 										alert("결재선 상신 오류가 발생하였습니다."+data.MESSAGE);
 										$('#lab_loading').hide();
-										fn_goList();
+										fn_list();
 										return;
 									}
 								},
 								error:function(request, status, errorThrown){
 									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
 									$('#lab_loading').hide();
-									fn_goList();
+									fn_list();
 								}			
 							});
 						} else {
 							alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 생성되었습니다.");
 							$('#lab_loading').hide();
-							fn_goList();
+							fn_list();
 						}
-					} else {
-						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
-						$('#lab_loading').hide();
-					}
-					if( result.RESULT == 'S' ) {
-						alert("수정되었습니다.");
-						$('#lab_loading').hide();
-						fn_list();
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -1617,7 +1676,7 @@ var selectedArr = new Array();
 			</div>
 			
 			<div id="tab1_div">
-				<div class="title2"  style="width: 80%;"><span class="txt">제목 </span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제목 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">						
 				</div>
 				<div class="main_tbl">
@@ -1628,7 +1687,7 @@ var selectedArr = new Array();
 						<tbody>
 							<tr>
 								<td>
-									<input type="text" name="title" id="title" style="width: 99%;" class="req" value="${productData.data.TITLE}"/>
+									<input type="text" name="title" id="title" style="width: 99%;" value="${productData.data.TITLE}"/>
 									<input type="hidden" name="idx" id="idx" value="${productData.data.PRODUCT_IDX}"/>
 									<input type="hidden" name="docNo" id="docNo" value="${productData.data.DOC_NO}"/>
 									<input type="hidden" name="currentVersionNo" id="currentVersionNo" value="${productData.data.VERSION_NO}"/>
@@ -1638,7 +1697,7 @@ var selectedArr = new Array();
 						</tbody>
 					</table>
 				</div>
-				<div class="title2"  style="width: 80%;"><span class="txt">제품명</span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제품명 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
@@ -1649,7 +1708,7 @@ var selectedArr = new Array();
 						<tbody>
 							<tr>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="productName" id="productName" value="${productData.data.NAME}"/>
+									<input type="text"  style="width:99%; float: left" name="productName" id="productName" value="${productData.data.NAME}"/>
 								</td>
 							</tr>
 						</tbody>
@@ -1657,7 +1716,7 @@ var selectedArr = new Array();
 				</div>
 				
 				<div style="${productData.data.VERSION_NO == 1 ? '' : 'display:none'}">
-					<div class="title2"  style="width: 80%;"><span class="txt">개발 목적</span></div>
+					<div class="title2"  style="width: 80%;"><span class="txt">개발 목적 <span class="mandatory">*</span></span></div>
 					<div class="title2" style="width: 20%; display: inline-block;">
 						<button class="btn_con_search" onClick="fn_addCol('purpose')">
 							<img src="/resources/images/icon_s_write.png" />추가 
@@ -1682,7 +1741,7 @@ var selectedArr = new Array();
 											<input type="checkbox" id="purpose_${status.count}"><label for="purpose_${status.count}"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="purpose" value="${addInfoList.INFO_TEXT}"/>
+											<input type="text"  style="width:99%; float: left" name="purpose" placeholder="가." value="${addInfoList.INFO_TEXT}"/>
 										</td>
 									</tr>
 									</c:if>
@@ -1693,7 +1752,7 @@ var selectedArr = new Array();
 											<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="purpose"/>
+											<input type="text"  style="width:99%; float: left" name="purpose"/>
 										</td>
 									</tr>
 								</c:if>
@@ -1704,7 +1763,7 @@ var selectedArr = new Array();
 										<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text"  style="width:99%; float: left" class="req" name="purpose"/>
+										<input type="text"  style="width:99%; float: left" name="purpose"/>
 									</td>
 								</tr>
 							</tbody>
@@ -1713,7 +1772,7 @@ var selectedArr = new Array();
 				</div>
 				
 				<div style="${productData.data.VERSION_NO == 1 ? '' : 'display:none'}">
-					<div class="title2"  style="width: 80%;"><span class="txt">제품 특징</span></div>
+					<div class="title2"  style="width: 80%;"><span class="txt">제품 특징 <span class="mandatory">*</span></span></div>
 					<div class="title2" style="width: 20%; display: inline-block;">
 						<button class="btn_con_search" onClick="fn_addCol('feature')">
 							<img src="/resources/images/icon_s_write.png" />추가 
@@ -1738,7 +1797,7 @@ var selectedArr = new Array();
 											<input type="checkbox" id="feature_${status.count}"><label for="feature_${status.count}"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="feature" value="${addInfoList.INFO_TEXT}"/>
+											<input type="text"  style="width:99%; float: left" name="feature" placeholder="가." value="${addInfoList.INFO_TEXT}"/>
 										</td>
 									</tr>
 									</c:if>
@@ -1749,7 +1808,7 @@ var selectedArr = new Array();
 											<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="feature"/>
+											<input type="text"  style="width:99%; float: left" name="feature"/>
 										</td>
 									</tr>
 								</c:if>
@@ -1760,7 +1819,7 @@ var selectedArr = new Array();
 										<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text"  style="width:99%; float: left" class="req" name="feature"/>
+										<input type="text"  style="width:99%; float: left" name="feature"/>
 									</td>
 								</tr>
 							</tbody>
@@ -1770,7 +1829,7 @@ var selectedArr = new Array();
 				
 				<div style="${productData.data.VERSION_NO == 1 ? 'display:none' : ''}">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">개선목적</span>
+						<span class="txt">개선목적 <span class="mandatory">*</span></span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
@@ -1800,7 +1859,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_pur_${status.count}"><label for="improve_pur_${status.count}"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl" value="${imporvePurposeList.IMPROVE}"/>
+									<input type="text" name="itemImprove" style="width: 100%" class="code_tbl" value="${imporvePurposeList.IMPROVE}"/>
 								</td>
 								<td>
 									<input type="text" name="itemExist" style="width: 100%" value="${imporvePurposeList.EXIST}"/>
@@ -1814,7 +1873,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_pur_1"><label for="improve_pur_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemImprove" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemExist" style="width: 100%"/>
@@ -1829,7 +1888,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_pur_1"><label for="improve_pur_1"><span></span></label>
 								</td>
 								<td>
-										<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl"/>
+										<input type="text" name="itemImprove" style="width: 100%" class="code_tbl"/>
 									</td>
 									<td>
 										<input type="text" name="itemExist" style="width: 100%"/>
@@ -1843,8 +1902,8 @@ var selectedArr = new Array();
 				</div>
 				
 				<div style="${productData.data.VERSION_NO == 1 ? 'display:none' : ''}">
-					<div class="title2"  style="width: 80%;"><span class="txt">개선 사항</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
+					<div class="title2"  style="width: 80%;"><span class="txt">개선 사항 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
 					<button class="btn_con_search" onClick="fn_addCol('improve')">
 						<img src="/resources/images/icon_s_write.png" />추가 
 					</button>
@@ -1868,7 +1927,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_${status.count}"><label for="improve_${status.count}"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve" value="${addInfoList.INFO_TEXT}"/>
+									<input type="text"  style="width:99%; float: left" name="improve" value="${addInfoList.INFO_TEXT}"/>
 								</td>
 							</tr>
 							</c:if>
@@ -1879,7 +1938,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve"/>
+									<input type="text"  style="width:99%; float: left" name="improve"/>
 								</td>
 							</tr>
 							</c:if>		
@@ -1890,7 +1949,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve"/>
+									<input type="text"  style="width:99%; float: left" name="improve"/>
 								</td>
 							</tr>
 						</tbody>
@@ -1898,87 +1957,76 @@ var selectedArr = new Array();
 				</div>
 				</div>
 				
-				<div id="">
-				  <div class="title2" style="width: 80%;"><span class="txt">용도</span></div>
-				  <table id="usage_Table" class="tbl05">
-				    <colgroup>
-				      <col width="100">
-				      <col width="600">
-				      <col />
-				    </colgroup>
-				    <thead>
-				      <tr>
-				        <th>용도선택</th>
-				        <th>내용</th>
-				      </tr>
-				    </thead>
+				<!-- ✅ 브랜드 영역 -->
+				<div>
+				  <div class="title2" style="width: 80%; margin-top:20px;"><span class="txt">브랜드 <span class="mandatory">*</span></span></div>
+				  <table class="tbl05">
 				    <tbody>
 				      <tr>
 				        <td>
-				          <div class="search_box" style="width:100%;">
-				            <div class="selectbox" style="width:100%; text-align:center;">
-								<c:set var="hasUSC" value="false" />
-								<c:forEach items="${addInfoList}" var="item">
-								  <c:if test="${item.INFO_TYPE == 'USC'}">
-								    <c:set var="hasUSC" value="true" />
-								  </c:if>
-								</c:forEach>
-								
-								<label><c:if test="${!hasUSC}">브랜드선택</c:if><c:if test="${hasUSC}">제품 용도 기입</c:if></label>
-								<select name="usageSelect" onchange="onUsageChange(this, 1)">
-								  <option value="">-- 선택 --</option>
-								  <option value="BRAND" <c:if test="${!hasUSC}">selected</c:if>>브랜드선택</option>
-								  <option value="CUSTOM" <c:if test="${hasUSC}">selected</c:if>>제품 용도 기입</option>
-								</select>
-				            </div>
-				          </div>
-				        </td>
-				        <td id="usageContentArea_1">
 				          <div style="width: 100%;">
 				            <div style="display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;">
-							  <!-- ✅ 토큰 or input 박스 -->
-							  <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;">
-							    <c:forEach items="${addInfoList}" var="item">
-							      <c:if test="${item.INFO_TYPE == 'USB'}">
-							        <c:forEach var="i" begin="0" end="${fn:length(fn:split(item.INFO_TEXT, ',')) - 1}">
-							          <c:set var="code" value="${fn:split(item.INFO_TEXT, ',')[i]}" />
-							          <c:set var="name" value="${fn:split(item.INFO_TEXT_NAME, ',')[i]}" />
-							          <span class="brand-token" data-code="${code}">
-							            <span style="font-weight: bold; margin-right: 6px; cursor: pointer; color: rgb(102, 102, 102);">✕</span>
-							            ${name}
-							          </span>
-							        </c:forEach>
-							      </c:if>
-							      <c:if test="${item.INFO_TYPE == 'USC'}">
-							        <input type="text" id="customUsage_1" name="req" value="${item.INFO_TEXT}" style="width:99%;" />
-							      </c:if>
-							    </c:forEach>
-							  </div>
-							
-							  <!-- ✅ 버튼은 USB일 때만 노출 -->
-							  <c:if test="${!hasUSC}">
-							    <div style="display: flex; gap: 5px;">
-							      <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
-							      <button class="btn_small_search ml5" onclick="document.getElementById('brandTokenBox_1').innerHTML='';">초기화</button>
-							    </div>
-							  </c:if>
-							</div>
-				            <!-- ✅ 코드 hidden input -->
-							<c:set var="usbCodes" value="" />
-							<c:forEach items="${addInfoList}" var="item" varStatus="status">
+				              <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;">
+								<c:forEach items="${addInfoList}" var="item">
+								  <c:if test="${item.INFO_TYPE == 'USB'}">
+								    <c:forEach var="i" begin="0" end="${fn:length(fn:split(item.INFO_TEXT, ',')) - 1}">
+								      <c:set var="code" value="${fn:split(item.INFO_TEXT, ',')[i]}" />
+								      <c:set var="name" value="${fn:split(item.INFO_TEXT_NAME, ',')[i]}" />
+								      <span class="brand-token" data-code="${code}"
+								            style="display: flex; align-items: center; background: #e0e0e0; border-radius: 12px; padding: 4px 8px; margin-right: 5px; font-size: 13px;">
+								        <span
+								          style="font-weight: bold; margin-right: 6px; cursor: pointer; color: #666;">✕</span>
+								        ${name}
+								      </span>
+								    </c:forEach>
+								  </c:if>
+								</c:forEach>
+				              </div>
+				
+				              <!-- 항상 버튼 노출 -->
+				              <div style="display: flex; gap: 5px;">
+				                <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
+				                <button class="btn_small_search ml5" onclick="document.getElementById('brandTokenBox_1').innerHTML=''; document.getElementById('brandCodeValues_1').value='';">초기화</button>
+				              </div>
+				            </div>
+				            <!-- ✅ 숨겨진 브랜드 코드 -->
+							<c:set var="brandCodes" value="" />
+							<c:forEach items="${addInfoList}" var="item">
 							  <c:if test="${item.INFO_TYPE == 'USB'}">
 							    <c:choose>
-							      <c:when test="${empty usbCodes}">
-							        <c:set var="usbCodes" value="${item.INFO_TEXT}" />
+							      <c:when test="${empty brandCodes}">
+							        <c:set var="brandCodes" value="${item.INFO_TEXT}" />
 							      </c:when>
 							      <c:otherwise>
-							        <c:set var="usbCodes" value="${usbCodes},${item.INFO_TEXT}" />
+							        <c:set var="brandCodes" value="${brandCodes},${item.INFO_TEXT}" />
 							      </c:otherwise>
 							    </c:choose>
 							  </c:if>
 							</c:forEach>
-							<input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1" value="${usbCodes}" />
+							
+							<!-- ✅ 중복된 쉼표 정리는 JS에서 filter(Boolean)으로 가능 -->
+							<input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1" value="${brandCodes}" />
 				          </div>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+				</div>
+				
+				<!-- ✅ 용도 입력 영역 -->
+				<div>
+				  <div class="title2" style="width: 80%;"><span class="txt">용도</span></div>
+				  <table class="tbl05">
+				    <tbody>
+				      <tr>
+				        <td>
+				          <c:set var="customText" value="" />
+				          <c:forEach items="${addInfoList}" var="item">
+				            <c:if test="${item.INFO_TYPE == 'USC'}">
+				              <c:set var="customText" value="${item.INFO_TEXT}" />
+				            </c:if>
+				          </c:forEach>
+				          <input type="text" id="customUsage_1" name="customUsage" value="${customText}" placeholder="용도를 입력하세요" style="width:99%;" />
 				        </td>
 				      </tr>
 				    </tbody>
@@ -2021,7 +2069,7 @@ var selectedArr = new Array();
 										<input type="checkbox" id="new_${status.count}"><label for="new_${status.count}"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="itemName" style="width: 100%" class="req code_tbl" value="${newDataList.PRODUCT_NAME}"/>
+										<input type="text" name="itemName" style="width: 100%" class="code_tbl" value="${newDataList.PRODUCT_NAME}"/>
 									</td>
 									<td>
 										<input type="text" name="itemStandard" style="width: 100%" value="${newDataList.PACKAGE_STANDARD}"/>
@@ -2039,7 +2087,7 @@ var selectedArr = new Array();
 										<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+										<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 									</td>
 									<td>
 										<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2058,7 +2106,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2093,7 +2141,7 @@ var selectedArr = new Array();
 					</table>
 				</div>
 				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
+				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부 <span class="mandatory">*</span></span></div>
 				<div class="title2 mt20" style="width:10%; display: inline-block;">
 					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
 						<img src="/resources/images/icon_s_file.png" />파일첨부 
@@ -2130,11 +2178,11 @@ var selectedArr = new Array();
 						</colgroup>
 						<tbody>
 							<tr>
-								<th style="border-left: none;">제품코드</th>
+								<th style="border-left: none;">제품코드 <span class="mandatory">*</span></th>
 								<td>
 									<c:choose>
 										<c:when test = "${productData.data.PRODUCT_CODE eq '' || empty productData.data.PRODUCT_CODE }">
-											<input type="text"  style="width:200px; float: left" class="req" name="productCode" id="productCode" placeholder="코드를 생성 하세요." readonly/>
+											<input type="text"  style="width:200px; float: left" name="productCode" id="productCode" placeholder="코드를 생성 하세요." readonly/>
 											<button class="btn_small_search ml5" onclick="selectNewCode()" style="float: left">생성</button>
 										</c:when>
 										<c:otherwise>
@@ -2145,7 +2193,7 @@ var selectedArr = new Array();
 								</td>
 								<th style="border-left: none;">상품코드</th>
 								<td>
-									<input type="text" style="width:200px; float: left" class="req" name="productSapCode" id="productSapCode" value="${productData.data.SAP_CODE}" readonly/>
+									<input type="text" style="width:200px; float: left" name="productSapCode" id="productSapCode" value="${productData.data.SAP_CODE}" readonly/>
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								</td>
 							</tr>
@@ -2177,7 +2225,7 @@ var selectedArr = new Array();
 								</td>							
 							</tr>
 							<tr>
-								<th style="border-left: none;">제품유형</th>
+								<th style="border-left: none;">제품유형 <span class="mandatory">*</span></th>
 								<td colspan="5">
 									<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 450px; float: left" 
 									value="${productData.data.PRODUCT_TYPE_NAME1} ${productData.data.PRODUCT_TYPE_NAME2 eq '' || empty productData.data.PRODUCT_TYPE_NAME2 ? '' : '>' } ${productData.data.PRODUCT_TYPE_NAME2} ${productData.data.PRODUCT_TYPE_NAME3 eq '' || empty productData.data.PRODUCT_TYPE_NAME3 ? '' : '>' } ${productData.data.PRODUCT_TYPE_NAME3}" readonly>
@@ -2257,12 +2305,12 @@ var selectedArr = new Array();
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${productMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${productMaterialData.NAME}" class="read_only" />
@@ -2282,12 +2330,12 @@ var selectedArr = new Array();
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl"/>
 									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
@@ -2349,12 +2397,12 @@ var selectedArr = new Array();
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.SAP_CODE}"/>								
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${productMaterialData.SAP_CODE}"/>								
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${productMaterialData.NAME}" class="read_only" />
@@ -2374,12 +2422,12 @@ var selectedArr = new Array();
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl"/>								
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>								
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />

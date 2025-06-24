@@ -821,4 +821,14 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'					
 	</select>
+	
+	<select id="selectMyDataCount" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(MENU_IDX) as cnt
+		FROM
+			lab_menu
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'					
+	</select>
 </mapper>

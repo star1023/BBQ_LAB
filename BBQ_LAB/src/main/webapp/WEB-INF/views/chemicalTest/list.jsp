@@ -4,8 +4,7 @@
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <title>이화학 검사 의뢰서</title>
-<script type="text/javascript" src="/resources/js/jquery.monthpicker.min.js"></script>
-<link rel="stylesheet" href="/resources/css/jquery.monthpicker.css" />
+
 <script type="text/javascript">
 $(document).ready(function () {
 	fn_loadList(1);

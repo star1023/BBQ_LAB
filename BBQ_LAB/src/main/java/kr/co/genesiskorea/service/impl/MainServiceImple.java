@@ -24,5 +24,10 @@ public class MainServiceImple implements MainService {
     public Map<String, Object> getDocStatusCount(Map<String,Object> param) {
     	return mainDao.getDocStatusCount(param);
     }
+    
+    @Override
+    public Map<String, Object> getApprStatusCount(Map<String,Object> param) {
+    	return mainDao.getApprStatusCount(param);
+    }
 
 }

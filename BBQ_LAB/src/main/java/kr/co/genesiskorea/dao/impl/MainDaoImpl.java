@@ -26,5 +26,11 @@ public class MainDaoImpl implements MainDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("main.getDocStatusCount", param);
 	}
+	
+	@Override
+	public Map<String, Object> getApprStatusCount(Map<String,Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("main.getApprStatusCount", param);
+	}
 
 }

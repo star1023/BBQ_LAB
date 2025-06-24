@@ -124,7 +124,7 @@ public class ProductServiceImpl implements ProductService {
 		status = txManager.getTransaction(def);
 		try {
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
@@ -191,10 +191,18 @@ public class ProductServiceImpl implements ProductService {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", productIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", productIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -379,7 +387,7 @@ public class ProductServiceImpl implements ProductService {
 		status = txManager.getTransaction(def);
 		try{
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
@@ -441,14 +449,22 @@ public class ProductServiceImpl implements ProductService {
 				}
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", productIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", productIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -501,7 +517,7 @@ public class ProductServiceImpl implements ProductService {
 			
 			//원료 리스트 등록
 			ArrayList<HashMap<String,String>> matList = new ArrayList<HashMap<String,String>>();
-			for( int i = 0 ; i < itemSapCodeArr.size() ; i++ ) {
+			for( int i = 0 ; i < itemMatIdxArr.size() ; i++ ) {
 				HashMap<String,String> matMap = new HashMap<String,String>();
 				matMap.put("itemType", (String)itemTypeArr.get(i));
 				matMap.put("matIdx", (String)itemMatIdxArr.get(i));
@@ -539,8 +555,11 @@ public class ProductServiceImpl implements ProductService {
 				}
 				matList.add(matMap);
 			}
-			param.put("matList", matList);
-			productDao.insertProductMaterial(param);
+			
+			if(matList != null && matList.size() > 0) {
+				param.put("matList", matList);
+				productDao.insertProductMaterial(param);				
+			}
 			
 			//첨부파일 유형 저장
 			List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
@@ -711,7 +730,7 @@ public class ProductServiceImpl implements ProductService {
 		status = txManager.getTransaction(def);
 		try {
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
@@ -737,7 +756,7 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
 			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
 			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
-			
+
 			int currentVersionNo = Integer.parseInt((String)param.get("currentVersionNo"));	//현재 문서 버젼
 			int versionNo = Integer.parseInt((String)param.get("versionNo"));				//개정 문서 버젼
 			
@@ -801,14 +820,22 @@ public class ProductServiceImpl implements ProductService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", productIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", productIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -854,14 +881,14 @@ public class ProductServiceImpl implements ProductService {
 				
 				newList.add(newMap);
 			}
-			
+
 			if( newList != null && newList.size() > 0 ) {
 				productDao.insertProductNew(newList);
 			}
 			
 			//원료 리스트 등록
 			ArrayList<HashMap<String,String>> matList = new ArrayList<HashMap<String,String>>();
-			for( int i = 0 ; i < itemSapCodeArr.size() ; i++ ) {
+			for( int i = 0 ; i < itemMatIdxArr.size() ; i++ ) {
 				HashMap<String,String> matMap = new HashMap<String,String>();
 				matMap.put("itemType", (String)itemTypeArr.get(i));
 				matMap.put("matIdx", (String)itemMatIdxArr.get(i));
@@ -894,6 +921,7 @@ public class ProductServiceImpl implements ProductService {
 				}
 				matList.add(matMap);
 			}
+			
 			if( matList != null && matList.size() > 0 ) {
 				param.put("matList", matList);
 				productDao.insertProductMaterial(param);
@@ -985,7 +1013,7 @@ public class ProductServiceImpl implements ProductService {
 		status = txManager.getTransaction(def);
 		try {
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
@@ -1079,14 +1107,22 @@ public class ProductServiceImpl implements ProductService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", productIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", productIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -1139,7 +1175,7 @@ public class ProductServiceImpl implements ProductService {
 			
 			//원료 리스트 등록
 			ArrayList<HashMap<String,String>> matList = new ArrayList<HashMap<String,String>>();
-			for( int i = 0 ; i < itemSapCodeArr.size() ; i++ ) {
+			for( int i = 0 ; i < itemMatIdxArr.size() ; i++ ) {
 				HashMap<String,String> matMap = new HashMap<String,String>();
 				matMap.put("itemType", (String)itemTypeArr.get(i));
 				matMap.put("matIdx", (String)itemMatIdxArr.get(i));
@@ -1300,7 +1336,7 @@ public class ProductServiceImpl implements ProductService {
 		status = txManager.getTransaction(def);
 		try{
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
@@ -1429,14 +1465,22 @@ public class ProductServiceImpl implements ProductService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", productIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", productIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -1494,7 +1538,7 @@ public class ProductServiceImpl implements ProductService {
 			
 			//원료 리스트 등록
 			ArrayList<HashMap<String,String>> matList = new ArrayList<HashMap<String,String>>();
-			for( int i = 0 ; i < itemSapCodeArr.size() ; i++ ) {
+			for( int i = 0 ; i < itemMatIdxArr.size() ; i++ ) {
 				HashMap<String,String> matMap = new HashMap<String,String>();
 				matMap.put("itemType", (String)itemTypeArr.get(i));
 				matMap.put("matIdx", (String)itemMatIdxArr.get(i));
@@ -1527,8 +1571,11 @@ public class ProductServiceImpl implements ProductService {
 				}
 				matList.add(matMap);
 			}
-			param.put("matList", matList);
-			productDao.insertProductMaterial(param);
+			
+			if( matList != null && matList.size() > 0) {
+				param.put("matList", matList);
+				productDao.insertProductMaterial(param);				
+			}
 			
 			//첨부파일 유형 삭제
 			map = new HashMap<String,Object>(); 
@@ -1634,7 +1681,7 @@ public class ProductServiceImpl implements ProductService {
 		status = txManager.getTransaction(def);
 		try{
 			ArrayList<String> usageArr = (ArrayList<String>)listMap.get("usageArr");
-			String usageType = (String)listMap.get("usageType");
+			String customUsage = (String)listMap.get("customUsage");
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
@@ -1756,14 +1803,22 @@ public class ProductServiceImpl implements ProductService {
 				}				
 			}
 			
-			if( usageArr.size() > 0 ) {
+			if( usageArr != null && usageArr.size() > 0 ) {
 				for( int i = 0 ; i < usageArr.size() ; i++ ) {
 					HashMap<String,Object> usageData = new HashMap<String,Object>();
 					usageData.put("idx", productIdx);
-					usageData.put("infoType", "BRAND".equals(usageType) ? "USB" : "USC");
+					usageData.put("infoType", "USB");
 					usageData.put("infoText", usageArr.get(i));
 					addInfoList.add(usageData);
 				}
+			}
+			
+			if( customUsage != null && customUsage.length() > 0 ) {
+				HashMap<String,Object> usageData = new HashMap<String,Object>();
+				usageData.put("idx", productIdx);
+				usageData.put("infoType", "USC");
+				usageData.put("infoText", customUsage);
+				addInfoList.add(usageData);
 			}
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -1821,7 +1876,7 @@ public class ProductServiceImpl implements ProductService {
 			
 			//원료 리스트 등록
 			ArrayList<HashMap<String,String>> matList = new ArrayList<HashMap<String,String>>();
-			for( int i = 0 ; i < itemSapCodeArr.size() ; i++ ) {
+			for( int i = 0 ; i < itemMatIdxArr.size() ; i++ ) {
 				HashMap<String,String> matMap = new HashMap<String,String>();
 				matMap.put("itemType", (String)itemTypeArr.get(i));
 				matMap.put("matIdx", (String)itemMatIdxArr.get(i));
@@ -1854,8 +1909,11 @@ public class ProductServiceImpl implements ProductService {
 				}
 				matList.add(matMap);
 			}
-			param.put("matList", matList);
-			productDao.insertProductMaterial(param);
+			
+			if(matList != null && matList.size() > 0) {
+				param.put("matList", matList);
+				productDao.insertProductMaterial(param);				
+			}
 			
 			//첨부파일 유형 삭제
 			map = new HashMap<String,Object>(); 
@@ -1951,5 +2009,10 @@ public class ProductServiceImpl implements ProductService {
 	public int selectMyDataCheck(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return productDao.selectMyDataCheck(param);
+	}	
+	@Override
+	public int selectMyDataCount(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return productDao.selectMyDataCount(param);
 	}	
 }

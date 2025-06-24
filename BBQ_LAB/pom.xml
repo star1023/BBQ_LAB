@@ -349,10 +349,10 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.5.1</version>
+				<version>3.8.1</version>
 				<configuration>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.8</source>
+					<target>1.8</target>
 					<compilerArgument>-Xlint:all</compilerArgument>
 					<showWarnings>true</showWarnings>
 					<showDeprecation>true</showDeprecation>
@@ -371,15 +371,10 @@
 		<!-- add start -->
 		<resources>
 			<resource>
-				<directory>src/main/resources</directory>
+			  <directory>src/main/resources</directory>
 			</resource>
 			<resource>
-				<directory>src/main/resources-${environment}</directory>
-				<targetPath>WEB-INF/classes/resources-${environment}</targetPath>
-			</resource>
-			<resource>
-				<directory>src/main/resources-${environment}</directory>
-				<targetPath>resources-${environment}</targetPath>
+			  <directory>src/main/resources-${environment}</directory>
 			</resource>
 			<resource>
 				<directory>src/main/java</directory>
@@ -404,15 +399,15 @@
 			<properties>
 				<environment>dev</environment>
 			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 		</profile>
 		<profile>
 			<id>prd</id>
 			<properties>
 				<environment>prd</environment>
 			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
 		</profile>
 	</profiles>
 </project>

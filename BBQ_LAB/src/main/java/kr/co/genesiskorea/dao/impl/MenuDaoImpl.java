@@ -225,5 +225,11 @@ public class MenuDaoImpl implements MenuDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("menu.selectMyDataCheck", param);
 	}
+	
+	@Override
+	public int selectMyDataCount(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("menu.selectMyDataCount", param);
+	}
 
 }

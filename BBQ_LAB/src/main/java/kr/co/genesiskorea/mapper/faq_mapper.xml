@@ -109,8 +109,8 @@
 	/* faq.selectFaqData */
 		SELECT 
 			BFAQ_IDX,
-			TITLE,
-			CONTENT,
+			QUESTION,
+			ANSWER,
 			REG_USER,
 			DATE_FORMAT(REG_DATE, '%Y-%m-%d') as REG_DATE,
 			CATEGORY,

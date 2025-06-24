@@ -12,7 +12,9 @@
 	transform: translate(-50%, -45%);
 }
 .ck-editor__editable { max-height: 200px; min-height:200px;}
-
+li {
+	list-style: none;
+}
 </style>
 
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
@@ -774,21 +776,16 @@
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));	
 			
-			// 용도
-			const usageType = $('select[name=usageSelect]').val();
+			// 용도 분리 입력 처리
+			var brandCodes = $('#brandCodeValues_1').val();
+			var customUsage = $('#customUsage_1').val();
 
-			if (usageType === 'BRAND') {
-			    const brandCodes = $('#brandCodeValues_1').val(); // 예: "1,2,3"
-			    if (brandCodes) {
-			        formData.append("usageArr", brandCodes); // 그대로 넣음
-			    }
-			} else if (usageType === 'CUSTOM') {
-			    const customText = $('#customUsage_1').val();
-			    if (customText) {
-			        formData.append("usageArr", customText.trim()); // 문자열 그대로 넣음
-			    }
+			if (brandCodes) {
+				formData.append("usageArr", brandCodes); // USB
 			}
-			formData.append("usageType", usageType); // 그대로 넣음
+			if (customUsage) {
+				formData.append("customUsage", customUsage.trim()); // USC
+			}
 			
 			// 신규도입품/제품규격
 			var newItemNameArr = new Array();
@@ -957,29 +954,70 @@
 			
 		}
 	}
+	
+	function validatePurposeAndFeature() {
+		// ✅ 개발 목적 유효성 체크
+		var isValidPurpose = false;
+		$('tr[id^=purpose_tr]').each(function () {
+			var val = $(this).find('input[name=purpose]').val();
+			if ($.trim(val) !== '') isValidPurpose = true;
+		});
+		if (!isValidPurpose) {
+			alert("개발 목적을 하나 이상 입력해 주세요.");
+			return false;
+		}
+
+		// ✅ 메뉴 특징 유효성 체크
+		var isValidFeature = false;
+		$('tr[id^=feature_tr]').each(function () {
+			var val = $(this).find('input[name=feature]').val();
+			if ($.trim(val) !== '') isValidFeature = true;
+		});
+		if (!isValidFeature) {
+			alert("메뉴 특징을 하나 이상 입력해 주세요.");
+			return false;
+		}
+
+		return true;
+	}
+	
 	//입력확인
 	function fn_insert(){
 		var contents = editor.getData();
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
+			tabChange('tab1');
 			$("#title").focus();
 			return;
 		} else if( !chkNull($("#menuCode").val()) ) {
 			alert("메뉴 코드를 입력해 주세요.");
+			tabChange('tab2');
 			$("#menuCode").focus();
 			return;
 		} else if( !chkNull($("#menuName").val()) ) {
 			alert("메뉴명을 입력해 주세요.");
+			tabChange('tab1');
 			$("#menuName").focus();
+			return;
+		} else if(!validatePurposeAndFeature()){
+			tabChange('tab1');
+			return;
+		} else if(!$.trim($('#brandCodeValues_1').val())){
+			alert("브랜드를 선택해 주세요.");
+			tabChange('tab1');
 			return;
 		} else if( !chkNull($("#selectTxtFull").val()) ) {
 			alert("메뉴유형을 선택해 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( selectedArr.length == 0 ) {
-			alert("메뉴유형을 선택하여 주세요.");		
+			alert("메뉴유형을 선택하여 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
+			alert("첨부파일을 등록해주세요.");
+			tabChange('tab1');
+			$("#attatch_file").focus();
 			return;			
 		} else {
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
@@ -995,14 +1033,10 @@
 						validMat = false;
 						return;
 					}
-					/*if(itemName.length <= 0){
-						validMat = false;
-						return;
-					}*/
 					matCount++;
 				})
 				if( matCount == 0 || !validMat) {
-					alert('원료를 입력해주세요.');
+					alert('신규원료를 체크하셨습니다. 신규원료를 입력해주세요.');
 					return;
 				}
 			}			
@@ -1041,20 +1075,15 @@
 						formData.append("featureArr", JSON.stringify(featureArr));	
 						
 						// 용도
-						const usageType = $('select[name=usageSelect]').val();
-
-						if (usageType === 'BRAND') {
-						    const brandCodes = $('#brandCodeValues_1').val(); // 예: "1,2,3"
-						    if (brandCodes) {
-						        formData.append("usageArr", brandCodes); // 그대로 넣음
-						    }
-						} else if (usageType === 'CUSTOM') {
-						    const customText = $('#customUsage_1').val();
-						    if (customText) {
-						        formData.append("usageArr", customText.trim()); // 문자열 그대로 넣음
-						    }
+						var brandCodes = $('#brandCodeValues_1').val();
+						var customUsage = $('#customUsage_1').val();
+			
+						if (brandCodes) {
+							formData.append("usageArr", brandCodes); // USB
 						}
-						formData.append("usageType", usageType); // 그대로 넣음
+						if (customUsage) {
+							formData.append("customUsage", customUsage.trim()); // USC
+						}
 						
 						// 신규도입품/제품규격
 						var newItemNameArr = new Array();
@@ -1589,73 +1618,66 @@
 					});
 				}
 				
+				// 브랜드 토큰 초기화
+				document.getElementById("brandTokenBox_1").innerHTML = "";
+				document.getElementById("brandCodeValues_1").value = "";
+				
 				// 용도 초기화
 				$("#usageContentArea_1").html('');
-				$("select[name='usageSelect']").val(""); // 기본값으로 초기화
 
-				addInfoList.forEach(function(item){
-					if (item.INFO_TYPE === 'USB') {
-						// BRAND 선택 설정 및 브랜드 내용 렌더링
-						const select = document.querySelector("select[name='usageSelect']");
-						select.value = "BRAND";
-						onUsageChange(select, 1); // 동적으로 영역 생성
+				addInfoList.forEach(function(item) {
+				  if (item.INFO_TYPE === 'USB') {
+				    // 브랜드 코드/이름 파싱
+				    const codeArr = item.INFO_TEXT.split(",");
+				    const nameArr = item.INFO_TEXT_NAME.split(",");
 
-						// 브랜드 코드, 이름 파싱
-						const codeArr = item.INFO_TEXT.split(",");
-						const nameArr = item.INFO_TEXT_NAME.split(",");
+				    const tokenBox = document.getElementById("brandTokenBox_1");
+				    const hiddenInput = document.getElementById("brandCodeValues_1");
+				    let brandCodes = [];
 
-						const tokenBox = document.getElementById("brandTokenBox_1");
-						const hiddenInput = document.getElementById("brandCodeValues_1");
-						tokenBox.innerHTML = '';
-						let brandCodes = [];
+				    tokenBox.innerHTML = "";
 
-						codeArr.forEach((code, i) => {
-							const name = nameArr[i];
-							brandCodes.push(code);
+				    codeArr.forEach((code, i) => {
+				      const name = nameArr[i];
+				      brandCodes.push(code);
 
-							const token = document.createElement("span");
-							token.className = "brand-token";
-							token.setAttribute("data-code", code);
-							token.style = `
-								display: flex;
-								align-items: center;
-								background: #e0e0e0;
-								border-radius: 12px;
-								padding: 4px 8px;
-								margin-right: 5px;
-								font-size: 13px;
-							`;
+				      const token = document.createElement("span");
+				      token.className = "brand-token";
+				      token.setAttribute("data-code", code);
+				      token.style = `
+				        display: flex;
+				        align-items: center;
+				        background: #e0e0e0;
+				        border-radius: 12px;
+				        padding: 4px 8px;
+				        margin-right: 5px;
+				        font-size: 13px;
+				      `;
 
-							const removeBtn = document.createElement("span");
-							removeBtn.textContent = "✕";
-							removeBtn.style = `
-								font-weight: bold;
-								margin-right: 6px;
-								cursor: pointer;
-								color: #666;
-							`;
-							removeBtn.onclick = function () {
-								token.remove();
-								updateHiddenBrandCodes(1);
-							};
+				      const removeBtn = document.createElement("span");
+				      removeBtn.textContent = "✕";
+				      removeBtn.style = `
+				        font-weight: bold;
+				        margin-right: 6px;
+				        cursor: pointer;
+				        color: #666;
+				      `;
+				      removeBtn.onclick = function () {
+				        token.remove();
+				        updateHiddenBrandCodes(1);
+				      };
 
-							token.appendChild(removeBtn);
-							token.append(name);
-							tokenBox.appendChild(token);
-						});
+				      token.appendChild(removeBtn);
+				      token.append(name);
+				      tokenBox.appendChild(token);
+				    });
 
-						hiddenInput.value = brandCodes.join(',');
-					}
+				    hiddenInput.value = brandCodes.join(',');
+				  }
 
-					if (item.INFO_TYPE === 'USC') {
-						// CUSTOM 선택 설정 및 input 생성
-						const select = document.querySelector("select[name='usageSelect']");
-						select.value = "CUSTOM";
-						onUsageChange(select, 1); // 동적으로 영역 생성
-
-						const input = document.getElementById("customUsage_1");
-						input.value = item.INFO_TEXT;
-					}
+				  if (item.INFO_TYPE === 'USC') {
+				    document.getElementById("customUsage_1").value = item.INFO_TEXT;
+				  }
 				});
 				
 			},
@@ -1769,76 +1791,6 @@
 	}
 
 // ---------------------------------------------- BRAND POPUP -------------------------------------------
-	function onUsageChange(select, idx) {
-	    // label 업데이트
-	    const label = select.parentNode.parentNode.querySelector('label');
-	    if (label) {
-  	      label.textContent = select.options[select.selectedIndex].text;
-	    }
-	    // 3단계 위로 올라가서 td 찾기
-	    var td = select.parentNode.parentNode.parentNode;
-	    var contentTd = td.nextElementSibling; // 옆에 있는 내용 td
-
-	    contentTd.innerHTML = ''; // 내용 초기화
-
-	    if (select.value === 'BRAND') {
-	        const wrapper = document.createElement('div');
-	        wrapper.style = 'width: 100%;';
-
-	        // ✅ 전체를 감쌀 컨테이너 (토큰 + 버튼)
-	        const flexContainer = document.createElement('div');
-	        flexContainer.style = 'display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;';
-
-	        // ✅ 토큰이 보여질 영역 (왼쪽)
-	        const tokenDiv = document.createElement('div');
-	        tokenDiv.id = 'brandTokenBox_' + idx;
-	        tokenDiv.className = 'token-box';
-	        tokenDiv.style = 'display: flex; flex-wrap: wrap; gap: 5px; flex: 1;';
-
-	        // ✅ 버튼 그룹 (오른쪽)
-	        const buttonGroup = document.createElement('div');
-	        buttonGroup.style = 'display: flex; gap: 5px;';
-
-	        const btnSearch = document.createElement('button');
-	        btnSearch.className = 'btn_small_search ml5';
-	        btnSearch.textContent = '조회';
-	        btnSearch.onclick = function () {
-	            openBrandDialog(idx);
-	        };
-
-	        const btnReset = document.createElement('button');
-	        btnReset.className = 'btn_small_search ml5';
-	        btnReset.textContent = '초기화';
-	        btnReset.onclick = function () {
-	            tokenDiv.innerHTML = '';
-	            hiddenInput.value = '';
-	        };
-
-	        buttonGroup.appendChild(btnSearch);
-	        buttonGroup.appendChild(btnReset);
-
-	        // ✅ 숨겨진 input (브랜드 코드 값들)
-	        const hiddenInput = document.createElement('input');
-	        hiddenInput.type = 'hidden';
-	        hiddenInput.id = 'brandCodeValues_' + idx;
-	        hiddenInput.name = 'brandCodeValues_' + idx;
-
-	        // ✅ 조합
-	        flexContainer.appendChild(tokenDiv);
-	        flexContainer.appendChild(buttonGroup);
-	        wrapper.appendChild(flexContainer);
-	        wrapper.appendChild(hiddenInput);
-	        contentTd.appendChild(wrapper);
-	    } else if (select.value === 'CUSTOM') {
-	        const input = document.createElement('input');
-	        input.type = 'text';
-	        input.id = 'customUsage_' + idx;
-	        input.placeholder = '용도를 입력하세요';
-	        input.className = 'req';
-	        input.style = 'width:99%;';
-	        contentTd.appendChild(input);
-	    }
-	}
 
 	function openBrandDialog(idx) {
 	    window._brandIdx = idx;
@@ -1974,6 +1926,12 @@
 	    document.getElementById("brandCodeValues_" + idx).value = codes.join(',');
 	}
 
+	function resetBrandTokens(idx) {
+	    const tokenDiv = document.getElementById('brandTokenBox_' + idx);
+	    const hiddenInput = document.getElementById('brandCodeValues_' + idx);
+	    if (tokenDiv) tokenDiv.innerHTML = '';
+	    if (hiddenInput) hiddenInput.value = '';
+	}
 // ---------------------------------------------- BRAND POPUP -------------------------------------------
 </script>
 <div class="wrap_in" id="fixNextTag">
@@ -2005,7 +1963,7 @@
 				</ul>
 			</div>
 			<div id="tab1_div">
-				<div class="title2"  style="width: 80%;"><span class="txt">제목 </span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제목 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">						
 				</div>
 				<div class="main_tbl">
@@ -2015,12 +1973,12 @@
 						</colgroup>
 						<tbody>
 							<tr>
-								<td><input type="text" name="title" id="title" style="width: 99%;" class="req" /></td>
+								<td><input type="text" name="title" id="title" style="width: 99%;" /></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="title2"  style="width: 80%;"><span class="txt">메뉴명</span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">메뉴명 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
@@ -2031,15 +1989,15 @@
 						<tbody>
 							<tr>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="menuName" id="menuName"/>
+									<input type="text"  style="width:99%; float: left" name="menuName" id="menuName"/>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				
-				<div class="title2"  style="width: 80%;"><span class="txt">개발 목적</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
+				<div class="title2"  style="width: 80%; margin-top:20px;"><span class="txt">개발 목적 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; margin-top:20px; display: inline-block; text-align: center;">
 					<button class="btn_con_search" onClick="fn_addCol('purpose')" id="purpose_add_btn">
 						<img src="/resources/images/icon_s_write.png" />추가 
 					</button>
@@ -2059,7 +2017,7 @@
 									<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="purpose" value="가."/>
+									<input type="text"  style="width:99%; float: left" name="purpose" placeholder="가."/>
 								</td>
 							</tr>
 						</tbody>
@@ -2069,7 +2027,7 @@
 									<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="purpose"/>
+									<input type="text"  style="width:99%; float: left" name="purpose"/>
 								</td>
 							</tr>
 						</tbody>
@@ -2077,8 +2035,8 @@
 				</div>
 				
 				
-				<div class="title2"  style="width: 80%;"><span class="txt">메뉴 특징</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
+				<div class="title2"  style="width: 80%;"><span class="txt">메뉴 특징 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
 					<button class="btn_con_search" onClick="fn_addCol('feature')" id="feature_add_btn">
 						<img src="/resources/images/icon_s_write.png" />추가 
 					</button>
@@ -2098,7 +2056,7 @@
 									<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="feature" value="가."/>
+									<input type="text"  style="width:99%; float: left" name="feature" placeholder="가."/>
 								</td>
 							</tr>
 						</tbody>
@@ -2108,49 +2066,48 @@
 									<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="feature"/>
+									<input type="text"  style="width:99%; float: left" name="feature"/>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				
+				<!-- 브랜드 영역 -->
+				<div>
+				  <div class="title2" style="margin-top:20px;"><span class="txt">브랜드 <span class="mandatory">*</span></span></div>
+				  <table class="tbl05">
+				    <tbody>
+				      <tr>
+				        <td>
+				          <div style="width: 100%;">
+				            <div style="display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;">
+				              <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;"></div>
+				              <div style="display: flex; gap: 5px;">
+				                <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
+				                <button class="btn_small_search ml5" onclick="resetBrandTokens(1)">초기화</button>
+				              </div>
+				            </div>
+				            <input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1">
+				          </div>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+				</div>
 				
-				<div id="">
-					<div class="title2"  style="width: 80%;"><span class="txt">용도</span></div>
-					<table id="usage_Table" class="tbl05">
-						<colgroup>
-							<col width="100">
-							<col width="600">
-							<col />
-						</colgroup>
-						<thead>
-							<tr>
-								<th>용도선택</th>
-								<th>내용</th>
-							</tr>
-						</thead>
-						<tbody id="brand_tbody" name="brand_tbody">
-							<tr id="brand_tr_1" class="temp_color">
-								<td>
-									<div class="search_box" style="width:100%;" >
-										<div class="selectbox" style="width:100%; text-align:center;" >
-											<label>-- 선택 --</label>
-										    <select name="usageSelect" onchange="onUsageChange(this, 1);">
-										      <option value="">-- 선택 --</option>
-										      <option value="BRAND">브랜드선택</option>
-										      <option value="CUSTOM">제품 용도 기입</option>
-										    </select>
-										</div>
-									</div>
-								</td>
-								<td id="usageContentArea_1">
-								</td>
-							</tr>
-						</tbody>
-						<tfoot>
-						</tfoot>
-					</table>
+				<!-- 용도 입력 영역 -->
+				<div>
+				  <div class="title2"><span class="txt">용도 </span></div>
+				  <table class="tbl05">
+				    <tbody>
+				      <tr>
+				        <td>
+				          <input type="text" id="customUsage_1" placeholder="용도를 입력하세요" style="width:99%;">
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
 				</div>
 				
 				<div id="">
@@ -2188,7 +2145,7 @@
 									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2206,7 +2163,7 @@
 									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2258,7 +2215,7 @@
 									<input type="checkbox" id="new1_1"><label for="new1_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2276,7 +2233,7 @@
 									<input type="checkbox" id="new1_1"><label for="new1_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2312,7 +2269,7 @@
 				</div>
 				
 				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
+				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부 <span class="mandatory">*</span></span></div>
 				<div class="title2 mt20" style="width:10%; display: inline-block;">
 					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
 						<img src="/resources/images/icon_s_file.png" />파일첨부 
@@ -2356,15 +2313,15 @@
 						</colgroup>
 						<tbody>
 							<tr>
-								<th style="border-left: none;">메뉴코드</th>
+								<th style="border-left: none;">메뉴코드 <span class="mandatory">*</span></th>
 								<td>
 									<input type="hidden"  name="isSample" id="isSample" value="N"/>
-									<input type="text"  style="width:200px; float: left" class="req" name="menuCode" id="menuCode" placeholder="코드를 생성 하세요." readonly/>
+									<input type="text"  style="width:200px; float: left" name="menuCode" id="menuCode" placeholder="코드를 생성 하세요." readonly/>
 									<button class="btn_small_search ml5" onclick="selectNewCode()" style="float: left">생성</button>
 								</td>
 								<th style="border-left: none;">상품코드</th>
 								<td>
-									<input type="text"  style="width:200px; float: left" class="req" name="menuSapCode" id="menuSapCode" placeholder="코드를 조회 하세요." readonly/>
+									<input type="text"  style="width:200px; float: left" name="menuSapCode" id="menuSapCode" placeholder="코드를 조회 하세요." readonly/>
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 									<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 								</td>
@@ -2408,7 +2365,7 @@
 						-->
 						
 							<tr>
-								<th style="border-left: none;">메뉴유형</th>
+								<th style="border-left: none;">메뉴유형 <span class="mandatory">*</span></th>
 								<td colspan="5">
 									<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 450px; float: left" readonly>
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_menu')" style="float: left">조회</button>
@@ -2475,8 +2432,8 @@
 									<input type="hidden" name="itemType" value="Y"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
@@ -2498,7 +2455,7 @@
 				
 				<div id="matDiv">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">원료</span>
+						<span class="txt">기존원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
@@ -2536,8 +2493,8 @@
 									<input type="hidden" name="itemType" value="N"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
@@ -2616,8 +2573,8 @@
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 			</td>
 			<td>
@@ -2639,8 +2596,8 @@
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 			</td>
 			<td>
@@ -2892,7 +2849,7 @@
 <div class="white_content" id="dialog_search">
 	<div class="modal" style="	width: 700px;margin-left:-360px;height: 550px;margin-top:-300px;">
 		<h5 style="position:relative">
-			<span class="title">개발완료보고서검색</span>
+			<span class="title">메뉴개발완료보고서검색</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -2904,14 +2861,14 @@
 		<div class="list_detail">
 			<ul>
 				<li>
-					<dt>제품검색</dt>
+					<dt>메뉴검색</dt>
 					<dd>
 						<input type="text" value="" class="req" style="width:302px; float: left" name="searchValue" id="searchValue" placeholder="제품코드/제품명을 입력하세요."/>
 						<button class="btn_small_search ml5" onclick="fn_search()" style="float: left">조회</button>
 					</dd>
 				</li>
 				<li>
-					<dt>제품구분</dt>
+					<dt>메뉴구분</dt>
 					<dd >
 						<div class="selectbox" style="width:100px;" id="searchCategory1_div">  
 							<label for="searchCategory1" id="searchCategory1_label">선택</label> 

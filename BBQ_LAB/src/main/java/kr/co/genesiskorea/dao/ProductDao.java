@@ -78,4 +78,6 @@ public interface ProductDao {
 	void deleteProductImporvePurpose(HashMap<String, Object> map) throws Exception;
 
 	int selectMyDataCheck(Map<String, Object> param);
+	
+	int selectMyDataCount(Map<String, Object> param);
 }

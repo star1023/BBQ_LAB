@@ -4,13 +4,16 @@
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
-<title>개발완료보고서 생성</title>
+<title>제품 개발완료보고서 생성</title>
 <style>
 .positionCenter{
 	position: absolute;
 	transform: translate(-50%, -45%);
 }
 .ck-editor__editable { max-height: 200px; min-height:200px;}
+li {
+	list-style : none;
+}
 </style>
 
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
@@ -769,21 +772,16 @@
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));
 			
-			// 용도
-			const usageType = $('select[name=usageSelect]').val();
+			// 용도 분리 입력 처리
+			var brandCodes = $('#brandCodeValues_1').val();
+			var customUsage = $('#customUsage_1').val();
 
-			if (usageType === 'BRAND') {
-			    const brandCodes = $('#brandCodeValues_1').val(); // 예: "1,2,3"
-			    if (brandCodes) {
-			        formData.append("usageArr", brandCodes); // 그대로 넣음
-			    }
-			} else if (usageType === 'CUSTOM') {
-			    const customText = $('#customUsage_1').val();
-			    if (customText) {
-			        formData.append("usageArr", customText.trim()); // 문자열 그대로 넣음
-			    }
+			if (brandCodes) {
+				formData.append("usageArr", brandCodes); // USB
 			}
-			formData.append("usageType", usageType); // 그대로 넣음
+			if (customUsage) {
+				formData.append("customUsage", customUsage.trim()); // USC
+			}
 			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
@@ -937,29 +935,69 @@
 			});
 		}
 	}
+	
+	function validatePurposeAndFeature() {
+		// ✅ 개발 목적 유효성 체크
+		var isValidPurpose = false;
+		$('tr[id^=purpose_tr]').each(function () {
+			var val = $(this).find('input[name=purpose]').val();
+			if ($.trim(val) !== '') isValidPurpose = true;
+		});
+		if (!isValidPurpose) {
+			alert("개발 목적을 하나 이상 입력해 주세요.");
+			return false;
+		}
+
+		// ✅ 제품 특징 유효성 체크
+		var isValidFeature = false;
+		$('tr[id^=feature_tr]').each(function () {
+			var val = $(this).find('input[name=feature]').val();
+			if ($.trim(val) !== '') isValidFeature = true;
+		});
+		if (!isValidFeature) {
+			alert("제품 특징을 하나 이상 입력해 주세요.");
+			return false;
+		}
+
+		return true;
+	}
+	
 	//입력확인
 	function fn_insert(){
 		var contents = editor.getData();
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
+			tabChange('tab1');
 			$("#title").focus();
 			return;
 		} else if( !chkNull($("#productCode").val()) ) {
 			alert("제품 코드를 입력해 주세요.");
+			tabChange('tab2');
 			$("#productCode").focus();
 			return;
 		} else if( !chkNull($("#productName").val()) ) {
 			alert("제품명을 입력해 주세요.");
+			tabChange('tab1');
 			$("#productName").focus();
+			return;
+		} else if(!validatePurposeAndFeature()){
+			tabChange('tab1');
+			return;
+		} else if(!$.trim($('#brandCodeValues_1').val())){
+			alert("브랜드를 선택해 주세요.");
+			tabChange('tab1');
 			return;
 		} else if( !chkNull($("#selectTxtFull").val()) ) {
 			alert("제품유형을 선택해 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( selectedArr.length == 0 ) {
-			alert("제품유형을 선택하여 주세요.");		
+			alert("제품유형을 선택하여 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
+			alert("첨부파일을 등록해주세요.");
+			tabChange('tab1');
 			return;			
 		} else {
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
@@ -982,7 +1020,7 @@
 					matCount++;
 				})
 				if( matCount == 0 || !validMat) {
-					alert('원료를 입력해주세요.');
+					alert('신규원료를 체크하셨습니다. 신규원료를 입력해주세요.');
 					return;
 				}
 			}			
@@ -1020,21 +1058,16 @@
 						});
 						formData.append("featureArr", JSON.stringify(featureArr));
 						
-						// 용도
-						const usageType = $('select[name=usageSelect]').val();
+						// 용도 분리 입력 처리
+						var brandCodes = $('#brandCodeValues_1').val();
+						var customUsage = $('#customUsage_1').val();
 
-						if (usageType === 'BRAND') {
-						    const brandCodes = $('#brandCodeValues_1').val(); // 예: "1,2,3"
-						    if (brandCodes) {
-						        formData.append("usageArr", brandCodes); // 그대로 넣음
-						    }
-						} else if (usageType === 'CUSTOM') {
-						    const customText = $('#customUsage_1').val();
-						    if (customText) {
-						        formData.append("usageArr", customText.trim()); // 문자열 그대로 넣음
-						    }
+						if (brandCodes) {
+							formData.append("usageArr", brandCodes); // USB
 						}
-						formData.append("usageType", usageType); // 그대로 넣음
+						if (customUsage) {
+							formData.append("customUsage", customUsage.trim()); // USC
+						}
 						
 						var newItemNameArr = new Array();
 						var newItemStandardArr = new Array();
@@ -1173,8 +1206,6 @@
 							success:function(result) {
 								if( result.RESULT == 'S' ) {
 									if( result.IDX > 0 ) {
-										//alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 생성되었습니다.");
-										//fn_goList();
 										if( $("#apprLine option").length > 0 ) {
 											var apprFormData = new FormData();
 											apprFormData.append("docIdx", result.IDX );
@@ -1951,7 +1982,7 @@
 				</ul>
 			</div>
 			<div id="tab1_div">
-				<div class="title2"  style="width: 80%;"><span class="txt">제목 </span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제목 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">						
 				</div>
 				<div class="main_tbl">
@@ -1961,12 +1992,12 @@
 						</colgroup>
 						<tbody>
 							<tr>
-								<td><input type="text" name="title" id="title" style="width: 99%;" class="req" /></td>
+								<td><input type="text" name="title" id="title" style="width: 99%;"/></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="title2"  style="width: 80%;"><span class="txt">제품명</span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제품명 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
@@ -1977,15 +2008,15 @@
 						<tbody>
 							<tr>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="productName" id="productName"/>
+									<input type="text"  style="width:99%; float: left" name="productName" id="productName"/>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				
-				<div class="title2"  style="width: 80%;"><span class="txt">개발 목적</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
+				<div class="title2"  style="width: 80%;"><span class="txt">개발 목적 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
 					<button class="btn_con_search" onClick="fn_addCol('purpose')" id="purpose_add_btn">
 						<img src="/resources/images/icon_s_write.png" />추가 
 					</button>
@@ -2005,7 +2036,7 @@
 									<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="purpose" value="가."/>
+									<input type="text"  style="width:99%; float: left" name="purpose" placeholder="가."/>
 								</td>
 							</tr>
 						</tbody>
@@ -2015,7 +2046,7 @@
 									<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="purpose"/>
+									<input type="text"  style="width:99%; float: left" name="purpose"/>
 								</td>
 							</tr>
 						</tbody>
@@ -2023,8 +2054,8 @@
 				</div>
 				
 				
-				<div class="title2"  style="width: 80%;"><span class="txt">제품 특징</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
+				<div class="title2"  style="width: 80%;"><span class="txt">제품 특징 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
 					<button class="btn_con_search" onClick="fn_addCol('feature')" id="feature_add_btn">
 						<img src="/resources/images/icon_s_write.png" />추가 
 					</button>
@@ -2044,7 +2075,7 @@
 									<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="feature" value="가."/>
+									<input type="text"  style="width:99%; float: left" name="feature" placeholder="가."/>
 								</td>
 							</tr>
 						</tbody>
@@ -2054,49 +2085,49 @@
 									<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="feature"/>
+									<input type="text"  style="width:99%; float: left" name="feature"/>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				
-				<div id="">
-					<div class="title2"  style="width: 80%;"><span class="txt">용도</span></div>
-					<table id="usage_Table" class="tbl05">
-						<colgroup>
-							<col width="100">
-							<col width="600">
-							<col />
-						</colgroup>
-						<thead>
-							<tr>
-								<th>용도선택</th>
-								<th>내용</th>
-							</tr>
-						</thead>
-						<tbody id="brand_tbody" name="brand_tbody">
-							<tr id="brand_tr_1" class="temp_color">
-								<td>
-									<div class="search_box" style="width:100%;" >
-										<div class="selectbox" style="width:100%; text-align:center;" >
-											<label>-- 선택 --</label>
-										    <select name="usageSelect" onchange="onUsageChange(this, 1);">
-										      <option value="">-- 선택 --</option>
-										      <option value="BRAND">브랜드선택</option>
-										      <option value="CUSTOM">제품 용도 기입</option>
-										    </select>
-										</div>
-									</div>
-								</td>
-								<td id="usageContentArea_1">
-								</td>
-							</tr>
-						</tbody>
-						<tfoot>
-						</tfoot>
-					</table>
-				</div>	
+				<!-- 브랜드 영역 -->
+				<div>
+				  <div class="title2" style="margin-top:20px;"><span class="txt">브랜드 <span class="mandatory">*</span></span></div>
+				  <table class="tbl05">
+				    <tbody>
+				      <tr>
+				        <td>
+				          <div style="width: 100%;">
+				            <div style="display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;">
+				              <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;"></div>
+				              <div style="display: flex; gap: 5px;">
+				                <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
+				                <button class="btn_small_search ml5" onclick="resetBrandTokens(1)">초기화</button>
+				              </div>
+				            </div>
+				            <input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1">
+				          </div>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+				</div>
+				
+				<!-- 용도 입력 영역 -->
+				<div>
+				  <div class="title2"><span class="txt">용도</span></div>
+				  <table class="tbl05">
+				    <tbody>
+				      <tr>
+				        <td>
+				          <input type="text" id="customUsage_1" placeholder="용도를 입력하세요" style="width:99%;">
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+				</div>
 				
 				<div id="">
 					<div class="title2" style="float: left; margin-top: 30px;">
@@ -2133,7 +2164,7 @@
 									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2151,7 +2182,7 @@
 									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2187,7 +2218,7 @@
 				</div>
 				
 				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
+				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부 <span class="mandatory">*</span></span></div>
 				<div class="title2 mt20" style="width:10%; display: inline-block;">
 					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
 						<img src="/resources/images/icon_s_file.png" />파일첨부 
@@ -2231,15 +2262,15 @@
 						</colgroup>
 						<tbody>
 							<tr>
-								<th style="border-left: none;">제품코드</th>
+								<th style="border-left: none;">제품코드 <span class="mandatory">*</span></th>
 								<td>
 									<input type="hidden"  name="isSample" id="isSample" value="N"/>
-									<input type="text"  style="width:200px; float: left" class="req" name="productCode" id="productCode" placeholder="코드를 생성 하세요." readonly/>
+									<input type="text"  style="width:200px; float: left" name="productCode" id="productCode" placeholder="코드를 생성 하세요." readonly/>
 									<button class="btn_small_search ml5" onclick="selectNewCode()" style="float: left">생성</button>
 								</td>
 								<th style="border-left: none;">상품코드</th>
 								<td>
-									<input type="text"  style="width:200px; float: left" class="req" name="productSapCode" id="productSapCode" placeholder="코드를 조회 하세요." readonly/>
+									<input type="text"  style="width:200px; float: left" name="productSapCode" id="productSapCode" placeholder="코드를 조회 하세요." readonly/>
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 									<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 								</td>
@@ -2280,7 +2311,7 @@
 								</td>							
 							</tr>
 							<tr>
-								<th style="border-left: none;">제품유형</th>
+								<th style="border-left: none;">제품유형 <span class="mandatory">*</span></th>
 								<td colspan="5">
 									<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 450px; float: left" readonly>
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_product')" style="float: left">조회</button>
@@ -2347,8 +2378,8 @@
 									<input type="hidden" name="itemType" value="Y"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
@@ -2408,8 +2439,8 @@
 									<input type="hidden" name="itemType" value="N"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
@@ -2488,8 +2519,8 @@
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 			</td>
 			<td>
@@ -2511,8 +2542,8 @@
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 			</td>
 			<td>

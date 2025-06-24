@@ -76,5 +76,7 @@ public interface MenuDao {
 	void deleteMenuMaterial(HashMap<String, Object> map) throws Exception;
 
 	int selectMyDataCheck(Map<String, Object> param);
+	
+	int selectMyDataCount(Map<String, Object> param);
 
 }
