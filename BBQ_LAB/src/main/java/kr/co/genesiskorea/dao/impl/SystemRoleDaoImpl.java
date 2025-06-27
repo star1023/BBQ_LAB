@@ -35,7 +35,7 @@ public class SystemRoleDaoImpl implements SystemRoleDao {
 	@Override
 	public void insertRole(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		sqlSessionTemplate.insert("systemRole.insertRoleMenu", param);
+		sqlSessionTemplate.insert("systemRole.insertRole", param);
 	}
 
 	@Override

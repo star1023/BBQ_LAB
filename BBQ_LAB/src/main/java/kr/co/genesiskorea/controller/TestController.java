@@ -28,6 +28,7 @@ import kr.co.genesiskorea.service.TestService;
 import kr.co.genesiskorea.service.impl.BatchServiceImpl;
 import kr.co.genesiskorea.service.impl.CommonServiceImpl;
 import kr.co.genesiskorea.service.impl.TestServiceImpl;
+import kr.co.genesiskorea.util.SecurityUtil;
 
 /**
  * Handles requests for the application home page.
@@ -153,6 +154,24 @@ public class TestController {
 	@ResponseBody
 	public String selectMasterCodeAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		testServiceImpl.selectMasterCode();
+		return "테스트";
+	}
+	
+	@RequestMapping("/userTestAjax")
+	@ResponseBody
+	public String userTestAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		List<Map<String,Object>> userList = testServiceImpl.selecUserList();
+		for( int i = 0 ; i < userList.size() ; i++ ) {
+			HashMap<String,Object> userData = (HashMap<String,Object>)userList.get(i);
+			String userId = (String)userData.get("userId");
+			String encPwd = SecurityUtil.getEncrypt(userId, userId);
+//			System.err.println(userId +"  :  "+ encPwd);
+			param.put("userId", userId);
+			param.put("encPwd", encPwd);
+			param.put("pwdInit", "Y");
+			testServiceImpl.updateUserPwd(param);
+			
+		}
 		return "테스트";
 	}
 }

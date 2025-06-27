@@ -82,4 +82,16 @@ public class TestServiceImpl implements TestService {
 		testDao.insertMasterCode(dataList);
 	}
 
+
+	public List<Map<String, Object>> selecUserList() {
+		// TODO Auto-generated method stub
+		return testDao.selecUserList();
+	}
+
+
+	public void updateUserPwd(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		testDao.updateUserPwd(param);
+	}
+
 }

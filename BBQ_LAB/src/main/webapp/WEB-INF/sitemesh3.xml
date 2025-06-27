@@ -4,6 +4,8 @@
 	<mapping path="*/user/login" exclude="true" />
 	<mapping path="*/user/logout" exclude="true" />
 	<mapping path="*/user/ssoLoginFail" exclude="true" />
+	<mapping path="*/user/pwdInit" exclude="true" />
+	<mapping path="*/error/*" exclude="true" />
 	<mapping path="*/*popup*" decorator="/WEB-INF/views/decorators/layoutpopup.jsp"/>
 	<mapping path="*/**/*" decorator="/WEB-INF/views/decorators/layout.jsp"/>	
 </sitemesh>

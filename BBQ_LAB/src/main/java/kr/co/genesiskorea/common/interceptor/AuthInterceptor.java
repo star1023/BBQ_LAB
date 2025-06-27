@@ -53,6 +53,8 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		exceptUriList.add("Ajax");
 		exceptUriList.add("/user/login");
 		exceptUriList.add("/user/logout");
+		exceptUriList.add("/user/pwdInit");
+		exceptUriList.add("/ssoLogin");
 		exceptUriList.add("/subscribe");
 		exceptUriList.add("send-data");
 		exceptUriList.add("resources");

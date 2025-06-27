@@ -297,7 +297,7 @@
 		, USEDYN = VALUES(USEDYN)
 	</insert>
 	
-	<insert id="insertHrUser">
+	<!-- insert id="insertHrUser">
 		/* batch.insertHrUser */
 		INSERT INTO lab_user( 
 			USER_ID
@@ -313,8 +313,10 @@
 			, TITLCD
 			, LEVLCD
 			, RESPCD
-			, EMSTAT)
-		SELECT user_data.* FROM (
+			, EMSTAT
+			, USER_PWD
+			, PWD_INIT)
+		SELECT user_data.*, HEX(AES_ENCRYPT(user_data.EMPNUM,'genesisbbq2025$%')) AS USER_PWD, 'Y' AS PWD_INIT FROM (
 			WITH ORG_INFO AS (
 				SELECT lih.*, org.OBJTTX, org.TOBJID, org.level FROM lab_interface_hr2000 lih, (
 					WITH RECURSIVE org_path(OBJTID, OBJTTX, TOBJID, SEQUEN, PRIORT, CSTCNT, BUKRS, level) AS 
@@ -379,6 +381,115 @@
 			, LEVLCD = VALUES(LEVLCD)
 			, RESPCD = VALUES(RESPCD)
 			, EMSTAT = VALUES(EMSTAT)
+	</insert-->
+	
+	<insert id="insertHrUser" parameterType="list">
+	/* batch.insertHrUser */
+		INSERT INTO lab_user( 
+			USER_ID
+			, USER_NAME
+			, REG_DATE
+			, EMAIL
+			, IS_ADMIN
+			, IS_DELETE
+			, THEME
+			, IS_LOCK
+			, ROLE_CODE
+			, ORGAID
+			, TITLCD
+			, LEVLCD
+			, RESPCD
+			, EMSTAT
+			, USER_PWD
+			, PWD_INIT)
+		<foreach collection = "list" item = "item" separator = ","> 
+		 (
+	    	#{item.EMPNUM}
+	        , #{item.NAMEKO}
+	        , sysdate()
+	        , #{item.EMAIL}
+	        , #{item.IS_ADMIN}
+	        , #{item.IS_DELETE}
+	        , #{item.THEME}
+	        , #{item.IS_LOCK}
+	        , #{item.ROLE_CODE}
+	        , #{item.ORGAID}
+	        , #{item.TITLCD}
+	        , #{item.LEVLCD}
+	        , #{item.RESPCD}
+	        , #{item.EMSTAT}
+	        , #{item.ENCPWD}
+	        , 'Y'
+	     ) 
+		</foreach>
+		ON DUPLICATE KEY UPDATE     
+			USER_NAME = VALUES(USER_NAME)
+			, EMAIL = VALUES(EMAIL)
+			, IS_ADMIN = VALUES(IS_ADMIN)
+			, IS_DELETE = VALUES(IS_DELETE)
+			, THEME = VALUES(THEME)
+			, IS_LOCK = VALUES(IS_LOCK)
+			, ROLE_CODE = VALUES(ROLE_CODE)
+			, ORGAID = VALUES(ORGAID)
+			, TITLCD = VALUES(TITLCD)
+			, LEVLCD = VALUES(LEVLCD)
+			, RESPCD = VALUES(RESPCD)
+			, EMSTAT = VALUES(EMSTAT)	
+	
 	</insert>
 	
+	<select id="selectResearchUser" resultType="map">
+	/* batch.selectResearchUser */
+		SELECT user_data.* FROM (
+			WITH ORG_INFO AS (
+				SELECT lih.*, org.OBJTTX, org.TOBJID, org.level FROM lab_interface_hr2000 lih, (
+					WITH RECURSIVE org_path(OBJTID, OBJTTX, TOBJID, SEQUEN, PRIORT, CSTCNT, BUKRS, level) AS 
+					(
+					SELECT 
+						hr1010.OBJTID
+						, hr1010.OBJTTX 
+						, hr1010.TOBJID 
+						, hr1010.SEQUEN
+						, hr1010.PRIORT 
+						, hr1010.CSTCNT 
+						, hr1010.BUKRS
+						, 1 as level
+					FROM lab_interface_hr1010 hr1010
+					WHERE hr1010.OBJTID = '10000065'
+					UNION ALL
+					SELECT 
+						hr1010_tmp.OBJTID
+						, hr1010_tmp.OBJTTX 
+						, hr1010_tmp.TOBJID 
+						, hr1010_tmp.SEQUEN
+						, hr1010_tmp.PRIORT 
+						, hr1010_tmp.CSTCNT 
+						, hr1010_tmp.BUKRS
+						, op.level+1 as level
+					FROM lab_interface_hr1010 hr1010_tmp
+					INNER JOIN org_path op ON hr1010_tmp.TOBJID = op.OBJTID
+					)
+					SELECT OBJTID, OBJTTX, TOBJID, SEQUEN, PRIORT, CSTCNT, BUKRS, level
+					FROM org_path
+				)org
+				WHERE 1 = 1
+					AND lih.ORGAID = org.OBJTID
+			)
+			SELECT 
+				EMPNUM
+				, NAMEKO
+				, sysdate()
+				, EMAIL
+				, 'N' as IS_ADMIN
+				, 'N' as IS_DELETE
+				, 'theme02' as THEME
+				, 'N' as IS_LOCK
+				, ORGAID
+				, TITLCD
+				, LEVLCD
+				, RESPCD
+				, EMSTAT
+			FROM ORG_INFO
+		)user_data
+	</select>
 </mapper>

@@ -80,12 +80,13 @@
 		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
 		, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as TOBJID 
 		, lu.EMSTAT
+		, lu.PWD_INIT
     FROM 
     	lab_user lu
 	WHERE	1 = 1
 		AND lu.USER_ID = #{userId}
-		AND lu.USER_PWD = #{userEncPwd}
-		AND lu.EMSTAT = 1
+		AND lu.USER_PWD = #{encPwd}
+
     </select>
     
     <select id="userCount" parameterType="map" resultType="int">
@@ -515,4 +516,58 @@
 		INNER JOIN lab_system_role_menu lm ON t2.menuId = lm.MENU_IDX and lm.ROLE_IDX = '1'
 		where t2.useYn = 'Y'
 	</select>
+	
+	<select id="selectUserData" parameterType="map" resultType="hashmap">
+	/*	user.selectUserData 사용자 정보 조회 */
+	SELECT 
+		lu.USER_ID AS userId
+	    , lu.USER_NAME AS userName
+	    , lu.USER_GRAD AS userGrade
+	    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
+	    , lu.REG_DATE AS regDate
+	    , lu.USER_CODE AS userCode
+	    , lu.EMAIL AS email
+	    , lu.DEPT_CODE AS deptCode
+	    , getCodeName('DEPT',lu.DEPT_CODE) AS deptCodeName
+	    , lu.TEAM_CODE AS teamCode
+	    , getCodeName('TEAM',lu.TEAM_CODE) AS teamCodeName	
+	    , lu.TITLE_CODE AS titleCode
+	    , lu.USER_TYPE AS userType
+	    , lu.IS_ADMIN AS isAdmin
+	    , lu.IS_DELETE AS isDelete
+	    , lu.THEME AS theme
+	    , lu.CONTENT_MODE AS contentMode
+	    , lu.WIDTH_MODE AS widthMode
+	    , lu.MAIL_CHECK1 AS mailCheck1
+	    , lu.MAIL_CHECK2 AS mailCheck2
+	    , lu.MAIL_CHECK3 AS mailCheck3
+	    , lu.IS_LOCK AS isLock
+	    , lu.ROLE_CODE AS roleCode
+	    , lu.ORGAID
+		, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+		, lu.TITLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+		, lu.LEVLCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+		, lu.RESPCD
+		, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
+		, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as TOBJID 
+		, lu.EMSTAT
+    FROM 
+    	lab_user lu
+	WHERE	1 = 1
+	    AND lu.IS_DELETE != 'Y'
+	    AND lu.EMSTAT != 3         
+		AND lu.USER_ID = #{userId, jdbcType=VARCHAR}
+    </select>
+    
+    <update id="updateUserPwd" parameterType="map">
+    	/*	user.updateUserPwd 사용자 비밀번호 변경 */
+    	UPDATE lab_user 
+		SET 
+	      	USER_PWD =  #{encPwd}
+			, PWD_INIT =  #{pwdInit}  
+		WHERE	1 = 1
+			AND USER_ID = #{userId}
+    </update>
 </mapper>

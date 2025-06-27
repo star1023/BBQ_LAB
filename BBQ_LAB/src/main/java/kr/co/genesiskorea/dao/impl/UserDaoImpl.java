@@ -123,5 +123,17 @@ public class UserDaoImpl implements UserDao {
 	public void setPersonalization(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("user.setPersonalization", param);
+	}
+
+	@Override
+	public HashMap<String, Object> loginCheck(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("user.loginCheck", param);
+	}
+
+	@Override
+	public void updateUserPwd(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("user.updateUserPwd", param);
 	}	
 }

@@ -67,5 +67,15 @@ public class TestDaoImpl implements TestDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.insert("test.insertMasterCode", dataList);
 	}
+
+	public List<Map<String, Object>> selecUserList() {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("test.selecUserList");
+	}
+
+	public void updateUserPwd(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("test.updateUserPwd", param);
+	}
 	
 }

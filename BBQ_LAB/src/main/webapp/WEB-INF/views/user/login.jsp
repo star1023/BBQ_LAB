@@ -44,6 +44,17 @@ function loginProc(){
 						alert(data.MESSAGE);
 					} else if( data.RESULT_TYPE == 'LOCK' ) {
 						//잠김페이지로 이동
+					} else if( data.RESULT_TYPE == 'DELETE' ) {
+						//잠김페이지로 이동
+					} else if( data.RESULT_TYPE == 'RETIRED' ) {
+						//잠김페이지로 이동
+						alert("퇴직자는 시스템을 사용하실 수 없습니다.");
+					} else if( data.RESULT_TYPE == 'PWD_INIT' ) {
+						//잠김페이지로 이동
+						alert("비밀번호 초기화 대상입니다.\n비밀번호 초기화 화면으로 이동합니다.");
+						document.form1.action = "/user/pwdInit";
+						$("#userIdTemp").val($("#userId").val());
+						document.form1.submit();
 					}
 		        } else{
 					alert('아이디 또는 비밀번호가 일치하지 않습니다.');
@@ -64,11 +75,12 @@ function loginProc(){
 		<title>BBQ 연구소 시스템</title>
 	</head>	
 	<body bgcolor="#f1f1f1">
+	
  		<div class="login_wrap">
  			<div class="login_box login_ani">
 				<div class="login_txt">
 					<p class="pb20"><img src="/resources/images/bbq_logo.png" width="250" height=""></p>
-					<p><span>BBQ 식품연구소 관리자 페이지입니다.</span></p>			
+					<p><span>BBQ 식품연구소 PDM 시스템 로그인 페이지입니다.</span></p>			
 				</div>
 	 			<div class="login_input">
 	 				<input type="text" id="userId" name="userId" tabindex="1" class="inputbg01" placeholder="아이디"/>
@@ -78,7 +90,7 @@ function loginProc(){
 					<!--아이디 자동저장 <a href="#"><img src="images/auto_save_on.png"/></a>-->
 					</div>
 					<div>
-						<button class="btn_login" onClick="javascript:loginProc();">관리자 로그인</button>
+						<button class="btn_login" onClick="javascript:loginProc();">로그인</button>
 					</div>
 				</div>
 			<br/><br/><br/> 
@@ -90,5 +102,8 @@ function loginProc(){
 			</div>
 		</footer>
 		</div>
+		<form name="form1" method="post">
+			<input type="hidden" id="userIdTemp" name="userIdTemp"/>
+		</form>
 	</body>
 </html>

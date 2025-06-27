@@ -29,4 +29,8 @@ public interface BatchDao {
 
 	void insertHrUser();
 
+	List<Map<String, Object>> selectResearchUserList();
+
+	void insertHrUser(List<Map<String, Object>> userList);
+
 }

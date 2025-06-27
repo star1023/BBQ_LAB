@@ -1,6 +1,7 @@
 package kr.co.genesiskorea.service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -31,4 +32,14 @@ public interface UserService {
 	public void logout(HttpServletRequest request) throws Exception;
 
 	public void setPersonalization(Map<String, Object> param) throws Exception;
+
+	public List<Map<String, Object>> selectUserMenu(Map<String, Object> param);
+
+	public List<Map<String, Object>> selectUserAuth(Map<String, Object> param) throws Exception;
+
+	public void insertLginLog(Map<String, Object> userData) throws Exception;
+
+	public HashMap<String,Object> loginPwd(Map<String, Object> param, HttpServletRequest request) throws Exception;
+
+	public void updateUserPwd(Map<String, Object> param) throws Exception;
 }

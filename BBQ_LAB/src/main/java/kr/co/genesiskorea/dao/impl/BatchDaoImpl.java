@@ -137,4 +137,16 @@ public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
 		sqlSessionTemplate.insert("batch.insertHrUser");
 	}
 
+	@Override
+	public List<Map<String, Object>> selectResearchUserList() {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("batch.selectResearchUser");
+	}
+
+	@Override
+	public void insertHrUser(List<Map<String, Object>> userList) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("batch.insertHrUser", userList);
+	}
+
 }

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,6 +25,7 @@ import kr.co.genesiskorea.common.auth.AuthUtil;
 import kr.co.genesiskorea.service.CommonService;
 import kr.co.genesiskorea.service.UserService;
 import kr.co.genesiskorea.util.CommonException;
+import kr.co.genesiskorea.util.SecurityUtil;
 import kr.co.genesiskorea.util.StringUtil;
 
 @Controller
@@ -66,15 +69,32 @@ public class UserController {
 				userService.login(param, request);
 				resultMap.put("RESULT", "S");
 			} else {
-				resultMap.put("RESULT", "E");
-				resultMap.put("RESULT_TYPE", "FAIL");
-				resultMap.put("MESSAGE", "입력하신 비밀번호가 올바르지 않거나 \n 존재하지 않는 사용자 입니다.");
+				if( param.get("userPwd") != null && !"".equals(param.get("userPwd")) ) {
+					userService.loginPwd(param, request);
+					resultMap.put("RESULT", "S");
+				} else {
+					resultMap.put("RESULT", "E");
+					resultMap.put("RESULT_TYPE", "FAIL");
+					resultMap.put("MESSAGE", "입력하신 비밀번호가 올바르지 않거나 \n 존재하지 않는 사용자 입니다.");
+				}
 			}
 		} catch(CommonException ce) {
 			if(ce.getMessage().equals("USER_LOCK")){
 				resultMap.put("RESULT", "E");
 				resultMap.put("RESULT_TYPE", "LOCK");
 				resultMap.put("MESSAGE", "계정이 잠긴 사용자입니다.");		
+			} else if(ce.getMessage().equals("USER_DELETE")){
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "DELETE");
+				resultMap.put("MESSAGE", "삭제 된 사용자입니다.");		
+			} else if(ce.getMessage().equals("USER_RETIRED")){
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "RETIRED");
+				resultMap.put("MESSAGE", "퇴직자입니다.");		
+			} else if(ce.getMessage().equals("USER_PWD_INIT")){
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "PWD_INIT");
+				resultMap.put("MESSAGE", "비밀번호 초기화 대상자 입니다.");		
 			} else {
 				resultMap.put("RESULT", "E");
 				resultMap.put("RESULT_TYPE", "FAIL");
@@ -293,5 +313,110 @@ public class UserController {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 		}
 		return map;
+	}
+	
+	@RequestMapping(value = "/pwdInit", method = RequestMethod.POST)
+	public String pwdInit(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="userIdTemp") String userIdTemp, Model model) throws Exception {
+		logger.debug("비밀번호 초기화");
+		model.addAttribute("userId", userIdTemp);
+		return "/user/pwdInit";
+	}
+	
+	@RequestMapping(value = "/pwdCheckAjax", method = RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String,Object> pwdCheckAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
+		HashMap<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			String pattern = config.getProperty("user.pwd.pattern");
+			String sLimit = config.getProperty("user.pwd.limit");		
+			int limit = 0;
+			try {
+				limit = Integer.parseInt(sLimit);
+			} catch( Exception e ) {
+				limit = 3;
+			}
+			
+			String userId = (String)param.get("userId");
+			String newPassword = (String)param.get("newPassword");
+			Matcher match = Pattern.compile(pattern).matcher(newPassword);
+			
+			if( !match.find() ) {
+				resultMap.put("RESULT", "F");
+				resultMap.put("MESSAGE", "비밀번호는 최소8자 이상, 하나 이상의 영문자,숫자,특수문자를 포함하여야 합니다.");
+			} else if( this.continuousPwd(newPassword,limit) ) {
+				resultMap.put("RESULT", "F");
+				resultMap.put("MESSAGE", "연속된 알파벳 또는 숫자로 조합된 비밀번호는 사용할 수 없습니다.");
+			} else if( newPassword.contains(userId) ) {
+				resultMap.put("RESULT", "F");
+				resultMap.put("MESSAGE", "아이디가 포함 된 비밀번호는 사용할 수 없습니다.");
+			} else {
+				resultMap.put("RESULT", "S");
+			}
+		} catch( Exception e ) {
+			resultMap.put("RESULT", "E");
+			resultMap.put("MESSAGE", "시스템 오류가 발생했습니다.\n관리자에게 문의하시기 바랍니다.");
+		}
+		return resultMap;
+	}
+	
+	@RequestMapping(value = "/pwdUpdateAjax", method = RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String,Object> pwdUpdateAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
+		HashMap<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			//1. 비밀번호를 업데이트 한다.
+			String userId = (String)param.get("userId");
+			String newPassword = (String)param.get("newPassword");
+			String encPwd = SecurityUtil.getEncrypt(newPassword, userId); 
+			param.put("encPwd", encPwd);
+			param.put("pwdInit", "N");			
+			userService.updateUserPwd(param);
+			//2. 로그인 처리를 한다.
+			userService.login(param, request);
+			resultMap.put("RESULT", "S");
+		} catch(CommonException ce) {
+			if(ce.getMessage().equals("USER_LOCK")){
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "LOCK");
+				resultMap.put("MESSAGE", "계정이 잠긴 사용자입니다.");		
+			} else if(ce.getMessage().equals("USER_DELETE")){
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "DELETE");
+				resultMap.put("MESSAGE", "삭제 된 사용자입니다.");		
+			} else if(ce.getMessage().equals("USER_RETIRED")){
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "RETIRED");
+				resultMap.put("MESSAGE", "퇴직자입니다.");		
+			} else if(ce.getMessage().equals("USER_PWD_INIT")){
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "PWD_INIT");
+				resultMap.put("MESSAGE", "비밀번호 초기화 대상자 입니다.");		
+			} else {
+				resultMap.put("RESULT", "E");
+				resultMap.put("RESULT_TYPE", "FAIL");
+				resultMap.put("MESSAGE", "입력하신 비밀번호가 올바르지 않거나 \n 존재하지 않는 사용자 입니다.");
+			}
+		} catch( Exception e ) {
+			resultMap.put("RESULT", "E");
+			resultMap.put("MESSAGE", "시스템 오류가 발생했습니다.\n관리자에게 문의하시기 바랍니다.");
+		}
+		return resultMap;
+	}
+	
+	private boolean continuousPwd(String pwd, int limit) {
+		int o = 0;
+		int d = 0;
+		int p = 0;
+		int n = 0;
+		//int limit = 3;
+		for(int i=0; i<pwd.length(); i++) {
+			char tempVal = pwd.charAt(i);
+			if(i > 0 && (p = o - tempVal) > -2 && (n = p == d ? n + 1 :0) > limit -3) {
+				return true;
+			}
+			d = p;
+			o = tempVal;
+		}
+		return false;
 	}
 }
