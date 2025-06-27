@@ -873,7 +873,7 @@ table{font-size: 12px}
 			        	<c:set var="count" value="${count + 1}" />
 			        	<td style="height: 250px">
 			        		<div>
-			        		<p><img id="preview" src="/picture${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
+			        		<p><img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
 			        		<div style=" z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
 								<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
 							</div>
@@ -975,7 +975,7 @@ table{font-size: 12px}
 			        	<c:set var="count" value="${count + 1}" />
 			        	<td style="height: 250px">
 			        		<div>
-				        		<p><img id="preview" src="/picture${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
+				        		<p><img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
 				        		<div style=" z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
 									<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
 								</div>

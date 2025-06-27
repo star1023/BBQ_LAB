@@ -29,6 +29,19 @@ public class SseEmitterServiceImpl implements SseEmitterService {
 		sendToClient(userId, "FIRST");
 		return emitter;
 	}
+//	public SseEmitter subscribe(String userId) {
+//		SseEmitter emitter = createEmitter(userId);
+//		try {
+//			emitter.send(SseEmitter.event()
+//				.name("connect")
+//				.data("connected")
+//				.reconnectTime(RECONNECTION_TIMEOUT));
+//		} catch (IOException e) {
+//			emitter.completeWithError(e);
+//		}
+//		return emitter;
+//	}
+	
 	
 	public void notify(String userId, Object event) {
 		sendToClient(userId, event);
@@ -55,6 +68,28 @@ public class SseEmitterServiceImpl implements SseEmitterService {
 		}
 	}
 	
+//	private SseEmitter createEmitter(String id) {
+//		SseEmitter oldEmitter = emitterRepository.get(id);
+//		if (oldEmitter != null) {
+//			oldEmitter.complete();
+//			emitterRepository.deleteById(id);
+//		}
+//
+//		SseEmitter emitter = new SseEmitter(TIMEOUT);
+//		emitterRepository.save(id, emitter);
+//
+//		emitter.onCompletion(() -> {
+//			emitterRepository.deleteById(id);
+//		});
+//		emitter.onTimeout(() -> {
+//			emitterRepository.deleteById(id);
+//		});
+//		emitter.onError(e -> {
+//			emitterRepository.deleteById(id);
+//		});
+//
+//		return emitter;
+//	}
 	private SseEmitter createEmitter(String id) {
 		SseEmitter emitter = emitterRepository.get(id);
 		
@@ -67,7 +102,9 @@ public class SseEmitterServiceImpl implements SseEmitterService {
 		emitter.onCompletion(() -> emitterRepository.deleteById(id));
 		// Emitter가 타임아웃 되었을 때(지정된 시간동안 어떠한 이벤트도 전송되지 않았을 때) Emitter를 삭제한다.
 		emitter.onTimeout(() -> emitterRepository.deleteById(id));
-	 
+		// Emitter 중 오류가났을 때 Emitter를 삭제한다.
+		emitter.onError(e -> emitterRepository.deleteById(id));
+		
 		return emitter;
 	}
 

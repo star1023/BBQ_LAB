@@ -4,32 +4,42 @@
 	<select id="searchUser" parameterType="map" resultType="hashmap">
 		/*	approval.searchUser */
 		SELECT 
-			USER_ID
-			, USER_PWD
-			, USER_NAME
-			, USER_GRAD
-			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE
-			, USER_CODE
-			, EMAIL
-			, DEPT_CODE
-			, TEAM_CODE
-			, TITLE_CODE
-			, USER_TYPE
-			, IS_ADMIN
-			, IS_DELETE
-			, THEME
-			, CONTENT_MODE
-			, WIDTH_MODE
-			, MAIL_CHECK1
-			, MAIL_CHECK2
-			, MAIL_CHECK3
-			, IS_LOCK
-			, IS_OLD
-			, ROLE_CODE
+			lu.USER_ID
+			, lu.USER_PWD
+			, lu.USER_NAME
+			, lu.USER_GRAD
+			, DATE_FORMAT(lu.REG_DATE,'%Y-%m-%d') AS REG_DATE
+			, lu.USER_CODE
+			, lu.EMAIL
+			, lu.DEPT_CODE
+			, lu.TEAM_CODE
+			, lu.TITLE_CODE
+			, lu.USER_TYPE
+			, lu.IS_ADMIN
+			, lu.IS_DELETE
+			, lu.THEME
+			, lu.CONTENT_MODE
+			, lu.WIDTH_MODE
+			, lu.MAIL_CHECK1
+			, lu.MAIL_CHECK2
+			, lu.MAIL_CHECK3
+			, lu.IS_LOCK
+			, lu.IS_OLD
+			, lu.ROLE_CODE
+			, lu.ORGAID
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+			, lu.TITLCD
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+			, lu.LEVLCD
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+			, lu.RESPCD
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
+			, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as TOBJID 
+			, lu.EMSTAT
 		FROM 
-			lab_user
+			lab_user lu
 		WHERE 1 = 1
-			AND (USER_ID LIKE CONCAT('%',#{keyword},'%') OR USER_NAME LIKE CONCAT('%',#{keyword},'%'))
+			AND (lu.USER_ID LIKE CONCAT('%',#{keyword},'%') OR lu.USER_NAME LIKE CONCAT('%',#{keyword},'%'))
 	</select>
 	
 	<select id="selectLineSeq" resultType="int">

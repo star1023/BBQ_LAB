@@ -42,4 +42,7 @@ public interface UserService {
 	public HashMap<String,Object> loginPwd(Map<String, Object> param, HttpServletRequest request) throws Exception;
 
 	public void updateUserPwd(Map<String, Object> param) throws Exception;
+	
+	public Map<String, Object> getUserData(String userId);
+
 }

@@ -131,9 +131,11 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	            }
 	        }
 	        
-	        // ✅ 한 번에 insert
-	        newProductResultDao.insertNewProductResultItems(itemList);
-
+	        // ✅ 한 번에 insert ( 직접입력이 아닌경우에는 인서트 회피 )
+	        if (!itemList.isEmpty()) {
+	            newProductResultDao.insertNewProductResultItems(itemList);
+	        }
+	        
 	        // ✅ 3. 이미지 저장
 	        List<Map<String, Object>> imageMetaList = new ArrayList<Map<String, Object>>();
 

@@ -12,6 +12,10 @@
 	transform: translate(-50%, -45%);
 }
 .ck-editor__editable { max-height: 200px; min-height:200px;}
+
+li {
+	list-style: none;
+}
 </style>
 
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
@@ -44,13 +48,14 @@ var selectedArr = new Array();
 			showAnim: ""
 		});
 		
-	    document.querySelectorAll('.brand-token').forEach(token => {
-	        token.addEventListener('click', function () {
-	            token.remove();
-	            updateHiddenBrandCodes(1); // idx는 해당 영역에 맞게 사용하세요
-	        });
-	    });
-		
+		document.querySelectorAll('.brand-token').forEach(token => {
+		    token.addEventListener('click', function (e) {
+		        if (e.target.textContent === '✕') {
+		            token.remove();
+		            updateHiddenBrandCodes(1);
+		        }
+		    });
+		});
 	});
 	
 	let _brandFullList = []; // 전체 브랜드 저장용 전역변수
@@ -229,6 +234,9 @@ var selectedArr = new Array();
 	var attatchFileTypeArr = [];
 	var attatchTempFileArr = [];
 	var attatchTempFileTypeArr = [];
+	var deletedFileArr = [];
+	var deletedFilePathArr = [];
+	var existingFileArr = [];
 	function callAddFileEvent(){
 		$('#attatch_common').click();
 	}
@@ -354,6 +362,10 @@ var selectedArr = new Array();
 		});
 		$("#docTypeTxt").html(docTypeTxt);
 		closeDialogWithClean('dialog_attatch');
+	}
+	
+	function downloadFile(idx){
+		location.href = '/common/fileDownload?idx='+idx;
 	}
 	
 	function checkFileName(str){
@@ -760,42 +772,50 @@ var selectedArr = new Array();
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));	
 			
-			var itemImproveArr = new Array();
-			var itemExistArr = new Array();
-			var itemNoteArr = new Array();
-			$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				itemImproveArr.push($('#'+ rowId + ' input[name=itemImprove]').val());
-				itemExistArr.push($('#'+ rowId + ' input[name=itemExist]').val());
-				itemNoteArr.push($('#'+ rowId + ' input[name=itemNote]').val());
-			});		
-			formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
-			formData.append("itemExistArr", JSON.stringify(itemExistArr));	
-			formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
-			
-			
-			var improveArr = new Array();
-			$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				improveArr.push($('#'+ rowId + ' input[name=improve]').val());
-			});		
-			formData.append("improveArr", JSON.stringify(improveArr));
-			
-			// 용도
-			const usageType = $('select[name=usageSelect]').val();
+			const version = '${menuData.data.VERSION_NO}';
 
-			if (usageType === 'BRAND') {
-			    const brandCodes = $('#brandCodeValues_1').val();
-			    if (brandCodes) {
-			        formData.append("usageArr", brandCodes);
-			    }
-			} else if (usageType === 'CUSTOM') {
-			    const customText = $('#customUsage_1').val();
-			    if (customText) {
-			        formData.append("usageArr", customText.trim());
-			    }
+			// (버전 > 1일 때만 전송)
+			if (version !== '1') {
+				// 개선 목적
+				var itemImproveArr = [];
+				var itemExistArr = [];
+				var itemNoteArr = [];
+				// 개선사항 (항상 포함 — 공통 항목)
+				var improveArr = [];
+				
+				$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					itemImproveArr.push($('#' + rowId + ' input[name=itemImprove]').val().trim());
+					itemExistArr.push($('#' + rowId + ' input[name=itemExist]').val().trim());
+					itemNoteArr.push($('#' + rowId + ' input[name=itemNote]').val().trim());
+				});
+				formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
+				formData.append("itemExistArr", JSON.stringify(itemExistArr));	
+				formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
+				
+				$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					improveArr.push($('#' + rowId + ' input[name=improve]').val().trim());
+				});
+				formData.append("improveArr", JSON.stringify(improveArr));
+			} else {
+				// 버전이 1이면 빈 배열로 초기화
+				formData.append("itemImproveArr", JSON.stringify([]));
+				formData.append("itemExistArr", JSON.stringify([]));	
+				formData.append("itemNoteArr", JSON.stringify([]));	
+				formData.append("improveArr", JSON.stringify([]));
 			}
-			formData.append("usageType", usageType);
+			
+			// 용도 분리 입력 처리
+			var brandCodes = $('#brandCodeValues_1').val();
+			var customUsage = $('#customUsage_1').val();
+
+			if (brandCodes) {
+				formData.append("usageArr", brandCodes); // USB
+			}
+			if (customUsage) {
+				formData.append("customUsage", customUsage.trim()); // USC
+			}
 			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
@@ -939,6 +959,9 @@ var selectedArr = new Array();
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
 			
+			deletedFileArr.forEach(val => formData.append("deleteFileArr", val));
+			deletedFilePathArr.forEach(val => formData.append("deleteFilePathArr", val));
+			
 			URL = "../menu/updateTmpMenuAjax";
 			$.ajax({
 				type:"POST",
@@ -952,7 +975,7 @@ var selectedArr = new Array();
 					if( result.RESULT == 'S' ) {
 						alert("임시저장 되었습니다.");
 						$('#lab_loading').hide();
-						fn_goList();
+						fn_list();
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -966,29 +989,104 @@ var selectedArr = new Array();
 		}
 	}
 	
+	function validatePurposeAndFeature() {
+		const versionNo = '${menuData.data.VERSION_NO}';
+		
+		if (versionNo === '1') {
+			// ✅ 개발 목적 유효성 체크
+			var isValidPurpose = false;
+			$('tr[id^=purpose_tr]').each(function () {
+				var val = $(this).find('input[name=purpose]').val();
+				if ($.trim(val) !== '') isValidPurpose = true;
+			});
+			if (!isValidPurpose) {
+				alert("개발 목적을 하나 이상 입력해 주세요.");
+				return false;
+			}
+
+			// ✅ 메뉴 특징 유효성 체크
+			var isValidFeature = false;
+			$('tr[id^=feature_tr]').each(function () {
+				var val = $(this).find('input[name=feature]').val();
+				if ($.trim(val) !== '') isValidFeature = true;
+			});
+			if (!isValidFeature) {
+				alert("메뉴 특징을 하나 이상 입력해 주세요.");
+				return false;
+			}
+		} else {
+			// ✅ 개선 목적 유효성 체크 (3개 항목 모두 빈값이 아닌 행이 하나 이상 있어야 함)
+			let validImprovePurposeRowCount = 0;
+			$('tr[id^=improve_pur_tr]').each(function () {
+				const val1 = $(this).find('input[name=itemImprove]').val();
+				const val2 = $(this).find('input[name=itemExist]').val();
+				const val3 = $(this).find('input[name=itemNote]').val();
+
+				if (
+					$.trim(val1) !== '' &&
+					$.trim(val2) !== '' &&
+					$.trim(val3) !== ''
+				) {
+					validImprovePurposeRowCount++;
+				}
+			});
+			if (validImprovePurposeRowCount === 0) {
+				alert("개선 목적을 하나 이상, 빈 항목 없이 입력해 주세요.");
+				return false;
+			}
+
+			// ✅ 개선 사항 유효성 체크
+			var isValidFeature = false;
+			$('tr[id^=improve_tr]').each(function () {
+				var val = $(this).find('input[name=improve]').val();
+				if ($.trim(val) !== '') isValidFeature = true;
+			});
+			if (!isValidFeature) {
+				alert("개선 사항을 하나 이상 입력해 주세요.");
+				return false;
+			}
+		}
+
+		return true;
+	}
+	
 	//입력확인
 	function fn_update(){
 		var contents = editor.getData();
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
+			tabChange('tab1');
 			$("#title").focus();
-			return;
-		} else if( !chkNull($("#menuName").val()) ) {
-			alert("메뉴명을 입력해 주세요.");
-			$("#menuName").focus();
 			return;
 		} else if( !chkNull($("#menuCode").val()) ) {
 			alert("메뉴 코드를 입력해 주세요.");
+			tabChange('tab2');
 			$("#menuCode").focus();
+			return;
+		} else if( !chkNull($("#menuName").val()) ) {
+			alert("메뉴명을 입력해 주세요.");
+			tabChange('tab1');
+			$("#menuName").focus();
+			return;
+		} else if(!validatePurposeAndFeature()){
+			tabChange('tab1');
+			return;
+		} else if(!$.trim($('#brandCodeValues_1').val())){
+			alert("브랜드를 선택해 주세요.");
+			tabChange('tab1');
 			return;
 		} else if( !chkNull($("#selectTxtFull").val()) ) {
 			alert("메뉴유형을 선택해 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( selectedArr.length == 0 ) {
-			alert("메뉴유형을 선택하여 주세요.");		
+			alert("메뉴유형을 선택하여 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( $("#temp_attatch_file").children("li").length == 0 && attatchFileArr.length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
+			alert("첨부파일을 등록해주세요.");
+			tabChange('tab1');
+			$("#attatch_file").focus();
 			return;
 		} else {
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
@@ -1037,41 +1135,50 @@ var selectedArr = new Array();
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));	
 			
-			var itemImproveArr = new Array();
-			var itemExistArr = new Array();
-			var itemNoteArr = new Array();
-			$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				itemImproveArr.push($('#'+ rowId + ' input[name=itemImprove]').val());
-				itemExistArr.push($('#'+ rowId + ' input[name=itemExist]').val());
-				itemNoteArr.push($('#'+ rowId + ' input[name=itemNote]').val());
-			});		
-			formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
-			formData.append("itemExistArr", JSON.stringify(itemExistArr));	
-			formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
-			
-			var improveArr = new Array();
-			$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
-				var rowId = $(purposeRow).attr('id');
-				improveArr.push($('#'+ rowId + ' input[name=improve]').val());
-			});		
-			formData.append("improveArr", JSON.stringify(improveArr));
-			
-			// 용도
-			const usageType = $('select[name=usageSelect]').val();
+			const version = '${menuData.data.VERSION_NO}';
 
-			if (usageType === 'BRAND') {
-			    const brandCodes = $('#brandCodeValues_1').val();
-			    if (brandCodes) {
-			        formData.append("usageArr", brandCodes);
-			    }
-			} else if (usageType === 'CUSTOM') {
-			    const customText = $('#customUsage_1').val();
-			    if (customText) {
-			        formData.append("usageArr", customText.trim());
-			    }
+			// (버전 > 1일 때만 전송)
+			if (version !== '1') {
+				// 개선 목적
+				var itemImproveArr = [];
+				var itemExistArr = [];
+				var itemNoteArr = [];
+				// 개선사항 (항상 포함 — 공통 항목)
+				var improveArr = [];
+				
+				$('tr[id^=improve_pur_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					itemImproveArr.push($('#' + rowId + ' input[name=itemImprove]').val().trim());
+					itemExistArr.push($('#' + rowId + ' input[name=itemExist]').val().trim());
+					itemNoteArr.push($('#' + rowId + ' input[name=itemNote]').val().trim());
+				});
+				formData.append("itemImproveArr", JSON.stringify(itemImproveArr));
+				formData.append("itemExistArr", JSON.stringify(itemExistArr));	
+				formData.append("itemNoteArr", JSON.stringify(itemNoteArr));	
+				
+				$('tr[id^=improve_tr]').toArray().forEach(function(purposeRow){
+					var rowId = $(purposeRow).attr('id');
+					improveArr.push($('#' + rowId + ' input[name=improve]').val().trim());
+				});
+				formData.append("improveArr", JSON.stringify(improveArr));
+			} else {
+				// 버전이 1이면 빈 배열로 초기화
+				formData.append("itemImproveArr", JSON.stringify([]));
+				formData.append("itemExistArr", JSON.stringify([]));	
+				formData.append("itemNoteArr", JSON.stringify([]));	
+				formData.append("improveArr", JSON.stringify([]));
 			}
-			formData.append("usageType", usageType);
+			
+			// 용도 분리 입력 처리
+			var brandCodes = $('#brandCodeValues_1').val();
+			var customUsage = $('#customUsage_1').val();
+
+			if (brandCodes) {
+				formData.append("usageArr", brandCodes); // USB
+			}
+			if (customUsage) {
+				formData.append("customUsage", customUsage.trim()); // USC
+			}
 			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
@@ -1217,6 +1324,9 @@ var selectedArr = new Array();
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
 			
+			deletedFileArr.forEach(val => formData.append("deleteFileArr", val));
+			deletedFilePathArr.forEach(val => formData.append("deleteFilePathArr", val));
+			
 			$('#lab_loading').show();
 			var URL = "../menu/updateMenuAjax";
 			$.ajax({
@@ -1267,27 +1377,19 @@ var selectedArr = new Array();
 	    }	    
 	}
 	
-	function fn_removeTempFile(element, tempId){
-		//서버의 파일을 삭제한다.
-		var URL = '/file/deleteFile2Ajax';
-		$.ajax({
-			type:"POST",
-			url:URL,
-			data: {
-				"fileIdx": tempId
-			},
-			dataType:"json",
-			success:function(result) {
-				if( result.RESULT == 'S' ) {
-					$(element).parent().remove();
-				} else {
-					alert("오류가 발생하였습니다.\n"+result.MESSAGE);
-				}
-			},
-			error:function(request, status, errorThrown){
-				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-			}			
-		});
+	function fn_removeTempFile(el, fileIdx) {
+	    const $li = $(el).closest('li');
+
+	    // li에 data-* 로 박아둔 파일명 및 경로 추출
+	    const fileName = $li.data('name');
+	    const filePath = $li.data('path');
+	    
+	    // 배열에 저장
+	    deletedFileArr.push(fileName);
+	    deletedFilePathArr.push(filePath);
+
+	    // 화면에서 삭제
+	    $li.remove();
 	}
 	
 	function tabChange(tabId) {
@@ -1585,7 +1687,7 @@ function updateHiddenBrandCodes(idx) {
 			</div>
 			
 			<div id="tab1_div">
-				<div class="title2"  style="width: 80%;"><span class="txt">제목 </span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제목 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">						
 				</div>
 				<div class="main_tbl">
@@ -1596,7 +1698,7 @@ function updateHiddenBrandCodes(idx) {
 						<tbody>
 							<tr>
 								<td>
-									<input type="text" name="title" id="title" style="width: 99%;" class="req" value="${menuData.data.TITLE}"/>
+									<input type="text" name="title" id="title" style="width: 99%;" value="${menuData.data.TITLE}"/>
 									<input type="hidden" name="idx" id="idx" value="${menuData.data.MENU_IDX}"/>
 									<input type="hidden" name="docNo" id="docNo" value="${menuData.data.DOC_NO}"/>
 									<input type="hidden" name="currentVersionNo" id="currentVersionNo" value="${menuData.data.VERSION_NO}"/>
@@ -1606,7 +1708,7 @@ function updateHiddenBrandCodes(idx) {
 						</tbody>
 					</table>
 				</div>
-				<div class="title2"  style="width: 80%;"><span class="txt">메뉴명</span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">메뉴명 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
@@ -1617,7 +1719,7 @@ function updateHiddenBrandCodes(idx) {
 						<tbody>
 							<tr>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="menuName" id="menuName" value="${menuData.data.NAME}"/>
+									<input type="text"  style="width:99%; float: left" name="menuName" id="menuName" value="${menuData.data.NAME}"/>
 								</td>
 							</tr>
 						</tbody>
@@ -1625,7 +1727,7 @@ function updateHiddenBrandCodes(idx) {
 				</div>
 				
 				<div style="${menuData.data.VERSION_NO == 1 ? '' : 'display:none'}">
-					<div class="title2"  style="width: 80%;"><span class="txt">개발 목적</span></div>
+					<div class="title2"  style="width: 80%;"><span class="txt">개발 목적 <span class="mandatory">*</span></span></div>
 					<div class="title2" style="width: 20%; display: inline-block;">
 						<button class="btn_con_search" onClick="fn_addCol('purpose')">
 							<img src="/resources/images/icon_s_write.png" />추가 
@@ -1650,7 +1752,7 @@ function updateHiddenBrandCodes(idx) {
 											<input type="checkbox" id="purpose_${status.count}"><label for="purpose_${status.count}"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="purpose" value="${addInfoList.INFO_TEXT}"/>
+											<input type="text"  style="width:99%; float: left" name="purpose" placeholder="가." value="${addInfoList.INFO_TEXT}"/>
 										</td>
 									</tr>
 									</c:if>
@@ -1661,7 +1763,7 @@ function updateHiddenBrandCodes(idx) {
 											<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="purpose"/>
+											<input type="text"  style="width:99%; float: left" name="purpose"/>
 										</td>
 									</tr>
 								</c:if>
@@ -1672,7 +1774,7 @@ function updateHiddenBrandCodes(idx) {
 										<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text"  style="width:99%; float: left" class="req" name="purpose"/>
+										<input type="text"  style="width:99%; float: left" name="purpose"/>
 									</td>
 								</tr>
 							</tbody>
@@ -1681,7 +1783,7 @@ function updateHiddenBrandCodes(idx) {
 				</div>
 				
 				<div style="${menuData.data.VERSION_NO == 1 ? '' : 'display:none'}">
-					<div class="title2"  style="width: 80%;"><span class="txt">메뉴 특징</span></div>
+					<div class="title2"  style="width: 80%;"><span class="txt">메뉴 특징 <span class="mandatory">*</span></span></div>
 					<div class="title2" style="width: 20%; display: inline-block;">
 						<button class="btn_con_search" onClick="fn_addCol('feature')">
 							<img src="/resources/images/icon_s_write.png" />추가 
@@ -1706,7 +1808,7 @@ function updateHiddenBrandCodes(idx) {
 											<input type="checkbox" id="feature_${status.count}"><label for="feature_${status.count}"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="feature" value="${addInfoList.INFO_TEXT}"/>
+											<input type="text"  style="width:99%; float: left" name="feature" placeholder="가." value="${addInfoList.INFO_TEXT}"/>
 										</td>
 									</tr>
 									</c:if>
@@ -1717,7 +1819,7 @@ function updateHiddenBrandCodes(idx) {
 											<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="feature"/>
+											<input type="text"  style="width:99%; float: left" name="feature"/>
 										</td>
 									</tr>
 								</c:if>
@@ -1728,7 +1830,7 @@ function updateHiddenBrandCodes(idx) {
 										<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text"  style="width:99%; float: left" class="req" name="feature"/>
+										<input type="text"  style="width:99%; float: left" name="feature"/>
 									</td>
 								</tr>
 							</tbody>
@@ -1738,7 +1840,7 @@ function updateHiddenBrandCodes(idx) {
 				
 				<div style="${menuData.data.VERSION_NO == 1 ? 'display:none' : ''}">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">개선목적</span>
+						<span class="txt">개선목적 <span class="mandatory">*</span></span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
@@ -1768,7 +1870,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="improve_pur_${status.count}"><label for="improve_pur_${status.count}"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl" value="${imporvePurposeList.IMPROVE}"/>
+									<input type="text" name="itemImprove" style="width: 100%" class="code_tbl" value="${imporvePurposeList.IMPROVE}"/>
 								</td>
 								<td>
 									<input type="text" name="itemExist" style="width: 100%" value="${imporvePurposeList.EXIST}"/>
@@ -1782,7 +1884,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="improve_pur_1"><label for="improve_pur_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemImprove" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemExist" style="width: 100%"/>
@@ -1797,7 +1899,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="improve_pur_1"><label for="improve_pur_1"><span></span></label>
 								</td>
 								<td>
-										<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl"/>
+										<input type="text" name="itemImprove" style="width: 100%" class="code_tbl"/>
 									</td>
 									<td>
 										<input type="text" name="itemExist" style="width: 100%"/>
@@ -1811,8 +1913,8 @@ function updateHiddenBrandCodes(idx) {
 				</div>
 				
 				<div style="${menuData.data.VERSION_NO == 1 ? 'display:none' : ''}">
-					<div class="title2"  style="width: 80%; margin-top:30px"><span class="txt">개선 사항</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
+					<div class="title2"  style="width: 80%; "><span class="txt">개선 사항 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
 					<button class="btn_con_search" onClick="fn_addCol('improve')">
 						<img src="/resources/images/icon_s_write.png" />추가 
 					</button>
@@ -1836,7 +1938,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="improve_${status.count}"><label for="improve_${status.count}"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve" value="${addInfoList.INFO_TEXT}"/>
+									<input type="text"  style="width:99%; float: left" name="improve" value="${addInfoList.INFO_TEXT}"/>
 								</td>
 							</tr>
 							</c:if>
@@ -1847,7 +1949,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve"/>
+									<input type="text"  style="width:99%; float: left" name="improve"/>
 								</td>
 							</tr>
 							</c:if>		
@@ -1858,7 +1960,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve"/>
+									<input type="text"  style="width:99%; float: left" name="improve"/>
 								</td>
 							</tr>
 						</tbody>
@@ -1866,75 +1968,76 @@ function updateHiddenBrandCodes(idx) {
 				</div>
 				</div>
 				
-				<div id="">
-				  <div class="title2" style="width: 80%;"><span class="txt">용도</span></div>
-				  <table id="usage_Table" class="tbl05">
-				    <colgroup>
-				      <col width="100">
-				      <col width="600">
-				      <col />
-				    </colgroup>
-				    <thead>
-				      <tr>
-				        <th>용도선택</th>
-				        <th>내용</th>
-				      </tr>
-				    </thead>
+				<!-- ✅ 브랜드 영역 -->
+				<div>
+				  <div class="title2" style="width: 80%; margin-top:20px;"><span class="txt">브랜드 <span class="mandatory">*</span></span></div>
+				  <table class="tbl05">
 				    <tbody>
 				      <tr>
 				        <td>
-				          <div class="search_box" style="width:100%;">
-				            <div class="selectbox" style="width:100%; text-align:center;">
-								<c:set var="hasUSC" value="false" />
-								<c:forEach items="${addInfoList}" var="item">
-								  <c:if test="${item.INFO_TYPE == 'USC'}">
-								    <c:set var="hasUSC" value="true" />
-								  </c:if>
-								</c:forEach>
-								
-								<label><c:if test="${!hasUSC}">브랜드선택</c:if><c:if test="${hasUSC}">제품 용도 기입</c:if></label>
-								<select name="usageSelect" onchange="onUsageChange(this, 1)">
-								  <option value="">-- 선택 --</option>
-								  <option value="BRAND" <c:if test="${!hasUSC}">selected</c:if>>브랜드선택</option>
-								  <option value="CUSTOM" <c:if test="${hasUSC}">selected</c:if>>제품 용도 기입</option>
-								</select>
-				            </div>
-				          </div>
-				        </td>
-				        <td id="usageContentArea_1">
 				          <div style="width: 100%;">
 				            <div style="display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;">
-							  <!-- ✅ 토큰 or input 박스 -->
-							  <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;">
-							    <c:forEach items="${addInfoList}" var="item">
-							      <c:if test="${item.INFO_TYPE == 'USB'}">
-							        <c:forEach var="i" begin="0" end="${fn:length(fn:split(item.INFO_TEXT, ',')) - 1}">
-							          <c:set var="code" value="${fn:split(item.INFO_TEXT, ',')[i]}" />
-							          <c:set var="name" value="${fn:split(item.INFO_TEXT_NAME, ',')[i]}" />
-							          <span class="brand-token" data-code="${code}">
-							            <span style="font-weight: bold; margin-right: 6px; cursor: pointer; color: rgb(102, 102, 102);">✕</span>
-							            ${name}
-							          </span>
-							        </c:forEach>
-							      </c:if>
-							      <c:if test="${item.INFO_TYPE == 'USC'}">
-							        <input type="text" id="customUsage_1" name="req" value="${item.INFO_TEXT}" style="width:99%;" />
-							      </c:if>
-							    </c:forEach>
-							  </div>
-							
-							  <!-- ✅ 버튼은 USB일 때만 노출 -->
-							  <c:if test="${!hasUSC}">
-							    <div style="display: flex; gap: 5px;">
-							      <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
-							      <button class="btn_small_search ml5" onclick="document.getElementById('brandTokenBox_1').innerHTML='';">초기화</button>
-							    </div>
+				              <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;">
+								<c:forEach items="${addInfoList}" var="item">
+								  <c:if test="${item.INFO_TYPE == 'USB'}">
+								    <c:forEach var="i" begin="0" end="${fn:length(fn:split(item.INFO_TEXT, ',')) - 1}">
+								      <c:set var="code" value="${fn:split(item.INFO_TEXT, ',')[i]}" />
+								      <c:set var="name" value="${fn:split(item.INFO_TEXT_NAME, ',')[i]}" />
+								      <span class="brand-token" data-code="${code}"
+								            style="display: flex; align-items: center; background: #e0e0e0; border-radius: 12px; padding: 4px 8px; margin-right: 5px; font-size: 13px;">
+								        <span
+								          style="font-weight: bold; margin-right: 6px; cursor: pointer; color: #666;">✕</span>
+								        ${name}
+								      </span>
+								    </c:forEach>
+								  </c:if>
+								</c:forEach>
+				              </div>
+				
+				              <!-- 항상 버튼 노출 -->
+				              <div style="display: flex; gap: 5px;">
+				                <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
+				                <button class="btn_small_search ml5" onclick="document.getElementById('brandTokenBox_1').innerHTML=''; document.getElementById('brandCodeValues_1').value='';">초기화</button>
+				              </div>
+				            </div>
+				            <!-- ✅ 숨겨진 브랜드 코드 -->
+							<c:set var="brandCodes" value="" />
+							<c:forEach items="${addInfoList}" var="item">
+							  <c:if test="${item.INFO_TYPE == 'USB'}">
+							    <c:choose>
+							      <c:when test="${empty brandCodes}">
+							        <c:set var="brandCodes" value="${item.INFO_TEXT}" />
+							      </c:when>
+							      <c:otherwise>
+							        <c:set var="brandCodes" value="${brandCodes},${item.INFO_TEXT}" />
+							      </c:otherwise>
+							    </c:choose>
 							  </c:if>
-							</div>
-				            <!-- ✅ 코드 hidden input -->
-				            <input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1"
-				              value="<c:forEach items='${addInfoList}' var='item'><c:if test='${item.INFO_TYPE == "USB"}'>${item.INFO_TEXT},</c:if></c:forEach>">
+							</c:forEach>
+							
+							<!-- ✅ 중복된 쉼표 정리는 JS에서 filter(Boolean)으로 가능 -->
+							<input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1" value="${brandCodes}" />
 				          </div>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+				</div>
+				
+				<!-- ✅ 용도 입력 영역 -->
+				<div>
+				  <div class="title2" style="width: 80%;"><span class="txt">용도</span></div>
+				  <table class="tbl05">
+				    <tbody>
+				      <tr>
+				        <td>
+				          <c:set var="customText" value="" />
+				          <c:forEach items="${addInfoList}" var="item">
+				            <c:if test="${item.INFO_TYPE == 'USC'}">
+				              <c:set var="customText" value="${item.INFO_TEXT}" />
+				            </c:if>
+				          </c:forEach>
+				          <input type="text" id="customUsage_1" name="customUsage" value="${customText}" placeholder="용도를 입력하세요" style="width:99%;" />
 				        </td>
 				      </tr>
 				    </tbody>
@@ -1978,7 +2081,7 @@ function updateHiddenBrandCodes(idx) {
 											<input type="checkbox" id="new_${status.count}"><label for="new_${status.count}"><span></span></label>
 										</td>
 										<td>
-											<input type="text" name="itemName" style="width: 100%" class="req code_tbl" value="${newDataList.PRODUCT_NAME}"/>
+											<input type="text" name="itemName" style="width: 100%" class="code_tbl" value="${newDataList.PRODUCT_NAME}"/>
 										</td>
 										<td>
 											<input type="text" name="itemStandard" style="width: 100%" value="${newDataList.PACKAGE_STANDARD}"/>
@@ -1997,7 +2100,7 @@ function updateHiddenBrandCodes(idx) {
 										<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+										<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 									</td>
 									<td>
 										<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2016,7 +2119,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2070,7 +2173,7 @@ function updateHiddenBrandCodes(idx) {
 											<input type="checkbox" id="new_${status.count}"><label for="new_${status.count}"><span></span></label>
 										</td>
 										<td>
-											<input type="text" name="itemName" style="width: 100%" class="req code_tbl" value="${newDataList.PRODUCT_NAME}"/>
+											<input type="text" name="itemName" style="width: 100%" class="code_tbl" value="${newDataList.PRODUCT_NAME}"/>
 										</td>
 										<td>
 											<input type="text" name="itemStandard" style="width: 100%" value="${newDataList.PACKAGE_STANDARD}"/>
@@ -2089,7 +2192,7 @@ function updateHiddenBrandCodes(idx) {
 										<input type="checkbox" id="new1_1"><label for="new1_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+										<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 									</td>
 									<td>
 										<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2108,7 +2211,7 @@ function updateHiddenBrandCodes(idx) {
 									<input type="checkbox" id="new1_1"><label for="new1_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -2143,7 +2246,7 @@ function updateHiddenBrandCodes(idx) {
 					</table>
 				</div>
 				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
+				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부 <span class="mandatory">*</span></span></div>
 				<div class="title2 mt20" style="width:10%; display: inline-block;">
 					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
 						<img src="/resources/images/icon_s_file.png" />파일첨부 
@@ -2155,7 +2258,12 @@ function updateHiddenBrandCodes(idx) {
 							<dt>첨부파일</dt><dd>
 								<ul id="temp_attatch_file">
 									<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
-										<li><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+										<li data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}">
+											<a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')">
+												<img src="/resources/images/icon_del_file.png">
+											</a>&nbsp;
+											<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a>
+										</li>
 									</c:forEach>
 								</ul>
 								<ul id="attatch_file">								
@@ -2180,11 +2288,11 @@ function updateHiddenBrandCodes(idx) {
 						</colgroup>
 						<tbody>
 							<tr>
-								<th style="border-left: none;">메뉴코드</th>
+								<th style="border-left: none;">메뉴코드 <span class="mandatory">*</span></th>
 								<td>
 									<c:choose>
 										<c:when test = "${menuData.data.MENU_CODE eq '' || empty menuData.data.MENU_CODE }">
-											<input type="text"  style="width:200px; float: left" class="req" name="menuCode" id="menuCode" placeholder="코드를 생성 하세요." readonly/>
+											<input type="text"  style="width:200px; float: left" name="menuCode" id="menuCode" placeholder="코드를 생성 하세요." readonly/>
 											<button class="btn_small_search ml5" onclick="selectNewCode()" style="float: left">생성</button>
 										</c:when>
 										<c:otherwise>
@@ -2195,7 +2303,7 @@ function updateHiddenBrandCodes(idx) {
 								</td>
 								<th style="border-left: none;">상품코드</th>
 								<td>
-									<input type="text" style="width:200px; float: left" class="req" name="menuSapCode" id="menuSapCode" value="${menuData.data.SAP_CODE}" readonly/>
+									<input type="text" style="width:200px; float: left" name="menuSapCode" id="menuSapCode" value="${menuData.data.SAP_CODE}" readonly/>
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								</td>
 							</tr>
@@ -2230,7 +2338,7 @@ function updateHiddenBrandCodes(idx) {
 						 -->
 							
 							<tr>
-								<th style="border-left: none;">메뉴유형</th>
+								<th style="border-left: none;">메뉴유형 <span class="mandatory">*</span></th>
 								<td colspan="5">
 									<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 450px; float: left" 
 									value="${menuData.data.MENU_TYPE_NAME1} ${menuData.data.MENU_TYPE_NAME2 eq '' || empty menuData.data.MENU_TYPE_NAME2 ? '' : '>' } ${menuData.data.MENU_TYPE_NAME2} ${menuData.data.MENU_TYPE_NAME3 eq '' || empty menuData.data.MENU_TYPE_NAME3 ? '' : '>' } ${menuData.data.MENU_TYPE_NAME3}" readonly>
@@ -2310,12 +2418,12 @@ function updateHiddenBrandCodes(idx) {
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" value="${menuMaterialData.MATERIAL_IDX}"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" value="${menuMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" value="${menuMaterialData.MATERIAL_IDX}"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" value="${menuMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${menuMaterialData.NAME}" class="read_only" />
@@ -2335,12 +2443,12 @@ function updateHiddenBrandCodes(idx) {
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
@@ -2359,7 +2467,7 @@ function updateHiddenBrandCodes(idx) {
 				
 				<div id="matDiv">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">원료</span>
+						<span class="txt">기존원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
@@ -2402,12 +2510,12 @@ function updateHiddenBrandCodes(idx) {
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" value="${menuMaterialData.MATERIAL_IDX}"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" value="${menuMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" value="${menuMaterialData.MATERIAL_IDX}"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" value="${menuMaterialData.SAP_CODE}"/>								
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.SAP_CODE}"/>								
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${menuMaterialData.NAME}" class="read_only" />
@@ -2427,12 +2535,12 @@ function updateHiddenBrandCodes(idx) {
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl"/>								
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>								
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
@@ -2512,8 +2620,8 @@ function updateHiddenBrandCodes(idx) {
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 			</td>
 			<td>
@@ -2535,12 +2643,12 @@ function updateHiddenBrandCodes(idx) {
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 			</td>
 			<td>
-				<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl"/>
+				<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>
 			</td>
 			<td>
 				<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />

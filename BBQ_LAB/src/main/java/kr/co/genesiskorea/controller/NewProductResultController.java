@@ -94,7 +94,6 @@ public class NewProductResultController {
 	    try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-	        System.out.println("📌 param : " + param);
 
 	        ObjectMapper objectMapper = new ObjectMapper();
 
@@ -105,15 +104,6 @@ public class NewProductResultController {
 	        List<Map<String, Object>> itemImageArr = objectMapper.readValue(
 	            itemImageArrStr, new TypeReference<List<Map<String, Object>>>() {}
 	        );
-
-	        System.out.println("📌 resultItemArr: " + resultItemArr);
-	        System.out.println("📌 itemImageArr: " + itemImageArr);
-
-	        if (imageFiles != null) {
-	            for (MultipartFile image : imageFiles) {
-	                System.out.println(" - imageFileName: " + image.getOriginalFilename() + ", size: " + image.getSize());
-	            }
-	        }
 
 	        int resultIdx = newProductResult.insertNewProductResult(param, resultItemArr, itemImageArr, imageFiles, file);
 	        

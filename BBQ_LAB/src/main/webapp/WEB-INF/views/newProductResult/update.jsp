@@ -6,7 +6,7 @@
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>  <!-- ✅ 이거 추가 -->
-<title>신제품 품질 결과 보고서</title>
+<title>메뉴 품질 점검 결과 보고서</title>
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
 <link href="../resources/css/common.css" rel="stylesheet" type="text/css">
 <link href="../resources/css/tree.css" rel="stylesheet" type="text/css">
@@ -1053,13 +1053,13 @@ function fn_goList() {
 </script>
 <div class="wrap_in">
     <span class="path">
-        신제품 품질 결과 보고서&nbsp;&nbsp;
+        메뉴 품질 점검 결과 보고서&nbsp;&nbsp;
         <img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;수정
     </span>
     <section class="type01">
         <h2>
-            <span class="title_s">New Product Result Report</span>
-            <span class="title">신제품 품질 결과 보고서 수정</span>
+            <span class="title_s">Menu Quality Test Report</span>
+            <span class="title">메뉴 품질 점검 결과 보고서 수정</span>
         </h2>
 
         <!-- ✅ 기본 정보 -->
@@ -1194,7 +1194,7 @@ function fn_goList() {
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
-			<span class="title">출장결과보고서 결재 상신</span>
+			<span class="title">메뉴 품질 점검 결과 보고서 결재 상신</span>
 			<div  class="top_btn_box">
 				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
 			</div>

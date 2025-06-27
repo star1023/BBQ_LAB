@@ -233,5 +233,11 @@ public class ProductDaoImpl implements ProductDao {
 	public int selectMyDataCheck(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("product.selectMyDataCheck", param);
+	}	
+	
+	@Override
+	public int selectMyDataCount(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("product.selectMyDataCount", param);
 	}		
 }

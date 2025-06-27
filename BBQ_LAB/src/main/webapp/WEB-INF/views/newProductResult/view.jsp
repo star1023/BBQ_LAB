@@ -10,7 +10,7 @@
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>  <!-- ✅ 이거 추가 -->
-<title>신제품 품질 결과 보고서</title>
+<title>메뉴 품질 점검 결과 보고서</title>
 <style>
 #dynamicHeaderRow th{
 	background-color: #fafafa;
@@ -43,6 +43,14 @@ let resultItemList = [];
     </c:forEach>
     ];
 </c:if>
+$(document).ready(function () {
+	// ✅ 섹션 숨김 조건 추가
+	if (_columnStateCodes.length === 1 && _columnStateCodes[0] === "" && resultItemList.length === 0) {
+	    document.getElementById("dynamicTableSection").style.display = "none";
+	}
+
+});
+
 // ✅ 페이지 로드시 코드 목록 먼저 불러오고 렌더링
 $.ajax({
     type: "POST",
@@ -96,14 +104,23 @@ function renderDynamicBody() {
 
                 const images = imageMap[rowNo];
                 if (images && images.length > 0) {
-                    images.forEach(src => {
-                        const img = document.createElement("img");
-                        img.src = src;
-                        img.style.maxWidth = "240px";
-                        img.style.height = "auto";
-                        img.style.objectFit = "contain";
-                        td.appendChild(img);
-                    });
+                	images.forEach(src => {
+                	    const a = document.createElement("a");
+                	    a.href = src;
+                	    a.target = "_blank"; // 새창 열기
+                	    a.style.display = "inline-block";
+                	    a.style.marginRight = "5px";
+
+                	    const img = document.createElement("img");
+                	    img.src = src;
+                	    img.style.maxWidth = "240px";
+                	    img.style.maxHeight = "200px";
+                	    img.style.height = "auto";
+                	    img.style.objectFit = "contain";
+
+                	    a.appendChild(img);     // ⬅️ 이미지 <a> 안에 삽입
+                	    td.appendChild(a);      // ⬅️ <a>를 <td>에 추가
+                	});
                 } else {
                     // ✅ 이미지 없을 때 기본 이미지 표시
                     const img = document.createElement("img");
@@ -189,13 +206,13 @@ function fn_update(idx) {
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		신제품 품질 결과 보고서&nbsp;&nbsp;
+		메뉴 품질 점검 결과 보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position:relative">
-			<span class="title_s">New Product Result Report</span><span class="title">신제품 품질 결과 보고서</span>
+			<span class="title_s">Menu Quality Test Report</span><span class="title">메뉴 품질 점검 결과 보고서</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -240,7 +257,7 @@ function fn_update(idx) {
 			</div>
 		</div>
 		
-		<div class="group01 mt20">
+		<div id="dynamicTableSection" class="group01 mt20">
 			<div class="title2"  style="width: 80%;"><span class="txt">내용</span></div>
 			<div class="title2" style="width: 20%; display: inline-block;">
 				
@@ -293,7 +310,7 @@ function fn_update(idx) {
 
 <!-- 결재 상신 레이어  start-->
 <div class="white_content" id="approval_dialog">
-	<input type="hidden" id="docType" value="PROD"/>
+	<input type="hidden" id="docType" value="RESULT"/>
  	<input type="hidden" id="deptName" />
 	<input type="hidden" id="teamName" />
 	<input type="hidden" id="userId" />
@@ -304,7 +321,7 @@ function fn_update(idx) {
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
-			<span class="title">개발완료보고서 결재 상신</span>
+			<span class="title">메뉴 품질 점검 결과 보고서 결재 상신</span>
 			<div  class="top_btn_box">
 				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
 			</div>

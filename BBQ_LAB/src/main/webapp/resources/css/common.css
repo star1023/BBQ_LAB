@@ -22,7 +22,10 @@ textarea:-ms-input-placeholder {
   color: #CCC
 }
 
-
+.mandatory {
+	color: #b92c35;
+	font-weight: bold;
+}
 
 
 /*margin*/

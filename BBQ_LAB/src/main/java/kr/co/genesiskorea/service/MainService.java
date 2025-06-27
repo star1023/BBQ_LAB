@@ -8,4 +8,6 @@ public interface MainService {
 	
 	Map<String, Object> getDocStatusCount(Map<String,Object> param);
 	
+	Map<String, Object> getApprStatusCount(Map<String,Object> param);
+	
 }

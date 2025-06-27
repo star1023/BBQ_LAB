@@ -12,6 +12,20 @@
 	$(document).ready(function(){
 		loadCount();
 		loadMyList('1');
+		
+		// 🔥 tab 파라미터가 있으면 해당 탭 실행
+		const urlParams = new URLSearchParams(window.location.search);
+		const tabParam = urlParams.get('tab');
+
+		if (tabParam === 'appr') {
+			fn_changeTab('apprCount');
+		} else if (tabParam === 'ref') {
+			fn_changeTab('refCount');
+		} else if (tabParam === 'comp') {
+			fn_changeTab('compCount');
+		} else {
+			fn_changeTab('myCount'); // 기본값
+		}
 	});	
 	
 	// 페이징

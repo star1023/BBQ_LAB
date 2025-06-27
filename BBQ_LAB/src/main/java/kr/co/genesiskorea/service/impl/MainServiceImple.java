@@ -1,6 +1,5 @@
 package kr.co.genesiskorea.service.impl;
 
-import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,11 @@ public class MainServiceImple implements MainService {
     @Override
     public Map<String, Object> getDocStatusCount(Map<String,Object> param) {
     	return mainDao.getDocStatusCount(param);
+    }
+    
+    @Override
+    public Map<String, Object> getApprStatusCount(Map<String,Object> param) {
+    	return mainDao.getApprStatusCount(param);
     }
 
 }

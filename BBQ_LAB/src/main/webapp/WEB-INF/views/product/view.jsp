@@ -261,8 +261,8 @@
 					</table>
 				</div>
 				
-				<c:if test="${addInfoCount.PUR_CNT > 0 }">
-				<div class="title2"  style="width: 80%;"><span class="txt">개발 목적</span></div>
+				<c:if test="${productData.data.VERSION_NO == 1 && addInfoCount.PUR_CNT > 0 }">
+				<div class="title2"  style="width: 80%; margin-top:20px;"><span class="txt">개발 목적</span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
@@ -287,7 +287,7 @@
 				</div>
 				</c:if>
 				
-				<c:if test="${addInfoCount.FEA_CNT > 0 }">
+				<c:if test="${productData.data.VERSION_NO == 1 && addInfoCount.FEA_CNT > 0 }">
 				<div class="title2"  style="width: 80%;"><span class="txt">제품 특징</span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
@@ -313,7 +313,7 @@
 				</div>
 				</c:if>
 				
-				<c:if test="${fn:length(imporvePurposeList) > 0 }">
+				<c:if test="${productData.data.VERSION_NO != 1 && fn:length(imporvePurposeList) > 0 }">
 					<div class="title2" style="float: left; margin-top: 30px;">
 						<span class="txt">개선 목적</span>
 					</div>
@@ -350,7 +350,7 @@
 					</table>
 				</c:if>
 				
-				<c:if test="${addInfoCount.IMP_CNT > 0 }">
+				<c:if test="${productData.data.VERSION_NO != 1 && addInfoCount.IMP_CNT > 0 }">
 				<div class="title2"  style="width: 80%;"><span class="txt">개선 사항</span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
@@ -377,51 +377,58 @@
 				</c:if>
 				
 				
-				<c:if test="${addInfoCount.USB_CNT > 0 || addInfoCount.USC_CNT > 0}">
-					<div class="title2" style="width: 80%;"><span class="txt">용도</span></div>
-					<div class="title2" style="width: 20%; display: inline-block;"></div>
+				<c:if test="${addInfoCount.USB_CNT > 0}">
+					<div class="title2" style="margin-top:20px;"><span class="txt">브랜드</span></div>
 					<div class="main_tbl">
-						<c:set var="usageText" value="" />
-						<c:forEach items="${addInfoList}" var="item" varStatus="status">
-							<c:if test="${item.INFO_TYPE == 'USB' || item.INFO_TYPE == 'USC'}">
-								<c:choose>
-									<c:when test="${empty usageText}">
-										<c:choose>
-											<c:when test="${item.INFO_TYPE == 'USB'}">
-												<c:set var="usageText" value="${item.INFO_TEXT_NAME}" />
-											</c:when>
-											<c:otherwise>
-												<c:set var="usageText" value="${item.INFO_TEXT}" />
-											</c:otherwise>
-										</c:choose>
-									</c:when>
-									<c:otherwise>
-										<c:choose>
-											<c:when test="${item.INFO_TYPE == 'USB'}">
-												<c:set var="usageText" value="${usageText}, ${item.INFO_TEXT_NAME}" />
-											</c:when>
-											<c:otherwise>
-												<c:set var="usageText" value="${usageText}, ${item.INFO_TEXT}" />
-											</c:otherwise>
-										</c:choose>
-									</c:otherwise>
-								</c:choose>
-							</c:if>
-						</c:forEach>
+						<table class="tbl05" style="border-top: 2px solid #4b5165;">
+							<tbody>
+								<tr>
+									<td>
+										<div class="ellipsis_txt tgnl">
+											<%-- USB 총 개수 먼저 계산 --%>
+											<c:set var="usbCount" value="0" />
+											<c:forEach items="${addInfoList}" var="item">
+												<c:if test="${item.INFO_TYPE == 'USB'}">
+													<c:set var="usbCount" value="${usbCount + 1}" />
+												</c:if>
+											</c:forEach>
+											
+											<%-- 출력 --%>
+											<c:set var="usbIndex" value="0" />
+											<c:forEach items="${addInfoList}" var="item">
+												<c:if test="${item.INFO_TYPE == 'USB'}">
+													<c:set var="usbIndex" value="${usbIndex + 1}" />
+													${item.INFO_TEXT_NAME}
+													<c:if test="${usbIndex < usbCount}">, </c:if>
+												</c:if>
+											</c:forEach>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</c:if>
 				
-						<c:if test="${not empty usageText}">
-							<div class="main_tbl">
-								<table class="tbl05" style="border-top: 2px solid #4b5165;">
-									<tbody>
-										<tr>
-											<td>
-												<div class="ellipsis_txt tgnl">${usageText}</div>
-											</td>
-										</tr>
-									</tbody>
-								</table>
-							</div>
-						</c:if>
+				<c:if test="${addInfoCount.USC_CNT > 0}">
+					<div class="title2"><span class="txt">용도</span></div>
+					<div class="main_tbl">
+						<table class="tbl05" style="border-top: 2px solid #4b5165;">
+							<tbody>
+								<tr>
+									<td>
+										<div class="ellipsis_txt tgnl">
+											<c:forEach items="${addInfoList}" var="item" varStatus="loop">
+												<c:if test="${item.INFO_TYPE == 'USC'}">
+													${item.INFO_TEXT}
+													<c:if test="${!loop.last}">, </c:if>
+												</c:if>
+											</c:forEach>
+										</div>
+									</td>
+								</tr>
+							</tbody>
+						</table>
 					</div>
 				</c:if>
 				
@@ -643,7 +650,7 @@
 				</c:if>
 				
 				<div class="title2" style="float: left; margin-top: 30px;">
-					<span class="txt">원료</span>
+					<span class="txt">기존원료</span>
 				</div>
 				<div class="main_tbl">				
 					<table class="tbl01 " style="border-bottom: 2px solid #4b5165;">

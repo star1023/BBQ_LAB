@@ -59,6 +59,8 @@ public class ProductController {
 	@RequestMapping("/selectProductListAjax")
 	@ResponseBody
 	public Map<String, Object> selectProductListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
 		Map<String, Object> returnMap = productService.selectProductList(param);
 		return returnMap;
 	}
@@ -159,6 +161,7 @@ public class ProductController {
 			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
 			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
@@ -182,6 +185,7 @@ public class ProductController {
 			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
 			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
+			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
@@ -224,6 +228,7 @@ public class ProductController {
 			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
 			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
@@ -257,6 +262,7 @@ public class ProductController {
 			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
 			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
+			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
@@ -348,6 +354,7 @@ public class ProductController {
 			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
 			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
@@ -382,6 +389,7 @@ public class ProductController {
 			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
 			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
+			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
@@ -423,6 +431,7 @@ public class ProductController {
 			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
 			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
@@ -457,6 +466,7 @@ public class ProductController {
 			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
 			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
+			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
@@ -628,6 +638,7 @@ public class ProductController {
 			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
 			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
@@ -644,6 +655,8 @@ public class ProductController {
 			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
 			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
 			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
+			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -667,6 +680,7 @@ public class ProductController {
 			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
 			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
+			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
@@ -683,6 +697,8 @@ public class ProductController {
 			//listMap.put("itemKeepExpArr", itemKeepExpArr);
 			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
 			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("deleteFileArr", deleteFileArr);
+			listMap.put("deleteFilePathArr", deleteFilePathArr);
 			productService.updateProductTmp(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -712,6 +728,7 @@ public class ProductController {
 			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
 			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
@@ -728,6 +745,8 @@ public class ProductController {
 			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
 			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
 			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
+			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -750,6 +769,7 @@ public class ProductController {
 			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
 			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
+			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
@@ -766,6 +786,8 @@ public class ProductController {
 			//listMap.put("itemKeepExpArr", itemKeepExpArr);
 			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
 			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("deleteFileArr", deleteFileArr);
+			listMap.put("deleteFilePathArr", deleteFilePathArr);
 			productService.updateProduct(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

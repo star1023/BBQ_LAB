@@ -32,10 +32,7 @@
 		<param-value>/WEB-INF/classes/config/*-context.xml</param-value>
 	</context-param>
 	<!-- Spring profiles -->
-	<context-param>
-		<param-name>spring.profiles.active</param-name>
-		<param-value>dev</param-value><!-- 로컬/개발/운영 local/dev/prod -->
-	</context-param>
+
 	
 	<!-- Creates the Spring Container shared by all Servlets and Filters -->
 	<listener>

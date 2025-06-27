@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
-<title>신제품 품질 결과 보고서</title>
+<title>메뉴 품질 점검 결과 보고서</title>
 <script src="/resources/js/jquery.ui.monthpicker.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
@@ -80,7 +80,9 @@ function fn_loadList(pageNo) {
 					html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.RESULT_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";
 					html += "	<td style='text-align:center;'>"+nvl(item.EXCUTE_DATE,'&nbsp;')+"</td>";
 					html += "	<td>";
-					var columnItems = item.COLUMN_STATE_TEXT.split(',');
+					var columnItems = item.COLUMN_STATE_TEXT && item.COLUMN_STATE_TEXT.trim() !== ""
+					    ? item.COLUMN_STATE_TEXT.split(',')
+					    : ['업로드'];
 					for (var i = 0; i < columnItems.length; i++) {
 						html += columnItems[i] + "<br>";
 					}
@@ -201,14 +203,14 @@ function fn_viewHistory(idx) {
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
 <div class="wrap_in" id="fixNextTag">
-	<span class="path">신제품 품질 결과 보고서&nbsp;&nbsp;
+	<span class="path">메뉴 품질 점검 결과 보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align:middle"/>&nbsp;&nbsp;
 		<a href="#">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 	<!-- 상세 페이지  start-->
-		<h2 style="position:relative"><span class="title_s">New Product Result Report</span>
-			<span class="title">신제품 품질 결과 보고서</span>
+		<h2 style="position:relative"><span class="title_s">Menu Quality Test Report</span>
+			<span class="title">메뉴 품질 점검 결과 보고서</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -305,7 +307,7 @@ function fn_viewHistory(idx) {
 				</div>
 			</div>
 			<div class="btn_box_con"> 
-				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">신제품 품질 결과 보고서 생성</button>
+				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">메뉴 품질 점검 결과 보고서 생성</button>
 			</div>
 	 		<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>

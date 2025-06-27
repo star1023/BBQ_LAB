@@ -57,4 +57,6 @@ public interface ProductService {
 	Map<String, Object> selectAddInfoCount(Map<String, Object> param);
 
 	int selectMyDataCheck(Map<String, Object> param);
+	
+	int selectMyDataCount(Map<String, Object> param);
 }

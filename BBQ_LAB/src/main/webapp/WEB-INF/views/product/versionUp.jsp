@@ -12,6 +12,9 @@
 	transform: translate(-50%, -45%);
 }
 .ck-editor__editable { max-height: 200px; min-height:200px;}
+li {
+	list-style:none;
+}
 </style>
 
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
@@ -46,6 +49,15 @@ var selectedArr = new Array();
 		});
 		
 		fn.autoComplete($("#keyword"));
+		
+		document.querySelectorAll('.brand-token').forEach(token => {
+		    token.addEventListener('click', function (e) {
+		        if (e.target.textContent === '✕') {
+		            token.remove();
+		            updateHiddenBrandCodes(1);
+		        }
+		    });
+		});
 	});
 	
 	var selectedArr = new Array();
@@ -743,21 +755,16 @@ var selectedArr = new Array();
 			});		
 			formData.append("improveArr", JSON.stringify(improveArr));	
 			
-			// 용도
-			const usageType = $('select[name=usageSelect]').val();
+			// 용도 분리 입력 처리
+			var brandCodes = $('#brandCodeValues_1').val();
+			var customUsage = $('#customUsage_1').val();
 
-			if (usageType === 'BRAND') {
-			    const brandCodes = $('#brandCodeValues_1').val();
-			    if (brandCodes) {
-			        formData.append("usageArr", brandCodes);
-			    }
-			} else if (usageType === 'CUSTOM') {
-			    const customText = $('#customUsage_1').val();
-			    if (customText) {
-			        formData.append("usageArr", customText.trim());
-			    }
+			if (brandCodes) {
+				formData.append("usageArr", brandCodes); // USB
 			}
-			formData.append("usageType", usageType);
+			if (customUsage) {
+				formData.append("customUsage", customUsage.trim()); // USC
+			}
 			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
@@ -772,6 +779,7 @@ var selectedArr = new Array();
 				newItemKeepExpArr.push($('#'+ rowId + ' input[name=itemKeepExp]').val());
 				newItemNoteArr.push($('#'+ rowId + ' input[name=itemNote]').val());
 			});
+			
 			formData.append("newItemNameArr", JSON.stringify(newItemNameArr));	
 			formData.append("newItemStandardArr", JSON.stringify(newItemStandardArr));	
 			formData.append("newItemSupplierArr", JSON.stringify(newItemSupplierArr));	
@@ -916,7 +924,7 @@ var selectedArr = new Array();
 								if( result.RESULT == 'S' ) {
 									alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 개정되었습니다.");
 									$('#lab_loading').hide();
-									fn_list();									
+									fn_goList();									
 								} else {
 									alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 									$('#lab_loading').hide();
@@ -937,25 +945,73 @@ var selectedArr = new Array();
 		}
 	}
 	
+	function validatePurposeAndFeature() {
+		// ✅ 개선 목적 유효성 체크 (3개 항목 모두 빈값이 아닌 행이 하나 이상 있어야 함)
+		let validImprovePurposeRowCount = 0;
+		$('tr[id^=improve_pur_tr]').each(function () {
+			const val1 = $(this).find('input[name=itemImprove]').val();
+			const val2 = $(this).find('input[name=itemExist]').val();
+			const val3 = $(this).find('input[name=itemNote]').val();
+
+			if (
+				$.trim(val1) !== '' &&
+				$.trim(val2) !== '' &&
+				$.trim(val3) !== ''
+			) {
+				validImprovePurposeRowCount++;
+			}
+		});
+		if (validImprovePurposeRowCount === 0) {
+			alert("개선 목적을 하나 이상, 빈 항목 없이 입력해 주세요.");
+			return false;
+		}
+
+		// ✅ 개선 사항 유효성 체크
+		var isValidFeature = false;
+		$('tr[id^=improve_tr]').each(function () {
+			var val = $(this).find('input[name=improve]').val();
+			if ($.trim(val) !== '') isValidFeature = true;
+		});
+		if (!isValidFeature) {
+			alert("개선 사항을 하나 이상 입력해 주세요.");
+			return false;
+		}
+		
+		return true;
+	}
+	
 	//입력확인
 	function fn_insert(){
 		var contents = editor.getData();
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
+			tabChange('tab1');
 			$("#title").focus();
 			return;
 		} else if( !chkNull($("#productName").val()) ) {
 			alert("제품명을 입력해 주세요.");
+			tabChange('tab1');
 			$("#productName").focus();
+			return;
+		} else if(!validatePurposeAndFeature()){
+			tabChange('tab1');
+			return;
+		} else if(!$.trim($('#brandCodeValues_1').val())){
+			alert("브랜드를 선택해 주세요.");
+			tabChange('tab1');
 			return;
 		} else if( !chkNull($("#selectTxtFull").val()) ) {
 			alert("제품유형을 선택해 주세요.");
+			tabChange('tab2');
 			return;
 		} else if( selectedArr.length == 0 ) {
-			alert("제품유형을 선택하여 주세요.");		
+			alert("제품유형을 선택하여 주세요.");	
+			tabChange('tab2');
 			return;
 		} else if( attatchFileArr.length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
+			alert("첨부파일을 등록해주세요.");	
+			tabChange('tab1');
+			$("#attatch_file").focus();
 			return;
 		} else {
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
@@ -1574,7 +1630,7 @@ var selectedArr = new Array();
 			</div>
 			
 			<div id="tab1_div">
-				<div class="title2"  style="width: 80%;"><span class="txt">제목 </span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제목 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">						
 				</div>
 				<div class="main_tbl">
@@ -1585,7 +1641,7 @@ var selectedArr = new Array();
 						<tbody>
 							<tr>
 								<td>
-									<input type="text" name="title" id="title" style="width: 99%;" class="req" value="${productData.data.TITLE}"/>
+									<input type="text" name="title" id="title" style="width: 99%;" value="${productData.data.TITLE}"/>
 									<input type="hidden" name="idx" id="idx" value="${productData.data.PRODUCT_IDX}"/>
 									<input type="hidden" name="docNo" id="docNo" value="${productData.data.DOC_NO}"/>
 									<input type="hidden" name="currentVersionNo" id="currentVersionNo" value="${productData.data.VERSION_NO}"/>
@@ -1595,7 +1651,7 @@ var selectedArr = new Array();
 						</tbody>
 					</table>
 				</div>
-				<div class="title2"  style="width: 80%;"><span class="txt">제품명</span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">제품명 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
@@ -1606,7 +1662,7 @@ var selectedArr = new Array();
 						<tbody>
 							<tr>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="productName" id="productName" value="${productData.data.NAME}"/>
+									<input type="text"  style="width:99%; float: left" name="productName" id="productName" value="${productData.data.NAME}"/>
 								</td>
 							</tr>
 						</tbody>
@@ -1614,8 +1670,8 @@ var selectedArr = new Array();
 				</div>
 				
 				<div id="">
-					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">개선목적</span>
+					<div class="title2" style="float: left; margin-top: 20px;">
+						<span class="txt">개선목적 <span class="mandatory">*</span></span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
@@ -1645,7 +1701,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_pur_${status.count}"><label for="improve_pur_${status.count}"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl" value="${imporvePurposeList.IMPROVE}"/>
+									<input type="text" name="itemImprove" style="width: 100%" class="code_tbl" value="${imporvePurposeList.IMPROVE}"/>
 								</td>
 								<td>
 									<input type="text" name="itemExist" style="width: 100%" value="${imporvePurposeList.EXIST}"/>
@@ -1659,7 +1715,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_pur_1"><label for="improve_pur_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemImprove" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemExist" style="width: 100%"/>
@@ -1674,7 +1730,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_pur_1"><label for="improve_pur_1"><span></span></label>
 								</td>
 								<td>
-										<input type="text" name="itemImprove" style="width: 100%" class="req code_tbl"/>
+										<input type="text" name="itemImprove" style="width: 100%" class="code_tbl"/>
 									</td>
 									<td>
 										<input type="text" name="itemExist" style="width: 100%"/>
@@ -1687,8 +1743,8 @@ var selectedArr = new Array();
 					</table>
 				</div>
 				
-				<div class="title2"  style="width: 80%;"><span class="txt">개선 사항</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
+				<div class="title2"  style="width: 80%;"><span class="txt">개선 사항 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
 					<button class="btn_con_search" onClick="fn_addCol('improve')">
 						<img src="/resources/images/icon_s_write.png" />추가 
 					</button>
@@ -1712,7 +1768,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_${status.count}"><label for="improve_${status.count}"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve" value="${addInfoList.INFO_TEXT}"/>
+									<input type="text"  style="width:99%; float: left" name="improve" value="${addInfoList.INFO_TEXT}"/>
 								</td>
 							</tr>
 							</c:if>
@@ -1723,7 +1779,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve"/>
+									<input type="text"  style="width:99%; float: left" placeholder="가." name="improve"/>
 								</td>
 							</tr>
 						</c:if>	
@@ -1734,93 +1790,83 @@ var selectedArr = new Array();
 									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text"  style="width:99%; float: left" class="req" name="improve"/>
+									<input type="text"  style="width:99%; float: left" name="improve"/>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
 				
-				<div id="">
-				  <div class="title2" style="width: 80%;"><span class="txt">용도</span></div>
-				  <table id="usage_Table" class="tbl05">
-				    <colgroup>
-				      <col width="100">
-				      <col width="600">
-				      <col />
-				    </colgroup>
-				    <thead>
-				      <tr>
-				        <th>용도선택</th>
-				        <th>내용</th>
-				      </tr>
-				    </thead>
+				<!-- ✅ 브랜드 영역 -->
+				<div>
+				  <div class="title2" style="width: 80%; margin-top:20px;"><span class="txt">브랜드 <span class="mandatory">*</span></span></div>
+				  <table class="tbl05">
 				    <tbody>
 				      <tr>
 				        <td>
-				          <div class="search_box" style="width:100%;">
-				            <div class="selectbox" style="width:100%; text-align:center;">
-								<c:set var="hasUSC" value="false" />
-								<c:forEach items="${addInfoList}" var="item">
-								  <c:if test="${item.INFO_TYPE == 'USC'}">
-								    <c:set var="hasUSC" value="true" />
-								  </c:if>
-								</c:forEach>
-								
-								<label><c:if test="${!hasUSC}">브랜드선택</c:if><c:if test="${hasUSC}">제품 용도 기입</c:if></label>
-								<select name="usageSelect" onchange="onUsageChange(this, 1)">
-								  <option value="">-- 선택 --</option>
-								  <option value="BRAND" <c:if test="${!hasUSC}">selected</c:if>>브랜드선택</option>
-								  <option value="CUSTOM" <c:if test="${hasUSC}">selected</c:if>>제품 용도 기입</option>
-								</select>
-				            </div>
-				          </div>
-				        </td>
-				        <td id="usageContentArea_1">
 				          <div style="width: 100%;">
 				            <div style="display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;">
-							  <!-- ✅ 토큰 or input 박스 -->
-							  <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;">
-							    <c:forEach items="${addInfoList}" var="item">
-							      <c:if test="${item.INFO_TYPE == 'USB'}">
-							        <c:forEach var="i" begin="0" end="${fn:length(fn:split(item.INFO_TEXT, ',')) - 1}">
-							          <c:set var="code" value="${fn:split(item.INFO_TEXT, ',')[i]}" />
-							          <c:set var="name" value="${fn:split(item.INFO_TEXT_NAME, ',')[i]}" />
-							          <span class="brand-token" data-code="${code}">
-							            <span style="font-weight: bold; margin-right: 6px; cursor: pointer; color: rgb(102, 102, 102);">✕</span>
-							            ${name}
-							          </span>
-							        </c:forEach>
-							      </c:if>
-							      <c:if test="${item.INFO_TYPE == 'USC'}">
-							        <input type="text" id="customUsage_1" name="req" value="${item.INFO_TEXT}" style="width:99%;" />
-							      </c:if>
-							    </c:forEach>
-							  </div>
-							
-							  <!-- ✅ 버튼은 USB일 때만 노출 -->
-							  <c:if test="${!hasUSC}">
-							    <div style="display: flex; gap: 5px;">
-							      <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
-							      <button class="btn_small_search ml5" onclick="document.getElementById('brandTokenBox_1').innerHTML='';">초기화</button>
-							    </div>
-							  </c:if>
-							</div>
-    				        <!-- ✅ 코드 hidden input -->
-							<c:forEach items="${addInfoList}" var="item" varStatus="status">
+				              <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;">
+								<c:forEach items="${addInfoList}" var="item">
+								  <c:if test="${item.INFO_TYPE == 'USB'}">
+								    <c:forEach var="i" begin="0" end="${fn:length(fn:split(item.INFO_TEXT, ',')) - 1}">
+								      <c:set var="code" value="${fn:split(item.INFO_TEXT, ',')[i]}" />
+								      <c:set var="name" value="${fn:split(item.INFO_TEXT_NAME, ',')[i]}" />
+								      <span class="brand-token" data-code="${code}"
+								            style="display: flex; align-items: center; background: #e0e0e0; border-radius: 12px; padding: 4px 8px; margin-right: 5px; font-size: 13px;">
+								        <span
+								          style="font-weight: bold; margin-right: 6px; cursor: pointer; color: #666;">✕</span>
+								        ${name}
+								      </span>
+								    </c:forEach>
+								  </c:if>
+								</c:forEach>
+				              </div>
+				
+				              <!-- 항상 버튼 노출 -->
+				              <div style="display: flex; gap: 5px;">
+				                <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
+				                <button class="btn_small_search ml5" onclick="document.getElementById('brandTokenBox_1').innerHTML=''; document.getElementById('brandCodeValues_1').value='';">초기화</button>
+				              </div>
+				            </div>
+				            <!-- ✅ 숨겨진 브랜드 코드 -->
+							<c:set var="brandCodes" value="" />
+							<c:forEach items="${addInfoList}" var="item">
 							  <c:if test="${item.INFO_TYPE == 'USB'}">
 							    <c:choose>
-							      <c:when test="${empty usbCodeList}">
-							        <c:set var="usbCodeList" value="${item.INFO_TEXT}" />
+							      <c:when test="${empty brandCodes}">
+							        <c:set var="brandCodes" value="${item.INFO_TEXT}" />
 							      </c:when>
 							      <c:otherwise>
-							        <c:set var="usbCodeList" value="${usbCodeList},${item.INFO_TEXT}" />
+							        <c:set var="brandCodes" value="${brandCodes},${item.INFO_TEXT}" />
 							      </c:otherwise>
 							    </c:choose>
 							  </c:if>
 							</c:forEach>
-							<input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1" value="${usbCodeList}" />
+							
+							<!-- ✅ 중복된 쉼표 정리는 JS에서 filter(Boolean)으로 가능 -->
+							<input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1" value="${brandCodes}" />
 				          </div>
+				        </td>
+				      </tr>
+				    </tbody>
+				  </table>
+				</div>
+				
+				<!-- ✅ 용도 입력 영역 -->
+				<div>
+				  <div class="title2" style="width: 80%;"><span class="txt">용도</span></div>
+				  <table class="tbl05">
+				    <tbody>
+				      <tr>
+				        <td>
+				          <c:set var="customText" value="" />
+				          <c:forEach items="${addInfoList}" var="item">
+				            <c:if test="${item.INFO_TYPE == 'USC'}">
+				              <c:set var="customText" value="${item.INFO_TEXT}" />
+				            </c:if>
+				          </c:forEach>
+				          <input type="text" id="customUsage_1" name="customUsage" value="${customText}" placeholder="용도를 입력하세요" style="width:99%;" />
 				        </td>
 				      </tr>
 				    </tbody>
@@ -1863,7 +1909,7 @@ var selectedArr = new Array();
 										<input type="checkbox" id="new_${status.count}"><label for="new_${status.count}"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="itemName" style="width: 100%" class="req code_tbl" value="${newDataList.PRODUCT_NAME}"/>
+										<input type="text" name="itemName" style="width: 100%" class="code_tbl" value="${newDataList.PRODUCT_NAME}"/>
 									</td>
 									<td>
 										<input type="text" name="itemStandard" style="width: 100%" value="${newDataList.PACKAGE_STANDARD}"/>
@@ -1881,7 +1927,7 @@ var selectedArr = new Array();
 										<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+										<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 									</td>
 									<td>
 										<input type="text" name="itemStandard" style="width: 100%"/>
@@ -1900,7 +1946,7 @@ var selectedArr = new Array();
 									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="itemName" style="width: 100%" class="req code_tbl"/>
+									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
 								</td>
 								<td>
 									<input type="text" name="itemStandard" style="width: 100%"/>
@@ -1935,7 +1981,7 @@ var selectedArr = new Array();
 					</table>
 				</div>
 				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
+				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부 <span class="mandatory">*</span></span></div>
 				<div class="title2 mt20" style="width:10%; display: inline-block;">
 					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
 						<img src="/resources/images/icon_s_file.png" />파일첨부 
@@ -1967,13 +2013,13 @@ var selectedArr = new Array();
 						</colgroup>
 						<tbody>
 							<tr>
-								<th style="border-left: none;">제품코드</th>
+								<th style="border-left: none;">제품코드 <span class="mandatory">*</span></th>
 								<td>
 									${productData.data.PRODUCT_CODE}
 								</td>
 								<th style="border-left: none;">상품코드</th>
 								<td>
-									<input type="text" style="width:200px; float: left" class="req" name="productSapCode" id="productSapCode" value="${productData.data.SAP_CODE}" readonly/>
+									<input type="text" style="width:200px; float: left" name="productSapCode" id="productSapCode" value="${productData.data.SAP_CODE}" readonly/>
 									<c:if test="${productData.data.SAP_CODE == '' || productData.data.SAP_CODE == null}">
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 									</c:if>
@@ -1995,7 +2041,7 @@ var selectedArr = new Array();
 							<tr>
 								<th style="border-left: none;">버젼 NO.</th>
 								<td colspan="3">
-									<input type="text" style="width:50px; float: left" class="req" name="versionNo" id="versionNo" value="${productData.data.VERSION_NO+1}" onkeyup="chkNum(this)"/>
+									<input type="text" style="width:50px; float: left" name="versionNo" id="versionNo" value="${productData.data.VERSION_NO+1}" onkeyup="chkNum(this)"/>
 								</td>
 							</tr>
 							<tr>
@@ -2020,7 +2066,7 @@ var selectedArr = new Array();
 								</td>							
 							</tr>
 							<tr>
-								<th style="border-left: none;">제품유형</th>
+								<th style="border-left: none;">제품유형 <span class="mandatory">*</span></th>
 								<td colspan="5">
 									<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 450px; float: left" 
 									value="${productData.data.PRODUCT_TYPE_NAME1}>${productData.data.PRODUCT_TYPE_NAME2}>${productData.data.PRODUCT_TYPE_NAME3}" readonly>
@@ -2030,9 +2076,9 @@ var selectedArr = new Array();
 							<tr>
 								<th style="border-left: none;">신규원료사용 유무</th>
 								<td colspan="5">
-									<input type="radio" name="newMat" id="newMat1" value="N" onclick="changeNewMat(event)" checked="${productData.data.IS_NEW_MATERIAL == 'N' ? 'checked' : ''}">
+									<input type="radio" name="newMat" id="newMat1" value="N" onclick="changeNewMat(event)" ${productData.data.IS_NEW_MATERIAL == 'N' ? 'checked' : ''}>
 									<label for="newMat1"><span></span>사용안함</label>
-									<input type="radio" name="newMat" id="newMat2" onclick="changeNewMat(event)" value="Y" checked="${productData.data.IS_NEW_MATERIAL == 'Y' ? 'checked' : ''}">
+									<input type="radio" name="newMat" id="newMat2" value="Y" onclick="changeNewMat(event)" ${productData.data.IS_NEW_MATERIAL == 'Y' ? 'checked' : ''}>
 									<label for="newMat2"><span></span>사용</label>
 								</td>
 							</tr>
@@ -2098,12 +2144,12 @@ var selectedArr = new Array();
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${productMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${productMaterialData.NAME}" class="read_only" />
@@ -2114,7 +2160,31 @@ var selectedArr = new Array();
 								<td><input type="text" name="itemDesc" style="width: 100%" value="${productMaterialData.DESCRIPTION}"/></td>
 							</tr>
 							</c:if>	
-						</c:forEach>	
+						</c:forEach>
+						<c:if test="${fn:length(menuMaterialData) == 0}">
+							<tr id="newMatRow_1" class="temp_color">
+								<td>
+									<input type="checkbox" id="newMat_1"><label for="newMat_1"><span></span></label>
+									<input type="hidden" name="itemType" value="Y"/>
+									<input type="hidden" name="itemTypeName"/>
+								</td>
+								<td>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
+								</td>
+								<td>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+								</td>
+								<td>
+									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
+								</td>
+								<td><input type="text" name="itemStandard" style="width: 100%" class=""/></td>
+								<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
+								<td><input type="text" name="itemUnitPrice" style="width: 100%"  readonly="readonly" class="read_only"/></td>
+								<td><input type="text" name="itemDesc" style="width: 100%"/></td>
+							</tr>
+						</c:if>	
 						</tbody>
 						<tfoot>
 						</tfoot>
@@ -2123,7 +2193,7 @@ var selectedArr = new Array();
 				
 				<div id="matDiv">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">원료</span>
+						<span class="txt">기존원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
@@ -2157,6 +2227,7 @@ var selectedArr = new Array();
 						<tbody id="matTbody" name="matTbody">
 						<c:forEach items="${productMaterialData}" var="productMaterialData" varStatus="status">
 							<c:if test="${productMaterialData.MATERIAL_TYPE == 'N' }">
+							<c:set var="count" value="${count + 1}" />
 							<tr id="matRow_${status.count}" class="temp_color">
 								<td>
 									<input type="checkbox" id="mat_${status.count}"><label for="mat_${status.count}"><span></span></label>
@@ -2164,12 +2235,12 @@ var selectedArr = new Array();
 									<input type="hidden" name="itemTypeName"/>
 								</td>
 								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')"/>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_IDX}"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" value="${productMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')"/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl" value="${productMaterialData.SAP_CODE}"/>								
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${productMaterialData.SAP_CODE}"/>								
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${productMaterialData.NAME}" class="read_only" />
@@ -2180,7 +2251,31 @@ var selectedArr = new Array();
 								<td><input type="text" name="itemDesc" style="width: 100%" value="${productMaterialData.DESCRIPTION}"/></td>
 							</tr>
 							</c:if>	
-						</c:forEach>	
+						</c:forEach>
+						<c:if test="${fn:length(productMaterialData) == 0}">
+							<tr id="matRow_1" class="temp_color">
+								<td>
+									<input type="checkbox" id="mat_1"><label for="mat_1"><span></span></label>
+									<input type="hidden" name="itemType" value="N"/>
+									<input type="hidden" name="itemTypeName"/>
+								</td>
+								<td>
+									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl"/>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
+								</td>
+								<td>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>								
+								</td>
+								<td>
+									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
+								</td>
+								<td><input type="text" name="itemStandard" style="width: 100%" class=""/></td>
+								<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
+								<td><input type="text" name="itemUnitPrice" style="width: 100%"  readonly="readonly" class="read_only"/></td>
+								<td><input type="text" name="itemDesc" style="width: 100%" /></td>
+							</tr>
+						</c:if>
 						</tbody>
 						<tfoot>
 						</tfoot>
@@ -2245,8 +2340,8 @@ var selectedArr = new Array();
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 			</td>
 			<td>
@@ -2268,12 +2363,12 @@ var selectedArr = new Array();
 				<input type="hidden" name="itemType"/>
 			</td>
 			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="req code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="req code_tbl" onkeyup="checkMaterail(event,'mat')"/>
+				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 			</td>
 			<td>
-				<input type="text" name="itemSapCode" style="width: 100px" class="req code_tbl"/>
+				<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>
 			</td>
 			<td>
 				<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />

@@ -199,91 +199,51 @@ th.contentBlock {
 				</table>
 			</div>
 			<br>
-			<c:set var="itemList" value="${itemList}" />
-			<c:forEach var="item" items="${itemList}">
-				<c:if test="${item.TYPE_CODE eq 'PH'}">
-					<c:set var="itemContent_PH" value="${item.ITEM_CONTENT}" />
-				</c:if>
-				<c:if test="${item.TYPE_CODE eq 'BRI'}">
-					<c:set var="itemContent_BRI" value="${item.ITEM_CONTENT}" />
-				</c:if>
-				<c:if test="${item.TYPE_CODE eq 'SAL'}">
-					<c:set var="itemContent_SAL" value="${item.ITEM_CONTENT}" />
-				</c:if>
-				<c:if test="${item.TYPE_CODE eq 'VIS'}">
-					<c:set var="itemContent_VIS" value="${item.ITEM_CONTENT}" />
-				</c:if>
-			</c:forEach>
-			<div class="main_tbl">
-				<table class="insert_proc01">
-					<tbody>
-						<tr style="height:60px;">
-							<th style="border-left: none;" class="contentBlock">검사요청(항목에 체크)</th>
-							<td>
-								<div class="search_box" style="text-align:center;">
-									<input type="checkbox" id="check_ph" name="testItems" value="PH" disabled 
-										<c:if test="${not empty itemContent_PH}">checked</c:if> />
-									<label for="check_ph"><span></span>pH</label>
-								</div>
-							</td>
-							<td>
-								<div class="search_box" style="text-align:center;">
-									<input type="checkbox" id="check_bri" name="testItems" value="BRI" disabled 
-										<c:if test="${not empty itemContent_BRI}">checked</c:if> />
-									<label for="check_bri"><span></span>Brix</label>
-								</div>
-							</td>
-							<td>
-								<div class="search_box" style="text-align:center;">
-									<input type="checkbox" id="check_sal" name="testItems" value="SAL" disabled 
-										<c:if test="${not empty itemContent_SAL}">checked</c:if> />
-									<label for="check_sal"><span></span>염도</label>
-								</div>
-							</td>
-							<td>
-								<div class="search_box" style="text-align:center;">
-									<input type="checkbox" id="check_vis" name="testItems" value="VIS" disabled 
-										<c:if test="${not empty itemContent_VIS}">checked</c:if> />
-									<label for="check_vis"><span></span>점도</label>
-								</div>
-							</td>
-						</tr>
+			<table class="insert_proc01" style="width:100%; table-layout:fixed; border-collapse:collapse;">
+			    <tbody>
+			        <c:forEach var="start" begin="0" end="${fn:length(itemList)-1}" step="4">
+				    <c:set var="isFirstRow" value="${start == 0}" />
+				    
+				    <tr style="height:60px;<c:if test='${!isFirstRow}'>border-top:2px solid #aaaaaa;</c:if>">
+				        <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">
+				            검사요청 항목
+				        </th>
+				        <c:forEach var="i" begin="${start}" end="${start + 3}">
+				            <c:choose>
+				                <c:when test="${i lt fn:length(itemList)}">
+				                    <td style="width:20%; border:1px solid #ddd; text-align:center; padding:10px;">
+				                        ${itemList[i].TYPE_CODE_TEXT}
+				                    </td>
+				                </c:when>
+				                <c:otherwise>
+				                    <td style="width:20%; border:1px solid #ddd;"></td>
+				                </c:otherwise>
+				            </c:choose>
+				        </c:forEach>
+				    </tr>
+				
+				    <tr style="height:60px;">
+				        <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">
+				            범위<br>(시료의 대략적인 범위 기재)
+				        </th>
+				        <c:forEach var="i" begin="${start}" end="${start + 3}">
+				            <c:choose>
+				                <c:when test="${i lt fn:length(itemList)}">
+				                    <td style="width:20%; border:1px solid #ddd; text-align:center; padding:10px;">
+				                        ${itemList[i].ITEM_CONTENT}
+				                    </td>
+				                </c:when>
+				                <c:otherwise>
+				                    <td style="width:20%; border:1px solid #ddd;"></td>
+				                </c:otherwise>
+				            </c:choose>
+				        </c:forEach>
+				    </tr>
+				</c:forEach>
+			    </tbody>
+			</table>
 			
-						<tr style="height:60px;">
-							<th style="border-left: none;" class="contentBlock">범위<br>(시료의 대략적인 범위 기재)</th>
-							<td style="text-align:center;">
-								${itemContent_PH}
-							</td>
-							<td style="text-align:center;">
-								${itemContent_BRI}
-							</td>
-							<td style="text-align:center;">
-								${itemContent_SAL}
-							</td>
-							<td style="text-align:center;">
-								${itemContent_VIS}
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-			
-			<div class="title2"  style="width: 100%; margin-top:10px;"><span class="txt">이화학 검사 진행 기준</span></div>
-			<!-- 
-			<div class="main_tbl">
-				<div>
-					<table class="insert_proc01" style="border-bottom: 2px solid #4b5165;">
-						<tr>
-							<td>
-								<div style="white-space: pre-wrap; max-height: 100%; overflow-y: auto;">
-									${chemicalTestData.data.STANDARD_CONTENT}
-								</div>
-							</td>
-						</tr>
-					</table>
-				</div>
-			</div>
-			 -->
+			<div class="title2"  style="width: 100%; margin-top:20px;"><span class="txt">이화학 검사 진행 기준</span></div>
 			 <c:set var="standardList" value="${standardList}" />
 			 <div class="main_tbl">
 				<span class="txt" style="margin-left:10px;">1. 검사 요청 방법</span>
@@ -354,9 +314,21 @@ th.contentBlock {
 							</td>
 							<!-- 오른쪽: 이미지 영역 -->
 							<td style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+								<c:set var="hasImage" value="${not empty chemicalTestData.data.FILE_PATH and not empty chemicalTestData.data.FILE_NAME}" />
 								<p>
-									<img id="preview" src="/images${chemicalTestData.data.FILE_PATH}/${chemicalTestData.data.FILE_NAME}"
-										style="border:1px solid #e1e1e1; border-radius:5px; min-height:300px; max-height:300px; object-fit: contain; min-width:440px; max-width: 440px;">
+								    <a href="<c:if test='${hasImage}'><c:out value='/images${chemicalTestData.data.FILE_PATH}/${chemicalTestData.data.FILE_NAME}'/></c:if>" 
+								       target="_blank">
+								        <img id="preview"
+								             src="<c:choose>
+								                      <c:when test='${hasImage}'>
+								                          /images${chemicalTestData.data.FILE_PATH}/${chemicalTestData.data.FILE_NAME}
+								                      </c:when>
+								                      <c:otherwise>
+								                          /resources/images/img_noimg3.png
+								                      </c:otherwise>
+								                  </c:choose>"
+								             style="border:1px solid #e1e1e1; border-radius:5px; min-height:300px; max-height:300px; object-fit: contain; min-width:440px; max-width: 440px;">
+								    </a>
 								</p>
 							</td>
 						</tr>
@@ -384,6 +356,9 @@ th.contentBlock {
 					
 				</div>
 				<div class="btn_box_con4">
+					<c:if test="${chemicalTestData.data.STATUS == 'REG'}">
+						<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">수정</button>
+					</c:if>
 					<c:if test="${chemicalTestData.data.STATUS == 'COND_APPR'}">
 						<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">수정</button>
 					</c:if>

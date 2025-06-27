@@ -136,4 +136,10 @@ public class UserDaoImpl implements UserDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("user.updateUserPwd", param);
 	}	
+	
+	@Override
+	public Map<String, Object> getUserData(String userId) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("user.getUserData", userId);
+	}
 }

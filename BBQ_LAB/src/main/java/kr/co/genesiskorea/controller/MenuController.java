@@ -52,6 +52,8 @@ public class MenuController {
 	@RequestMapping("/selectMenuListAjax")
 	@ResponseBody
 	public Map<String, Object> selectMenuListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
 		Map<String, Object> returnMap = menuService.selectMenuList(param);
 		return returnMap;
 	}
@@ -131,7 +133,7 @@ public class MenuController {
 			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
 			, @RequestParam(value = "featureArr", required = false) List<String> featureArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
-			, @RequestParam(value = "usageType", required = false) String usageType
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			/*, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
 			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
 			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
@@ -165,7 +167,7 @@ public class MenuController {
 			//listMap.put("purposeArr", purposeArr);
 			//listMap.put("featureArr", featureArr);
 			listMap.put("usageArr", usageArr);
-			listMap.put("usageType", usageType);
+			listMap.put("customUsage", customUsage);
 			//listMap.put("newItemNameArr", newItemNameArr);
 			//listMap.put("newItemStandardArr", newItemStandardArr);
 			//listMap.put("newItemSupplierArr", newItemSupplierArr);
@@ -208,7 +210,7 @@ public class MenuController {
 			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
 			, @RequestParam(value = "featureArr", required = false) List<String> featureArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
-			, @RequestParam(value = "usageType", required = false) String usageType
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			/*, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
 			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
 			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
@@ -242,7 +244,7 @@ public class MenuController {
 			//listMap.put("purposeArr", purposeArr);
 			//listMap.put("featureArr", featureArr);
 			listMap.put("usageArr", usageArr);
-			listMap.put("usageType", usageType);
+			listMap.put("customUsage", customUsage);
 			//listMap.put("newItemNameArr", newItemNameArr);
 			//listMap.put("newItemStandardArr", newItemStandardArr);
 			//listMap.put("newItemSupplierArr", newItemSupplierArr);
@@ -333,7 +335,7 @@ public class MenuController {
 			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr
 			, @RequestParam(value = "improveArr", required = false) List<String> improveArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
-			, @RequestParam(value = "usageType", required = false) String usageType
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			/*, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
 			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
 			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
@@ -368,7 +370,7 @@ public class MenuController {
 			//listMap.put("itemNoteArr", itemNoteArr);
 			//listMap.put("improveArr", improveArr);
 			listMap.put("usageArr", usageArr);
-			listMap.put("usageType", usageType);
+			listMap.put("customUsage", customUsage);
 			//listMap.put("newItemNameArr", newItemNameArr);
 			//listMap.put("newItemStandardArr", newItemStandardArr);
 			//listMap.put("newItemSupplierArr", newItemSupplierArr);
@@ -410,7 +412,7 @@ public class MenuController {
 			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr
 			, @RequestParam(value = "improveArr", required = false) List<String> improveArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
-			, @RequestParam(value = "usageType", required = false) String usageType
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			/*, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
 			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
 			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
@@ -446,7 +448,7 @@ public class MenuController {
 			//listMap.put("itemNoteArr", itemNoteArr);
 			//listMap.put("improveArr", improveArr);
 			listMap.put("usageArr", usageArr);
-			listMap.put("usageType", usageType);
+			listMap.put("customUsage", customUsage);
 			//listMap.put("newItemNameArr", newItemNameArr);
 			//listMap.put("newItemStandardArr", newItemStandardArr);
 			//listMap.put("newItemSupplierArr", newItemSupplierArr);
@@ -576,7 +578,7 @@ public class MenuController {
 			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
 			, @RequestParam(value = "featureArr", required = false) List<String> featureArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
-			, @RequestParam(value = "usageType", required = false) String usageType
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			
 			/*, @RequestParam(value = "itemImproveArr", required = false) List<String> itemImproveArr
 			, @RequestParam(value = "itemExistArr", required = false) List<String> itemExistArr
@@ -604,6 +606,8 @@ public class MenuController {
 			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
 			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
 			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
+			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -615,7 +619,7 @@ public class MenuController {
 			//listMap.put("purposeArr", purposeArr);
 			//listMap.put("featureArr", featureArr);
 			listMap.put("usageArr", usageArr);
-			listMap.put("usageType", usageType);
+			listMap.put("customUsage", customUsage);
 			
 			//listMap.put("itemImproveArr", itemImproveArr);
 			//listMap.put("itemExistArr", itemExistArr);
@@ -644,6 +648,8 @@ public class MenuController {
 			//listMap.put("itemKeepExpArr", itemKeepExpArr);
 			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
 			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("deleteFileArr", deleteFileArr);
+			listMap.put("deleteFilePathArr", deleteFilePathArr);
 			menuService.updateMenuTmp(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -661,7 +667,7 @@ public class MenuController {
 			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
 			, @RequestParam(value = "featureArr", required = false) List<String> featureArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
-			, @RequestParam(value = "usageType", required = false) String usageType
+			, @RequestParam(value = "customUsage", required = false) String customUsage
 			
 			/*, @RequestParam(value = "itemImproveArr", required = false) List<String> itemImproveArr
 			, @RequestParam(value = "itemExistArr", required = false) List<String> itemExistArr
@@ -690,6 +696,8 @@ public class MenuController {
 			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
 			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
 			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
+			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -700,7 +708,7 @@ public class MenuController {
 			//listMap.put("purposeArr", purposeArr);
 			//listMap.put("featureArr", featureArr);
 			listMap.put("usageArr", usageArr);
-			listMap.put("usageType", usageType);
+			listMap.put("customUsage", customUsage);
 			
 			//listMap.put("itemImproveArr", itemImproveArr);
 			//listMap.put("itemExistArr", itemExistArr);
@@ -729,6 +737,8 @@ public class MenuController {
 			//listMap.put("itemKeepExpArr", itemKeepExpArr);
 			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
 			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("deleteFileArr", deleteFileArr);
+			listMap.put("deleteFilePathArr", deleteFilePathArr);
 			menuService.updateMenu(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

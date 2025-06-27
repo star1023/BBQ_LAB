@@ -10,4 +10,9 @@
 		/* main.getDocStatusCount */
         SELECT * FROM lab_doc_status_view WHERE DOC_OWNER = #{userId}
     </select>
+    
+	<select id="getApprStatusCount" resultType="map">
+		/* main.getApprStatusCount */
+        SELECT * FROM lab_appr_status_view WHERE USER_ID = #{userId}
+    </select>
 </mapper>

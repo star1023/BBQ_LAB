@@ -116,7 +116,7 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 			path += "/"+toDay;
 			
 			// 5. 이미지 파일 저장
-			if( !imageFile.isEmpty() ) {
+			if( imageFile != null && !imageFile.isEmpty() ) {
 				String fileIdx = FileUtil.getUUID();
 				String result = FileUtil.upload3(imageFile,path,fileIdx);
 				param.put("orgFileName", imageFile.getOriginalFilename());

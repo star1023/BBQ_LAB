@@ -58,4 +58,6 @@ public interface MenuService {
 
 	int selectMyDataCheck(Map<String, Object> param);	
 
+	int selectMyDataCount(Map<String, Object> param);
+	
 }
