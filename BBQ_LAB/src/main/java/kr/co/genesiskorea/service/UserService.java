@@ -31,4 +31,6 @@ public interface UserService {
 	public void logout(HttpServletRequest request) throws Exception;
 
 	public void setPersonalization(Map<String, Object> param) throws Exception;
+	
+	Map<String, Object> getUserData(String userId);
 }

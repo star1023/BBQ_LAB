@@ -30,21 +30,18 @@ $(document).ready(function() {
 	  drawBarChartByDocType(docType);
 	});
 	
-	// 결재 상태 조회
-	if (typeof apprStatusData !== 'undefined') {
-	   // 올린 결재 문서
-	   $("#my_reg").text(apprStatusData.APPR_NCNT || 0);   // 대기 (상신)
-	   $("#my_ac").text(apprStatusData.APPR_A_CNT + apprStatusData.APPR_C_CNT || 0);  // 반려
-	   $("#my_ret").text(apprStatusData.APPR_R_CNT || 0);  // 반려
-	   $("#my_comp").text(apprStatusData.APPR_Y_CNT || 0); // 완료
-	
-	   // 받은 결재 문서
-	   $("#appr_reg").text(apprStatusData.MY_APPR_CNT || 0); // 결재중 + 부분승인
-	   
-	   // 참조 문서
-	   $("#ref_today").text(apprStatusData.REF_NO_READ_CNT || 0); // 미열람
-	   $("#ref_total").text(apprStatusData.REF_TOTAL_CNT || 0);   // 전체
-	}
+    // 올린 결재 문서
+    $("#my_reg").text(apprStatusData !== null ? apprStatusData.APPR_NCNT : 0);   // 대기 (상신)
+    $("#my_ac").text(apprStatusData !== null ? apprStatusData.APPR_A_CNT + apprStatusData.APPR_C_CNT : 0);  // 반려
+    $("#my_ret").text(apprStatusData !== null ? apprStatusData.APPR_R_CNT : 0);  // 반려
+    $("#my_comp").text(apprStatusData !== null ? apprStatusData.APPR_Y_CNT : 0); // 완료
+
+    // 받은 결재 문서
+    $("#appr_reg").text(apprStatusData !== null ? apprStatusData.MY_APPR_CNT : 0); // 결재중 + 부분승인
+   
+    // 참조 문서
+    $("#ref_today").text(apprStatusData !== null ? apprStatusData.REF_NO_READ_CNT : 0); // 미열람
+    $("#ref_total").text(apprStatusData !== null ? apprStatusData.REF_TOTAL_CNT : 0);   // 전체
 	
 	$("#productDocCount").text(productDocCount || 0);
 	$("#menuDocCount").text(menuDocCount || 0);
@@ -71,6 +68,16 @@ $(document).ready(function() {
 	  }
 	});
 	
+	$(document).on("click", ".barChartBtnBox2 .barChartBtn", function () {
+	  const btnText = $(this).text().trim();
+	  updatePieChartContext(btnText);
+	});
+
+	$(document).on("click", ".barChartBtnBox .barChartBtn", function () {
+	  const btnText = $(this).text().trim();
+	  updateBarChartContext(btnText);
+	});
+		
 	$(document).on("click", ".faq-title", function () {
 	  const $clickedItem = $(this).closest(".faq-item");
 
@@ -91,12 +98,12 @@ $(document).ready(function() {
 });
 let _faqCategoryFullList = []; // 전체 FAQ 카테고리 저장용 전역변수
 let faqCurrentIndex = 0;
-const chartData1 = ${docCountJson};
-const chartData2 = ${docStatusCountJson};
-const chartStatusData = transformFlatToNestedStatusData(chartData2);
+const chartData1 = ${docCountJson != null ? docCountJson : '{}'};
+const chartData2 = ${docStatusCountJson != null ? docStatusCountJson : '{}'};
 const apprStatusData = ${apprStatusCountJson};
-const productDocCount = ${productDocCount};
-const menuDocCount = ${menuDocCount};
+const productDocCount = ${productDocCount != null ? productDocCount : 0};
+const menuDocCount = ${menuDocCount != null ? menuDocCount : 0};
+const chartStatusData = transformFlatToNestedStatusData(chartData2);
 
 //공지사항 //
 function fn_loadList(pageNo = 1) {
@@ -126,6 +133,8 @@ function fn_loadList(pageNo = 1) {
 }
 
 function transformFlatToNestedStatusData(flatData) {
+  if (!flatData || typeof flatData !== 'object') return {}; // 🔒 안정화
+
   const result = {};
   Object.entries(flatData).forEach(([key, value]) => {
     const match = key.match(/^([A-Z_]+)_(TMP|REG|APPR|COND_APPR|COMP|RET)_CNT$/);
@@ -143,8 +152,14 @@ function fn_renderDashboardList(list) {
   const $tbody = $("#noticeTableBody");
   $tbody.empty();
 
+  const totalRows = 7; // 항상 7행 보이도록 설정
+  let renderedCount = 0;
+
   if (!list || list.length === 0) {
-    $tbody.append("<tr><td colspan='3' style='text-align: center;'>공지사항이 없습니다.</td></tr>");
+    // 공지사항이 없으면 빈 행 7개 출력
+    for (let i = 0; i < totalRows; i++) {
+      $tbody.append("<tr><td colspan='3' style='height: 32px;'>&nbsp;</td></tr>");
+    }
     return;
   }
 
@@ -164,7 +179,7 @@ function fn_renderDashboardList(list) {
         "</span>";
     }
 
-    var trHtml = "<tr " + trStyle + ">" +
+    const trHtml = "<tr " + trStyle + ">" +
       "<td style='width: 80px; text-align: center;'>" + iconHtml + "</td>" +
       "<td style='text-align: center; width: 350px;'>" +
         "<a href=\"javascript:fn_viewDetail(" + item.BNOTICE_IDX + ");\">" + item.TITLE + "</a>" +
@@ -173,7 +188,14 @@ function fn_renderDashboardList(list) {
     "</tr>";
 
     $tbody.append(trHtml);
+    renderedCount++;
   });
+
+  // 부족한 행 수 만큼 빈 행 추가
+  const remainingRows = totalRows - renderedCount;
+  for (let i = 0; i < remainingRows; i++) {
+    $tbody.append("<tr><td colspan='3' style='height: 32px;'>&nbsp;</td></tr>");
+  }
 }
 
 
@@ -417,7 +439,50 @@ function loadCode(codeId, selectBoxId) {
   });
 }
 
+function getLabelFromText(text) {
+  if (text === '${userData.userName}') {
+  	return "내";	  
+  }else if(text === '세계식문화과학기술원'){
+  	return "전체";
+  }else {
+  	return "팀";
+  }
+}
 
+function getLabelFromText2(text) {
+  if (text === '${userData.userName}') {
+  	return "내";	  
+  }else {
+  	return text;	  
+  }
+}
+
+function updatePieChartContext(buttonText) {
+  const label = getLabelFromText(buttonText);
+  $("#pieChartTitle").text(label + " 보고서 현황");
+
+  // 초기화 + 이후 차트 재렌더링
+  $("#reportPieChart").empty();
+  if (label === '내'){
+	  drawPieChart();
+  }else {	  
+  // drawPieChartFor(label); ← 나중에 추가 예정
+  }
+}
+
+function updateBarChartContext(buttonText) {
+  const label = getLabelFromText2(buttonText);
+  $("#barChartTitle").text(label + " 보고서 상태별 현황");
+
+  // 초기화 + 이후 차트 재렌더링
+  $("#reportBarChart").empty();
+  if (label === '내'){
+	  drawBarChartByDocType("PROD");
+  }else {	  
+  // drawPieChartFor(label); ← 나중에 추가 예정
+  }
+
+}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path"> <a href="#">제너시스 BBQ연구소</a>
@@ -441,9 +506,16 @@ function loadCode(codeId, selectBoxId) {
 										<img alt="profilelogo" src="../resources/images/bbq_logo.png" style="width:70px;">
 									</div>
 									<div class="main_profile_info">
+										<span class="user_dept">
+											${userData.OBJTTX}
+											<c:if test="${not empty userData.RESP_TXT}">
+												<em>&nbsp;|&nbsp;</em>
+												<strong class="ml5">${userData.RESP_TXT}</strong>
+											</c:if>
+										</span>
 										<span class="user_name">
-											${userUtil:getUserName(pageContext.request)}
-											<strong	class="ml5"></strong>
+											${userData.userName}
+											<strong	class="ml5">${userData.TITL_TXT}</strong>
 										</span> 
 										<span class="user_sub_info">
 											제품완료보고서 <strong id="productDocCount">0</strong> 건 
@@ -493,7 +565,15 @@ function loadCode(codeId, selectBoxId) {
 					<div class="wd40">
 						<div class="chart-card-wrapper">
 							<div class="chart-title">
-								<span class="txt pieChart">내 보고서 현황</span>
+								<span class="txt pieChart" id="pieChartTitle">내 보고서 현황</span>
+								<div class="barChartBtnBox2">
+									<c:if test='${userData.ORGAID == "10000065" || userData.RESP_TXT == "팀장"}'>
+										<span class="barChartBtn">${userData.userName}</span>
+										<span>|</span> <span class="barChartBtn">${userData.OBJTTX}</span> 
+										<!-- <span>|</span>
+										<span class="barChartBtn">부서</span> -->
+									</c:if>
+								</div>
 							</div>
 							<div class="chart-area pie">
 								<div id="reportPieChart"
@@ -509,12 +589,23 @@ function loadCode(codeId, selectBoxId) {
 						<div class="tab-wrapper">
 							<div class="chart-card-wrapper">
 								<div class="chart-title">
-									<span class="txt-icon barChart">내 보고서 상태별 현황</span>
+									<span class="txt-icon barChart" id="barChartTitle">내 보고서 상태별 현황</span>
 									<div class="barChartBtnBox">
-										<span class="barChartBtn">${userUtil:getUserName(pageContext.request)}</span>
-										<span>|</span> <span class="barChartBtn">팀&파트</span> <span>|</span>
-										<span class="barChartBtn">부서</span> <span>|</span> <span
-											class="barChartBtn">본부</span>
+										<c:if test='${userData.ORGAID == "10000065" || userData.RESP_TXT == "팀장"}'>
+											<span class="barChartBtn">${userData.userName}</span>
+											<c:if test='${userData.ORGAID != "10000065"}'>
+												<span>|</span> <span class="barChartBtn">${userData.OBJTTX}</span> 
+											</c:if>
+											<c:if test='${userData.ORGAID == "10000065"}'>
+												<span>|</span> <span class="barChartBtn">유통상품</span> 
+												<span>|</span> <span class="barChartBtn">BBQ상품개발</span> 
+												<span>|</span> <span class="barChartBtn">F&B상품개발</span> 
+												<span>|</span> <span class="barChartBtn">글로벌/신소재</span> 
+												<span>|</span> <span class="barChartBtn">식품안전</span> 
+											</c:if>
+											<!-- <span>|</span>
+											<span class="barChartBtn">부서</span> -->
+										</c:if>
 									</div>
 								</div>
 								<ul class="tab-menu">
@@ -522,8 +613,8 @@ function loadCode(codeId, selectBoxId) {
 									<li class="tab-item" data-doc="MENU">메뉴개발</li>
 									<li class="tab-item" data-doc="DESIGN">상품설계</li>
 									<li class="tab-item" data-doc="SENSE_QUALITY">관능&품질</li>
-									<li class="tab-item" data-doc="TRIP">출장계획</li>
-									<li class="tab-item" data-doc="TRIP_RESULT">출장결과</li>
+									<li class="tab-item" data-doc="PLAN">출장계획</li>
+									<li class="tab-item" data-doc="TRIP">출장결과</li>
 									<li class="tab-item" data-doc="RESEARCH">시장조사</li>
 									<li class="tab-item" data-doc="RESULT">신제품품질</li>
 									<li class="tab-item" data-doc="CHEMICAL">이화학검사</li>

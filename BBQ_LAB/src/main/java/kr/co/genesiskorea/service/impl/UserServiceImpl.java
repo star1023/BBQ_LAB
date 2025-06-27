@@ -169,4 +169,9 @@ public class UserServiceImpl implements UserService {
 		userDao.setPersonalization(param);
 	}
 	
+	@Override
+	public Map<String, Object> getUserData(String userId) {
+		// TODO Auto-generated method stub
+		return userDao.getUserData(userId);
+	}
 }

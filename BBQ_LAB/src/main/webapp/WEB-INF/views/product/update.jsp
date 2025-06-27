@@ -236,6 +236,8 @@ var selectedArr = new Array();
 	var attatchFileTypeArr = [];
 	var attatchTempFileArr = [];
 	var attatchTempFileTypeArr = [];
+	var deletedFileArr = [];
+	var deletedFilePathArr = [];
 	function callAddFileEvent(){
 		$('#attatch_common').click();
 	}
@@ -361,6 +363,10 @@ var selectedArr = new Array();
 		});
 		$("#docTypeTxt").html(docTypeTxt);
 		closeDialogWithClean('dialog_attatch');
+	}
+	
+	function downloadFile(idx){
+		location.href = '/common/fileDownload?idx='+idx;
 	}
 	
 	function checkFileName(str){
@@ -766,10 +772,10 @@ var selectedArr = new Array();
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));	
 			
-			var version = parseInt($("#version").val() || "1");
+			const version = '${menuData.data.VERSION_NO}';
 			
 			// (버전 > 1일 때만 전송)
-			if (version > 1) {
+			if (version !== '1') {
 				// 개선 목적
 				var itemImproveArr = [];
 				var itemExistArr = [];
@@ -937,6 +943,9 @@ var selectedArr = new Array();
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
 			
+			deletedFileArr.forEach(val => formData.append("deleteFileArr", val));
+			deletedFilePathArr.forEach(val => formData.append("deleteFilePathArr", val));
+			
 			URL = "../product/updateTmpProductAjax";
 			$.ajax({
 				type:"POST",
@@ -965,26 +974,61 @@ var selectedArr = new Array();
 	}
 	
 	function validatePurposeAndFeature() {
-		// ✅ 개발 목적 유효성 체크
-		var isValidPurpose = false;
-		$('tr[id^=purpose_tr]').each(function () {
-			var val = $(this).find('input[name=purpose]').val();
-			if ($.trim(val) !== '') isValidPurpose = true;
-		});
-		if (!isValidPurpose) {
-			alert("개발 목적을 하나 이상 입력해 주세요.");
-			return false;
-		}
+		const versionNo = '${productData.data.VERSION_NO}';
+		
+		if (versionNo === '1') {
+			// ✅ 개발 목적 유효성 체크
+			var isValidPurpose = false;
+			$('tr[id^=purpose_tr]').each(function () {
+				var val = $(this).find('input[name=purpose]').val();
+				if ($.trim(val) !== '') isValidPurpose = true;
+			});
+			if (!isValidPurpose) {
+				alert("개발 목적을 하나 이상 입력해 주세요.");
+				return false;
+			}
 
-		// ✅ 메뉴 특징 유효성 체크
-		var isValidFeature = false;
-		$('tr[id^=feature_tr]').each(function () {
-			var val = $(this).find('input[name=feature]').val();
-			if ($.trim(val) !== '') isValidFeature = true;
-		});
-		if (!isValidFeature) {
-			alert("메뉴 특징을 하나 이상 입력해 주세요.");
-			return false;
+			// ✅ 메뉴 특징 유효성 체크
+			var isValidFeature = false;
+			$('tr[id^=feature_tr]').each(function () {
+				var val = $(this).find('input[name=feature]').val();
+				if ($.trim(val) !== '') isValidFeature = true;
+			});
+			if (!isValidFeature) {
+				alert("제품 특징을 하나 이상 입력해 주세요.");
+				return false;
+			}
+		} else {
+			// ✅ 개선 목적 유효성 체크 (3개 항목 모두 빈값이 아닌 행이 하나 이상 있어야 함)
+			let validImprovePurposeRowCount = 0;
+			$('tr[id^=improve_pur_tr]').each(function () {
+				const val1 = $(this).find('input[name=itemImprove]').val();
+				const val2 = $(this).find('input[name=itemExist]').val();
+				const val3 = $(this).find('input[name=itemNote]').val();
+
+				if (
+					$.trim(val1) !== '' &&
+					$.trim(val2) !== '' &&
+					$.trim(val3) !== ''
+				) {
+					validImprovePurposeRowCount++;
+				}
+			});
+			if (validImprovePurposeRowCount === 0) {
+				alert("개선 목적을 하나 이상, 빈 항목 없이 입력해 주세요.");
+				return false;
+			}
+
+			// ✅ 개선 사항 유효성 체크
+			var isValidFeature = false;
+			$('tr[id^=improve_tr]').each(function () {
+				var val = $(this).find('input[name=improve]').val();
+				if ($.trim(val) !== '') isValidFeature = true;
+			});
+			if (!isValidFeature) {
+				alert("개선 사항을 하나 이상 입력해 주세요.");
+				return false;
+			}
 		}
 
 		return true;
@@ -1074,10 +1118,10 @@ var selectedArr = new Array();
 			});
 			formData.append("featureArr", JSON.stringify(featureArr));
 			
-			var version = parseInt($("#version").val() || "1");
+			const version = '${menuData.data.VERSION_NO}';
 			
 			// (버전 > 1일 때만 전송)
-			if (version > 1) {
+			if (version !== '1') {
 				// 개선 목적
 				var itemImproveArr = [];
 				var itemExistArr = [];
@@ -1243,6 +1287,9 @@ var selectedArr = new Array();
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
 			
+			deletedFileArr.forEach(val => formData.append("deleteFileArr", val));
+			deletedFilePathArr.forEach(val => formData.append("deleteFilePathArr", val));
+			
 			$('#lab_loading').show();
 			var URL = "../product/updateProductAjax";
 			$.ajax({
@@ -1331,27 +1378,19 @@ var selectedArr = new Array();
 	    }	    
 	}
 	
-	function fn_removeTempFile(element, tempId){
-		//서버의 파일을 삭제한다.
-		var URL = '/file/deleteFile2Ajax';
-		$.ajax({
-			type:"POST",
-			url:URL,
-			data: {
-				"fileIdx": tempId
-			},
-			dataType:"json",
-			success:function(result) {
-				if( result.RESULT == 'S' ) {
-					$(element).parent().remove();
-				} else {
-					alert("오류가 발생하였습니다.\n"+result.MESSAGE);
-				}
-			},
-			error:function(request, status, errorThrown){
-				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-			}			
-		});
+	function fn_removeTempFile(el, fileIdx) {
+	    const $li = $(el).closest('li');
+
+	    // li에 data-* 로 박아둔 파일명 및 경로 추출
+	    const fileName = $li.data('name');
+	    const filePath = $li.data('path');
+	    
+	    // 배열에 저장
+	    deletedFileArr.push(fileName);
+	    deletedFilePathArr.push(filePath);
+
+	    // 화면에서 삭제
+	    $li.remove();
 	}
 	
 	function tabChange(tabId) {
@@ -2153,7 +2192,12 @@ var selectedArr = new Array();
 							<dt>첨부파일</dt><dd>
 								<ul id="temp_attatch_file">
 									<c:forEach items="${productData.fileList}" var="fileList" varStatus="status">
-										<li><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+										<li data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}">
+											<a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')">
+												<img src="/resources/images/icon_del_file.png">
+											</a>&nbsp;
+											<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a>
+										</li>
 									</c:forEach>
 								</ul>
 								<ul id="attatch_file">								
@@ -2354,7 +2398,7 @@ var selectedArr = new Array();
 				
 				<div id="matDiv">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">원료</span>
+						<span class="txt">기존원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>

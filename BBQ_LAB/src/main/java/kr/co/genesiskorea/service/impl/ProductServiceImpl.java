@@ -1342,6 +1342,8 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
 			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
 			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
+			ArrayList<String> deleteFileArr = (ArrayList<String>)listMap.get("deleteFileArr");
+			ArrayList<String> deleteFilePathArr = (ArrayList<String>)listMap.get("deleteFilePathArr");
 			
 			JSONParser parser = new JSONParser();
 			//JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
@@ -1606,6 +1608,26 @@ public class ProductServiceImpl implements ProductService {
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			//삭제된 파일 삭제
+			if (deleteFileArr != null && deleteFileArr.size() > 0) {
+			    for (int i = 0; i < deleteFileArr.size(); i++) {
+			        String fullFileName = deleteFileArr.get(i);
+			        String filePath = deleteFilePathArr.get(i);
+
+			        // 첫 번째 '_' 이전의 인덱스 값 추출
+			        String fileIdx = fullFileName.split("_")[0];
+
+			        logger.error("삭제할 파일 이름: {}", fullFileName);
+			        logger.error("삭제할 파일 경로: {}", filePath);
+			        logger.error("삭제할 파일 IDX: {}", fileIdx);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        productDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
+			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
 				Calendar cal = Calendar.getInstance();
@@ -1649,6 +1671,8 @@ public class ProductServiceImpl implements ProductService {
 			
 			if( param.get("currentStatus") != null && "COND_APPR".equals(param.get("currentStatus")) ) {
 				//다음 결재자에게 메일을 보낸다.
+				param.put("docIdx", productIdx);
+				param.put("docType", "PROD");
 				Map<String, Object> approvalHeader = approvalDao.selectApprHeaderData(param);
 				approvalHeader.get("CURRENT_USER_ID");
 				HashMap<String, Object> notiMap = new HashMap<String, Object>();
@@ -1687,9 +1711,11 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
 			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
 			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
+			ArrayList<String> deleteFileArr = (ArrayList<String>)listMap.get("deleteFileArr");
+			ArrayList<String> deleteFilePathArr = (ArrayList<String>)listMap.get("deleteFilePathArr");
 			
 			JSONParser parser = new JSONParser();
-			//JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
+//			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
 			
@@ -1943,6 +1969,26 @@ public class ProductServiceImpl implements ProductService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			//삭제된 파일 삭제
+			if (deleteFileArr != null && deleteFileArr.size() > 0) {
+			    for (int i = 0; i < deleteFileArr.size(); i++) {
+			        String fullFileName = deleteFileArr.get(i);
+			        String filePath = deleteFilePathArr.get(i);
+
+			        // 첫 번째 '_' 이전의 인덱스 값 추출
+			        String fileIdx = fullFileName.split("_")[0];
+
+			        logger.error("삭제할 파일 이름: {}", fullFileName);
+			        logger.error("삭제할 파일 경로: {}", filePath);
+			        logger.error("삭제할 파일 IDX: {}", fileIdx);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        productDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {

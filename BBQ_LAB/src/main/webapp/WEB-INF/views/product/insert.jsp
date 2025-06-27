@@ -1009,11 +1009,7 @@ li {
 					var itemName = $('#'+ rowId + ' input[name=itemName]').val();
 					var mixingRatio = $('#'+ rowId + ' input[name=mixingRatio]').val();
 					
-					if(itemSapCode.length <= 0){
-						validMat = false;
-						return;
-					}
-					if(itemName.length <= 0){
+					if(itemSapCode.length <= 0 && itemName.length <= 0){
 						validMat = false;
 						return;
 					}
@@ -2401,7 +2397,7 @@ li {
 				
 				<div id="matDiv">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">원료</span>
+						<span class="txt">기존원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>

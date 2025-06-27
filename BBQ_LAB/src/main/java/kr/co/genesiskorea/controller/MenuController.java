@@ -52,6 +52,8 @@ public class MenuController {
 	@RequestMapping("/selectMenuListAjax")
 	@ResponseBody
 	public Map<String, Object> selectMenuListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		Auth auth = AuthUtil.getAuth(request);
+		param.put("userId", auth.getUserId());
 		Map<String, Object> returnMap = menuService.selectMenuList(param);
 		return returnMap;
 	}
@@ -604,6 +606,8 @@ public class MenuController {
 			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
 			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
 			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
+			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -644,6 +648,8 @@ public class MenuController {
 			//listMap.put("itemKeepExpArr", itemKeepExpArr);
 			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
 			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("deleteFileArr", deleteFileArr);
+			listMap.put("deleteFilePathArr", deleteFilePathArr);
 			menuService.updateMenuTmp(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -690,6 +696,8 @@ public class MenuController {
 			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
 			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
 			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
+			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -729,6 +737,8 @@ public class MenuController {
 			//listMap.put("itemKeepExpArr", itemKeepExpArr);
 			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
 			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("deleteFileArr", deleteFileArr);
+			listMap.put("deleteFilePathArr", deleteFilePathArr);
 			menuService.updateMenu(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

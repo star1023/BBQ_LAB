@@ -286,6 +286,7 @@
 			ITEM_IDX
 			, CHEMICAL_IDX
 			, TYPE_CODE
+			, FN_GET_CODE_NAME('CHEMICALTEST',TYPE_CODE) as TYPE_CODE_TEXT
 			, ITEM_CONTENT
 		FROM 
 			lab_chemical_test_item

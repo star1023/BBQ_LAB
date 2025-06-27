@@ -779,21 +779,12 @@ var selectedArr = new Array();
 				newItemKeepExpArr.push($('#'+ rowId + ' input[name=itemKeepExp]').val());
 				newItemNoteArr.push($('#'+ rowId + ' input[name=itemNote]').val());
 			});
-			$('tr[id^=new1_tr]').toArray().forEach(function(newRow){
-				var rowId = $(newRow).attr('id');
-				newItemNameArr.push($('#'+ rowId + ' input[name=itemName]').val());
-				newItemStandardArr.push($('#'+ rowId + ' input[name=itemStandard]').val());
-				newItemSupplierArr.push($('#'+ rowId + ' input[name=itemSupplier]').val());
-				newItemKeepExpArr.push($('#'+ rowId + ' input[name=itemKeepExp]').val());
-				newItemNoteArr.push($('#'+ rowId + ' input[name=itemNote]').val());
-				newItemTypeCodeArr.push('B');
-			});
+			
 			formData.append("newItemNameArr", JSON.stringify(newItemNameArr));	
 			formData.append("newItemStandardArr", JSON.stringify(newItemStandardArr));	
 			formData.append("newItemSupplierArr", JSON.stringify(newItemSupplierArr));	
 			formData.append("newItemKeepExpArr", JSON.stringify(newItemKeepExpArr));	
 			formData.append("newItemNoteArr", JSON.stringify(newItemNoteArr));	
-			formData.append("newItemTypeCodeArr", JSON.stringify(newItemTypeCodeArr));
 			
 			formData.append("scheduleDate",$("#scheduleDate").val());
 			
@@ -952,6 +943,41 @@ var selectedArr = new Array();
 				}			
 			});
 		}
+	}
+	
+	function validatePurposeAndFeature() {
+		// ✅ 개선 목적 유효성 체크 (3개 항목 모두 빈값이 아닌 행이 하나 이상 있어야 함)
+		let validImprovePurposeRowCount = 0;
+		$('tr[id^=improve_pur_tr]').each(function () {
+			const val1 = $(this).find('input[name=itemImprove]').val();
+			const val2 = $(this).find('input[name=itemExist]').val();
+			const val3 = $(this).find('input[name=itemNote]').val();
+
+			if (
+				$.trim(val1) !== '' &&
+				$.trim(val2) !== '' &&
+				$.trim(val3) !== ''
+			) {
+				validImprovePurposeRowCount++;
+			}
+		});
+		if (validImprovePurposeRowCount === 0) {
+			alert("개선 목적을 하나 이상, 빈 항목 없이 입력해 주세요.");
+			return false;
+		}
+
+		// ✅ 개선 사항 유효성 체크
+		var isValidFeature = false;
+		$('tr[id^=improve_tr]').each(function () {
+			var val = $(this).find('input[name=improve]').val();
+			if ($.trim(val) !== '') isValidFeature = true;
+		});
+		if (!isValidFeature) {
+			alert("개선 사항을 하나 이상 입력해 주세요.");
+			return false;
+		}
+		
+		return true;
 	}
 	
 	//입력확인
@@ -2201,6 +2227,7 @@ var selectedArr = new Array();
 						<tbody id="matTbody" name="matTbody">
 						<c:forEach items="${productMaterialData}" var="productMaterialData" varStatus="status">
 							<c:if test="${productMaterialData.MATERIAL_TYPE == 'N' }">
+							<c:set var="count" value="${count + 1}" />
 							<tr id="matRow_${status.count}" class="temp_color">
 								<td>
 									<input type="checkbox" id="mat_${status.count}"><label for="mat_${status.count}"><span></span></label>
@@ -2225,7 +2252,7 @@ var selectedArr = new Array();
 							</tr>
 							</c:if>	
 						</c:forEach>
-						<c:if test="${fn:length(menuMaterialData) == 0}">
+						<c:if test="${fn:length(productMaterialData) == 0}">
 							<tr id="matRow_1" class="temp_color">
 								<td>
 									<input type="checkbox" id="mat_1"><label for="mat_1"><span></span></label>

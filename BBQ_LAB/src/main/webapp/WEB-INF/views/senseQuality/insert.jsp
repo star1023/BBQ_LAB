@@ -151,6 +151,7 @@ table{font-size: 12px}
 			
 			if( inputCheckCnt > 0 ) {
 				alert("세부내용은 구분, 사진, 결과를 입력하여야 합니다.");
+				$('#lab_loading').hide();
 				return;
 			}
 			

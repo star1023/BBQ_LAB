@@ -504,7 +504,7 @@ table{font-size: 12px}
 			        	<c:if test="${status.index >= startNo && status.index <= endNo}">
 			        	<c:set var="count" value="${count + 1}" />
 			        	<td style="height: 250px">
-			        		<p><img id="preview" src="/picture${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
+			        		<p><img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
 			            </td>
 			            </c:if>
 			        	</c:forEach>

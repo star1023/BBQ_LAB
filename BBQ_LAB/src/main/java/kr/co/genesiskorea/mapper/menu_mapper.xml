@@ -274,6 +274,7 @@
 			count(MENU_IDX) as cnt
 		FROM lab_menu
 		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'
 			AND IS_LAST = 'Y'
 			<include refid="menu.whereMenuList" />
@@ -327,6 +328,7 @@
 						, DOC_NO
 					FROM lab_menu
 					WHERE 1 = 1
+						AND DOC_OWNER = #{userId}
 						AND IS_DELETE = 'N'
 						AND IS_LAST = 'Y'
 						<include refid="menu.whereMenuList" />

@@ -104,14 +104,23 @@ function renderDynamicBody() {
 
                 const images = imageMap[rowNo];
                 if (images && images.length > 0) {
-                    images.forEach(src => {
-                        const img = document.createElement("img");
-                        img.src = src;
-                        img.style.maxWidth = "240px";
-                        img.style.height = "auto";
-                        img.style.objectFit = "contain";
-                        td.appendChild(img);
-                    });
+                	images.forEach(src => {
+                	    const a = document.createElement("a");
+                	    a.href = src;
+                	    a.target = "_blank"; // 새창 열기
+                	    a.style.display = "inline-block";
+                	    a.style.marginRight = "5px";
+
+                	    const img = document.createElement("img");
+                	    img.src = src;
+                	    img.style.maxWidth = "240px";
+                	    img.style.maxHeight = "200px";
+                	    img.style.height = "auto";
+                	    img.style.objectFit = "contain";
+
+                	    a.appendChild(img);     // ⬅️ 이미지 <a> 안에 삽입
+                	    td.appendChild(a);      // ⬅️ <a>를 <td>에 추가
+                	});
                 } else {
                     // ✅ 이미지 없을 때 기본 이미지 표시
                     const img = document.createElement("img");
@@ -301,7 +310,7 @@ function fn_update(idx) {
 
 <!-- 결재 상신 레이어  start-->
 <div class="white_content" id="approval_dialog">
-	<input type="hidden" id="docType" value="PROD"/>
+	<input type="hidden" id="docType" value="RESULT"/>
  	<input type="hidden" id="deptName" />
 	<input type="hidden" id="teamName" />
 	<input type="hidden" id="userId" />
@@ -312,7 +321,7 @@ function fn_update(idx) {
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
-			<span class="title">개발완료보고서 결재 상신</span>
+			<span class="title">메뉴 품질 점검 결과 보고서 결재 상신</span>
 			<div  class="top_btn_box">
 				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
 			</div>

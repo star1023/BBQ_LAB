@@ -281,6 +281,7 @@
 			count(PRODUCT_IDX) as cnt
 		FROM lab_product
 		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'
 			AND IS_LAST = 'Y'
 			<include refid="product.whereProductList" />
@@ -334,6 +335,7 @@
 						, DOC_NO
 					FROM lab_product
 					WHERE 1 = 1
+						AND DOC_OWNER = #{userId}
 						AND IS_DELETE = 'N'
 						AND IS_LAST = 'Y'
 						<include refid="product.whereProductList" />

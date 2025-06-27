@@ -116,7 +116,7 @@
 						html += "	<td>";
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";
-							if( item.STATUS != 'TMP' ) {
+							if( item.STATUS == 'COMP' ) {
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.MENU_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
 							}
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.MENU_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";

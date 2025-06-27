@@ -8,8 +8,12 @@ function drawCharts() {
 
 // 파이 차트: chartData1
 function drawPieChart() {
-	if (!chartData1) return;
-
+	const chartContainer = document.getElementById('reportPieChart');
+	if (!chartData1 || typeof chartData1 !== 'object') {
+		chartContainer.innerHTML = "<div style='text-align:center; padding-top:100px;'>데이터가 존재하지 않습니다.</div>";
+		return;
+	}
+	
 	const data = new google.visualization.DataTable();
 	data.addColumn('string', '보고서 구분');
 	data.addColumn('number', '건수');
@@ -58,9 +62,13 @@ function drawBarChartByDocType(docTypeKey) {
 		COMP: '#28a745',
 		RET: '#6c757d'
 	};
-
-	const raw = chartStatusData[docTypeKey];
-	if (!raw) return;
+	
+	const chartContainer = document.getElementById('reportBarChart');
+	const raw = chartStatusData?.[docTypeKey];
+	if (!raw || typeof raw !== 'object') {
+		chartContainer.innerHTML = "<div style='text-align:center; padding-top:100px;'>데이터가 존재하지 않습니다.</div>";
+		return;
+	}
 
 	const chartData = new google.visualization.DataTable();
 	chartData.addColumn('string', '상태');

@@ -21,6 +21,7 @@ import kr.co.genesiskorea.common.auth.AuthUtil;
 import kr.co.genesiskorea.service.MainService;
 import kr.co.genesiskorea.service.MenuService;
 import kr.co.genesiskorea.service.ProductService;
+import kr.co.genesiskorea.service.UserService;
 
 @Controller
 @RequestMapping("/main")
@@ -36,6 +37,9 @@ public class MainController {
 	@Autowired
 	MenuService menuService;
 	
+	@Autowired
+	UserService userService;
+	
 	@RequestMapping(value = { "/","/main" }, method = RequestMethod.GET)
 	public String main(HttpServletRequest request, Model model,@RequestParam Map<String,Object> param) throws Exception {
 		// 메인에서 로그인
@@ -43,8 +47,11 @@ public class MainController {
 			return "redirect:/user/login";
 		}
 		Auth auth = AuthUtil.getAuth(request);
-		param.put("userId", auth.getUserId());
+		String userUd = auth.getUserId();
+		param.put("userId", userUd);
 		
+		// 유저 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData(userUd);
 		// 문서 개수 리스트 조회
 		Map<String, Object> docCount = mainService.getDocCount(param);
 		// 문서 상태 개수 리스트 조회
@@ -59,6 +66,7 @@ public class MainController {
 	    String docCountJson = mapper.writeValueAsString(docCount);
 	    String docStatusCountJson = mapper.writeValueAsString(docStatusCount);
 	    String apprStatusCountJson = mapper.writeValueAsString(apprStatusCount);
+	    model.addAttribute("userData", userData);
 	    model.addAttribute("docCountJson", docCountJson);
 	    model.addAttribute("docStatusCountJson", docStatusCountJson);
 	    model.addAttribute("apprStatusCountJson", apprStatusCountJson);

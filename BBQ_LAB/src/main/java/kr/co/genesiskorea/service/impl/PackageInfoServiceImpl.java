@@ -125,7 +125,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		        Date day = cal.getTime();    //시간을 꺼낸다.
 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.research");
+				String path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -221,7 +221,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		        Date day = cal.getTime();    //시간을 꺼낸다.
 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.research");
+				String path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -331,7 +331,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		        Date day = cal.getTime();    //시간을 꺼낸다.
 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.research");
+				String path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -422,7 +422,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		        Date day = cal.getTime();    //시간을 꺼낸다.
 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.research");
+				String path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -519,7 +519,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		        Date day = cal.getTime();    //시간을 꺼낸다.
 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.research");
+				String path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -618,7 +618,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		        Date day = cal.getTime();    //시간을 꺼낸다.
 		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.research");
+				String path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {

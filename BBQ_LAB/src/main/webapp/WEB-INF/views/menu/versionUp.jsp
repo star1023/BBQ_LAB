@@ -983,28 +983,37 @@ var selectedArr = new Array();
 	}
 	
 	function validatePurposeAndFeature() {
-		// ✅ 개발 목적 유효성 체크
-		var isValidPurpose = false;
-		$('tr[id^=purpose_tr]').each(function () {
-			var val = $(this).find('input[name=purpose]').val();
-			if ($.trim(val) !== '') isValidPurpose = true;
+		// ✅ 개선 목적 유효성 체크 (3개 항목 모두 빈값이 아닌 행이 하나 이상 있어야 함)
+		let validImprovePurposeRowCount = 0;
+		$('tr[id^=improve_pur_tr]').each(function () {
+			const val1 = $(this).find('input[name=itemImprove]').val();
+			const val2 = $(this).find('input[name=itemExist]').val();
+			const val3 = $(this).find('input[name=itemNote]').val();
+
+			if (
+				$.trim(val1) !== '' &&
+				$.trim(val2) !== '' &&
+				$.trim(val3) !== ''
+			) {
+				validImprovePurposeRowCount++;
+			}
 		});
-		if (!isValidPurpose) {
-			alert("개발 목적을 하나 이상 입력해 주세요.");
+		if (validImprovePurposeRowCount === 0) {
+			alert("개선 목적을 하나 이상, 빈 항목 없이 입력해 주세요.");
 			return false;
 		}
 
-		// ✅ 메뉴 특징 유효성 체크
+		// ✅ 개선 사항 유효성 체크
 		var isValidFeature = false;
-		$('tr[id^=feature_tr]').each(function () {
-			var val = $(this).find('input[name=feature]').val();
+		$('tr[id^=improve_tr]').each(function () {
+			var val = $(this).find('input[name=improve]').val();
 			if ($.trim(val) !== '') isValidFeature = true;
 		});
 		if (!isValidFeature) {
-			alert("메뉴 특징을 하나 이상 입력해 주세요.");
+			alert("개선 사항을 하나 이상 입력해 주세요.");
 			return false;
 		}
-
+		
 		return true;
 	}
 	
@@ -2352,7 +2361,7 @@ var selectedArr = new Array();
 				
 				<div id="matDiv">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">원료</span>
+						<span class="txt">기존원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>

@@ -26,11 +26,11 @@ fn.autoComplete = function(objKeyWord){
 		fn.ajax("/approval/searchUserAjax",{keyword:objKeyWord.val()},function(data){
 			response($.map(data, function(item){
 				return {
-					label : item.USER_NAME + ' / '+item.USER_ID + ' / '+'부서명' + ' / '+'팀명',
-					value : item.USER_NAME + ' / '+item.USER_ID + ' / '+'부서명' + ' / '+'팀명',
+					label : item.USER_NAME + ' / '+item.USER_ID + ' / '+ item.OBJTTX + ' / '+ nvl(item.RESP_TXT, ''),
+					value : item.USER_NAME + ' / '+item.USER_ID + ' / '+ item.OBJTTX + ' / '+ nvl(item.RESP_TXT, ''),
 					userId : item.USER_ID,
-					deptName : '부서명',
-					teamName : '팀명',
+					deptName : item.OBJTTX,
+					teamName : nvl(item.RESP_TXT, ''),
 					userName : item.USER_NAME
 				};
 			}));

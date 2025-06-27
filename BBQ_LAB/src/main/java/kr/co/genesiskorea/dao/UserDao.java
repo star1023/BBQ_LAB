@@ -40,4 +40,6 @@ public interface UserDao {
 	public void setPersonalization(Map<String, Object> param) throws Exception;
 
 	public List<Map<String, Object>> selectUserAuth(Map<String, Object> param) throws Exception;
+	
+	Map<String, Object> getUserData(String userId);
 }

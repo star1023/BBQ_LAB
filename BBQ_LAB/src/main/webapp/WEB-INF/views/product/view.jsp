@@ -650,7 +650,7 @@
 				</c:if>
 				
 				<div class="title2" style="float: left; margin-top: 30px;">
-					<span class="txt">원료</span>
+					<span class="txt">기존원료</span>
 				</div>
 				<div class="main_tbl">				
 					<table class="tbl01 " style="border-bottom: 2px solid #4b5165;">
