@@ -68,6 +68,7 @@
     	});
 		
 		fn.autoComplete($("#keyword"));
+		autoComplete2($("#keyword2"));
 	});
 	
 	function CreateEditor(editorId) {
@@ -665,7 +666,8 @@
 				
 				result.userList.forEach(function(item,index){
 					if( index > 0 ) {
-						$("#span_user").trigger("click");	
+						//$("#span_user").trigger("click");
+						fn_addCol('user');
 					}					
 					var trObj = $("#user_tbody tr:last");
 					trObj.find("input[name='dept']").val(item.DEPT);
@@ -763,6 +765,79 @@
 			if($('#'+checkBoxId).is(':checked')) $(v).remove();
 		})
 	}
+	
+	autoComplete2 = function(objKeyWord){
+		var config = new Object();
+		config.minLength = 1;
+		config.delay = 300;
+		config.source = function(request, response){
+			if(nvl(objKeyWord.val(),"").indexOf("/") > 0) return;
+			fn.ajax("/approval/searchUserAjax",{keyword:objKeyWord.val()},function(data){
+				response($.map(data, function(item){
+					var txt = item.USER_NAME + ' / '+item.USER_ID + ' / '+ item.OBJTTX + ' / '+ item.TITL_TXT;
+					if( nvl(item.RESP_TXT, '') != '' ) {
+						txt += "("+item.RESP_TXT+")"
+					}
+					return {
+						label : txt,
+						value : txt,
+						userId : item.USER_ID,
+						deptName : item.OBJTTX,
+						postionName : nvl(item.RESP_TXT, ''),
+						titleName : item.TITL_TXT,
+						userName : item.USER_NAME
+					};
+				}));
+			});
+		};
+		config.select = function(event,ui){
+			console.log(ui);
+			jQuery('#addDeptName').val('');
+			jQuery('#addDeptName').val(ui.item.deptName);
+			
+			jQuery('#addPostionName').val('');
+			jQuery('#addPostionName').val(ui.item.postionName);
+			
+			jQuery('#addTitleName').val('');
+			jQuery('#addTitleName').val(ui.item.titleName);
+			
+			jQuery('#addUserName').val('');
+			jQuery('#addUserName').val(ui.item.userName);
+			
+			jQuery('#addUserId').val('');
+			jQuery('#addUserId').val(ui.item.userId);
+		};
+		config.focus = function( event, ui ) {
+			return false;
+		};
+		objKeyWord.autocomplete(config);
+	}
+	
+	function addUser() {
+		if( $("#addUserId").val() == '' || $("#addUserName").val() == '' ) {
+			alert("출장자를 선택해주세요.");
+		} else {
+			fn_addCol('user');
+			var trObj = $("#user_tbody tr:last");
+			trObj.find("input[name='dept']").val($("#addDeptName").val());
+			var txt = $("#addTitleName").val();
+			if( $("#addPostionName").val() != '' ) {
+				txt += "("+$("#addPostionName").val()+")"
+			}
+			trObj.find("input[name='position']").val(txt);
+			trObj.find("input[name='name']").val($("#addUserName").val());			
+			$("#keyword2").val("");
+			$('#addDeptName').val('');
+			$('#addPostionName').val('');
+			$('#addTitleName').val('');
+			$('#addUserName').val('');
+			$('#addDeptName').val('');
+		}
+	}
+	
+	function delUser(element) {
+		$(element).parent().parent().parent().parent().remove();
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -817,16 +892,24 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장자<span onClick="fn_addCol('user')" id="span_user">(+)</span></th>
+							<th style="border-left: none;">출장자</th>
 							<td colspan="3">
+								<input type="text" name="keyword2" id="keyword2" style="width: 50%;float: left"/>
+								<input type="hidden" name="addUserId" id="addUserId"/>
+								<input type="hidden" name="addUserName" id="addUserName"/>
+								<input type="hidden" name="addDeptName" id="addDeptName"/>
+								<input type="hidden" name="addPostionName" id="addPostionName"/>
+								<input type="hidden" name="addTitleName" id="addTitleName"/>
+								<button class="btn_small_search ml5" onclick="addUser();" style="float: left" name="user_add_btn" id="user_add_btn">추가</button>
 								<table width="100%">
 									<tr>
-										<td>소속</td>
-										<td>직위(직급)</td>
-										<td>성명</td>
+										<td width="30%">소속</td>
+										<td width="30%">직위(직급)</td>
+										<td width="30%">성명</td>
+										<td>&nbsp;</td>
 									</tr>
 									<tbody id="user_tbody" name="user_tbody">
-										<tr id="user_tr_1">
+										<!-- <tr id="user_tr_1">
 											<td>
 												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" />
 											</td>
@@ -836,18 +919,25 @@
 											<td>
 												<input type="text" name="name" id="name" style="width: 100%;" class="req" />
 											</td>
-										</tr>
+										</tr> -->
 									</tbody>
 									<tbody id="user_tbody_temp" name="user_tbody_temp" style="display:none">
 										<tr id="user_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" />
+												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" readonly/>
 											</td>
 											<td>
-												<input type="text" name="position" id="position" style="width: 100%;" class="req" />
+												<input type="text" name="position" id="position" style="width: 100%;" class="req" readonly/>
 											</td>
 											<td>
-												<input type="text" name="name" id="name" style="width: 100%;" class="req" />
+												<input type="text" name="name" id="name" style="width: 100%;" class="req" readonly/>
+											</td>
+											<td>
+												<ul>
+												<li style="float:none; display:inline">
+													<button class="btn_doc" onClick="javascript:delUser(this)"><img src="/resources/images/icon_doc04.png">삭제</button>
+												</li>
+												</ul>
 											</td>
 										</tr>
 									</tbody>
