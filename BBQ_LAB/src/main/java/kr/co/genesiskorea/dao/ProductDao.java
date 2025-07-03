@@ -80,4 +80,10 @@ public interface ProductDao {
 	int selectMyDataCheck(Map<String, Object> param);
 	
 	int selectMyDataCount(Map<String, Object> param);
+	
+	void insertSharedUser(ArrayList<HashMap<String, Object>> sharedUserList) throws Exception;
+	
+	void deleteSharedUser(HashMap<String, Object> map) throws Exception;
+	
+	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
 }

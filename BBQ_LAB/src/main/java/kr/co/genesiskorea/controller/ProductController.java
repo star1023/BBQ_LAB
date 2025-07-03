@@ -90,6 +90,8 @@ public class ProductController {
 		List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
 		model.addAttribute("newDataList", newDataList);
 		model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
+		List<Map<String, String>> sharedUserList = productService.selectSharedUser(param);
+		model.addAttribute("sharedUserList", sharedUserList);
 		
 		return "/product/view";
 	}
@@ -311,6 +313,8 @@ public class ProductController {
 				List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
 				model.addAttribute("newDataList", newDataList);
 				model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
+				List<Map<String, String>> sharedUserList = productService.selectSharedUser(param);
+				model.addAttribute("sharedUserList", sharedUserList);
 				
 				return "/product/versionUp";
 			} else {
@@ -583,6 +587,9 @@ public class ProductController {
 				List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
 				model.addAttribute("newDataList", newDataList);
 				model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
+				List<Map<String, String>> sharedUserList = productService.selectSharedUser(param);
+				model.addAttribute("sharedUserList", sharedUserList);
+				
 				return "/product/update";
 			} else {
 				model.addAttribute("returnPage", "/product/list");

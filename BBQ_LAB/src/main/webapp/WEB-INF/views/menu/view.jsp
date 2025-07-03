@@ -539,7 +539,7 @@
 				<div class="title2 mt20"  style="width:90%;  margin-top: 30px;"><span class="txt">첨부파일</span></div>
 				<div class="con_file" style="">
 					<ul>
-						<li class="point_img">
+						<li class="point_img" style="display:flex;">
 							<dt>첨부파일</dt><dd>
 								<ul>
 									<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
@@ -583,6 +583,14 @@
 								<td>
 									${menuData.data.SAP_CODE}
 								</td>
+							</tr>
+							<tr>
+							    <th style="border-left: none;">공동 참여자</th>
+							    <td colspan="3">
+							        <c:forEach var="user" items="${sharedUserList}" varStatus="status">
+							            ${user.USER_NAME}<c:if test="${!status.last}">, </c:if>
+							        </c:forEach>
+							    </td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">버젼 No.</th>

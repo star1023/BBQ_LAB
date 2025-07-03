@@ -1,18 +1,27 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<%@ page import="kr.co.genesiskorea.util.*" %>
+<%@ page import="kr.co.genesiskorea.util.*"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
 <title>제품 개발완료보고서 생성</title>
 <style>
-.positionCenter{
+.positionCenter {
 	position: absolute;
 	transform: translate(-50%, -45%);
 }
-.ck-editor__editable { max-height: 200px; min-height:200px;}
+
+.ck-editor__editable {
+	max-height: 200px;
+	min-height: 200px;
+}
+
 li {
-	list-style : none;
+	list-style: none;
+}
+#prevPopup {
+	display: none;
 }
 </style>
 
@@ -20,7 +29,12 @@ li {
 
 <link href="../resources/css/tree.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../resources/js/jstree.js"></script>
-<script type="text/javascript" src="../resources/js/appr/apprClass.js?v=<%= System.currentTimeMillis()%>"></script>
+<script type="text/javascript"
+	src="../resources/js/appr/apprClass.js?v=<%=System.currentTimeMillis()%>"></script>
+<script type="text/javascript"
+	src="../resources/js/user/userSearchClass.js?v=<%=System.currentTimeMillis()%>"></script>
+<script type="text/javascript"
+	src="../resources/js/preview/preview.js?v=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
 		CreateEditor("contents");		
@@ -37,6 +51,7 @@ li {
 		});
 		
 		fn.autoComplete($("#keyword"));
+		fn2.autoComplete($("#sharedUserKeyword"));
 	});
 	
 	var selectedArr = new Array();
@@ -783,6 +798,8 @@ li {
 				formData.append("customUsage", customUsage.trim()); // USC
 			}
 			
+			formData.append("sharedUserArr", JSON.stringify($('#sharedUserIds').val().split(','))); // ✅ 추가
+			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
 			var newItemSupplierArr = new Array();
@@ -1064,6 +1081,8 @@ li {
 						if (customUsage) {
 							formData.append("customUsage", customUsage.trim()); // USC
 						}
+						
+						formData.append("sharedUserArr", JSON.stringify($('#sharedUserIds').val().split(','))); // ✅ 추가
 						
 						var newItemNameArr = new Array();
 						var newItemStandardArr = new Array();
@@ -1942,21 +1961,190 @@ li {
 	    }
 	}
 	
+	function resetBrandTokens(idx) {
+	    const tokenDiv = document.getElementById('brandTokenBox_' + idx);
+	    const hiddenInput = document.getElementById('brandCodeValues_' + idx);
+	    if (tokenDiv) tokenDiv.innerHTML = '';
+	    if (hiddenInput) hiddenInput.value = '';
+	}
+	
 	function updateHiddenBrandCodes(idx) {
 	    const tokens = document.querySelectorAll("#brandTokenBox_" + idx + " .brand-token");
 	    const codes = [...tokens].map(t => t.getAttribute("data-code"));
 	    document.getElementById("brandCodeValues_" + idx).value = codes.join(',');
 	}
 	
+	function fn_previewDataBinding(popup) {
+	    const $doc = popup.document;
+
+	    // 기본 항목
+	    $doc.getElementById("prev_title").innerText = document.getElementById("title").value;
+	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
+	    
+	 	// 공동 참여자 바인딩
+	    $doc.getElementById("prev_sharedUser").innerText = document.getElementById("sharedUserNames").value.replaceAll(',',', ');
+	    
+	    // 개발 목적
+	    var purposeHTML = "";
+	    document.querySelectorAll('tr[id^=purpose_tr]').forEach(function (row) {
+	        var val = row.querySelector('input[name=purpose]')?.value || "";
+	        if (val.trim()) purposeHTML += val + "<br/>";
+	    });
+	    $doc.getElementById("prev_purpose").innerHTML = purposeHTML;
+
+	    // 제품 특징
+	    var featureHTML = "";
+	    document.querySelectorAll('tr[id^=feature_tr]').forEach(function (row) {
+	        var val = row.querySelector('input[name=feature]')?.value || "";
+	        if (val.trim()) featureHTML += val + "<br/>";
+	    });
+	    $doc.getElementById("prev_feature").innerHTML = featureHTML;
+
+	    // 브랜드
+	    var brandTexts = [];
+	    document.querySelectorAll("#brandTokenBox_1 .brand-token").forEach(function (el) {
+	        var textNode = el.childNodes[1];
+	        if (textNode && textNode.nodeType === Node.TEXT_NODE) {
+	            brandTexts.push(textNode.nodeValue.trim());
+	        }
+	    });
+	    $doc.getElementById("prev_brand").innerText = brandTexts.join(", ");
+
+	    // 용도
+	    $doc.getElementById("prev_usage").innerText = document.getElementById("customUsage_1").value;
+
+	    // 신규도입품
+	    var newHTML = "";
+	    document.querySelectorAll('tr[id^=new_tr]').forEach(function (row) {
+	        var itemName = row.querySelector('input[name=itemName]')?.value || "";
+	        var itemStandard = row.querySelector('input[name=itemStandard]')?.value || "";
+	        var itemSupplier = row.querySelector('input[name=itemSupplier]')?.value || "";
+	        var itemKeepExp = row.querySelector('input[name=itemKeepExp]')?.value || "";
+	        var itemNote = row.querySelector('input[name=itemNote]')?.value || "";
+
+	        if (itemName || itemStandard || itemSupplier || itemKeepExp || itemNote) {
+	            newHTML += "<tr><td>" + itemName + "</td><td>" + itemStandard + "</td><td>" + itemSupplier + "</td><td>" + itemKeepExp + "</td><td>" + itemNote + "</td></tr>";
+	        }
+	    });
+
+	    var newWrap = $doc.getElementById("wrapper_prev_new");
+	    if (newHTML.trim()) {
+	        $doc.getElementById("prev_new").innerHTML = newHTML;
+	        if (newWrap) newWrap.style.display = "block";
+	    } else {
+	        if (newWrap) newWrap.style.display = "none";
+	    }
+
+	    // 도입 예정일, 제품코드, SAP 코드
+	    $doc.getElementById("prev_scheduleDate").innerText = document.getElementById("scheduleDate").value;
+	    $doc.getElementById("prev_productCode").innerText = document.getElementById("productCode").value;
+	    $doc.getElementById("prev_sapCode").innerText = document.getElementById("productSapCode").value;
+
+	    // 버전, 중량, 규격, 보관조건, 소비기한
+	    $doc.getElementById("prev_version").innerText = "1";
+	    $doc.getElementById("prev_weight").innerText = document.getElementById("weight").value;
+	    $doc.getElementById("prev_standard").innerText = document.getElementById("standard").value;
+	    $doc.getElementById("prev_keepCondition").innerText = document.getElementById("keepCondition").value;
+	    $doc.getElementById("prev_expireDate").innerText = document.getElementById("expireDate").value;
+
+	    // 제품유형
+	    $doc.getElementById("prev_productType").innerText = document.getElementById("selectTxtFull").value;
+
+	    // 신규 원료
+	    var newMatHTML = "";
+	    var newMatRows = document.querySelectorAll('tr[id^=newMatRow]');
+	    if (document.querySelector('input[name=newMat]:checked')?.value === 'Y' && newMatRows.length > 0) {
+	        newMatRows.forEach(function (row) {
+	            var getVal = function (name) {
+	                return row.querySelector('input[name=' + name + ']')?.value || "";
+	            };
+	            if (
+	                getVal("itemMatCode") || getVal("itemSapCode") || getVal("itemName") ||
+	                getVal("itemStandard") || getVal("itemKeepExp") || getVal("itemUnitPrice") || getVal("itemDesc")
+	            ) {
+	                newMatHTML += "<tr>";
+	                newMatHTML += "<td>" + getVal("itemMatCode") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemSapCode") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemName") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemStandard") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemKeepExp") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemUnitPrice") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemDesc") + "</td>";
+	                newMatHTML += "</tr>";
+	            }
+	        });
+	    }
+
+	    var newMatWrap = $doc.getElementById("wrapper_prev_newMat");
+	    if (newMatHTML.trim()) {
+	        $doc.getElementById("prev_newMat").innerHTML = newMatHTML;
+	        if (newMatWrap) newMatWrap.style.display = "block";
+	    } else {
+	        if (newMatWrap) newMatWrap.style.display = "none";
+	    }
+
+	    // 기존 원료
+	    var matHTML = "";
+	    var matRows = document.querySelectorAll('tr[id^=matRow]');
+	    matRows.forEach(function (row) {
+	        var getVal = function (name) {
+	            return row.querySelector('input[name=' + name + ']')?.value || "";
+	        };
+	        if (getVal("itemSapCode")) {
+	            matHTML += "<tr>";
+	            matHTML += "<td>" + getVal("itemMatCode") + "</td>";
+	            matHTML += "<td>" + getVal("itemSapCode") + "</td>";
+	            matHTML += "<td>" + getVal("itemName") + "</td>";
+	            matHTML += "<td>" + getVal("itemStandard") + "</td>";
+	            matHTML += "<td>" + getVal("itemKeepExp") + "</td>";
+	            matHTML += "<td>" + getVal("itemUnitPrice") + "</td>";
+	            matHTML += "<td>" + getVal("itemDesc") + "</td>";
+	            matHTML += "</tr>";
+	        }
+	    });
+
+	    var matWrap = $doc.getElementById("wrapper_prev_newMat1");
+	    if (matHTML.trim()) {
+	        $doc.getElementById("prev_newMat1").innerHTML = matHTML;
+	        if (matWrap) matWrap.style.display = "block";
+	    } else {
+	        if (matWrap) matWrap.style.display = "none";
+	    }
+
+	 	// 🔹 비고 (내용)
+	    var contents = editor.getData().trim();
+	    var contentTarget = $doc.getElementById("prev_content");
+	    var contentWrapper = $doc.getElementById("wrapper_prev_content");
+
+	    if (contents) {
+	        contentTarget.innerHTML = contents;
+	        if (contentWrapper) contentWrapper.style.display = "block";
+	    } else {
+	        if (contentWrapper) contentWrapper.style.display = "none";
+	    }
+	}
+
+	function fn_openPreview() {
+		var url = "/preview/productPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
-	<span class="path">
-		제품개발완료보고서&nbsp;&nbsp;
-		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;제품 완료보고서&nbsp;&nbsp;
-		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
+	<span class="path"> 제품개발완료보고서&nbsp;&nbsp; <img
+		src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;제품
+		완료보고서&nbsp;&nbsp; <img src="/resources/images/icon_path.png"
+		style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
-		<h2 style="position:relative">
+		<h2 style="position: relative">
 			<span class="title_s">Product Complete Doc</span><span class="title">제품개발완료보고서</span>
 			<div class="top_btn_box">
 				<ul>
@@ -1968,171 +2156,197 @@ li {
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
+			<div class="title">
+				<!--span class="txt">연구개발시스템 공지사항</span-->
+			</div>
 			<div class="tab02">
-				<ul>
+				<ul style="display: flex; justify-content: space-between;">
 					<!-- 선택됬을경우는 탭 클래스에 select를 넣어주세요 -->
 					<!-- 내 제품설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
-					<a href="#" onClick="tabChange('tab1')"><li  class="select" id="tab1_li">기안내용</li></a>
-					<a href="#" onClick="tabChange('tab2')"><li class="" id="tab2_li">완료보고서상세정보</li></a>
+					<div>
+						<a href="#" onClick="tabChange('tab1')"><li class="select"
+							id="tab1_li">기안내용</li></a> <a href="#" onClick="tabChange('tab2')"><li
+							class="" id="tab2_li">완료보고서상세정보</li></a>
+					</div>
+					<div>
+						<button class="btn_small_search ml5" onclick="fn_openPreview()">미리보기</button>
+					</div>
 				</ul>
 			</div>
 			<div id="tab1_div">
-				<div class="title2"  style="width: 80%;"><span class="txt">제목 <span class="mandatory">*</span></span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">						
+				<div class="title2" style="width: 80%;">
+					<span class="txt">제목 <span class="mandatory">*</span></span>
 				</div>
-				<div class="main_tbl">
-					<table class="insert_proc01">
-						<colgroup>
-							<col  />							
-						</colgroup>
-						<tbody>
-							<tr>
-								<td><input type="text" name="title" id="title" style="width: 99%;"/></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-				<div class="title2"  style="width: 80%;"><span class="txt">제품명 <span class="mandatory">*</span></span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
 					<table class="insert_proc01">
 						<colgroup>
-							<col  />							
+							<col />
 						</colgroup>
 						<tbody>
 							<tr>
-								<td>
-									<input type="text"  style="width:99%; float: left" name="productName" id="productName"/>
-								</td>
+								<td><input type="text" name="title" id="title"
+									style="width: 99%;" /></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				
-				<div class="title2"  style="width: 80%;"><span class="txt">개발 목적 <span class="mandatory">*</span></span></div>
-				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
-					<button class="btn_con_search" onClick="fn_addCol('purpose')" id="purpose_add_btn">
-						<img src="/resources/images/icon_s_write.png" />추가 
+				<div class="title2" style="width: 80%;">
+					<span class="txt">제품명 <span class="mandatory">*</span></span>
+				</div>
+				<div class="title2" style="width: 20%; display: inline-block;">
+				</div>
+				<div class="main_tbl">
+					<table class="insert_proc01">
+						<colgroup>
+							<col />
+						</colgroup>
+						<tbody>
+							<tr>
+								<td><input type="text" style="width: 99%; float: left"
+									name="productName" id="productName" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div class="title2" style="width: 80%;">
+					<span class="txt">개발 목적 <span class="mandatory">*</span></span>
+				</div>
+				<div class="title2"
+					style="width: 20%; display: inline-block; text-align: center;">
+					<button class="btn_con_search" onClick="fn_addCol('purpose')"
+						id="purpose_add_btn">
+						<img src="/resources/images/icon_s_write.png" />추가
 					</button>
 					<button class="btn_con_search" onClick="fn_delCol('purpose')">
-						<img src="/resources/images/icon_s_del.png" />삭제 
+						<img src="/resources/images/icon_s_del.png" />삭제
 					</button>
 				</div>
 				<div class="main_tbl">
 					<table class="insert_proc01">
 						<colgroup>
 							<col width="20" />
-							<col  />							
+							<col />
 						</colgroup>
 						<tbody id="purpose_tbody" name="purpose_tbody">
 							<tr id="purpose_tr_1">
-								<td>
-									<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text"  style="width:99%; float: left" name="purpose" placeholder="가."/>
-								</td>
+								<td><input type="checkbox" id="purpose_1"><label
+									for="purpose_1"><span></span></label></td>
+								<td><input type="text" style="width: 99%; float: left"
+									name="purpose" placeholder="가." /></td>
 							</tr>
 						</tbody>
-						<tbody id="purpose_tbody_temp" name="purpose_tbody_temp" style="display:none">
-							<tr id="purpose_tmp_tr_1"> 
-								<td>
-									<input type="checkbox" id="purpose_1"><label for="purpose_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text"  style="width:99%; float: left" name="purpose"/>
-								</td>
+						<tbody id="purpose_tbody_temp" name="purpose_tbody_temp"
+							style="display: none">
+							<tr id="purpose_tmp_tr_1">
+								<td><input type="checkbox" id="purpose_1"><label
+									for="purpose_1"><span></span></label></td>
+								<td><input type="text" style="width: 99%; float: left"
+									name="purpose" /></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				
-				
-				<div class="title2"  style="width: 80%;"><span class="txt">제품 특징 <span class="mandatory">*</span></span></div>
-				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
-					<button class="btn_con_search" onClick="fn_addCol('feature')" id="feature_add_btn">
-						<img src="/resources/images/icon_s_write.png" />추가 
+
+
+				<div class="title2" style="width: 80%;">
+					<span class="txt">제품 특징 <span class="mandatory">*</span></span>
+				</div>
+				<div class="title2"
+					style="width: 20%; display: inline-block; text-align: center;">
+					<button class="btn_con_search" onClick="fn_addCol('feature')"
+						id="feature_add_btn">
+						<img src="/resources/images/icon_s_write.png" />추가
 					</button>
 					<button class="btn_con_search" onClick="fn_delCol('feature')">
-						<img src="/resources/images/icon_s_del.png" />삭제 
+						<img src="/resources/images/icon_s_del.png" />삭제
 					</button>
 				</div>
 				<div class="main_tbl">
 					<table class="insert_proc01">
 						<colgroup>
 							<col width="20" />
-							<col  />							
+							<col />
 						</colgroup>
 						<tbody id="feature_tbody" name="feature_tbody">
 							<tr id="feature_tr_1">
-								<td>
-									<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text"  style="width:99%; float: left" name="feature" placeholder="가."/>
-								</td>
+								<td><input type="checkbox" id="feature_1"><label
+									for="feature_1"><span></span></label></td>
+								<td><input type="text" style="width: 99%; float: left"
+									name="feature" placeholder="가." /></td>
 							</tr>
 						</tbody>
-						<tbody id="feature_tbody_temp" name="feature_tbody_temp" style="display:none">
-							<tr id="feature_tmp_tr_1"> 
+						<tbody id="feature_tbody_temp" name="feature_tbody_temp"
+							style="display: none">
+							<tr id="feature_tmp_tr_1">
+								<td><input type="checkbox" id="feature_1"><label
+									for="feature_1"><span></span></label></td>
+								<td><input type="text" style="width: 99%; float: left"
+									name="feature" /></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<!-- 브랜드 영역 -->
+				<div>
+					<div class="title2" style="margin-top: 20px;">
+						<span class="txt">브랜드 <span class="mandatory">*</span></span>
+					</div>
+					<table class="tbl05">
+						<tbody>
+							<tr>
 								<td>
-									<input type="checkbox" id="feature_1"><label for="feature_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text"  style="width:99%; float: left" name="feature"/>
+									<div style="width: 100%;">
+										<div
+											style="display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;">
+											<div id="brandTokenBox_1" class="token-box"
+												style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;"></div>
+											<div style="display: flex; gap: 5px;">
+												<button class="btn_small_search ml5"
+													onclick="openBrandDialog(1)">조회</button>
+												<button class="btn_small_search ml5"
+													onclick="resetBrandTokens(1)">초기화</button>
+											</div>
+										</div>
+										<input type="hidden" id="brandCodeValues_1"
+											name="brandCodeValues_1">
+									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				
-				<!-- 브랜드 영역 -->
-				<div>
-				  <div class="title2" style="margin-top:20px;"><span class="txt">브랜드 <span class="mandatory">*</span></span></div>
-				  <table class="tbl05">
-				    <tbody>
-				      <tr>
-				        <td>
-				          <div style="width: 100%;">
-				            <div style="display: flex; margin-left: 10px; justify-content: space-between; align-items: center; gap: 10px;">
-				              <div id="brandTokenBox_1" class="token-box" style="display: flex; flex-wrap: wrap; gap: 5px; flex: 1;"></div>
-				              <div style="display: flex; gap: 5px;">
-				                <button class="btn_small_search ml5" onclick="openBrandDialog(1)">조회</button>
-				                <button class="btn_small_search ml5" onclick="resetBrandTokens(1)">초기화</button>
-				              </div>
-				            </div>
-				            <input type="hidden" id="brandCodeValues_1" name="brandCodeValues_1">
-				          </div>
-				        </td>
-				      </tr>
-				    </tbody>
-				  </table>
-				</div>
-				
+
 				<!-- 용도 입력 영역 -->
 				<div>
-				  <div class="title2"><span class="txt">용도</span></div>
-				  <table class="tbl05">
-				    <tbody>
-				      <tr>
-				        <td>
-				          <input type="text" id="customUsage_1" placeholder="용도를 입력하세요" style="width:99%;">
-				        </td>
-				      </tr>
-				    </tbody>
-				  </table>
+					<div class="title2">
+						<span class="txt">용도</span>
+					</div>
+					<table class="tbl05">
+						<tbody>
+							<tr>
+								<td><input type="text" id="customUsage_1"
+									placeholder="용도를 입력하세요" style="width: 99%;"></td>
+							</tr>
+						</tbody>
+					</table>
 				</div>
-				
+
 				<div id="">
 					<div class="title2" style="float: left; margin-top: 30px;">
 						<span class="txt">신규도입품/제품규격</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
-						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
-						<span class="table_header_btn_box">
-							<button class="btn_add_tr" onclick="fn_addCol('new')" id="new_add_btn"></button><button class="btn_del_tr" onclick="fn_delCol('new')"></button>
+						<span class="table_order_btn"><button class="btn_up"
+								onclick="moveUp(this)"></button>
+							<button class="btn_down" onclick="moveDown(this)"></button></span> <span
+							class="table_header_btn_box">
+							<button class="btn_add_tr" onclick="fn_addCol('new')"
+								id="new_add_btn"></button>
+							<button class="btn_del_tr" onclick="fn_delCol('new')"></button>
 						</span>
 					</div>
 					<table id="new_Table" class="tbl05">
@@ -2156,97 +2370,103 @@ li {
 						</thead>
 						<tbody id="new_tbody" name="new_tbody">
 							<tr id="new_tr_1" class="temp_color">
-								<td>
-									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
-								</td>
-								<td>
-									<input type="text" name="itemStandard" style="width: 100%"/>
-								</td>
-								<td>
-									<input type="text" name="itemSupplier" style="width: 100%"/>
-								</td>
-								<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
-								<td><input type="text" name="itemNote" style="width: 100%" class=""/></td>
+								<td><input type="checkbox" id="new_1"><label
+									for="new_1"><span></span></label></td>
+								<td><input type="text" name="itemName" style="width: 100%"
+									class="code_tbl" /></td>
+								<td><input type="text" name="itemStandard"
+									style="width: 100%" /></td>
+								<td><input type="text" name="itemSupplier"
+									style="width: 100%" /></td>
+								<td><input type="text" name="itemKeepExp"
+									style="width: 100%" class="" /></td>
+								<td><input type="text" name="itemNote" style="width: 100%"
+									class="" /></td>
 							</tr>
 						</tbody>
-						<tbody id="new_tbody_temp" name="new_tbody_temp" style="display:none">
+						<tbody id="new_tbody_temp" name="new_tbody_temp"
+							style="display: none">
 							<tr id="new_tmp_tr_1" class="temp_color">
-								<td>
-									<input type="checkbox" id="new_1"><label for="new_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text" name="itemName" style="width: 100%" class="code_tbl"/>
-								</td>
-								<td>
-									<input type="text" name="itemStandard" style="width: 100%"/>
-								</td>
-								<td>
-									<input type="text" name="itemSupplier" style="width: 100%"/>
-								</td>
-								<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
-								<td><input type="text" name="itemNote" style="width: 100%" class=""/></td>
+								<td><input type="checkbox" id="new_1"><label
+									for="new_1"><span></span></label></td>
+								<td><input type="text" name="itemName" style="width: 100%"
+									class="code_tbl" /></td>
+								<td><input type="text" name="itemStandard"
+									style="width: 100%" /></td>
+								<td><input type="text" name="itemSupplier"
+									style="width: 100%" /></td>
+								<td><input type="text" name="itemKeepExp"
+									style="width: 100%" class="" /></td>
+								<td><input type="text" name="itemNote" style="width: 100%"
+									class="" /></td>
 							</tr>
 						</tbody>
 						<tfoot>
 						</tfoot>
 					</table>
 				</div>
-				
-				<div class="title2"  style="width: 80%;"><span class="txt">도입 예정일</span></div>
+
+				<div class="title2" style="width: 80%;">
+					<span class="txt">도입 예정일</span>
+				</div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
 					<table class="insert_proc01">
 						<colgroup>
-							<col  />							
+							<col />
 						</colgroup>
 						<tbody>
 							<tr>
-								<td>
-									<input type="text" name="scheduleDate" id="scheduleDate" style="width: 120px;"/>
-								</td>
+								<td><input type="text" name="scheduleDate"
+									id="scheduleDate" style="width: 120px;" /></td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				
-				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부 <span class="mandatory">*</span></span></div>
-				<div class="title2 mt20" style="width:10%; display: inline-block;">
-					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
-						<img src="/resources/images/icon_s_file.png" />파일첨부 
+
+
+				<div class="title2 mt20" style="width: 90%;">
+					<span class="txt">파일첨부 <span class="mandatory">*</span></span>
+				</div>
+				<div class="title2 mt20" style="width: 10%; display: inline-block;">
+					<button class="btn_con_search"
+						onClick="openDialog('dialog_attatch')">
+						<img src="/resources/images/icon_s_file.png" />파일첨부
 					</button>
 				</div>
 				<div class="con_file" style="">
 					<ul>
-						<li class="point_img">
-							<dt>첨부파일</dt><dd>
+						<li class="point_img" style="display:flex;">
+							<dt>첨부파일</dt>
+							<dd>
 								<ul id="attatch_file">
 								</ul>
 							</dd>
 						</li>
 					</ul>
 				</div>
-				<div class="con_file" style="display:none" id="temp_file">
-					<select id="tempFileList" name="tempFileList" multiple style="display:none"></select>
+				<div class="con_file" style="display: none" id="temp_file">
+					<select id="tempFileList" name="tempFileList" multiple
+						style="display: none"></select>
 					<ul>
 						<li class="point_img">
-							<dt>기존파일</dt><dd>
+							<dt>기존파일</dt>
+							<dd>
 								<ul id="temp_attatch_file">
 								</ul>
 							</dd>
 						</li>
 					</ul>
 				</div>
-				
+
 			</div>
-			<div id="tab2_div" style="display:none">
-				<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
+			<div id="tab2_div" style="display: none">
+				<div class="title2" style="width: 80%;">
+					<span class="txt">기본정보</span>
+				</div>
 				<div class="title2" style="width: 20%; display: inline-block;">
-					
+
 				</div>
 				<div class="main_tbl">
 					<table class="insert_proc01">
@@ -2259,89 +2479,114 @@ li {
 						<tbody>
 							<tr>
 								<th style="border-left: none;">제품코드 <span class="mandatory">*</span></th>
-								<td>
-									<input type="hidden"  name="isSample" id="isSample" value="N"/>
-									<input type="text"  style="width:200px; float: left" name="productCode" id="productCode" placeholder="코드를 생성 하세요." readonly/>
-									<button class="btn_small_search ml5" onclick="selectNewCode()" style="float: left">생성</button>
-								</td>
+								<td><input type="hidden" name="isSample" id="isSample"
+									value="N" /> <input type="text"
+									style="width: 200px; float: left" name="productCode"
+									id="productCode" placeholder="코드를 생성 하세요." readonly />
+									<button class="btn_small_search ml5" onclick="selectNewCode()"
+										style="float: left">생성</button></td>
 								<th style="border-left: none;">상품코드</th>
-								<td>
-									<input type="text"  style="width:200px; float: left" name="productSapCode" id="productSapCode" placeholder="코드를 조회 하세요." readonly/>
-									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
-									<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
+								<td><input type="text" style="width: 200px; float: left"
+									name="productSapCode" id="productSapCode"
+									placeholder="코드를 조회 하세요." readonly />
+									<button class="btn_small_search ml5"
+										onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
+									<button class="btn_small_search ml5" onclick="fn_initForm()"
+										style="float: left">초기화</button></td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">공동 참여자</th>
+								<td colspan="3">
+									<!-- 사용자 토큰이 표시될 영역 -->
+									<div id="sharedUserTokens"
+										style="width: 450px; float: left; min-height: 24px; border: 1px solid #ccc; padding: 5px;"></div>
+
+									<!-- 숨겨진 input에 ID 들 저장 --> <input type="hidden"
+									id="sharedUserIds" name="sharedUserIds" /> <input
+									type="hidden" id="sharedUserNames" name="sharedUserNames" /> <input
+									type="hidden" id="sharedUserDepts" name="sharedUserDepts" /> <input
+									type="hidden" id="sharedUserTeams" name="sharedUserTeams" /> <!-- 버튼 -->
+									<button class="btn_small_search ml5" style="float: left"
+										onclick="userSearchClass.openSharedUserPopup();">조회</button>
+									<button class="btn_small_search ml5"
+										onclick="userSearchClass.clearTokens();">초기화</button>
 								</td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">결재라인</th>
-								<td colspan="3">
-									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								<td colspan="3"><input class="" id="apprTxtFull"
+									name="apprTxtFull" type="text"
+									style="width: 450px; float: left" readonly>
+									<button class="btn_small_search ml5"
+										onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
 								</td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">참조자</th>
 								<td colspan="3">
-									<div id="refTxtFull" name="refTxtFull"></div>								
+									<div id="refTxtFull" name="refTxtFull"></div>
 								</td>
 							</tr>
-							
+
 							<tr>
 								<th style="border-left: none;">중량</th>
-								<td>
-									<input type="text"  style="width:200px; float: left" class="" name="weight" id="weight"/>
-								</td>
+								<td><input type="text" style="width: 200px; float: left"
+									class="" name="weight" id="weight" /></td>
 								<th style="border-left: none;">제품규격</th>
-								<td>
-									<input type="text"  style="width:350px; float: left" class="" name="standard" id="standard"/>								
-								</td>
-								
+								<td><input type="text" style="width: 350px; float: left"
+									class="" name="standard" id="standard" /></td>
+
 							</tr>
 							<tr>
 								<th style="border-left: none;">보관방법</th>
-								<td>
-									<input type="text"  style="width:350px; float: left" class="" name="keepCondition" id="keepCondition"/>
-								</td>
+								<td><input type="text" style="width: 350px; float: left"
+									class="" name="keepCondition" id="keepCondition" /></td>
 								<th style="border-left: none;">소비기한</th>
-								<td>
-									<input type="text"  style="width:350px; float: left" class="" name="expireDate" id="expireDate"/>								
-								</td>							
+								<td><input type="text" style="width: 350px; float: left"
+									class="" name="expireDate" id="expireDate" /></td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">제품유형 <span class="mandatory">*</span></th>
-								<td colspan="5">
-									<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 450px; float: left" readonly>
-									<button class="btn_small_search ml5" onclick="openDialog('dialog_product')" style="float: left">조회</button>
+								<td colspan="5"><input class="" id="selectTxtFull"
+									name="selectTxtFull" type="text"
+									style="width: 450px; float: left" readonly>
+									<button class="btn_small_search ml5"
+										onclick="openDialog('dialog_product')" style="float: left">조회</button>
 								</td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">신규원료사용 유무</th>
-								<td colspan="5">
-									<input type="radio" name="newMat" id="newMat1" value="N" onclick="changeNewMat(event)" checked="checked">
-									<label for="newMat1"><span></span>사용안함</label>
-									<input type="radio" name="newMat" id="newMat2" onclick="changeNewMat(event)" value="Y">
-									<label for="newMat2"><span></span>사용</label>
-								</td>
+								<td colspan="5"><input type="radio" name="newMat"
+									id="newMat1" value="N" onclick="changeNewMat(event)"
+									checked="checked"> <label for="newMat1"><span></span>사용안함</label>
+									<input type="radio" name="newMat" id="newMat2"
+									onclick="changeNewMat(event)" value="Y"> <label
+									for="newMat2"><span></span>사용</label></td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">첨부파일 유형</th>
 								<td colspan="5">
-									<div id="docTypeTxt"></div>
-									<select id="docTypeTemp" name="docTypeTemp" multiple style='display:none'>
-									</select>
+									<div id="docTypeTxt"></div> <select id="docTypeTemp"
+									name="docTypeTemp" multiple style='display: none'>
+								</select>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				
-				<div id="matNewDiv" style="display:none">
+
+				<div id="matNewDiv" style="display: none">
 					<div class="title2" style="float: left; margin-top: 30px;">
 						<span class="txt">신규원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
-						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
-						<span class="table_header_btn_box">
-							<button class="btn_add_tr" onclick="addRow(this, 'newMat')" id="matNew_add_btn"></button><button class="btn_del_tr" onclick="removeRow(this)"></button>
+						<span class="table_order_btn"><button class="btn_up"
+								onclick="moveUp(this)"></button>
+							<button class="btn_down" onclick="moveDown(this)"></button></span> <span
+							class="table_header_btn_box">
+							<button class="btn_add_tr" onclick="addRow(this, 'newMat')"
+								id="matNew_add_btn"></button>
+							<button class="btn_del_tr" onclick="removeRow(this)"></button>
 						</span>
 					</div>
 					<table id="matTable" class="tbl05">
@@ -2357,7 +2602,8 @@ li {
 						</colgroup>
 						<thead>
 							<tr>
-								<th><input type="checkbox" id="matTable_2" onclick="checkAll(event)"><label for="matTable_2"><span></span></label></th>
+								<th><input type="checkbox" id="matTable_2"
+									onclick="checkAll(event)"><label for="matTable_2"><span></span></label></th>
 								<th>원료코드</th>
 								<th>ERP코드</th>
 								<th>원료명</th>
@@ -2369,40 +2615,45 @@ li {
 						</thead>
 						<tbody id="newMatTbody" name="newMatTbody">
 							<Tr id="newMatRow_1" class="temp_color">
-								<td>
-									<input type="checkbox" id="mat_1"><label for="mat_1"><span></span></label>
-									<input type="hidden" name="itemType" value="Y"/>
-								</td>
-								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
-									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
-									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
-								</td>
-								<td>
-									<input type="text" name="itemSapCode" style="width: 100px"/>
-								</td>
-								<td>
-									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
-								</td>
-								<td><input type="text" name="itemStandard" style="width: 100%" class=""/></td>
-								<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
-								<td><input type="text" name="itemUnitPrice" style="width: 100%"  readonly="readonly" class="read_only"/></td>
-								<td><input type="text" name="itemDesc" style="width: 100%"/></td>
+								<td><input type="checkbox" id="mat_1"><label
+									for="mat_1"><span></span></label> <input type="hidden"
+									name="itemType" value="Y" /></td>
+								<td><input type="hidden" name="itemMatIdx"
+									style="width: 100px" class="code_tbl" /> <input type="text"
+									name="itemMatCode" style="width: 100px" class="code_tbl"
+									onkeyup="checkMaterail(event,'newMat')" />
+									<button class="btn_code_search2"
+										onclick="openMaterialPopup(this,'newMat')"></button></td>
+								<td><input type="text" name="itemSapCode"
+									style="width: 100px" /></td>
+								<td><input type="text" name="itemName" style="width: 85%"
+									readonly="readonly" class="read_only" /></td>
+								<td><input type="text" name="itemStandard"
+									style="width: 100%" class="" /></td>
+								<td><input type="text" name="itemKeepExp"
+									style="width: 100%" class="" /></td>
+								<td><input type="text" name="itemUnitPrice"
+									style="width: 100%" readonly="readonly" class="read_only" /></td>
+								<td><input type="text" name="itemDesc" style="width: 100%" /></td>
 							</Tr>
 						</tbody>
 						<tfoot>
 						</tfoot>
 					</table>
 				</div>
-				
+
 				<div id="matDiv">
 					<div class="title2" style="float: left; margin-top: 30px;">
 						<span class="txt">기존원료</span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
-						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
-						<span class="table_header_btn_box">
-							<button class="btn_add_tr" onclick="addRow(this, 'mat')" id="mat_add_btn"></button><button class="btn_del_tr" onclick="removeRow(this)"></button>
+						<span class="table_order_btn"><button class="btn_up"
+								onclick="moveUp(this)"></button>
+							<button class="btn_down" onclick="moveDown(this)"></button></span> <span
+							class="table_header_btn_box">
+							<button class="btn_add_tr" onclick="addRow(this, 'mat')"
+								id="mat_add_btn"></button>
+							<button class="btn_del_tr" onclick="removeRow(this)"></button>
 						</span>
 					</div>
 					<table id="matTable" class="tbl05">
@@ -2418,7 +2669,8 @@ li {
 						</colgroup>
 						<thead>
 							<tr>
-								<th><input type="checkbox" id="matTable_1" onclick="checkAll(event)"><label for="matTable_1"><span></span></label></th>
+								<th><input type="checkbox" id="matTable_1"
+									onclick="checkAll(event)"><label for="matTable_1"><span></span></label></th>
 								<th>원료코드</th>
 								<th>ERP코드</th>
 								<th>원료명</th>
@@ -2430,66 +2682,72 @@ li {
 						</thead>
 						<tbody id="matTbody" name="matTbody">
 							<tr id="matRow_1" class="temp_color">
-								<td>
-									<input type="checkbox" id="mat_2"><label for="mat_2"><span></span></label>
-									<input type="hidden" name="itemType" value="N"/>
-								</td>
-								<td>
-									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
-									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
-									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
-								</td>
-								<td>
-									<input type="text" name="itemSapCode" style="width: 100px"/>
-								</td>
-								<td>
-									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
-								</td>
-								<td><input type="text" name="itemStandard" style="width: 100%" class=""/></td>
-								<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
-								<td><input type="text" name="itemUnitPrice" style="width: 100%"  readonly="readonly" class="read_only"/></td>
-								<td><input type="text" name="itemDesc" style="width: 100%"/></td>
+								<td><input type="checkbox" id="mat_2"><label
+									for="mat_2"><span></span></label> <input type="hidden"
+									name="itemType" value="N" /></td>
+								<td><input type="hidden" name="itemMatIdx"
+									style="width: 100px" class="code_tbl" /> <input type="text"
+									name="itemMatCode" style="width: 100px" class="code_tbl"
+									onkeyup="checkMaterail(event,'mat')" />
+									<button class="btn_code_search2"
+										onclick="openMaterialPopup(this,'mat')"></button></td>
+								<td><input type="text" name="itemSapCode"
+									style="width: 100px" /></td>
+								<td><input type="text" name="itemName" style="width: 85%"
+									readonly="readonly" class="read_only" /></td>
+								<td><input type="text" name="itemStandard"
+									style="width: 100%" class="" /></td>
+								<td><input type="text" name="itemKeepExp"
+									style="width: 100%" class="" /></td>
+								<td><input type="text" name="itemUnitPrice"
+									style="width: 100%" readonly="readonly" class="read_only" /></td>
+								<td><input type="text" name="itemDesc" style="width: 100%" /></td>
 							</tr>
 						</tbody>
 						<tfoot>
 						</tfoot>
 					</table>
 				</div>
-				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">비고</span></div>
+
+				<div class="title2 mt20" style="width: 90%;">
+					<span class="txt">비고</span>
+				</div>
 				<div class="main_tbl">
 					<ul>
 						<li class="">
 							<div class="text_insert" style="padding: 0px;">
-								<textarea name="contents" id="contents" style="width: 666px; height: 120px; display: none;">
+								<textarea name="contents" id="contents"
+									style="width: 666px; height: 120px; display: none;">
 								<!--<h2><strong>1. 제품명</strong></h2><p>&nbsp;</p><h2><strong>2. 개발목적</strong></h2><p>&nbsp;</p><h2><strong>3. 제품특징</strong></h2><p>&nbsp;</p><h2><strong>4. 용도</strong></h2><p>&nbsp;</p><h2><strong>5. 제품규격</strong></h2><p>&nbsp;</p><h2><strong>6. 도입예정일</strong></h2><p>&nbsp;</p><p>&nbsp;</p>-->
 								</textarea>
-								<script type="text/javascript" src="/resources/editor/build/ckeditor.js"></script>
+								<script type="text/javascript"
+									src="/resources/editor/build/ckeditor.js"></script>
 							</div>
 						</li>
 					</ul>
 				</div>
-			</div>		
-				<div class="main_tbl">
-					<div class="btn_box_con5">
-						<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
-					</div>
-					<div class="btn_box_con4">
-						<!-- 
+			</div>
+			<div class="main_tbl">
+				<div class="btn_box_con5">
+					<button class="btn_admin_gray" onClick="fn_goList();"
+						style="width: 120px;">목록</button>
+				</div>
+				<div class="btn_box_con4">
+					<!-- 
 						<button class="btn_admin_red">임시/템플릿저장</button>
 						<button class="btn_admin_navi">임시저장</button>
 						 -->
-						 <button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
-						<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
-						<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
-					</div>
-					<hr class="con_mode" />
+					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
+					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
+				<hr class="con_mode" />
 			</div>
+		</div>
 	</section>
 </div>
 
-<table id="tmpMatTable" class="tbl05" style="display:none">
+<table id="tmpMatTable" class="tbl05" style="display: none">
 	<colgroup>
 		<col width="20">
 		<col width="140">
@@ -2500,7 +2758,8 @@ li {
 	</colgroup>
 	<thead>
 		<tr>
-			<th><input type="checkbox" id="matTable_1" onclick="checkAll(event)"><label for="matTable_1"><span></span></label></th>
+			<th><input type="checkbox" id="matTable_1"
+				onclick="checkAll(event)"><label for="matTable_1"><span></span></label></th>
 			<th>원료코드</th>
 			<th>원료명</th>
 			<th>단가</th>
@@ -2510,48 +2769,48 @@ li {
 	</thead>
 	<tbody id="tmpMatTbody" name="tmpMatTbody">
 		<tr id="tempMatRow_1" class="temp_color">
-			<td>
-				<input type="checkbox" id="mat_1"><label for="mat_1"><span></span></label>
-				<input type="hidden" name="itemType"/>
+			<td><input type="checkbox" id="mat_1"><label for="mat_1"><span></span></label>
+				<input type="hidden" name="itemType" /></td>
+			<td><input type="hidden" name="itemMatIdx" style="width: 100px"
+				class="code_tbl" /> <input type="text" name="itemMatCode"
+				style="width: 100px" class="code_tbl"
+				onkeyup="checkMaterail(event,'newMat')" />
+				<button class="btn_code_search2"
+					onclick="openMaterialPopup(this,'newMat')"></button></td>
+			<td><input type="text" name="itemSapCode" style="width: 100px" />
 			</td>
-			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
-				<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
-			</td>
-			<td>
-				<input type="text" name="itemSapCode" style="width: 100px"/>
-			</td>
-			<td>
-				<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
-			</td>
-			<td><input type="text" name="itemStandard" style="width: 100%" class=""/></td>
-			<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
-			<td><input type="text" name="itemUnitPrice" style="width: 100%"  readonly="readonly" class="read_only"/></td>
-			<td><input type="text" name="itemDesc" style="width: 100%"/></td>
+			<td><input type="text" name="itemName" style="width: 85%"
+				readonly="readonly" class="read_only" /></td>
+			<td><input type="text" name="itemStandard" style="width: 100%"
+				class="" /></td>
+			<td><input type="text" name="itemKeepExp" style="width: 100%"
+				class="" /></td>
+			<td><input type="text" name="itemUnitPrice" style="width: 100%"
+				readonly="readonly" class="read_only" /></td>
+			<td><input type="text" name="itemDesc" style="width: 100%" /></td>
 		</tr>
 	</tbody>
 	<tbody id="tmpMatTbody2" name="tmpMatTbody2">
 		<tr id="tempMatRow_1" class="temp_color">
-			<td>
-				<input type="checkbox" id="mat_1"><label for="mat_1"><span></span></label>
-				<input type="hidden" name="itemType"/>
+			<td><input type="checkbox" id="mat_1"><label for="mat_1"><span></span></label>
+				<input type="hidden" name="itemType" /></td>
+			<td><input type="hidden" name="itemMatIdx" style="width: 100px"
+				class="code_tbl" /> <input type="text" name="itemMatCode"
+				style="width: 100px" class="code_tbl"
+				onkeyup="checkMaterail(event,'mat')" />
+				<button class="btn_code_search2"
+					onclick="openMaterialPopup(this,'mat')"></button></td>
+			<td><input type="text" name="itemSapCode" style="width: 100px" />
 			</td>
-			<td>
-				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
-				<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
-			</td>
-			<td>
-				<input type="text" name="itemSapCode" style="width: 100px"/>
-			</td>
-			<td>
-				<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
-			</td>
-			<td><input type="text" name="itemStandard" style="width: 100%" class=""/></td>
-			<td><input type="text" name="itemKeepExp" style="width: 100%" class=""/></td>
-			<td><input type="text" name="itemUnitPrice" style="width: 100%"  readonly="readonly" class="read_only"/></td>
-			<td><input type="text" name="itemDesc" style="width: 100%"/></td>
+			<td><input type="text" name="itemName" style="width: 85%"
+				readonly="readonly" class="read_only" /></td>
+			<td><input type="text" name="itemStandard" style="width: 100%"
+				class="" /></td>
+			<td><input type="text" name="itemKeepExp" style="width: 100%"
+				class="" /></td>
+			<td><input type="text" name="itemUnitPrice" style="width: 100%"
+				readonly="readonly" class="read_only" /></td>
+			<td><input type="text" name="itemDesc" style="width: 100%" /></td>
 		</tr>
 	</tbody>
 	<tfoot>
@@ -2563,23 +2822,29 @@ li {
 <!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
 <!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
 <div class="white_content" id="dialog_erpMaterial">
-	<input id="erpTargetID" type="hidden">
-	<input id="erpItemType" type="hidden">
-	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px ">
+	<input id="erpTargetID" type="hidden"> <input id="erpItemType"
+		type="hidden">
+	<div class="modal positionCenter"
+		style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px">
 		<h5 style="position: relative">
 			<span class="title">원료코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
-					<li><button class="btn_madal_close" onClick="fn_closeErpMatRayer()"></button></li>
+					<li><button class="btn_madal_close"
+							onClick="fn_closeErpMatRayer()"></button></li>
 				</ul>
 			</div>
 		</h5>
 
 		<div id="erpMatListDiv" class="code_box">
-			<input id="searchErpMatValue" type="text" class="code_input" onkeyup="bindDialogEnter(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
-			<img src="/resources/images/icon_code_search.png" onclick="fn_searchErpMaterial()"/>
+			<input id="searchErpMatValue" type="text" class="code_input"
+				onkeyup="bindDialogEnter(event)" style="width: 300px;"
+				placeholder="일부단어로 검색가능"> <img
+				src="/resources/images/icon_code_search.png"
+				onclick="fn_searchErpMaterial()" />
 			<div class="code_box2">
-				(<strong> <span id="erpMatCount">0</span> </strong>)건
+				(<strong> <span id="erpMatCount">0</span>
+				</strong>)건
 			</div>
 			<div class="main_tbl">
 				<table class="tbl07">
@@ -2608,7 +2873,7 @@ li {
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">
-						<input type="hidden" id="erpMatLayerPage" value="0"/>
+						<input type="hidden" id="erpMatLayerPage" value="0" />
 						<Tr>
 							<td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td>
 						</Tr>
@@ -2616,8 +2881,10 @@ li {
 				</table>
 				<!-- 뒤에 추가 리스트가 있을때는 클래스명 02로 숫자변경 -->
 				<div id="erpMatNextPrevDiv" class="page_navi  mt10">
-					<button class="btn_code_left01" onclick="fn_searchErpMaterial('prevPage')"></button>
-					<button class="btn_code_right02" onclick="fn_searchErpMaterial('nextPage')"></button>
+					<button class="btn_code_left01"
+						onclick="fn_searchErpMaterial('prevPage')"></button>
+					<button class="btn_code_right02"
+						onclick="fn_searchErpMaterial('nextPage')"></button>
 				</div>
 			</div>
 		</div>
@@ -2630,13 +2897,15 @@ li {
 <!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
 <!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
 <div class="white_content" id="dialog_attatch">
-	<div class="modal" style="margin-left: -355px; width: 710px; height: 550px; margin-top: -250px">
+	<div class="modal"
+		style="margin-left: -355px; width: 710px; height: 550px; margin-top: -250px">
 		<h5 style="position: relative">
 			<span class="title">첨부파일 추가</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
-						<button class="btn_madal_close" onClick="closeDialogWithClean('dialog_attatch')"></button>
+						<button class="btn_madal_close"
+							onClick="closeDialogWithClean('dialog_attatch')"></button>
 					</li>
 				</ul>
 			</div>
@@ -2647,40 +2916,46 @@ li {
 					<dt style="width: 20%">파일 선택</dt>
 					<dd style="width: 80%" class="ppp">
 						<div style="float: left; display: inline-block;">
-							<span class="file_load" id="fileSpan">
-								<input id="attatch_common_text" class="form-control form_point_color01" type="text" placeholder="파일을 선택해주세요." style="width:145px;/* width:308px;  */float:left; cursor: pointer; color: black;" onclick="callAddFileEvent()" readonly="readonly">
-								<!-- <label class="btn-default" for="attatch_common" style="float:left; margin-left: 5px; width: 57px">파일 선택</label> -->
-								<input id="attatch_common" type="file" style="display:none;" onchange="setFileName(this)">
+							<span class="file_load" id="fileSpan"> <input
+								id="attatch_common_text" class="form-control form_point_color01"
+								type="text" placeholder="파일을 선택해주세요."
+								style="width: 145px; /* width:308px;  */ float: left; cursor: pointer; color: black;"
+								onclick="callAddFileEvent()" readonly="readonly"> <!-- <label class="btn-default" for="attatch_common" style="float:left; margin-left: 5px; width: 57px">파일 선택</label> -->
+								<input id="attatch_common" type="file" style="display: none;"
+								onchange="setFileName(this)">
 							</span>
 							<button class="btn_small02 ml5" onclick="addFile(this, '00')">파일등록</button>
 						</div>
 						<div style="float: left; display: inline-block; margin-top: 5px">
-							
+
 						</div>
 					</dd>
 				</li>
 				<li class=" mb5">
 					<dt style="width: 20%">파일유형</dt>
 					<dd style="width: 80%;">
-						<input id="checkbox_item1" name="docType" type="checkbox" value="10"/>
-						<label for="checkbox_item1" style="vertical-align: middle;"><span></span>컨셉서-개발목적</label>
-						<input id="checkbox_item2" name="docType" type="checkbox" value="20"/>
-						<label for="checkbox_item2" style="vertical-align: middle;"><span></span>추정 원단위표</label>
-						<input id="checkbox_item3" name="docType" type="checkbox" value="30"/>
-						<label for="checkbox_item3" style="vertical-align: middle;"><span></span>배합비&제조신고용 배합비</label>						
-						<br/>
-						<input id="checkbox_item4" name="docType" type="checkbox" value="40"/>
-						<label for="checkbox_item4" style="vertical-align: middle;"><span></span>제조공정도</label>						
-						<input id="checkbox_item5" name="docType" type="checkbox" value="50"/>
+						<input id="checkbox_item1" name="docType" type="checkbox"
+							value="10" /> <label for="checkbox_item1"
+							style="vertical-align: middle;"><span></span>컨셉서-개발목적</label> <input
+							id="checkbox_item2" name="docType" type="checkbox" value="20" />
+						<label for="checkbox_item2" style="vertical-align: middle;"><span></span>추정
+							원단위표</label> <input id="checkbox_item3" name="docType" type="checkbox"
+							value="30" /> <label for="checkbox_item3"
+							style="vertical-align: middle;"><span></span>배합비&제조신고용
+							배합비</label> <br /> <input id="checkbox_item4" name="docType"
+							type="checkbox" value="40" /> <label for="checkbox_item4"
+							style="vertical-align: middle;"><span></span>제조공정도</label> <input
+							id="checkbox_item5" name="docType" type="checkbox" value="50" />
 						<label for="checkbox_item5" style="vertical-align: middle;"><span></span>제조작업표준서</label>
-						<input id="checkbox_item6" name="docType" type="checkbox" value="60"/>
-						<label for="checkbox_item6" style="vertical-align: middle;"><span></span>제품규격서</label>
+						<input id="checkbox_item6" name="docType" type="checkbox"
+							value="60" /> <label for="checkbox_item6"
+							style="vertical-align: middle;"><span></span>제품규격서</label>
 					</dd>
 				</li>
 				<li class=" mb5">
 					<dt style="width: 20%">파일리스트</dt>
 					<dd style="width: 80%;">
-						<div class="file_box_pop" style="width:95%">
+						<div class="file_box_pop" style="width: 95%">
 							<ul name="popFileList"></ul>
 						</div>
 					</dd>
@@ -2689,7 +2964,8 @@ li {
 		</div>
 		<div class="btn_box_con">
 			<button class="btn_admin_red" onclick="uploadFiles();">파일 등록</button>
-			<button class="btn_admin_gray" onClick="closeDialogWithClean('dialog_attatch')">등록 취소</button>
+			<button class="btn_admin_gray"
+				onClick="closeDialogWithClean('dialog_attatch')">등록 취소</button>
 		</div>
 	</div>
 </div>
@@ -2697,22 +2973,25 @@ li {
 
 <!-- 원료 선택 레이어 start-->
 <div class="white_content" id="dialog_product">
-	<div class="modal" style="	width: 400px;margin-left:-210px;height: 350px;margin-top:-100px;">
-		<h5 style="position:relative">
+	<div class="modal"
+		style="width: 400px; margin-left: -210px; height: 350px; margin-top: -100px;">
+		<h5 style="position: relative">
 			<span class="title">제품구분</span>
-			<div  class="top_btn_box">
+			<div class="top_btn_box">
 				<ul>
 					<li>
-						<button class="btn_madal_close" onClick="closeDialog('dialog_product')"></button>
+						<button class="btn_madal_close"
+							onClick="closeDialog('dialog_product')"></button>
 					</li>
 				</ul>
 			</div>
 		</h5>
 		<div style="height: 200px; overflow-x: hidden; overflow-y: auto;">
-			<div id="jsTree"></div> 
+			<div id="jsTree"></div>
 		</div>
 		<div class="btn_box_con">
-			<button class="btn_small02" onclick="closeDialog('dialog_product')"> 취소</button>
+			<button class="btn_small02" onclick="closeDialog('dialog_product')">
+				취소</button>
 		</div>
 	</div>
 </div>
@@ -2722,24 +3001,28 @@ li {
 <!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
 <!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
 <div class="white_content" id="dialog_material">
-	<input id="targetID" type="hidden">
-	<input id="itemType" type="hidden">
-	<input id="searchType" type="hidden">
+	<input id="targetID" type="hidden"> <input id="itemType"
+		type="hidden"> <input id="searchType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px">
 		<h5 style="position: relative">
 			<span class="title">원료코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
-					<li><button class="btn_madal_close" onClick="fn_closeMatRayer()"></button></li>
+					<li><button class="btn_madal_close"
+							onClick="fn_closeMatRayer()"></button></li>
 				</ul>
 			</div>
 		</h5>
 
 		<div id="matListDiv" class="code_box">
-			<input id="searchMatValue" type="text" class="code_input" onkeyup="bindDialogEnter(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
-			<img src="/resources/images/icon_code_search.png" onclick="searchMaterial()"/>
+			<input id="searchMatValue" type="text" class="code_input"
+				onkeyup="bindDialogEnter(event)" style="width: 300px;"
+				placeholder="일부단어로 검색가능"> <img
+				src="/resources/images/icon_code_search.png"
+				onclick="searchMaterial()" />
 			<div class="code_box2">
-				(<strong> <span id="matCount">0</span> </strong>)건
+				(<strong> <span id="matCount">0</span>
+				</strong>)건
 			</div>
 			<div class="main_tbl">
 				<table class="tbl07">
@@ -2770,7 +3053,7 @@ li {
 						<tr>
 					</thead>
 					<tbody id="matLayerBody">
-						<input type="hidden" id="matLayerPage" value="0"/>
+						<input type="hidden" id="matLayerPage" value="0" />
 						<Tr>
 							<td colspan="10">원료코드 혹은 원료코드명을 검색해주세요</td>
 						</Tr>
@@ -2778,8 +3061,10 @@ li {
 				</table>
 				<!-- 뒤에 추가 리스트가 있을때는 클래스명 02로 숫자변경 -->
 				<div id="matNextPrevDiv" class="page_navi  mt10">
-					<button class="btn_code_left01" onclick="searchMaterial('prevPage','')"></button>
-					<button class="btn_code_right02" onclick="searchMaterial('nextPage','')"></button>
+					<button class="btn_code_left01"
+						onclick="searchMaterial('prevPage','')"></button>
+					<button class="btn_code_right02"
+						onclick="searchMaterial('nextPage','')"></button>
 				</div>
 			</div>
 		</div>
@@ -2789,13 +3074,15 @@ li {
 
 <!-- 문서 검색 레이어 start-->
 <div class="white_content" id="dialog_search">
-	<div class="modal" style="	width: 700px;margin-left:-360px;height: 550px;margin-top:-300px;">
-		<h5 style="position:relative">
+	<div class="modal"
+		style="width: 700px; margin-left: -360px; height: 550px; margin-top: -300px;">
+		<h5 style="position: relative">
 			<span class="title">개발완료보고서검색</span>
-			<div  class="top_btn_box">
+			<div class="top_btn_box">
 				<ul>
 					<li>
-						<button class="btn_madal_close" onClick="closeDialog('dialog_search')"></button>
+						<button class="btn_madal_close"
+							onClick="closeDialog('dialog_search')"></button>
 					</li>
 				</ul>
 			</div>
@@ -2805,25 +3092,35 @@ li {
 				<li>
 					<dt>제품검색</dt>
 					<dd>
-						<input type="text" value="" class="req" style="width:302px; float: left" name="searchValue" id="searchValue" placeholder="제품코드/제품명을 입력하세요."/>
-						<button class="btn_small_search ml5" onclick="fn_search()" style="float: left">조회</button>
+						<input type="text" value="" class="req"
+							style="width: 302px; float: left" name="searchValue"
+							id="searchValue" placeholder="제품코드/제품명을 입력하세요." />
+						<button class="btn_small_search ml5" onclick="fn_search()"
+							style="float: left">조회</button>
 					</dd>
 				</li>
 				<li>
 					<dt>제품구분</dt>
-					<dd >
-						<div class="selectbox" style="width:100px;" id="searchCategory1_div">  
-							<label for="searchCategory1" id="searchCategory1_label">선택</label> 
-							<select name="searchCategory1" id="searchCategory1" onChange="fn_changeCategory(this,2)">
+					<dd>
+						<div class="selectbox" style="width: 100px;"
+							id="searchCategory1_div">
+							<label for="searchCategory1" id="searchCategory1_label">선택</label>
+							<select name="searchCategory1" id="searchCategory1"
+								onChange="fn_changeCategory(this,2)">
 							</select>
 						</div>
-						<div class="selectbox lm5" style="width:100px; margin-left:5px; display:none;" id="searchCategory2_div">  
-							<label for="searchCategory2" id="searchCategory2_label">선택</label> 
-							<select name="searchCategory2" id="searchCategory2" onChange="fn_changeCategory(this,3)">
+						<div class="selectbox lm5"
+							style="width: 100px; margin-left: 5px; display: none;"
+							id="searchCategory2_div">
+							<label for="searchCategory2" id="searchCategory2_label">선택</label>
+							<select name="searchCategory2" id="searchCategory2"
+								onChange="fn_changeCategory(this,3)">
 							</select>
 						</div>
-						<div class="selectbox lm5" style="width:100px; margin-left:5px; display:none;" id="searchCategory3_div">  
-							<label for="searchCategory3" id="searchCategory3_label">선택</label> 
+						<div class="selectbox lm5"
+							style="width: 100px; margin-left: 5px; display: none;"
+							id="searchCategory3_div">
+							<label for="searchCategory3" id="searchCategory3_label">선택</label>
 							<select name="searchCategory3" id="searchCategory3">
 							</select>
 						</div>
@@ -2862,32 +3159,33 @@ li {
 
 <!-- 결재 상신 레이어  start-->
 <div class="white_content" id="approval_dialog">
-	<input type="hidden" id="docType" value="PROD"/>
- 	<input type="hidden" id="deptName" />
-	<input type="hidden" id="teamName" />
-	<input type="hidden" id="userId" />
-	<input type="hidden" id="userName"/>
- 	<select style="display:none" id=apprLine name="apprLine" multiple>
- 	</select>
- 	<select style="display:none" id=refLine name="refLine" multiple>
- 	</select>
-	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
-		<h5 style="position:relative">
+	<input type="hidden" id="docType" value="PROD" /> <input type="hidden"
+		id="deptName" /> <input type="hidden" id="teamName" /> <input
+		type="hidden" id="userId" /> <input type="hidden" id="userName" /> <select
+		style="display: none" id=apprLine name="apprLine" multiple>
+	</select> <select style="display: none" id=refLine name="refLine" multiple>
+	</select>
+	<div class="modal"
+		style="margin-left: -500px; width: 1000px; height: 550px; margin-top: -300px">
+		<h5 style="position: relative">
 			<span class="title">개발완료보고서 결재 상신</span>
-			<div  class="top_btn_box">
-				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+			<div class="top_btn_box">
+				<ul>
+					<li><button class="btn_madal_close"
+							onClick="apprClass.apprCancel(); return false;"></button></li>
+				</ul>
 			</div>
 		</h5>
 		<div class="list_detail">
 			<ul>
 				<li>
-					<dt style="width:20%">결재요청의견</dt>
-					<dd style="width:80%;">
+					<dt style="width: 20%">결재요청의견</dt>
+					<dd style="width: 80%;">
 						<div class="insert_comment">
-							<table style=" width:756px">
+							<table style="width: 756px">
 								<tr>
-									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
+									<td><textarea style="width: 100%; height: 50px"
+											placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
 									</td>
 									<td width="98px"></td>
 								</tr>
@@ -2896,45 +3194,63 @@ li {
 					</dd>
 				</li>
 				<li class="pt5">
-					<dt style="width:20%">결재자 입력</dt>
-					<dd style="width:80%;" class="ppp">
-						<input type="text" placeholder="결재자명 2자이상 입력후 선택" style="width:198px; float:left;" class="req" id="keyword" name="keyword">
-						<button class="btn_small01 ml5" onclick="apprClass.approvalAddLine(this); return false;" name="appr_add_btn" id="appr_add_btn">결재자 추가</button>
-						<button class="btn_small02  ml5" onclick="apprClass.approvalAddLine(this); return false;" name="ref_add_btn" id="ref_add_btn">참조</button>
-						<div class="selectbox ml5" style="width:180px;">
-							<label for="apprLineSelect" id="apprLineSelect_label">---- 결재라인 불러오기 ----</label>
-							<select id="apprLineSelect" name="apprLineSelect" onchange="apprClass.changeApprLine(this);">
+					<dt style="width: 20%">결재자 입력</dt>
+					<dd style="width: 80%;" class="ppp">
+						<input type="text" placeholder="결재자명 2자이상 입력후 선택"
+							style="width: 198px; float: left;" class="req" id="keyword"
+							name="keyword">
+						<button class="btn_small01 ml5"
+							onclick="apprClass.approvalAddLine(this); return false;"
+							name="appr_add_btn" id="appr_add_btn">결재자 추가</button>
+						<button class="btn_small02  ml5"
+							onclick="apprClass.approvalAddLine(this); return false;"
+							name="ref_add_btn" id="ref_add_btn">참조</button>
+						<div class="selectbox ml5" style="width: 180px;">
+							<label for="apprLineSelect" id="apprLineSelect_label">----
+								결재라인 불러오기 ----</label> <select id="apprLineSelect" name="apprLineSelect"
+								onchange="apprClass.changeApprLine(this);">
 								<option value="">---- 결재라인 불러오기 ----</option>
 							</select>
 						</div>
-						<button class="btn_small02  ml5" onclick="apprClass.deleteApprovalLine(this); return false;">선택 결재라인 삭제</button>
+						<button class="btn_small02  ml5"
+							onclick="apprClass.deleteApprovalLine(this); return false;">선택
+							결재라인 삭제</button>
 					</dd>
 				</li>
-				<li  class="mt5">
-					<dt style="width:20%; background-image:none;" ></dt>
-					<dd style="width:80%;">
-						<div class="file_box_pop2" style="height:190px;">
+				<li class="mt5">
+					<dt style="width: 20%; background-image: none;"></dt>
+					<dd style="width: 80%;">
+						<div class="file_box_pop2" style="height: 190px;">
 							<ul id="apprLineList">
 							</ul>
 						</div>
-						<div class="file_box_pop3" style="height:190px;">
+						<div class="file_box_pop3" style="height: 190px;">
 							<ul id="refLineList">
 							</ul>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->
 						<div class="app_line_edit">
-							저장 결재선라인 입력 :  <input type="text" name="apprLineName" id="apprLineName" class="req" style="width:280px;"/> 
-							<button class="btn_doc" onclick="apprClass.approvalLineSave(this);  return false;"><img src="../resources/images/icon_doc11.png"> 저장</button> 
-							<button class="btn_doc" onclick="apprClass.apprLineSaveCancel(this); return false;"><img src="../resources/images/icon_doc04.png">취소</button>
+							저장 결재선라인 입력 : <input type="text" name="apprLineName"
+								id="apprLineName" class="req" style="width: 280px;" />
+							<button class="btn_doc"
+								onclick="apprClass.approvalLineSave(this);  return false;">
+								<img src="../resources/images/icon_doc11.png"> 저장
+							</button>
+							<button class="btn_doc"
+								onclick="apprClass.apprLineSaveCancel(this); return false;">
+								<img src="../resources/images/icon_doc04.png">취소
+							</button>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼 눌렀을때 보이게 처리 close -->
 					</dd>
 				</li>
 			</ul>
 		</div>
-		<div class="btn_box_con4" style="padding:15px 0 20px 0">
-			<button class="btn_admin_red" onclick="fn_apprSubmit(); return false;">결재등록</button> 
-			<button class="btn_admin_gray" onclick="apprClass.apprCancel(); return false;">결재삭제</button>
+		<div class="btn_box_con4" style="padding: 15px 0 20px 0">
+			<button class="btn_admin_red"
+				onclick="fn_apprSubmit(); return false;">결재등록</button>
+			<button class="btn_admin_gray"
+				onclick="apprClass.apprCancel(); return false;">결재삭제</button>
 		</div>
 	</div>
 </div>
@@ -2942,24 +3258,28 @@ li {
 
 <!-- 브랜드 선택 레이어 open -->
 <div class="white_content" id="dialog_brand" style="display: none;">
-	<input id="targetID" type="hidden">
-	<input id="itemType" type="hidden">
-	<input id="searchType" type="hidden">
-	<div class="modal" style="width: 700px; margin-left: -400px; height: 650px; margin-top: -300px;">
-		<h5 style="position:relative">
+	<input id="targetID" type="hidden"> <input id="itemType"
+		type="hidden"> <input id="searchType" type="hidden">
+	<div class="modal"
+		style="width: 700px; margin-left: -400px; height: 650px; margin-top: -300px;">
+		<h5 style="position: relative">
 			<span class="title">브랜드 선택</span>
 			<div class="top_btn_box">
 				<ul>
-					<li><button class="btn_madal_close" onclick="closeDialog('dialog_brand')"></button></li>
+					<li><button class="btn_madal_close"
+							onclick="closeDialog('dialog_brand')"></button></li>
 				</ul>
 			</div>
 		</h5>
-		<div style="width:100%; text-align:center;">
-			<input id="searchBandValue" type="text" class="code_input" onkeyup="bindBrandDialogEnter(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
-			<img src="/resources/images/icon_code_search.png" onclick="searchBrand()"/>
+		<div style="width: 100%; text-align: center;">
+			<input id="searchBandValue" type="text" class="code_input"
+				onkeyup="bindBrandDialogEnter(event)" style="width: 300px;"
+				placeholder="일부단어로 검색가능"> <img
+				src="/resources/images/icon_code_search.png" onclick="searchBrand()" />
 		</div>
 		<div class="code_box2">
-			(<strong> <span id="brandCount">0</span> </strong>)건
+			(<strong> <span id="brandCount">0</span>
+			</strong>)건
 		</div>
 		<div class="main_tbl" style="height: 400px; overflow-y: auto;">
 			<table class="tbl02">
@@ -2970,13 +3290,13 @@ li {
 				</colgroup>
 				<thead>
 					<tr>
-						<th></th>	
+						<th></th>
 						<th>브랜드 코드</th>
 						<th>브랜드 명</th>
 					</tr>
 				</thead>
 				<tbody id="brandLayerBody">
-					<input type="hidden" id="brandLayerPage" value="0"/>
+					<input type="hidden" id="brandLayerPage" value="0" />
 					<Tr>
 						<td colspan="10">브랜드코드 혹은 브랜드명을 검색해주세요</td>
 					</Tr>
@@ -2984,11 +3304,65 @@ li {
 			</table>
 		</div>
 		<div style="margin-top: 40px;">
-		    <!-- ✅ 선택 완료 버튼 추가 -->
-		    <div style="text-align: center;">
-		      <button class="btn_large_search" onclick="chooseBrandMulti()">선택 완료</button>
-		    </div>
+			<!-- ✅ 선택 완료 버튼 추가 -->
+			<div style="text-align: center;">
+				<button class="btn_large_search" onclick="chooseBrandMulti()">선택
+					완료</button>
+			</div>
 		</div>
 	</div>
 </div>
 <!-- 브랜드 선택 레이어 close -->
+<!-- 공동 참여자 팝업 start -->
+<div class="white_content" id="sharedUserDialog">
+	<input type="hidden" id="sharedUserId" /> <input type="hidden"
+		id="sharedUserName" /> <input type="hidden" id="sharedUserDept" /> <input
+		type="hidden" id="sharedUserTeam" />
+
+	<div class="modal"
+		style="margin-left: -400px; width: 800px; height: 450px; margin-top: -250px">
+		<h5 style="position: relative">
+			<span class="title">공동 참여자 선택</span>
+			<div class="top_btn_box">
+				<ul>
+					<li>
+						<button class="btn_madal_close"
+							onClick="userSearchClass.close(); return false;"></button>
+					</li>
+				</ul>
+			</div>
+		</h5>
+		<div class="list_detail">
+			<ul>
+				<!-- 사용자 검색 라인 -->
+				<li>
+					<dt style="width: 20%">사용자 검색</dt>
+					<dd
+						style="width: 80%; display: flex; justify-content: flex; align-items: center;">
+						<input type="text" id="sharedUserKeyword"
+							placeholder="이름 2자 이상 입력"
+							style="width: 200px; margin-right: 5px;">
+						<button class="btn_small01" onclick="sharedUserClass.add()">추가</button>
+					</dd>
+				</li>
+
+				<!-- 선택된 사용자 라인 -->
+				<li class="mt5">
+					<dt style="width: 20%">선택된 사용자</dt>
+					<dd style="width: 80%;">
+						<div class="file_box_pop2" style="height: 180px;">
+							<ul id="sharedUserList" style="margin-top: 10px;"></ul>
+						</div>
+					</dd>
+				</li>
+			</ul>
+		</div>
+		<div class="btn_box_con4" style="padding: 15px 0 20px 0">
+			<button class="btn_admin_red"
+				onclick="userSearchClass.submit(); return false;">확인</button>
+			<button class="btn_admin_gray"
+				onclick="userSearchClass.close(); return false;">취소</button>
+		</div>
+	</div>
+</div>
+<!-- 공동 참여자 팝업 close -->

@@ -833,4 +833,38 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'					
 	</select>
+	
+	<insert id="insertSharedUser" parameterType="list">
+		INSERT
+		INTO lab_doc_shared_user(
+			USER_ID
+			, DOC_TYPE
+			, DOC_IDX
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( #{item.userId}, #{item.docType}, #{item.docIdx} )
+		</foreach>
+	</insert>
+	
+	<delete id="deleteSharedUser" parameterType="map">
+		DELETE
+		FROM lab_doc_shared_user
+		WHERE 1 = 1
+			AND DOC_TYPE = 'MENU'
+			AND DOC_IDX = #{menuIdx}
+	</delete>
+	
+	<select id="selectSharedUser" parameterType="map" resultType="hashmap">
+		SELECT
+			su.USER_ID,
+			lu.USER_NAME,
+			su.DOC_IDX,
+			su.DOC_TYPE
+		FROM 
+			lab_doc_shared_user su
+			LEFT JOIN lab_user lu ON su.USER_ID = lu.USER_ID
+		WHERE 
+			su.DOC_IDX = #{idx}
+			AND su.DOC_TYPE = #{docType}
+	</select>
 </mapper>

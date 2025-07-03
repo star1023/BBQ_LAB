@@ -22,6 +22,8 @@ li {
 
 <link href="../resources/css/tree.css" rel="stylesheet" type="text/css" />
 <script type="text/javascript" src="../resources/js/jstree.js"></script>
+<script type="text/javascript" src="../resources/js/appr/apprClass.js?v=<%= System.currentTimeMillis()%>"></script>
+<script type="text/javascript" src="../resources/js/user/userSearchClass.js?v=<%= System.currentTimeMillis()%>"></script>
 <script type="text/javascript">
 var selectedArr = new Array();
 	$(document).ready(function(){
@@ -48,6 +50,9 @@ var selectedArr = new Array();
 			showAnim: ""
 		});
 		
+		fn.autoComplete($("#keyword"));
+		fn2.autoComplete($("#sharedUserKeyword"));
+		
 		document.querySelectorAll('.brand-token').forEach(token => {
 		    token.addEventListener('click', function (e) {
 		        if (e.target.textContent === '✕') {
@@ -56,6 +61,14 @@ var selectedArr = new Array();
 		        }
 		    });
 		});
+		
+		const sharedUsers = [
+	        <c:forEach var="user" items="${sharedUserList}" varStatus="status">
+	            { userId: "${user.USER_ID}", userName: "${user.USER_NAME}" }<c:if test="${!status.last}">,</c:if>
+	        </c:forEach>
+	    ];
+
+	    userSearchClass.renderTokenList(sharedUsers);
 	});
 	
 	let _brandFullList = []; // 전체 브랜드 저장용 전역변수
@@ -329,7 +342,7 @@ var selectedArr = new Array();
 		}
 		
 		if( $('input:checkbox[name=docType]:checked').length == 0 ) {
-			alert("첨부파일 유형을 선택해주세요.");
+			alert(" 유형을 선택해주세요.");
 			return;
 		}
 		
@@ -817,6 +830,8 @@ var selectedArr = new Array();
 				formData.append("customUsage", customUsage.trim()); // USC
 			}
 			
+			formData.append("sharedUserArr", JSON.stringify($('#sharedUserIds').val().split(','))); // ✅ 추가
+			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
 			var newItemSupplierArr = new Array();
@@ -1179,6 +1194,8 @@ var selectedArr = new Array();
 			if (customUsage) {
 				formData.append("customUsage", customUsage.trim()); // USC
 			}
+			
+			formData.append("sharedUserArr", JSON.stringify($('#sharedUserIds').val().split(','))); // ✅ 추가
 			
 			var newItemNameArr = new Array();
 			var newItemStandardArr = new Array();
@@ -1642,21 +1659,253 @@ var selectedArr = new Array();
 	    const codes = [...tokens].map(t => t.getAttribute("data-code"));
 	    document.getElementById("brandCodeValues_" + idx).value = codes.join(',');
 	}
+	
+	function updateHiddenBrandCodes(idx) {
+	    const tokenBox = document.getElementById('brandTokenBox_' + idx);
+	    const hiddenInput = document.getElementById('brandCodeValues_' + idx);
 
+	    const codes = [];
+	    tokenBox.querySelectorAll('.brand-token').forEach(token => {
+	        const code = token.dataset.code;
+	        if (code) codes.push(code);
+	    });
+
+	    hiddenInput.value = codes.join(',');
+	}
 // ---------------------------------------------- BRAND POPUP -------------------------------------------
 
-function updateHiddenBrandCodes(idx) {
-    const tokenBox = document.getElementById('brandTokenBox_' + idx);
-    const hiddenInput = document.getElementById('brandCodeValues_' + idx);
+	function fn_previewDataBinding(popup) {
+	    const $doc = popup.document;
 
-    const codes = [];
-    tokenBox.querySelectorAll('.brand-token').forEach(token => {
-        const code = token.dataset.code;
-        if (code) codes.push(code);
-    });
+	    // 기본 항목
+	    $doc.getElementById("prev_title").innerText = document.getElementById("title").value;
+	    $doc.getElementById("prev_menuName").innerText = document.getElementById("menuName").value;
+	    
+	 	// 공동 참여자 바인딩
+	    $doc.getElementById("prev_sharedUser").innerText = document.getElementById("sharedUserNames").value.replaceAll(',',', ');
+	    
+	    var version = '${menuData.data.VERSION_NO}';
+	    if (version === '1') {
+	    	togglePreviewRows('1', $doc);  // ← tr 표시 제어
+	    	// 개발 목적
+	    	let purposeHTML = "";
+	    	document.querySelectorAll('tr[id^=purpose_tr]').forEach(function (row) {
+	    		const val = row.querySelector('input[name=purpose]')?.value || "";
+	    		if (val.trim()) purposeHTML += val + "<br/>";
+	    	});
+	    	$doc.getElementById("prev_purpose").innerHTML = purposeHTML;
 
-    hiddenInput.value = codes.join(',');
-}
+	    	// 제품 특징
+	    	let featureHTML = "";
+	    	document.querySelectorAll('tr[id^=feature_tr]').forEach(function (row) {
+	    		const val = row.querySelector('input[name=feature]')?.value || "";
+	    		if (val.trim()) featureHTML += val + "<br/>";
+	    	});
+	    	$doc.getElementById("prev_feature").innerHTML = featureHTML;
+	    } else {
+	    	togglePreviewRows('2', $doc);  // ← tr 표시 제어
+
+	    	// 개선 목적
+	    	let improvePurHTML = "";
+	    	const improvePurRows = document.querySelectorAll('tr[id^=improve_pur_tr]');
+	    	improvePurRows.forEach(function (row) {
+	    		const improveVal = row.querySelector('input[name=itemImprove]')?.value.trim();
+	    		const existVal = row.querySelector('input[name=itemExist]')?.value.trim();
+	    		const noteVal = row.querySelector('input[name=itemNote]')?.value.trim();
+
+	    		if (improveVal || existVal || noteVal) {
+	    			improvePurHTML += "<tr>";
+	    			improvePurHTML += "<td>" + (improveVal || "") + "</td>";
+	    			improvePurHTML += "<td>" + (existVal || "") + "</td>";
+	    			improvePurHTML += "<td>" + (noteVal || "") + "</td>";
+	    			improvePurHTML += "</tr>";
+	    		}
+	    	});
+
+	    	const improveWrapper = $doc.getElementById("wrapper_prev_improve_pur");
+	    	const improveTarget = $doc.getElementById("prev_improve_pur");
+
+	    	if (improvePurHTML) {
+	    		improveTarget.innerHTML = improvePurHTML;
+	    		if (improveWrapper) improveWrapper.style.display = "block";
+	    	} else {
+	    		if (improveWrapper) improveWrapper.style.display = "none";
+	    	}
+
+	    	// 개선 항목
+	    	let improveHTML = "";
+	    	document.querySelectorAll('tr[id^=improve_tr]').forEach(function (row) {
+	    		const val = row.querySelector('input[name=improve]')?.value || "";
+	    		if (val.trim()) improveHTML += val + "<br/>";
+	    	});
+	    	$doc.getElementById("prev_improve").innerHTML = improveHTML;
+	    }
+
+	    // 브랜드
+	    var brandTexts = [];
+	    document.querySelectorAll("#brandTokenBox_1 .brand-token").forEach(function (el) {
+	        const cloned = el.cloneNode(true); // ✕ 버튼 포함 전체 복사
+	        const xBtn = cloned.querySelector("span"); // ✕ 버튼 제거
+	        if (xBtn) xBtn.remove();
+	        const brandName = cloned.textContent.trim();
+	        if (brandName) brandTexts.push(brandName);
+	    });
+	    $doc.getElementById("prev_brand").innerText = brandTexts.join(", ");
+
+	    // 용도
+	    $doc.getElementById("prev_usage").innerText = document.getElementById("customUsage_1").value;
+
+	    // 신규도입품
+	    var newHTML = "";
+	    document.querySelectorAll('tr[id^=new_tr]').forEach(function (row) {
+	        var itemName = row.querySelector('input[name=itemName]')?.value || "";
+	        var itemStandard = row.querySelector('input[name=itemStandard]')?.value || "";
+	        var itemSupplier = row.querySelector('input[name=itemSupplier]')?.value || "";
+	        var itemKeepExp = row.querySelector('input[name=itemKeepExp]')?.value || "";
+	        var itemNote = row.querySelector('input[name=itemNote]')?.value || "";
+
+	        if (itemName || itemStandard || itemSupplier || itemKeepExp || itemNote) {
+	            newHTML += "<tr><td>" + itemName + "</td><td>" + itemStandard + "</td><td>" + itemSupplier + "</td><td>" + itemKeepExp + "</td><td>" + itemNote + "</td></tr>";
+	        }
+	    });
+
+	    var newWrap = $doc.getElementById("wrapper_prev_new");
+	    if (newHTML.trim()) {
+	        $doc.getElementById("prev_new").innerHTML = newHTML;
+	        if (newWrap) newWrap.style.display = "block";
+	    } else {
+	        if (newWrap) newWrap.style.display = "none";
+	    }
+	    
+	 	// 추정원가
+	    var newHTML = "";
+	    document.querySelectorAll('tr[id^=new1_tr]').forEach(function (row) {
+	        var itemName = row.querySelector('input[name=itemName]')?.value || "";
+	        var itemStandard = row.querySelector('input[name=itemStandard]')?.value || "";
+	        var itemSupplier = row.querySelector('input[name=itemSupplier]')?.value || "";
+	        var itemKeepExp = row.querySelector('input[name=itemKeepExp]')?.value || "";
+	        var itemNote = row.querySelector('input[name=itemNote]')?.value || "";
+
+	        if (itemName || itemStandard || itemSupplier || itemKeepExp || itemNote) {
+	            newHTML += "<tr><td>" + itemName + "</td><td>" + itemStandard + "</td><td>" + itemSupplier + "</td><td>" + itemKeepExp + "</td><td>" + itemNote + "</td></tr>";
+	        }
+	    });
+	    var newWrap = $doc.getElementById("wrapper_prev_new1");
+	    if (newHTML.trim()) {
+	        $doc.getElementById("prev_new1").innerHTML = newHTML;
+	        if (newWrap) newWrap.style.display = "block";
+	    } else {
+	        if (newWrap) newWrap.style.display = "none";
+	    }
+	    
+	    // 도입 예정일, 제품코드, SAP 코드
+	    $doc.getElementById("prev_scheduleDate").innerText = document.getElementById("scheduleDate").value;
+	    $doc.getElementById("prev_productCode").innerText = document.getElementById("productCode").value;
+	    $doc.getElementById("prev_sapCode").innerText = document.getElementById("productSapCode").value;
+
+	    // 버전, 중량, 규격, 보관조건, 소비기한
+	    $doc.getElementById("prev_version").innerText = version;
+
+	    // 제품유형
+	    $doc.getElementById("prev_menuType").innerText = document.getElementById("selectTxtFull").value;
+
+	    // 신규 원료
+	    var newMatHTML = "";
+	    var newMatRows = document.querySelectorAll('tr[id^=newMatRow]');
+	    if (document.querySelector('input[name=newMat]:checked')?.value === 'Y' && newMatRows.length > 0) {
+	        newMatRows.forEach(function (row) {
+	            var getVal = function (name) {
+	                return row.querySelector('input[name=' + name + ']')?.value || "";
+	            };
+	            if (
+	                getVal("itemMatCode") || getVal("itemSapCode") || getVal("itemName") ||
+	                getVal("itemStandard") || getVal("itemKeepExp") || getVal("itemUnitPrice") || getVal("itemDesc")
+	            ) {
+	                newMatHTML += "<tr>";
+	                newMatHTML += "<td>" + getVal("itemMatCode") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemSapCode") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemName") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemStandard") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemKeepExp") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemUnitPrice") + "</td>";
+	                newMatHTML += "<td>" + getVal("itemDesc") + "</td>";
+	                newMatHTML += "</tr>";
+	            }
+	        });
+	    }
+
+	    var newMatWrap = $doc.getElementById("wrapper_prev_newMat");
+	    if (newMatHTML.trim()) {
+	        $doc.getElementById("prev_newMat").innerHTML = newMatHTML;
+	        if (newMatWrap) newMatWrap.style.display = "block";
+	    } else {
+	        if (newMatWrap) newMatWrap.style.display = "none";
+	    }
+
+	    // 기존 원료
+	    var matHTML = "";
+	    var matRows = document.querySelectorAll('tr[id^=matRow]');
+	    matRows.forEach(function (row) {
+	        var getVal = function (name) {
+	            return row.querySelector('input[name=' + name + ']')?.value || "";
+	        };
+	        if (getVal("itemSapCode")) {
+	            matHTML += "<tr>";
+	            matHTML += "<td>" + getVal("itemMatCode") + "</td>";
+	            matHTML += "<td>" + getVal("itemSapCode") + "</td>";
+	            matHTML += "<td>" + getVal("itemName") + "</td>";
+	            matHTML += "<td>" + getVal("itemStandard") + "</td>";
+	            matHTML += "<td>" + getVal("itemKeepExp") + "</td>";
+	            matHTML += "<td>" + getVal("itemUnitPrice") + "</td>";
+	            matHTML += "<td>" + getVal("itemDesc") + "</td>";
+	            matHTML += "</tr>";
+	        }
+	    });
+
+	    var matWrap = $doc.getElementById("wrapper_prev_newMat1");
+	    if (matHTML.trim()) {
+	        $doc.getElementById("prev_newMat1").innerHTML = matHTML;
+	        if (matWrap) matWrap.style.display = "block";
+	    } else {
+	        if (matWrap) matWrap.style.display = "none";
+	    }
+
+	 	// 🔹 비고 (내용)
+	    var contents = editor.getData().trim();
+	    var contentTarget = $doc.getElementById("prev_content");
+	    var contentWrapper = $doc.getElementById("wrapper_prev_content");
+
+	    if (contents) {
+	        contentTarget.innerHTML = contents;
+	        if (contentWrapper) contentWrapper.style.display = "block";
+	    } else {
+	        if (contentWrapper) contentWrapper.style.display = "none";
+	    }
+	}
+
+	function fn_openPreview() {
+		var url = "/preview/menuUpdatePopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
+	
+	function togglePreviewRows(version, $doc) {
+		const isVersion1 = (version === '1');
+
+		$doc.querySelectorAll(".tr_prev_version1").forEach(row => {
+			row.style.display = isVersion1 ? "table-row" : "none";
+		});
+		$doc.querySelectorAll(".tr_prev_version2").forEach(row => {
+			row.style.display = isVersion1 ? "none" : "table-row";
+		});
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -1678,11 +1927,17 @@ function updateHiddenBrandCodes(idx) {
 		<div class="group01 mt20">
 			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
 			<div class="tab02">
-				<ul>
+				<ul style="display: flex; justify-content: space-between;">
 					<!-- 선택됬을경우는 탭 클래스에 select를 넣어주세요 -->
-					<!-- 내 메뉴설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
-					<a href="#" onClick="tabChange('tab1')"><li  class="select" id="tab1_li">기안내용</li></a>
-					<a href="#" onClick="tabChange('tab2')"><li class="" id="tab2_li">완료보고서상세정보</li></a>
+					<!-- 내 제품설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
+					<div>
+						<a href="#" onClick="tabChange('tab1')"><li class="select"
+							id="tab1_li">기안내용</li></a> <a href="#" onClick="tabChange('tab2')"><li
+							class="" id="tab2_li">완료보고서상세정보</li></a>
+					</div>
+					<div>
+						<button class="btn_small_search ml5" onclick="fn_openPreview()">미리보기</button>
+					</div>
 				</ul>
 			</div>
 			
@@ -2254,7 +2509,7 @@ function updateHiddenBrandCodes(idx) {
 				</div>
 				<div class="con_file" style="">
 					<ul>
-						<li class="point_img">
+						<li class="point_img"  style="display:flex;">
 							<dt>첨부파일</dt><dd>
 								<ul id="temp_attatch_file">
 									<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
@@ -2306,6 +2561,22 @@ function updateHiddenBrandCodes(idx) {
 									<input type="text" style="width:200px; float: left" name="menuSapCode" id="menuSapCode" value="${menuData.data.SAP_CODE}" readonly/>
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								</td>
+							</tr>
+							<tr>
+							    <th style="border-left: none;">공동 참여자</th>
+							    <td colspan="3">
+							        <div id="sharedUserTokens" style="width: 450px; float: left; min-height: 24px; border: 1px solid #ccc; padding: 5px;"></div>
+							
+							        <!-- 숨겨진 input에 ID, 이름 저장 -->
+							        <input type="hidden" id="sharedUserIds" name="sharedUserIds" />
+									<input type="hidden" id="sharedUserNames" name="sharedUserNames" />
+									<input type="hidden" id="sharedUserDepts" name="sharedUserDepts" />
+									<input type="hidden" id="sharedUserTeams" name="sharedUserTeams" />
+							
+							        <!-- 버튼 -->
+							        <button class="btn_small_search ml5" style="float:left" onclick="userSearchClass.openSharedUserPopup(); return false;">조회</button>
+							        <button class="btn_small_search ml5" onclick="userSearchClass.clearTokens(); return false;">초기화</button>
+							    </td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">버젼 NO.</th>
@@ -2944,3 +3215,129 @@ function updateHiddenBrandCodes(idx) {
 	</div>
 </div>
 <!-- 브랜드 선택 레이어 close -->
+<!-- 결재 상신 레이어  start-->
+<div class="white_content" id="approval_dialog">
+	<input type="hidden" id="docType" value="PROD"/>
+ 	<input type="hidden" id="deptName" />
+	<input type="hidden" id="teamName" />
+	<input type="hidden" id="userId" />
+	<input type="hidden" id="userName"/>
+ 	<select style="display:none" id=apprLine name="apprLine" multiple>
+ 	</select>
+ 	<select style="display:none" id=refLine name="refLine" multiple>
+ 	</select>
+	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
+		<h5 style="position:relative">
+			<span class="title">개발완료보고서 결재 상신</span>
+			<div  class="top_btn_box">
+				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+			</div>
+		</h5>
+		<div class="list_detail">
+			<ul>
+				<li>
+					<dt style="width:20%">결재요청의견</dt>
+					<dd style="width:80%;">
+						<div class="insert_comment">
+							<table style=" width:756px">
+								<tr>
+									<td>
+										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
+									</td>
+									<td width="98px"></td>
+								</tr>
+							</table>
+						</div>
+					</dd>
+				</li>
+				<li class="pt5">
+					<dt style="width:20%">결재자 입력</dt>
+					<dd style="width:80%;" class="ppp">
+						<input type="text" placeholder="결재자명 2자이상 입력후 선택" style="width:198px; float:left;" class="req" id="keyword" name="keyword">
+						<button class="btn_small01 ml5" onclick="apprClass.approvalAddLine(this); return false;" name="appr_add_btn" id="appr_add_btn">결재자 추가</button>
+						<button class="btn_small02  ml5" onclick="apprClass.approvalAddLine(this); return false;" name="ref_add_btn" id="ref_add_btn">참조</button>
+						<div class="selectbox ml5" style="width:180px;">
+							<label for="apprLineSelect" id="apprLineSelect_label">---- 결재라인 불러오기 ----</label>
+							<select id="apprLineSelect" name="apprLineSelect" onchange="apprClass.changeApprLine(this);">
+								<option value="">---- 결재라인 불러오기 ----</option>
+							</select>
+						</div>
+						<button class="btn_small02  ml5" onclick="apprClass.deleteApprovalLine(this); return false;">선택 결재라인 삭제</button>
+					</dd>
+				</li>
+				<li  class="mt5">
+					<dt style="width:20%; background-image:none;" ></dt>
+					<dd style="width:80%;">
+						<div class="file_box_pop2" style="height:190px;">
+							<ul id="apprLineList">
+							</ul>
+						</div>
+						<div class="file_box_pop3" style="height:190px;">
+							<ul id="refLineList">
+							</ul>
+						</div>
+						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->
+						<div class="app_line_edit">
+							저장 결재선라인 입력 :  <input type="text" name="apprLineName" id="apprLineName" class="req" style="width:280px;"/> 
+							<button class="btn_doc" onclick="apprClass.approvalLineSave(this);  return false;"><img src="../resources/images/icon_doc11.png"> 저장</button> 
+							<button class="btn_doc" onclick="apprClass.apprLineSaveCancel(this); return false;"><img src="../resources/images/icon_doc04.png">취소</button>
+						</div>
+						<!-- 현재 추가된 결재선 저장 버튼 눌렀을때 보이게 처리 close -->
+					</dd>
+				</li>
+			</ul>
+		</div>
+		<div class="btn_box_con4" style="padding:15px 0 20px 0">
+			<button class="btn_admin_red" onclick="fn_apprSubmit(); return false;">결재등록</button> 
+			<button class="btn_admin_gray" onclick="apprClass.apprCancel(); return false;">결재삭제</button>
+		</div>
+	</div>
+</div>
+<!-- 결재 상신 레이어  close-->
+<!-- 공동 참여자 팝업 start -->
+<div class="white_content" id="sharedUserDialog">
+    <input type="hidden" id="sharedUserId" />
+	<input type="hidden" id="sharedUserName" />
+	<input type="hidden" id="sharedUserDept" />
+	<input type="hidden" id="sharedUserTeam" />
+
+    <div class="modal" style="margin-left:-400px;width:800px;height: 450px;margin-top:-250px">
+        <h5 style="position:relative">
+            <span class="title">공동 참여자 선택</span>
+            <div class="top_btn_box">
+                <ul>
+                    <li>
+                        <button class="btn_madal_close" onClick="userSearchClass.close(); return false;"></button>
+                    </li>
+                </ul>
+            </div>
+        </h5>
+        <div class="list_detail">
+            <ul>
+                <!-- 사용자 검색 라인 -->
+				<li>
+				    <dt style="width:20%">사용자 검색</dt>
+				    <dd style="width:80%; display: flex; justify-content: flex; align-items: center;">
+				        <input type="text" id="sharedUserKeyword" placeholder="이름 2자 이상 입력" style="width:200px; margin-right: 5px;">
+				        <button class="btn_small01" onclick="sharedUserClass.add()">추가</button>
+				    </dd>
+				</li>
+				
+				<!-- 선택된 사용자 라인 -->
+				<li class="mt5">
+				    <dt style="width:20%">선택된 사용자</dt>
+				    <dd style="width:80%;">
+				        <div class="file_box_pop2" style="height:180px;">
+				            <ul id="sharedUserList" style="margin-top:10px;"></ul>
+				        </div>
+				    </dd>
+				</li>
+            </ul>
+        </div>
+        <div class="btn_box_con4" style="padding:15px 0 20px 0">
+            <button class="btn_admin_red" onclick="userSearchClass.submit(); return false;">확인</button>
+            <button class="btn_admin_gray" onclick="userSearchClass.close(); return false;">취소</button>
+        </div>
+    </div>
+</div>
+<!-- 공동 참여자 팝업 close -->

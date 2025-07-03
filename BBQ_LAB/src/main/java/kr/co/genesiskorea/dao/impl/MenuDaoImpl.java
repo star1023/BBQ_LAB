@@ -232,4 +232,21 @@ public class MenuDaoImpl implements MenuDao {
 		return sqlSessionTemplate.selectOne("menu.selectMyDataCount", param);
 	}
 
+	@Override
+	public void insertSharedUser(ArrayList<HashMap<String, Object>> sharedUserList) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("menu.insertSharedUser", sharedUserList);
+	}
+	
+	@Override
+	public void deleteSharedUser(HashMap<String, Object> map) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.delete("menu.deleteSharedUser", map);
+	}
+	
+	@Override
+	public List<Map<String, String>> selectSharedUser(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("menu.selectSharedUser", param);
+	}
 }
