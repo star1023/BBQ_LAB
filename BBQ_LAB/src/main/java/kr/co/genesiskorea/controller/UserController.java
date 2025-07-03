@@ -29,7 +29,6 @@ import kr.co.genesiskorea.util.SecurityUtil;
 import kr.co.genesiskorea.util.StringUtil;
 
 @Controller
-@RequestMapping("/user")
 public class UserController {
 	private Logger logger = LogManager.getLogger(UserController.class);
 	
@@ -42,16 +41,21 @@ public class UserController {
 	@Autowired
 	private CommonService commonService;
 	
-	@RequestMapping(value = "/login", method = RequestMethod.GET)
+	@RequestMapping(value = {"","/", "/login" }, method = RequestMethod.GET)
 	public String login(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+		return "redirect:/user/login";
+	}
+	
+	@RequestMapping(value = "/user/login", method = RequestMethod.GET)
+	public String userLogin(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		logger.debug("로그인");
 		if (AuthUtil.hasAuth(request)) {
 			return "redirect:/main/main";
 		}
-		return "/user/login";
+		return "user/login";
 	}
 	
-	@RequestMapping(value = "/loginProcAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/loginProcAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> loginProc(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
 		logger.info("id: {}, autoLogin: {}", param.get("userId"));
@@ -109,13 +113,13 @@ public class UserController {
 		return resultMap;
 	}
 	
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	@RequestMapping(value = "/user/logout", method = RequestMethod.GET)
 	public String logout(HttpServletRequest request, HttpServletResponse response) throws Exception {
 		userService.logout(request);
 		return "/user/logout";
 	}
 	
-	@RequestMapping(value="/userList")
+	@RequestMapping(value="/user/userList")
 	public String manageUserList(Model model, HttpServletRequest request) throws Exception{
 		try {
 			HashMap<String,String> param = new HashMap<String,String>();
@@ -136,7 +140,7 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/userListAjax")
+	@RequestMapping(value="/user/userListAjax")
 	public Map<String, Object> userList(Model model, @RequestParam Map<String, Object> param ) {
 		 Map<String, Object> resultMap = new HashMap<String, Object>();
 		try{
@@ -157,7 +161,7 @@ public class UserController {
 	 * @return
 	 */
 	@ResponseBody
-	@RequestMapping(value="/checkId", method = RequestMethod.POST)
+	@RequestMapping(value="/user/checkId", method = RequestMethod.POST)
 	public Map<String, Object> checkId(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="userId") String userId ){
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try{
@@ -175,7 +179,7 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/inserUserAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/inserUserAjax", method = RequestMethod.POST)
 	public Map<String, Object> inserUser(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param){
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try{
@@ -196,14 +200,14 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/selectUserAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/selectUserAjax", method = RequestMethod.POST)
 	public Map<String, Object> selectUser(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="userId") String userId){
 		Map<String, Object> resultMap = userService.selectUserData(userId);
 		return resultMap;
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/updateUserAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/updateUserAjax", method = RequestMethod.POST)
 	public Map<String, Object> updateUser(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param){
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try{
@@ -224,7 +228,7 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/deleteUserAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/deleteUserAjax", method = RequestMethod.POST)
 	public Map<String, Object> deleteUser(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="userId") String userId){
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try{
@@ -245,7 +249,7 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/restoreUserAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/restoreUserAjax", method = RequestMethod.POST)
 	public Map<String, Object> restoreUser(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="userId") String userId){
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try{
@@ -266,7 +270,7 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value = "/unlockUserAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/unlockUserAjax", method = RequestMethod.POST)
 	public Map<String, Object> unlockUser(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="userId") String userId){
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		try{
@@ -287,7 +291,7 @@ public class UserController {
 	}
 	
 	@ResponseBody
-	@RequestMapping(value="/setPersonalizationAjax")
+	@RequestMapping(value="/user/setPersonalizationAjax")
 	public Map<String, Object> setPersonalization(@RequestParam Map<String, Object> param, HttpServletRequest request, HttpServletResponse response ,Model model ) {
 		 Map<String, Object> map = new HashMap<String, Object>();
 		try{
@@ -315,14 +319,14 @@ public class UserController {
 		return map;
 	}
 	
-	@RequestMapping(value = "/pwdInit", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/pwdInit", method = RequestMethod.POST)
 	public String pwdInit(HttpServletRequest request, HttpServletResponse response, @RequestParam(value="userIdTemp") String userIdTemp, Model model) throws Exception {
 		logger.debug("비밀번호 초기화");
 		model.addAttribute("userId", userIdTemp);
 		return "/user/pwdInit";
 	}
 	
-	@RequestMapping(value = "/pwdCheckAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/pwdCheckAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> pwdCheckAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
 		HashMap<String,Object> resultMap = new HashMap<String,Object>();
@@ -359,7 +363,7 @@ public class UserController {
 		return resultMap;
 	}
 	
-	@RequestMapping(value = "/pwdUpdateAjax", method = RequestMethod.POST)
+	@RequestMapping(value = "/user/pwdUpdateAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,Object> pwdUpdateAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
 		HashMap<String,Object> resultMap = new HashMap<String,Object>();

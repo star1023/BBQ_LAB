@@ -51,7 +51,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		
 		List<String> exceptUriList = new ArrayList<String>();
 		exceptUriList.add("Ajax");
+		exceptUriList.add("/");
 		exceptUriList.add("/user/login");
+		exceptUriList.add("/login");
 		exceptUriList.add("/user/logout");
 		exceptUriList.add("/user/pwdInit");
 		exceptUriList.add("/ssoLogin");
