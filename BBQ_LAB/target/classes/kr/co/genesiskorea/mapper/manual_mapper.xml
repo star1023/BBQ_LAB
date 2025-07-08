@@ -60,7 +60,6 @@
 						MANUAL manaual
 					WHERE 1 = 1
 						AND manaual.IS_DELETE = 'N'
-						AND manaual.IS_LAST = 'Y'
 					)tmp
 				WHERE rnum between #{startRow} AND #{endRow}
 			)

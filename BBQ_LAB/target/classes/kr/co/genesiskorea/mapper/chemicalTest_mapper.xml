@@ -165,11 +165,38 @@
 				, IS_DELETE
 				, STATUS
 				, REG_USER
+				, TEST_STATUS
+				, TEST_MANAGER
+				, TEST_COMPLETION_DATE
+				, TEST_RESULT
 			FROM 	
 				lab_chemical_test
 			WHERE 1 = 1
 				AND REG_USER = #{userId}
 				AND IS_DELETE = 'N'
+				
+				<!-- 일반 사용자 - 의뢰문서 -->
+				<!-- <if test="isSafeTeam != null and !isSafeTeam.equals('S') and listType == 'R'">
+				    AND NOT (STATUS = 'COMP' AND TEST_STATUS = 'C')
+				</if> -->
+				
+				<!-- 일반 사용자 - 결과문서 -->
+				<!-- <if test="isSafeTeam != null and !isSafeTeam.equals('S') and listType == 'C'">
+				    AND STATUS = 'COMP'
+				    AND TEST_STATUS = 'C'
+				</if> -->
+				
+				<!-- 안전팀 사용자 - 의뢰문서 -->
+				<!-- <if test="isSafeTeam != null and isSafeTeam.equals('S') and listType == 'R'">
+				    AND STATUS = 'COMP'
+				    AND TEST_STATUS = 'R'
+				</if> -->
+				
+				<!-- 안전팀 사용자 - 결과문서 -->
+				<!-- <if test="isSafeTeam != null and isSafeTeam.equals('S') and listType == 'C'">
+				    AND STATUS = 'COMP'
+				    AND TEST_STATUS = 'C'
+				</if> -->
 				<include refid="chemicalTest.whereChemicalTestList" />
 		)tmp
 		WHERE rnum between #{startRow} and #{endRow}		
