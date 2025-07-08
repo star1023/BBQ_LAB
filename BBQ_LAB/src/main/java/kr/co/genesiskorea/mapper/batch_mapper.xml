@@ -115,13 +115,16 @@
 	<select id="selectHrOrgMaster" resultType="hashmap">
     	/* batch.selectHrOrgMaster */
     	SELECT
-    		OBJTID
+    		COMPCD
+    		, OBJTID
 			, OBJTTX
 			, TOBJID
 			, SEQUEN
 			, PRIORT
 			, CSTCNT
 			, BUKRS
+			, LEVLCD
+			, LEVLTX
     	FROM
     		V_HR1010
     	WHERE 1 = 1		
@@ -130,13 +133,17 @@
      <select id="selectHrUserMaster" resultType="hashmap">
     	/* batch.selectHrUserMaster */
     	SELECT
-    		EMPNUM
+    		COMPCD
+    		, EMPNUM
+    		, EMPNUM_OLD
 			, SBTYPE
 			, IPSAIL
 			, RETIRE
 			, NAMEKO
 			, BIRDAY
 			, ORGAID
+			, ORGTXT
+			, POGUBN
 			, TITLCD
 			, LEVLCD
 			, RESPCD
@@ -224,6 +231,9 @@
 			, CSTCNT
 			, BUKRS
 			, WORKCD
+			, EMPNUM_OLD
+			, ORGTXT
+			, COMPCD
 		) VALUES 
 	    <foreach collection = "list" item = "item" separator = ","> 
 	    (
@@ -248,6 +258,9 @@
 		, #{item.CSTCNT}
 		, #{item.BUKRS}
 		, #{item.WORKCD}
+		, #{item.EMPNUM_OLD}
+		, #{item.ORGTXT}
+		, #{item.COMPCD}
 	     ) 
 	    </foreach> 
 	  ON DUPLICATE KEY UPDATE     
@@ -271,6 +284,9 @@
 		, CSTCNT = VALUES(CSTCNT)
 		, BUKRS = VALUES(BUKRS)
 		, WORKCD = VALUES(WORKCD)
+		, EMPNUM_OLD = VALUES(EMPNUM_OLD)
+		, ORGTXT = VALUES(ORGTXT)
+		, COMPCD = VALUES(COMPCD)
 	</insert>
 	
 	<insert id="insertHrCodeMaster" parameterType="list">
@@ -455,7 +471,7 @@
 						, hr1010.BUKRS
 						, 1 as level
 					FROM lab_interface_hr1010 hr1010
-					WHERE hr1010.OBJTID = '10000065'
+					WHERE hr1010.OBJTID = '10000752'
 					UNION ALL
 					SELECT 
 						hr1010_tmp.OBJTID

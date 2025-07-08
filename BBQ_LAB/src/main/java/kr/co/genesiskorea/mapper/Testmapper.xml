@@ -249,4 +249,45 @@
 		WHERE	1 = 1
 			AND USER_ID = #{userId}
 	</update>
+	
+	<insert id="insertHrUser" parameterType="list">
+	/* test.insertHrUser */
+		INSERT INTO lab_user( 
+			USER_ID
+			, USER_NAME
+			, REG_DATE
+			, EMAIL
+			, IS_ADMIN
+			, IS_DELETE
+			, THEME
+			, IS_LOCK
+			, ROLE_CODE
+			, ORGAID
+			, TITLCD
+			, LEVLCD
+			, RESPCD
+			, EMSTAT
+			, USER_PWD
+			, PWD_INIT)
+		 VALUES(
+	    	#{EMPNUM}
+	        , #{NAMEKO}
+	        , sysdate()
+	        , #{EMAIL}
+	        , #{IS_ADMIN}
+	        , #{IS_DELETE}
+	        , #{THEME}
+	        , #{IS_LOCK}
+	        , #{ROLE_CODE}
+	        , #{ORGAID}
+	        , #{TITLCD}
+	        , #{LEVLCD}
+	        , #{RESPCD}
+	        , #{EMSTAT}
+	        , #{ENCPWD}
+	        , 'Y'
+	     ) 
+
+	
+	</insert>
 </mapper>

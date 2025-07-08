@@ -77,5 +77,10 @@ public class TestDaoImpl implements TestDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("test.updateUserPwd", param);
 	}
+
+	public void insertHrUser(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("test.insertHrUser", param);
+	}
 	
 }

@@ -174,4 +174,53 @@ public class TestController {
 		}
 		return "테스트";
 	}
+	
+	@RequestMapping("/userTest2Ajax")
+	@ResponseBody
+	public String userTest2Ajax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		/*List<Map<String,Object>> userList = testServiceImpl.selecUserList();
+		for( int i = 0 ; i < userList.size() ; i++ ) {
+			HashMap<String,Object> userData = (HashMap<String,Object>)userList.get(i);
+			String userId = (String)userData.get("userId");
+			String encPwd = SecurityUtil.getEncrypt(userId, userId);
+//			System.err.println(userId +"  :  "+ encPwd);
+			param.put("userId", userId);
+			param.put("encPwd", encPwd);
+			param.put("pwdInit", "Y");
+			testServiceImpl.updateUserPwd(param);
+			
+		}*/
+		String encPwd = SecurityUtil.getEncrypt("20240777", "20240777");
+		param.put("EMPNUM", "20240777");
+		param.put("USER_NAME", "하성현");
+		param.put("EMAIL", "sh_ha@bbq.co.kr");
+		param.put("IS_ADMIN", "N");
+		param.put("IS_DELETE", "N");
+		param.put("THEME", "theme02");
+		param.put("IS_LOCK", "N");
+		param.put("ROLE_CODE", "3");
+		param.put("ORGAID", "10000067");
+		param.put("TITLCD", "u10");
+		param.put("LEVLCD", "");
+		param.put("RESPCD", "J01");
+		param.put("EMSTAT", "1");
+		param.put("ENCPWD", encPwd);
+		param.put("PWD_INIT", "Y");
+		testServiceImpl.insertHrUser(param);
+		return "테스트";
+	}
+	
+	@RequestMapping("/hrOrgMasterAjax")
+	@ResponseBody
+	public String hrOrgMasterAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		batchService.hrOrgMaster();
+		return "테스트";
+	}
+	
+	@RequestMapping("/hrUserMasterAjax")
+	@ResponseBody
+	public String hrUserMasterAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		batchService.hrUserMaster();
+		return "테스트";
+	}
 }

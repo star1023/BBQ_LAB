@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
-<title>BBQ식품연구소</title>
+<title>BBQ세계식문화과학기술원</title>
 	<link href="/resources/css/common.css" rel="stylesheet" type="text/css" />
 	<link href="/resources/css/layout.css" rel="stylesheet" type="text/css" />
 		

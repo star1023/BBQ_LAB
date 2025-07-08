@@ -110,7 +110,7 @@ public class BatchServiceImpl implements BatchService {
 			String respCode = (String)userData.get("RESPCD");
 			String roleCode = "";
 			//소속이 세과원인 경우
-			if( orgId != null && "10000065".equals(orgId) ) {				
+			if( orgId != null && "10000065".equals(orgId) ) {		//나중에 10000752 로 변경		
 				if( titleCode != null && "e10".equals(titleCode) ) {	//e10 은 사장
 					roleCode = "5";
 				} else if( titleCode != null && "m10".equals(titleCode) ) {	//m10 상무
@@ -119,7 +119,7 @@ public class BatchServiceImpl implements BatchService {
 			}
 			
 			//식품 안전팀일 경우
-			if( "".equals(roleCode) && orgId != null && "10000071".equals(orgId) ) {	
+			if( "".equals(roleCode) && orgId != null && "10000071".equals(orgId) ) {	//나중에 10001220 로 변경	
 				if( respCode != null && "906".equals(respCode) ) {
 					roleCode = "7";
 				} else {

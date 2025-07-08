@@ -94,4 +94,10 @@ public class TestServiceImpl implements TestService {
 		testDao.updateUserPwd(param);
 	}
 
+
+	public void insertHrUser(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		testDao.insertHrUser(param);
+	}
+
 }
