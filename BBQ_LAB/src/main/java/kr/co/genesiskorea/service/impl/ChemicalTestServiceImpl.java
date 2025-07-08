@@ -23,8 +23,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.genesiskorea.common.auth.Auth;
+import kr.co.genesiskorea.common.auth.AuthUtil;
 import kr.co.genesiskorea.dao.ChemicalTestDao;
 import kr.co.genesiskorea.dao.CommonDao;
+import kr.co.genesiskorea.dao.UserDao;
 import kr.co.genesiskorea.service.ChemicalTestService;
 import kr.co.genesiskorea.util.FileUtil;
 import kr.co.genesiskorea.util.PageNavigator;
@@ -39,6 +42,9 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 	
 	@Autowired
 	private Properties config;
+	
+	@Autowired
+	UserDao userDao;
 	
 	@Autowired
 	CommonDao commonDao;
@@ -56,6 +62,14 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 	public Map<String, Object> selectChemicalTestList(Map<String, Object> param) throws Exception{
 		// TODO Auto-generated method stub
 		int totalCount = reportDao.selectChemicalTestCount(param);
+
+		HashMap<String, Object> userMap = userDao.selectUser(param);
+		
+		if("10000071".equals(userMap.get("ORGAID"))) {
+			param.put("isSafeTeam", "S");
+		} else {
+			param.put("isSafeTeam", "N");			
+		}
 		
 		int viewCount = 10;
 		int pageNo = 1;

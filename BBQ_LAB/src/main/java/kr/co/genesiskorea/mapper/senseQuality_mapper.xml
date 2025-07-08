@@ -294,6 +294,9 @@
 			<when test="docType.equals('RESEARCH')">
 			rt.TITLE
 			</when>
+			<when test="docType.equals('SENSE_QUALITY')">
+			rt.TITLE
+			</when>
 		</choose>
 			AS TITLE
 		, lh.USER_ID
@@ -313,6 +316,9 @@
 		<when test="docType.equals('RESEARCH')">
 		lab_market_research rt
 		</when>
+		<when test="docType.equals('SENSE_QUALITY')">
+		lab_sense_quality_report rt
+		</when>
 	</choose>	
 	WHERE 1 = 1
 		AND lh.DOC_IDX = #{idx}
@@ -329,6 +335,9 @@
 			</when>
 			<when test="docType.equals('RESEARCH')">
 			AND lh.DOC_IDX = rt.RESEARCH_IDX 
+			</when>
+			<when test="docType.equals('SENSE_QUALITY')">
+			AND lh.DOC_IDX = rt.REPORT_IDX 
 			</when>
 		</choose>		
 	ORDER BY lh.REG_DATE ASC

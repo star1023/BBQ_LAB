@@ -59,4 +59,6 @@ public interface ProductService {
 	int selectMyDataCheck(Map<String, Object> param);
 	
 	int selectMyDataCount(Map<String, Object> param);
+	
+	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
 }

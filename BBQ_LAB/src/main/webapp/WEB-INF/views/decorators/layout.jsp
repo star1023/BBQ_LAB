@@ -6,7 +6,7 @@
 <html>
   <head>
     <!--title><sitemesh:write property='title'/></title-->
-    <title>연구개발시스템</title>    
+    <title>BBQ세계식문화과학기술원</title>    
     <sitemesh:write property='head'/>
     <link rel="shortcut icon" href="../resources/images/favicon.ico"/>
     <link href="../resources/css/common.css" rel="stylesheet" type="text/css" />

@@ -179,6 +179,13 @@
 	function fn_update(idx) {
 		location.href = '/menu/update?idx='+idx;
 	}
+	
+	function fn_pdfDownload(idx) {
+		var url = "/preview/menuViewPopup?idx="+idx;
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -205,11 +212,18 @@
 		<div class="group01 mt20">
 			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
 			<div class="tab02">
-				<ul>
+				<ul style="display:flex; justify-content:space-between;">
 					<!-- 선택됬을경우는 탭 클래스에 select를 넣어주세요 -->
 					<!-- 내 메뉴설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
-					<a href="#" onClick="tabChange('tab1')"><li  class="select" id="tab1_li">기안내용</li></a>
-					<a href="#" onClick="tabChange('tab2')"><li class="" id="tab2_li">완료보고서상세정보</li></a>
+					<div>
+						<a href="#" onClick="tabChange('tab1')"><li  class="select" id="tab1_li">기안내용</li></a>
+						<a href="#" onClick="tabChange('tab2')"><li class="" id="tab2_li">완료보고서상세정보</li></a>
+					</div>
+					<div>
+						<c:if test="${menuData.data.STATUS == 'COMP'}">
+						    <button class="btn_small_search ml5" onclick="fn_pdfDownload('${menuData.data.MENU_IDX}')">PDF 다운로드</button>
+						</c:if>
+					</div>
 				</ul>
 			</div>
 			
@@ -539,7 +553,7 @@
 				<div class="title2 mt20"  style="width:90%;  margin-top: 30px;"><span class="txt">첨부파일</span></div>
 				<div class="con_file" style="">
 					<ul>
-						<li class="point_img">
+						<li class="point_img" style="display:flex;">
 							<dt>첨부파일</dt><dd>
 								<ul>
 									<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
@@ -583,6 +597,14 @@
 								<td>
 									${menuData.data.SAP_CODE}
 								</td>
+							</tr>
+							<tr>
+							    <th style="border-left: none;">공동 참여자</th>
+							    <td colspan="3">
+							        <c:forEach var="user" items="${sharedUserList}" varStatus="status">
+							            ${user.USER_NAME}<c:if test="${!status.last}">, </c:if>
+							        </c:forEach>
+							    </td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">버젼 No.</th>

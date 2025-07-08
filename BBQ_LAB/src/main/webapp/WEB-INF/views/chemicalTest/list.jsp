@@ -7,6 +7,7 @@
 
 <script type="text/javascript">
 $(document).ready(function () {
+	
 	fn_loadList(1);
 
 	// 요청일자
@@ -43,6 +44,7 @@ $(document).ready(function () {
 	});
 });
 
+let currentTabType = "R"; // 기본값
 
 function fn_loadList(pageNo) {
     var URL = "../chemicalTest/selectChemicalTestListAjax";
@@ -63,8 +65,10 @@ function fn_loadList(pageNo) {
             "searchFileTxt": $("#searchFileTxt").val(),
             "requestDate": $("#requestDate").val(),
             "completeDate": $("#completeDate").val(),
+            "listType": currentTabType,
             "viewCount": viewCount,
-            "pageNo": pageNo
+            "pageNo": pageNo,
+            "testStatus": currentTabType
         },
 		dataType:"json",
 		success:function(data) {
@@ -178,6 +182,22 @@ function fn_searchClear() {
     $("#viewCount_label").text("선택");
 
 }
+
+function fn_changeTab(type) {
+	currentTabType = type;
+
+	// 탭 클래스 처리
+	if (type === "R") {
+		$("#myCount").addClass("select");
+		$("#apprCount").removeClass("select");
+		
+	} else {
+		$("#apprCount").addClass("select");
+		$("#myCount").removeClass("select");
+	}
+
+	fn_loadList(1); // 페이지 1번으로 다시 조회
+}
 </script>
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
@@ -201,10 +221,12 @@ function fn_searchClear() {
 		<div class="group01" >
 			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
 			<div class="tab02">
-				<!--  ul>
-					<a href="/material/list"><li class="select">자재관리</li></a>
-					<a href="/material/changeList"><li class="">변경관리</li></a>
-				</ul-->
+				<ul>
+				<!-- 선택됬을경우는 탭 클래스에 select를 넣어주세요 -->
+				<!-- 내 제품설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
+				<a href="#" onClick="fn_changeTab('R')"><li  class="select" id="myCount">의뢰 문서</li></a>
+				<a href="#" onClick="fn_changeTab('C')"><li class="" id="apprCount">결과 문서</li></a>
+				</ul>
 			</div>
 			<div class="search_box" >
 				<ul style="border-top:none">

@@ -34,52 +34,112 @@
 			dataType:"json",
 			success:function(data) {
 				var html = "";
-				if( data.totalCount > 0 ) {
-					$("#list").html(html);
-					data.list.forEach(function (item) {
-						if( item.IS_LAST == 'Y' ) {
-							html += "<tr id=\"manual_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";	
-						} else {
-							html += "<tr id=\"manual_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
-						}
+				if (data.list.length > 0) {
+				    // DOC_NO 기준으로 그룹핑
+				    var docMap = {};
+
+				    data.list.forEach(function (item) {
+				        if (!docMap[item.DOC_NO]) {
+				            docMap[item.DOC_NO] = [];
+				        }
+				        docMap[item.DOC_NO].push(item);
+				    });
+
+				    Object.keys(docMap).forEach(function(docNo) {
+				        var versionList = docMap[docNo];
+
+				        // IS_LAST = Y 인 아이템
+				        var lastVersion = versionList.find(v => v.IS_LAST === 'Y');
+
+				        // 보여줄 대표 문서 결정
+						let mainItem = null;
 						
-						html += "	<td>";
-						if( item.CHILD_CNT > 0 && item.IS_LAST == 'Y' ) {
-							html += "		<img src=\"/resources/images/img_add_doc.png\" style=\"cursor: pointer;\" onclick=\"showChildVersion(this)\"/>";
+						if (lastVersion) {
+						    mainItem = lastVersion; // 등록 여부 상관없이 IS_LAST 버전은 대표로 취급
 						} else {
-							html += "&nbsp;";
+						    mainItem = versionList
+						        .sort((a, b) => b.VERSION_NO - a.VERSION_NO)[0]; // 그냥 최신
 						}
-						html += "	</td>";
-						
-						html += "	<td>"+nvl(item.MENU_CODE,'&nbsp;')+"</td>";
-						html += "	<td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('"+item.MANUAL_IDX+"')\">"+nvl(item.NAME,'&nbsp;')+"</a></div></td>";
-						html += "	<td>"+nvl(item.VERSION_NO,'&nbsp;')+"</td>";
-						html += "	<td><div class=\"ellipsis_txt tgnl\">";
-						if( chkNull(item.CATEGORY_NAME1) ) {
-							html += item.CATEGORY_NAME1;
-						}
-						if( chkNull(item.CATEGORY_NAME2) ) { 
-							html += " > "+item.CATEGORY_NAME2;
-						}
-						if( chkNull(item.CATEGORY_NAME3) ) {
-							html += " > "+item.CATEGORY_NAME3;
-						}
-						html += "	</div></td>";
-						html += "	<td>"+nvl(item.REG_YN_TXT,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.DOC_USER_NAME,'&nbsp;')+"</td>";						
-						html += "	<td>";
-						if( item.REG_YN == 'N' ) {
-							html += "		<li style=\"float:none; display:inline\">";
-							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_attachFileOpen('"+item.MANUAL_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
-							html += "		</li>";
-						} else {
-							html += "		<li style=\"float:none; display:inline\">";
-							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewFile('"+item.MANUAL_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
-							html += "		</li>";
-						}
-						html += "	</td>";
-						html += "</tr>"		
-					});				
+
+				        // 대표 문서 row 출력
+				        if (mainItem) {
+				            html += "<tr id=\"manual_" + mainItem.DOC_NO + "_" + mainItem.VERSION_NO + "\">";
+
+				            html += "	<td>";
+				            if (versionList.length > 1) {
+				                html += "		<img src=\"/resources/images/img_add_doc.png\" style=\"cursor: pointer;\" onclick=\"showChildVersion(this)\"/>";
+				            } else {
+				                html += "&nbsp;";
+				            }
+				            html += "	</td>";
+
+				            html += "	<td>" + nvl(mainItem.MENU_CODE, '&nbsp;') + "</td>";
+				            html += "	<td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('" + mainItem.MANUAL_IDX + "')\">" + nvl(mainItem.NAME, '&nbsp;') + "</a></div></td>";
+				            html += "	<td>" + nvl(mainItem.VERSION_NO, '&nbsp;') + "</td>";
+				            html += "	<td><div class=\"ellipsis_txt tgnl\">";
+				            if (chkNull(mainItem.CATEGORY_NAME1)) {
+				                html += mainItem.CATEGORY_NAME1;
+				            }
+				            if (chkNull(mainItem.CATEGORY_NAME2)) {
+				                html += " > " + mainItem.CATEGORY_NAME2;
+				            }
+				            if (chkNull(mainItem.CATEGORY_NAME3)) {
+				                html += " > " + mainItem.CATEGORY_NAME3;
+				            }
+				            html += "	</div></td>";
+				            html += "	<td>" + nvl(mainItem.REG_YN_TXT, '&nbsp;') + "</td>";
+				            html += "	<td>" + nvl(mainItem.DOC_USER_NAME, '&nbsp;') + "</td>";
+
+				            html += "	<td>";
+				            if (mainItem.REG_YN === 'N') {
+				                html += "		<li style=\"float:none; display:inline\">";
+				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_attachFileOpen('" + mainItem.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
+				                html += "		</li>";
+				            } else {
+				                html += "		<li style=\"float:none; display:inline\">";
+				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewFile('" + mainItem.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
+				                html += "		</li>";
+				            }
+				            html += "	</td>";
+				            html += "</tr>";
+				        }
+
+				        // 나머지 이전 버전은 숨겨서 그려줌 (하위 버전들)
+				        versionList.forEach(function (item) {
+				            if (item === mainItem) return;
+
+				            // ✅ 메뉴얼 등록 여부와 상관 없이 과거 버전은 기본 숨김 처리
+				            html += "<tr id=\"manual_" + item.DOC_NO + "_" + item.VERSION_NO + "\" class=\"m_version\" style=\"display: none\">";
+				            html += "  <td>&nbsp;</td>";
+				            html += "  <td>" + nvl(item.MENU_CODE, '&nbsp;') + "</td>";
+				            html += "  <td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('" + item.MANUAL_IDX + "')\">" + nvl(item.NAME, '&nbsp;') + "</a></div></td>";
+				            html += "  <td>" + nvl(item.VERSION_NO, '&nbsp;') + "</td>";
+				            html += "  <td><div class=\"ellipsis_txt tgnl\">";
+				            if (chkNull(item.CATEGORY_NAME1)) html += item.CATEGORY_NAME1;
+				            if (chkNull(item.CATEGORY_NAME2)) html += " > " + item.CATEGORY_NAME2;
+				            if (chkNull(item.CATEGORY_NAME3)) html += " > " + item.CATEGORY_NAME3;
+				            html += "  </div></td>";
+				            html += "  <td>" + nvl(item.REG_YN_TXT, '&nbsp;') + "</td>";
+				            html += "  <td>" + nvl(item.DOC_USER_NAME, '&nbsp;') + "</td>";
+				            html += "  <td>";
+
+				            if (item.REG_YN === 'N') {
+				                html += "    <li style=\"float:none; display:inline\">";
+				                html += "      <button class=\"btn_doc\" onclick=\"fn_attachFileOpen('" + item.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
+				                html += "    </li>";
+				            } else {
+				                html += "    <li style=\"float:none; display:inline\">";
+				                html += "      <button class=\"btn_doc\" onclick=\"fn_viewFile('" + item.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
+				                html += "    </li>";
+				            }
+
+				            html += "  </td>";
+				            html += "</tr>";
+				        });
+
+				    });
+
+				    $("#list").html(html);
 				} else {
 					$("#list").html(html);
 					html += "<tr><td align='center' colspan='7'>데이터가 없습니다.</td></tr>";
@@ -261,6 +321,7 @@
 		for (var i = 0; i < attatchFileArr.length; i++) {
 			formData.append('file', attatchFileArr[i]);
 		}
+		
 		$('#lab_loading').show();
 		$.ajax({
 			url: URL,
@@ -285,6 +346,7 @@
 				$('#lab_loading').hide();
 			}
 		});
+		
 		closeDialogWithClean('dialog_attatch');
 	}
 	

@@ -135,6 +135,7 @@ public class ProductServiceImpl implements ProductService {
 			JSONParser parser = new JSONParser();
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
 			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
 			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
 			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
@@ -208,6 +209,21 @@ public class ProductServiceImpl implements ProductService {
 			if( addInfoList != null && addInfoList.size() > 0 ) {
 				//등록한다.
 				productDao.insertAddInfo(addInfoList);
+			}
+			
+			// 공동 참여자 등록
+			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
+			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
+				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+				sharedUserMap.put("userId", sharedUserArr.get(i));
+				sharedUserMap.put("docType", "PROD");
+				sharedUserMap.put("docIdx", productIdx);
+				
+				sharedUserList.add(sharedUserMap);
+			} 
+			
+			if( sharedUserList != null && sharedUserList.size() > 0 ) {
+				productDao.insertSharedUser(sharedUserList);
 			}
 			
 			//신규도입품/제품규격 등록
@@ -398,6 +414,7 @@ public class ProductServiceImpl implements ProductService {
 			JSONParser parser = new JSONParser();
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
 			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
 			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
 			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
@@ -470,6 +487,21 @@ public class ProductServiceImpl implements ProductService {
 			if( addInfoList != null && addInfoList.size() > 0 ) {
 				//등록한다.
 				productDao.insertAddInfo(addInfoList);
+			}
+			
+			// 공동 참여자 등록
+			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
+			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
+				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+				sharedUserMap.put("userId", sharedUserArr.get(i));
+				sharedUserMap.put("docType", "PROD");
+				sharedUserMap.put("docIdx", productIdx);
+				
+				sharedUserList.add(sharedUserMap);
+			} 
+			
+			if( sharedUserList != null && sharedUserList.size() > 0 ) {
+				productDao.insertSharedUser(sharedUserList);
 			}
 			
 			//신규도입품/제품규격 등록
@@ -742,6 +774,7 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemExistArr = (JSONArray) parser.parse((String)param.get("itemExistArr"));
 			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
 			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
 			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
 			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
 			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
@@ -841,6 +874,21 @@ public class ProductServiceImpl implements ProductService {
 			if( addInfoList != null && addInfoList.size() > 0 ) {
 				//등록한다.
 				productDao.insertAddInfo(addInfoList);
+			}
+			
+			// 공동 참여자 등록
+			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
+			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
+				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+				sharedUserMap.put("userId", sharedUserArr.get(i));
+				sharedUserMap.put("docType", "PROD");
+				sharedUserMap.put("docIdx", productIdx);
+				
+				sharedUserList.add(sharedUserMap);
+			} 
+			
+			if( sharedUserList != null && sharedUserList.size() > 0 ) {
+				productDao.insertSharedUser(sharedUserList);
 			}
 			
 			//신규도입품/제품규격 등록
@@ -1026,6 +1074,7 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemExistArr = (JSONArray) parser.parse((String)param.get("itemExistArr"));
 			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
 			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
 			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
 			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
 			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
@@ -1128,6 +1177,21 @@ public class ProductServiceImpl implements ProductService {
 			if( addInfoList != null && addInfoList.size() > 0 ) {
 				//등록한다.
 				productDao.insertAddInfo(addInfoList);
+			}
+			
+			// 공동 참여자 등록
+			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
+			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
+				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+				sharedUserMap.put("userId", sharedUserArr.get(i));
+				sharedUserMap.put("docType", "PROD");
+				sharedUserMap.put("docIdx", productIdx);
+				
+				sharedUserList.add(sharedUserMap);
+			} 
+			
+			if( sharedUserList != null && sharedUserList.size() > 0 ) {
+				productDao.insertSharedUser(sharedUserList);
 			}
 			
 			//신규도입품/제품규격 등록
@@ -1355,6 +1419,7 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
 			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
 			
+			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
 			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
 			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
 			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
@@ -1488,6 +1553,23 @@ public class ProductServiceImpl implements ProductService {
 			if( addInfoList != null && addInfoList.size() > 0 ) {
 				//추가 정보를 등록한다.
 				productDao.insertAddInfo(addInfoList);
+			}
+			
+			productDao.deleteSharedUser(map);
+			
+			// 공동 참여자 등록
+			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
+			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
+				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+				sharedUserMap.put("userId", sharedUserArr.get(i));
+				sharedUserMap.put("docType", "PROD");
+				sharedUserMap.put("docIdx", productIdx);
+				
+				sharedUserList.add(sharedUserMap);
+			} 
+			
+			if( sharedUserList != null && sharedUserList.size() > 0 ) {
+				productDao.insertSharedUser(sharedUserList);
 			}
 			
 			//신규도입품/제품규격 삭제
@@ -1724,6 +1806,7 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
 			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
 			
+			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
 			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
 			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
 			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
@@ -1850,6 +1933,23 @@ public class ProductServiceImpl implements ProductService {
 			if( addInfoList != null && addInfoList.size() > 0 ) {
 				//추가 정보를 등록한다.
 				productDao.insertAddInfo(addInfoList);
+			}
+			
+			productDao.deleteSharedUser(map);
+			
+			// 공동 참여자 등록
+			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
+			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
+				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+				sharedUserMap.put("userId", sharedUserArr.get(i));
+				sharedUserMap.put("docType", "PROD");
+				sharedUserMap.put("docIdx", productIdx);
+				
+				sharedUserList.add(sharedUserMap);
+			} 
+			
+			if( sharedUserList != null && sharedUserList.size() > 0 ) {
+				productDao.insertSharedUser(sharedUserList);
 			}
 			
 			//신규도입품/제품규격 삭제
@@ -2061,4 +2161,10 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return productDao.selectMyDataCount(param);
 	}	
+	
+	@Override
+	public List<Map<String, String>> selectSharedUser(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return productDao.selectSharedUser(param);
+	}
 }

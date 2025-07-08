@@ -33,3 +33,30 @@
 	color:#909090; 
 	outline:none;
 }
+
+/* 토큰 스타일 */
+.user-token {
+    display: inline-flex;
+    align-items: center;
+    background: #e0e0e0;
+    border-radius: 12px;
+    padding: 4px 8px;
+    margin: 2px 5px 2px 0;
+    font-size: 13px;
+    position: relative;
+}
+
+.token-close {
+    margin-left: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    color: #555;
+}
+
+/* 토큰 영역 */
+#sharedUserTokens {
+    min-height: 40px;  /* 원하는 높이로 줄이기 */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+}

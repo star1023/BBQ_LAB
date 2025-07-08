@@ -83,6 +83,8 @@ public class MenuController {
 		List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
 		model.addAttribute("newDataList", newDataList);
 		model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
+		List<Map<String, String>> sharedUserList = menuService.selectSharedUser(param);
+		model.addAttribute("sharedUserList", sharedUserList);
 		
 		return "/menu/view";
 	}
@@ -297,7 +299,8 @@ public class MenuController {
 				List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
 				model.addAttribute("newDataList", newDataList);
 				model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
-				
+				List<Map<String, String>> sharedUserList = menuService.selectSharedUser(param);
+				model.addAttribute("sharedUserList", sharedUserList);
 				return "/menu/versionUp";
 			} else {
 				model.addAttribute("returnPage", "/menu/list");
@@ -511,6 +514,8 @@ public class MenuController {
 		List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
 		returnMap.put("newDataList", newDataList);
 		returnMap.put("menuMaterialData", menuService.selectMenuMaterial(param));
+		List<Map<String, String>> sharedUserList = menuService.selectSharedUser(param);
+		model.addAttribute("sharedUserList", sharedUserList);
 		return returnMap;
 	}
 	
@@ -534,6 +539,8 @@ public class MenuController {
 				List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
 				model.addAttribute("newDataList", newDataList);
 				model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
+				List<Map<String, String>> sharedUserList = menuService.selectSharedUser(param);
+				model.addAttribute("sharedUserList", sharedUserList);
 				return "/menu//update";
 			} else {
 				model.addAttribute("returnPage", "/menu/list");

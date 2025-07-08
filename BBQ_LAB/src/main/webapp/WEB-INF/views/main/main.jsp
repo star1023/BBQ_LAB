@@ -5,7 +5,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ page session="false"%>
-<title>연구개발시스템</title>
+<title>BBQ세계식문화과학기술원</title>
 <link href="../resources/css/main.css" rel="stylesheet" type="text/css" />
 <style>
 
@@ -485,12 +485,11 @@ function updateBarChartContext(buttonText) {
 }
 </script>
 <div class="wrap_in" id="fixNextTag">
-	<span class="path"> <a href="#">제너시스 BBQ연구소</a>
+	<span class="path"> <a href="#">BBQ세계식문화과학기술원</a>
 	</span>
 	<section class="type01">
 		<h2 style="position: relative">
-			<span class="title_s">System main</span> <span class="title">제너시스
-				BBQ연구소</span>
+			<span class="title_s">System main</span> <span class="title">BBQ 세계식문화과학기술원</span>
 		</h2>
 		<div class="group01">
 

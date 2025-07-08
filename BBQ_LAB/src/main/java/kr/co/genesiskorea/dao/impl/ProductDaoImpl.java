@@ -240,4 +240,22 @@ public class ProductDaoImpl implements ProductDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("product.selectMyDataCount", param);
 	}		
+	
+	@Override
+	public void insertSharedUser(ArrayList<HashMap<String, Object>> sharedUserList) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("product.insertSharedUser", sharedUserList);
+	}
+	
+	@Override
+	public void deleteSharedUser(HashMap<String, Object> map) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.delete("product.deleteSharedUser", map);
+	}
+	
+	@Override
+	public List<Map<String, String>> selectSharedUser(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("product.selectSharedUser", param);
+	}
 }
