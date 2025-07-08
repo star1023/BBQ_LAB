@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
-<title>BBQ식품연구소</title>
+<title>BBQ세계식문화과학기술원</title>
 	<link href="/resources/css/common.css" rel="stylesheet" type="text/css" />
 	<link href="/resources/css/layout.css" rel="stylesheet" type="text/css" />
 		
@@ -133,7 +133,7 @@ function pwdInit(){
  			<div class="login_box login_ani">
 				<div class="login_txt">
 					<p class="pb20"><img src="/resources/images/bbq_logo.png" width="250" height=""></p>
-					<p><span>BBQ 식품연구소 비밀번호 변경 화면입니다.</span></p>			
+					<p><span>BBQ 세계식문화과학기술원 비밀번호 변경 화면입니다.</span></p>			
 				</div>
 	 			<div class="login_input">
 	 				<input type="hidden" id="userId" name="userId" value="${userId}"/>

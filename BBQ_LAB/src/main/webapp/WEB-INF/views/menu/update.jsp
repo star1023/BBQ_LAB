@@ -1800,8 +1800,8 @@ var selectedArr = new Array();
 	    
 	    // 도입 예정일, 제품코드, SAP 코드
 	    $doc.getElementById("prev_scheduleDate").innerText = document.getElementById("scheduleDate").value;
-	    $doc.getElementById("prev_productCode").innerText = document.getElementById("productCode").value;
-	    $doc.getElementById("prev_sapCode").innerText = document.getElementById("productSapCode").value;
+	    $doc.getElementById("prev_menuCode").innerText = document.getElementById("menuCode").value;
+	    $doc.getElementById("prev_sapCode").innerText = document.getElementById("menuSapCode").value;
 
 	    // 버전, 중량, 규격, 보관조건, 소비기한
 	    $doc.getElementById("prev_version").innerText = version;

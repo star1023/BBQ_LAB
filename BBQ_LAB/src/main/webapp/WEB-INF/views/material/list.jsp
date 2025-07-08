@@ -683,7 +683,7 @@ function fn_goDelete(idx, docNo) {
 
 
 function downloadFile(idx){
-	location.href = '/file/fileDownload?idx='+idx;
+	location.href = '/material/fileDownload?idx='+idx;
 }
 
 function fn_searchClear() {

@@ -18,7 +18,7 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-		<title>삼립 연구소 시스템</title>
+		<title>BBQ 세계식문화과학기술원</title>
 	</head>	
 	<body bgcolor="#f1f1f1">
  		<div class="login_wrap">

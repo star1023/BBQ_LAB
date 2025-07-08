@@ -5,7 +5,7 @@
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
 <meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
-<title>BBQ식품연구소</title>
+<title>BBQ세계식문화과학기술원</title>
 	<link href="/resources/css/common.css" rel="stylesheet" type="text/css" />
 	<link href="/resources/css/layout.css" rel="stylesheet" type="text/css" />
 		
@@ -80,7 +80,7 @@ function loginProc(){
  			<div class="login_box login_ani">
 				<div class="login_txt">
 					<p class="pb20"><img src="/resources/images/bbq_logo.png" width="250" height=""></p>
-					<p><span>BBQ 식품연구소 PDM 시스템 로그인 페이지입니다.</span></p>			
+					<p><span>BBQ 세계식문화과학기술원 PDM 시스템 로그인 페이지입니다.</span></p>			
 				</div>
 	 			<div class="login_input">
 	 				<input type="text" id="userId" name="userId" tabindex="1" class="inputbg01" placeholder="아이디"/>

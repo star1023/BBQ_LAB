@@ -42,7 +42,7 @@ function fn_loadList(pageNo) {
 					html += "	<td>"+nvl(item.REG_USER_NAME,'&nbsp;')+"</td>";
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
-					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PRODUCT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
+					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.REPORT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
 					if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' ) {
 						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.REPORT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 					}
@@ -92,7 +92,7 @@ function fn_viewHistory(idx) {
 		url:URL,
 		data:{
 			"idx" : idx
-			, "docType" : "DESIGN"
+			, "docType" : "SENSE_QUALITY"
 		},
 		dataType:"json",
 		async:false,
