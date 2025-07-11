@@ -60,3 +60,7 @@
     flex-wrap: wrap;
     align-items: center;
 }
+
+.pr15 {
+	padding-right : 15px;
+}

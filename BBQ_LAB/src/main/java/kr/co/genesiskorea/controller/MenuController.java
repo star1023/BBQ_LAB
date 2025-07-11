@@ -71,6 +71,11 @@ public class MenuController {
 	
 	@RequestMapping("/view")
 	public String menuView(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		//유저정보 DOC_OWNER 확인용
+		Auth auth = AuthUtil.getAuth(request);
+		String userId = auth.getUserId();
+		model.addAttribute("userId", userId);
+		
 		//lab_menu 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> menuData = menuService.selectMenuData(param);
 		model.addAttribute("menuData", menuData);

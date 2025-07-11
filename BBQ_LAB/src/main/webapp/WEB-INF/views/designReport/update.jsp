@@ -680,6 +680,106 @@
 			if($('#'+checkBoxId).is(':checked')) $(v).remove();
 		})
 	}
+	function fn_previewDataBinding(popup) {
+	    const $doc = popup.document;
+	    $doc.title = document.getElementById("title").value+'_상품설계변경보고서'
+	    // 기본 항목
+	    $doc.getElementById("prev_title").innerText = document.getElementById("title").value;
+	    $doc.getElementById("prev_sapCode").innerText = document.getElementById("sapCode").value;
+	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
+	    
+	    // 변경 사유
+	    var reasonHTML = "";
+	    document.querySelectorAll('#changeReason_tbody input[name=changeReason]').forEach(function(input) {
+	        var val = input.value || "";
+	        if (val.trim()) reasonHTML += val + "<br/>";
+	    });
+	    $doc.getElementById("prev_changeReason").innerHTML = reasonHTML;
+	    
+	    // 변경 사항
+	    var tbody = $doc.getElementById("prev_changeTable");
+	    var wrapper = $doc.querySelector("#prev_changeTable").closest("div");
+	    tbody.innerHTML = ""; // 초기화
+	    var hasRow = false;
+	    var rows = document.querySelectorAll("#changeTbody > tr");
+	    rows.forEach(function(row) {
+	        var itemDiv = row.querySelector('input[name="itemDiv"]');
+	        var itemCurrent = row.querySelector('textarea[name="itemCurrent"]');
+	        var itemChange = row.querySelector('textarea[name="itemChange"]');
+	        var itemNote = row.querySelector('input[name="itemNote"]');
+
+	        var valDiv = itemDiv ? itemDiv.value.trim() : "";
+	        var valCurrent = itemCurrent ? itemCurrent.value.trim() : "";
+	        var valChange = itemChange ? itemChange.value.trim() : "";
+	        var valNote = itemNote ? itemNote.value.trim() : "";
+
+	        if (valDiv || valCurrent || valChange || valNote) {
+	            hasRow = true;
+
+	            var tr = $doc.createElement("tr");
+
+	            var tdDiv = $doc.createElement("td");
+	            tdDiv.innerText = valDiv;
+
+	            var tdCurrent = $doc.createElement("td");
+	            tdCurrent.innerHTML = valCurrent.replace(/\n/g, "<br/>");
+
+	            var tdChange = $doc.createElement("td");
+	            tdChange.innerHTML = valChange.replace(/\n/g, "<br/>");
+
+	            var tdNote = $doc.createElement("td");
+	            tdNote.innerText = valNote;
+
+	            tr.appendChild(tdDiv);
+	            tr.appendChild(tdCurrent);
+	            tr.appendChild(tdChange);
+	            tr.appendChild(tdNote);
+
+	            tbody.appendChild(tr);
+	        }
+	    });
+	    
+	    if (hasRow) {
+	        wrapper.style.display = "block";
+	    } else {
+	        wrapper.style.display = "none";
+	    }
+	    
+	    // 변경 시점
+	    var changeTimeHTML = "";
+	    document.querySelectorAll('#changeTime_tbody input[name=changeTime]').forEach(function(input) {
+	        var val = input.value.trim();
+	        if (val) changeTimeHTML += val + "<br/>";
+	    });
+	    $doc.getElementById("prev_changeTime").innerHTML = changeTimeHTML;
+	    
+	    // 비고
+	    var content = editor.getData().trim();
+	    var previewContent = $doc.getElementById("prev_content");
+	    var wrapper = $doc.getElementById("wrapper_prev_content");
+
+	    if (content) {
+	    	previewContent.innerHTML = content;
+	        wrapper.style.display = "block";
+	    } else {
+	        previewContent.textContent = "";
+	        wrapper.style.display = "none";
+	    }
+
+	}
+
+	function fn_openPreview() {
+		var url = "/preview/designReportPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -699,9 +799,11 @@
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">

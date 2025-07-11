@@ -1685,7 +1685,7 @@ var selectedArr = new Array();
 	
 	function fn_previewDataBinding(popup) {
 	    const $doc = popup.document;
-
+	    $doc.title = document.getElementById("title").value+'_메뉴완료보고서'
 	    // 기본 항목
 	    $doc.getElementById("prev_title").innerText = document.getElementById("title").value;
 	    $doc.getElementById("prev_menuName").innerText = document.getElementById("menuName").value;

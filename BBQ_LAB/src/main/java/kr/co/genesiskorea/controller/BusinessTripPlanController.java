@@ -98,7 +98,10 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 	}
 	
 	@RequestMapping(value = "/view")
-	public String view( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) {
+	public String view( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
+		Auth auth = AuthUtil.getAuth(request);
+		model.addAttribute("userId", auth.getUserId());
+		
 		//1.lab_business_trip_plan 조회
 		Map<String, Object> planData = reportService.selectBusinessTripPlanData(param);
 		//2.lab_business_trip_plan_user 조회

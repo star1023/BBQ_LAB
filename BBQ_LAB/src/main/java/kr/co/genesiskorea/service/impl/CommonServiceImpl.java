@@ -166,5 +166,9 @@ public class CommonServiceImpl implements CommonService {
 		return commonDao.getCodeList(param);
 	}
 
-	
+	@Override
+	public void insertHistory(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		commonDao.insertHistory(param);
+	}
 }

@@ -78,6 +78,11 @@ public class ProductController {
 	
 	@RequestMapping("/view")
 	public String productView(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		//유저정보 DOC_OWNER 확인용
+		Auth auth = AuthUtil.getAuth(request);
+		String userId = auth.getUserId();
+		model.addAttribute("userId", userId);
+		
 		//lab_product 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> productData = productService.selectProductData(param);
 		model.addAttribute("productData", productData);

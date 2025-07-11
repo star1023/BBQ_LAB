@@ -1696,7 +1696,7 @@ var selectedArr = new Array();
 	
 	function fn_previewDataBinding(popup) {
 	    const $doc = popup.document;
-
+	    $doc.title = document.getElementById("title").value+'_제품완료보고서'
 	    // 기본 항목
 	    $doc.getElementById("prev_title").innerText = document.getElementById("title").value;
 	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;

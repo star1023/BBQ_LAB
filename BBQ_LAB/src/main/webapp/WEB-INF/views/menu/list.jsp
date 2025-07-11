@@ -192,6 +192,8 @@
 						html += " 수정되었습니다.";
 					} else if( item.HISTORY_TYPE == 'T' ) {
 						html += " 임시저장 되었습니다.";
+					} else if( item.HISTORY_TYPE == 'P' ) {
+						html += " PDF 다운로드 되었습니다.";
 					} 
 					html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
 					html += "</li>"; 

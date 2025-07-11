@@ -104,6 +104,9 @@ public class DesignReportController {
 	
 	@RequestMapping("/view")
 	public String designView(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		Auth auth = AuthUtil.getAuth(request);
+		model.addAttribute("userId", auth.getUserId());
+		
 		//lab_design 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> designData = reportService.selectDesignData(param);
 		model.addAttribute("designData", designData);

@@ -717,6 +717,88 @@
 	function delUser(element) {
 		$(element).parent().parent().parent().parent().remove();
 	}
+	
+	function fn_previewDataBinding(popup) {
+		const $doc = popup.document;
+		$doc.title = document.getElementById("title").value + '_시장조사결과보고서';
+
+		// 제목
+		$doc.querySelector("#prev_title").innerText = document.getElementById("title").value;
+
+		// 출장구분
+		const tripTypeLabel = document.getElementById("tripType_label").innerText.trim();
+		$doc.querySelector("#prev_trip_type").innerText = (tripTypeLabel === "선택" ? "" : tripTypeLabel);
+
+		// 대상업소
+		let marketHtml = "";
+		document.querySelectorAll("#market_tbody input[name=marketName]").forEach(input => {
+			if (input.value.trim()) {
+				marketHtml += input.value.trim() + "<br/>";
+			}
+		});
+		$doc.querySelector("#prev_market_tbody").innerHTML = marketHtml;
+
+		// 목적
+		let purposeHtml = "";
+		document.querySelectorAll("#purpose_tbody input[name=purpose]").forEach(input => {
+			if (input.value.trim()) {
+				purposeHtml += input.value.trim() + "<br/>";
+			}
+		});
+		$doc.querySelector("#prev_purpose_tbody").innerHTML = purposeHtml;
+
+		// 일시
+		$doc.querySelector("#prev_researchDate").innerText = document.getElementById("researchDate").value;
+
+		// 주소
+		let addressHtml = "";
+		document.querySelectorAll("#address_tbody input[name=marketAddress]").forEach(input => {
+			if (input.value.trim()) {
+				addressHtml += input.value.trim() + "<br/>";
+			}
+		});
+		$doc.querySelector("#prev_address_tbody").innerHTML = addressHtml;
+
+		// 비용
+		$doc.querySelector("#prev_cost").innerText = document.getElementById("cost").value;
+
+		// 조사자
+		let userHtml = "";
+		document.querySelectorAll("#user_tbody tr").forEach(row => {
+			const dept = row.querySelector("input[name=dept]")?.value.trim();
+			const position = row.querySelector("input[name=position]")?.value.trim();
+			const name = row.querySelector("input[name=name]")?.value.trim();
+
+			if (dept || position || name) {
+				userHtml += "<tr>";
+				userHtml += "<td>" + (dept || "") + "</td>";
+				userHtml += "<td>" + (position || "") + "</td>";
+				userHtml += "<td>" + (name || "") + "</td>";
+				userHtml += "</tr>";
+			}
+		});
+		
+		const userTableDiv = $doc.querySelector("#prev_user_tbody").closest("div");
+		if (userHtml) {
+			$doc.querySelector("#prev_user_tbody").innerHTML = userHtml;
+			userTableDiv.style.display = "block";
+		} else {
+			userTableDiv.style.display = "none";
+		}
+	}
+	
+	function fn_openPreview() {
+		var url = "/preview/marketResearchPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -737,9 +819,11 @@
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">

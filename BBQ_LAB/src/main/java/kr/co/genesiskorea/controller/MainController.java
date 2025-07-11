@@ -47,11 +47,11 @@ public class MainController {
 			return "redirect:/user/login";
 		}
 		Auth auth = AuthUtil.getAuth(request);
-		String userUd = auth.getUserId();
-		param.put("userId", userUd);
+		String userId = auth.getUserId();
+		param.put("userId", userId);
 		
 		// 유저 기본 정보 조회
-		Map<String, Object> userData = userService.getUserData(userUd);
+		Map<String, Object> userData = userService.getUserData(userId);
 		// 문서 개수 리스트 조회
 		Map<String, Object> docCount = mainService.getDocCount(param);
 		// 문서 상태 개수 리스트 조회

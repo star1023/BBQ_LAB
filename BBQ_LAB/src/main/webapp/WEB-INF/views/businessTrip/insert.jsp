@@ -838,6 +838,117 @@
 	function delUser(element) {
 		$(element).parent().parent().parent().parent().remove();
 	}
+	
+	function fn_previewDataBinding(popup) {
+	    const $doc = popup.document;
+	    $doc.title = document.getElementById("title").value + '_출장계획보고서';
+
+	    // 제목
+	    $doc.getElementById("prev_title").innerText = document.getElementById("title").value;
+
+	    // 출장구분
+	    const tripTypeLabel = document.getElementById("tripType_label").innerText.trim();
+	    const tripDivLabel = document.getElementById("tripDiv_label").innerText.trim();
+	    const tripTypeText = (tripTypeLabel === "선택" ? "" : tripTypeLabel);
+	    const tripDivText = (tripDivLabel === "선택" ? "" : tripDivLabel);
+	    const tripTypeResult = [tripTypeText, tripDivText].filter(Boolean).join(" / ");
+	    $doc.querySelector("#prev_trip_type").innerText = tripTypeResult;
+
+	    // 출장자
+	    const userRows = document.querySelectorAll("#user_tbody tr");
+	    const userPreviewTbody = $doc.querySelector("#prev_user_tbody");
+	    const userWrapper = userPreviewTbody.closest("div");
+	    userPreviewTbody.innerHTML = "";
+	    if (userRows.length === 0) {
+	        userWrapper.style.display = "none";
+	    } else {
+	        userWrapper.style.display = "block";
+	        userRows.forEach(function (row) {
+	            const dept = row.querySelector('input[name="dept"]').value;
+	            const position = row.querySelector('input[name="position"]').value;
+	            const name = row.querySelector('input[name="name"]').value;
+
+	            const tr = $doc.createElement("tr");
+	            [dept, position, name].forEach(function (val) {
+	                const td = $doc.createElement("td");
+	                td.innerText = val;
+	                tr.appendChild(td);
+	            });
+	            userPreviewTbody.appendChild(tr);
+	        });
+	    }
+
+	    // 출장목적
+	    let purposeHTML = "";
+	    document.querySelectorAll("#purpose_tbody input[name='purpose']").forEach(function (input) {
+	        const val = input.value.trim();
+	        if (val) purposeHTML += val + "<br/>";
+	    });
+	    $doc.querySelector("#prev_purpose_tbody").innerHTML = purposeHTML;
+
+	    // 출장기간
+	    const startDate = document.getElementById("tripStartDate").value.trim();
+	    const endDate = document.getElementById("tripEndDate").value.trim();
+	    let tripDateText = "";
+	    if (startDate && endDate) tripDateText = startDate + " ~ " + endDate;
+	    else if (startDate) tripDateText = startDate;
+	    else if (endDate) tripDateText = endDate;
+	    $doc.querySelector("#prev_trip_date").innerText = tripDateText;
+
+	    // 출장지, 경유지
+	    // 출장지
+		let destinationText = "";
+		document.querySelectorAll('input[name="tripDestination"]').forEach(function(input) {
+		    const val = input.value.trim();
+		    if (val) destinationText += val + "<br/>";
+		});
+		$doc.querySelector("#prev_tripDestination").innerHTML = destinationText;
+	    $doc.querySelector("#prev_tripTransit").innerText = document.getElementById("tripTransit").value.trim();
+
+	    // 업무수행내용
+	    const contentsRows = document.querySelectorAll("#contents_tbody tr");
+	    const contentsPreviewTbody = $doc.querySelector("#prev_contents_tbody");
+	    const contentsWrapper = contentsPreviewTbody.closest("div");
+	    contentsPreviewTbody.innerHTML = "";
+	    let hasContentRow = false;
+	    contentsRows.forEach(function (row) {
+	        const schedule = row.querySelector("input[name='schedule']").value;
+	        const content = row.querySelector("input[name='content']").value;
+	        const place = row.querySelector("input[name='place']").value;
+	        const note = row.querySelector("input[name='note']").value;
+
+	        if (schedule || content || place || note) {
+	            hasContentRow = true;
+	            const tr = $doc.createElement("tr");
+	            [schedule, content, place, note].forEach(function (val) {
+	                const td = $doc.createElement("td");
+	                td.innerText = val;
+	                tr.appendChild(td);
+	            });
+	            contentsPreviewTbody.appendChild(tr);
+	        }
+	    });
+	    contentsWrapper.style.display = hasContentRow ? "block" : "none";
+
+	    // 예상경비, 산출식, 기대효과
+	    $doc.getElementById("prev_tripCost").innerText = document.getElementById("tripCost").value;
+	    $doc.getElementById("prev_calMethod").innerText = document.getElementById("calMethod").value;
+	    $doc.getElementById("prev_tripEffect").innerText = document.getElementById("tripEffect").value;
+	}
+
+	
+	function fn_openPreview() {
+		var url = "/preview/businessTripPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -858,9 +969,11 @@
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">

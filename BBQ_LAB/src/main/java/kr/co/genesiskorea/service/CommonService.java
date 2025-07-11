@@ -37,4 +37,6 @@ public interface CommonService {
 	List<Map<String, Object>> getCodeList(Map<String, Object> param);
 
 	void notificationAll();
+	
+	void insertHistory(Map<String, Object> param) throws Exception;
 }

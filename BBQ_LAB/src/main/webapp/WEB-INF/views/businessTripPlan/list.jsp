@@ -105,6 +105,8 @@ function fn_viewHistory(idx) {
 					html += " 삭제되었습니다.";
 				} else if( item.HISTORY_TYPE == 'U' ) {
 					html += " 수정되었습니다.";
+				} else if( item.HISTORY_TYPE == 'P' ) {
+					html += " PDF 다운로드 되었습니다.";
 				} else if( item.HISTORY_TYPE == 'T' ) {
 					html += " 임시저장 되었습니다.";
 				} 

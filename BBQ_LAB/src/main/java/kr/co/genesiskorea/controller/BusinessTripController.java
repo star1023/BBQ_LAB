@@ -100,6 +100,8 @@ public class BusinessTripController {
 	
 	@RequestMapping("/view")
 	public String view(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		Auth auth = AuthUtil.getAuth(request);
+		model.addAttribute("userId", auth.getUserId());
 		//lab_design 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> businessTripData = reportService.selectBusinessTripData(param);
 		//2.lab_business_trip_user 조회

@@ -98,7 +98,9 @@ private Logger logger = LogManager.getLogger(MarketResearchController.class);
 	}
 	
 	@RequestMapping(value = "/view")
-	public String view( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) {
+	public String view( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception {
+		Auth auth = AuthUtil.getAuth(request);
+		model.addAttribute("userId", auth.getUserId());
 		//1.lab_market_research 조회
 		Map<String, Object> researchData = reportService.selectMarketResearchData(param);
 		//2.lab_market_research_user 조회
