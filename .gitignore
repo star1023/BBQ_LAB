@@ -2,7 +2,7 @@
 /classes/
 .class
 .properties
-/BBQ_LAB/
 
+/BBQ_LAB/target/
 /target/
 *.class
