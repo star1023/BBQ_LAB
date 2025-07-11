@@ -1,5 +1,6 @@
 package kr.co.genesiskorea.dao.impl;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +49,12 @@ public class SystemRoleDaoImpl implements SystemRoleDao {
 	public void deleteRole(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("systemRole.deleteRole", param);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> selectRoleList() {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("systemRole.selectRoleListAll");
 	}
 
 }

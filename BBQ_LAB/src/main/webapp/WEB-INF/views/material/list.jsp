@@ -138,6 +138,8 @@ function fn_view(idx) {
 			$("#standardTxt").html(data.data.STANDARD);
 			$("#originTxt").html(data.data.ORIGIN);
 			$("#expireDateTxt").html(data.data.EXPIRATION_DATE);
+			$("#supplierTxt").html(data.data.SUPPLIER);
+			
 			var typeName = "";
 			if( chkNull(data.data.MATERIAL_TYPE_NAME1) ) {
 				typeName += data.data.MATERIAL_TYPE_NAME1;
@@ -932,7 +934,7 @@ function paging(pageNo) {
 
 <!-- 자재 조회레이어 start-->
 <div class="white_content" id="open3">
-	<div class="modal" style="	width: 700px;margin-left:-350px;height: 810px;margin-top:-400px;">
+	<div class="modal" style="	width: 700px;margin-left:-350px;height: 840px;margin-top:-400px;">
 		<h5 style="position:relative">
 			<span class="title">원료 상세 정보</span>
 			<div  class="top_btn_box">
@@ -1015,6 +1017,12 @@ function paging(pageNo) {
 					<dt>원료구분상세</dt>
 					<dd>
 						<div id="typeTxt"></div>
+					</dd>
+				</li>
+				<li>
+					<dt>제조사/공급처</dt>
+					<dd>
+						<div id="supplierTxt"></div>
 					</dd>
 				</li>
 				<li>

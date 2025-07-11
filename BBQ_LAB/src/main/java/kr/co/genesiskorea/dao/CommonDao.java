@@ -48,4 +48,8 @@ public interface CommonDao {
 
 	List<Map<String, Object>> getCodeList(Map<String, Object> param);
 
+	List<HashMap<String, Object>> selectTeamList(Map<String, Object> param);
+
+	List<HashMap<String, Object>> selectUserList(Map<String, Object> param);
+
 }

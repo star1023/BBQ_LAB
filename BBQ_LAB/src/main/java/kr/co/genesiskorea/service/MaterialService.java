@@ -31,5 +31,7 @@ public interface MaterialService {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	Map<String, Object> updateErpMaterialData(Map<String, Object> param);
+
 
 }

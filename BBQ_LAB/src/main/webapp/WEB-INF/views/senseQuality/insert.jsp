@@ -13,7 +13,7 @@
 	position: absolute;
 	transform: translate(-50%, -45%);
 }
-.ck-editor__editable { max-height: 400px; min-height:400px;}
+.ck-editor__editable { max-height: 400px; min-height:150px;}
 
 
 <style type="text/css">

@@ -1,5 +1,6 @@
 package kr.co.genesiskorea.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -16,5 +17,7 @@ public interface SystemRoleDao {
 	void updateRole(Map<String, Object> param) throws Exception;
 
 	void deleteRole(Map<String, Object> param) throws Exception;
+
+	List<HashMap<String, Object>> selectRoleList();
 
 }

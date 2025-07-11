@@ -39,4 +39,8 @@ public interface CommonService {
 	void notificationAll();
 	
 	void insertHistory(Map<String, Object> param) throws Exception;
+
+	List<HashMap<String, Object>> selectTeamList(Map<String, Object> param);
+
+	List<HashMap<String, Object>> selectUserList(Map<String, Object> param);
 }

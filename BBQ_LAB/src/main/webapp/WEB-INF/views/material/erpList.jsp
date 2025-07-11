@@ -11,6 +11,17 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	fn_loadList(1);
+	
+	$("#selectDate").datepicker({
+		showOn: "both",
+		buttonImage: "../resources/images/btn_calendar.png",
+		buttonImageOnly: true,
+		buttonText: "Select date",
+		dateFormat: "yy-mm-dd",
+		showButtonPanel: true,
+		maxDate: 0,
+		showAnim: ""
+	});
 });
 
 
@@ -118,6 +129,40 @@ function fn_searchClear() {
 	$("#viewCount").selectOptions("");
 	$("#viewCount_label").html("선택");
 }
+
+function fn_update() {
+	if( !chkNull($("#selectDate").val()) ) {
+		alert("동기화일자 입력해 주세요.");
+		$("#selectDate").focus();
+		return;
+	} else {
+		if( confirm($("#selectDate").val()+" 상품정보를 동기화 하시겠습니까") ) {
+			closeDialog('open2');
+			$('#lab_loading').show();
+			var URL = "../material/updateErpMaterialDataAjax";
+			$.ajax({
+				type:"POST",
+				url:URL,
+				data:{
+					"selectDate" : $("#selectDate").val()
+				},
+				dataType:"json",
+				async:false,
+				success:function(data) {
+					console.log(data);
+					alert("전체 : "+data.totalCount+"건\n"+"처리건수 : "+data.resultCount+"건 업데이트.");
+					fn_loadList(1);
+					$('#lab_loading').hide();
+				},
+				error:function(request, status, errorThrown){					
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+					$('#lab_loading').hide();
+				}			
+			});
+			
+		}	
+	}
+}
 </script>
 <input type="hidden" name="pageNo" id="pageNo" value="">
 <div class="wrap_in" id="fixNextTag">
@@ -206,7 +251,8 @@ function fn_searchClear() {
 				<div class="page_navi  mt10">
 				</div>
 			</div>
-			<div class="btn_box_con"> 
+			<div class="btn_box_con">
+				<button class="btn_admin_red" onclick="openDialog('open2');">상품정보 동기화</button> 
 			</div>
 	 		<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>
@@ -298,3 +344,34 @@ function fn_searchClear() {
 	</div>
 </div>
 <!-- 자재 생성레이어 close-->
+
+<!-- 자재 호출레이어 start-->
+<div class="white_content" id="open2">
+	<div class="modal" style="	width: 500px;margin-left:-250px;height: 250px;margin-top:-150px;">
+		<h5 style="position:relative">
+			<span class="title">상품정보 동기화</span>
+			<div  class="top_btn_box">
+				<ul>
+					<li>
+						<button class="btn_madal_close" onClick="closeDialog('open2')"></button>
+					</li>
+				</ul>
+			</div>
+		</h5>
+		<div class="list_detail">
+			<ul>
+				<li>
+					<dt>동기화일자</dt>
+					<dd>
+						<input type="text" name="selectDate" id="selectDate" style="width: 120px;" readonly/>
+					</dd>
+				</li>
+			</ul>
+		</div>
+		<div class="btn_box_con">
+			<button class="btn_admin_red"onclick="javascript:fn_update();">동기화</button> 
+			<button class="btn_admin_gray"onclick="closeDialog('open2')"> 취소</button>
+		</div>
+	</div>
+</div>
+<!-- 자재 호출 레이어 close-->

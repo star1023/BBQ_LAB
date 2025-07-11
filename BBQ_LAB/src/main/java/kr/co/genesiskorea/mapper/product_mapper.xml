@@ -270,8 +270,29 @@
 		<if test="searchCategory3 != null and searchCategory3 != '' ">
 			AND PRODUCT_TYPE3 = #{searchCategory3}
 		</if>
-		<if test="searchFileTxt != null and searchFileTxt != '' ">
+		<!-- if test="searchFileTxt != null and searchFileTxt != '' ">
 			AND PRODUCT_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'PROD' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+		</if-->
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND PRODUCT_IDX IN (
+				SELECT 
+					distinct DOC_IDX 
+				FROM 
+					lab_file 
+				WHERE 1 = 1 
+					AND DOC_TYPE = 'PROD' 
+					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
+			)											
+		</if>
+		<if test="searchTeam != null and searchTeam != '' ">
+			<choose>
+				<when test="searchUser != null and searchUser != '' ">
+					AND DOC_OWNER = #{searchUser}
+				</when>
+				<otherwise>
+					AND DOC_OWNER IN (SELECT USER_ID FROM lab_user WHERE 1 = 1 AND EMSTAT = '1' AND ORGAID = #{searchTeam})
+				</otherwise>
+			</choose>	
 		</if>
 	</sql>
 	
@@ -281,7 +302,24 @@
 			count(PRODUCT_IDX) as cnt
 		FROM lab_product
 		WHERE 1 = 1
-			AND DOC_OWNER = #{userId}
+			<choose>
+				<when test="listType != null and listType == 'my' "> 
+				AND DOC_OWNER = #{userId} 
+				</when>
+			    <when test="listType != null and listType == 'team'">
+			    AND DOC_OWNER IN (
+			    	SELECT USER_ID from lab_team_manager_view ltmv
+					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+			    ) 
+			    </when>
+			    <when test="listType != null and listType == 'share'">
+			    AND PRODUCT_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+			    </when>
+			    <when test="listType != null and listType == 'all'">
+			    
+			    </when>
+				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+			</choose>
 			AND IS_DELETE = 'N'
 			AND IS_LAST = 'Y'
 			<include refid="product.whereProductList" />
@@ -335,7 +373,24 @@
 						, DOC_NO
 					FROM lab_product
 					WHERE 1 = 1
-						AND DOC_OWNER = #{userId}
+						<choose>
+							<when test="listType != null and listType == 'my' "> 
+							AND DOC_OWNER = #{userId} 
+							</when>
+						    <when test="listType != null and listType == 'team'">
+						    AND DOC_OWNER IN (
+						    	SELECT USER_ID from lab_team_manager_view ltmv
+								WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+						    ) 
+						    </when>
+						    <when test="listType != null and listType == 'share'">
+						    	AND PRODUCT_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+						    </when>
+						    <when test="listType != null and listType == 'all'">
+						    
+						    </when>
+							<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+						</choose>
 						AND IS_DELETE = 'N'
 						AND IS_LAST = 'Y'
 						<include refid="product.whereProductList" />
@@ -388,7 +443,10 @@
 			, PRODUCT_IDX
 			, MATERIAL_IDX
 			, MATERIAL_CODE			
-			, SAP_CODE
+			, CASE WHEN SAP_CODE = '' or SAP_CODE IS NULL 
+				THEN (SELECT lm.SAP_CODE FROM lab_material lm WHERE 1 = 1 AND lm.IS_LAST = 'Y' AND lm.MATERIAL_CODE = lpm.MATERIAL_CODE)
+				ELSE ''
+				END	AS SAP_CODE
 			, NAME
 			, SAP_PRICE
 			, VOLUMN
@@ -398,7 +456,7 @@
 			, DESCRIPTION
 			, MATERIAL_TYPE
 		FROM 
-			lab_product_material
+			lab_product_material lpm
 		WHERE 1 = 1
 			AND PRODUCT_IDX = #{idx}
 		ORDER BY P_MATERIAL_IDX ASC

@@ -226,4 +226,11 @@ public class MaterialController {
 		param.put("docType", "MAT");
 		return materialService.selectHistory(param);
 	}
+	
+	@RequestMapping("/updateErpMaterialDataAjax")
+	@ResponseBody
+	public Map<String, Object> updateErpMaterialDataAjax(HttpServletRequest request, HttpServletResponse response
+			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		return materialService.updateErpMaterialData(param);
+	}
 }

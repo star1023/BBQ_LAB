@@ -286,6 +286,7 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 				});	
 			}
 			
+			
 			function loadNotificationCount() {
 				/*
 				var URL = "../common/notificationCountAjax";

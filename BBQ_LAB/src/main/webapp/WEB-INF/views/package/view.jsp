@@ -101,7 +101,7 @@
 				<ul>
 					<li>
 					<c:if test="${userUtil:getUserId(pageContext.request) == packageInfoData.data.DOC_OWNER}">
-						<c:if test="${packageInfoData.data.STATUS == 'TMP' || packageInfoData.data.STATUS == 'COND_APPR'}">
+						<c:if test="${packageInfoData.data.STATUS == 'TMP'}">
 							<button class="btn_circle_modifiy" onclick="fn_update('${packageInfoData.data.PACKAGE_IDX}')">&nbsp;</button>
 						</c:if>
 						<c:if test="${packageInfoData.data.STATUS == 'COMP' and packageInfoData.data.IS_LAST == 'Y'}">
@@ -233,10 +233,29 @@
 								</c:choose>
 							</td>
 						</tr>
-						<tr>
+						<tr style="height:285px;">
 							<td>원재료명 및 함량</td>
-							<td colspan="2">
+							<td>
 								<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.CONTAIN_QUANTITY}</p>							
+							</td>
+							<td>
+								
+								<c:set var="hasImage" value="${not empty packageInfoData.data.CONTAIN_QUANTITY_FILE_PATH and not empty packageInfoData.data.CONTAIN_QUANTITY_FILE_NAME}" />
+								<p>
+								    <a href="<c:if test='${hasImage}'><c:out value='/images${packageInfoData.data.CONTAIN_QUANTITY_FILE_PATH}/${packageInfoData.data.CONTAIN_QUANTITY_FILE_NAME}'/></c:if>" 
+								       target="_blank">
+								        <img id="preview"
+								             src="<c:choose>
+								                      <c:when test='${hasImage}'>
+								                          /images${packageInfoData.data.CONTAIN_QUANTITY_FILE_PATH}/${packageInfoData.data.CONTAIN_QUANTITY_FILE_NAME}
+								                      </c:when>
+								                      <c:otherwise>
+								                          /resources/images/img_noimg3.png
+								                      </c:otherwise>
+								                  </c:choose>"
+								             style="border:1px solid #e1e1e1; border-radius:5px; min-height:250px; max-height:250px; object-fit: contain; min-width:310px; max-width: 310px;">
+								    </a>
+								</p>
 							</td>
 						</tr>
 						<tr>
@@ -347,9 +366,9 @@
 				<c:if test="${userUtil:getUserId(pageContext.request) == packageInfoData.data.DOC_OWNER}">
 				<c:if test="${packageInfoData.data.STATUS == 'TMP' || packageInfoData.data.STATUS == 'COND_APPR'}">
 					<button class="btn_admin_sky" onclick="fn_update('${packageInfoData.data.PACKAGE_IDX}')">수정</button>
+					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</c:if>	
 				</c:if>
-					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />
 			</div>

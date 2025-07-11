@@ -84,9 +84,9 @@ public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
 	}
 
 	@Override
-	public void insertMaterial(List<Map<String, Object>> returnList) {
+	public int insertMaterial(List<Map<String, Object>> returnList) {
 		// TODO Auto-generated method stub
-		sqlSessionTemplate.insert("batch.insertMaterial",returnList);
+		return sqlSessionTemplate.insert("batch.insertMaterial",returnList);
 	}
 
 	@Override

@@ -31,4 +31,6 @@ public interface PackageInfoDao {
 	List<Map<String, Object>> selectHistory(Map<String, Object> param);
 
 	int selectMyDataCheck(Map<String, Object> param);
+
+	Map<String, Object> selectPackageInfoDataByProductCode(Map<String, Object> param);
 }

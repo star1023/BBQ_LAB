@@ -217,10 +217,24 @@ public class TestController {
 		return "테스트";
 	}
 	
+	@RequestMapping("/hrCodeMasterAjax")
+	@ResponseBody
+	public String hrCodeMasterAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		batchService.hrCodeMaster();
+		return "테스트";
+	}
+	
 	@RequestMapping("/hrUserMasterAjax")
 	@ResponseBody
 	public String hrUserMasterAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		batchService.hrUserMaster();
+		return "테스트";
+	}
+	
+	@RequestMapping("/hrUserSyncAjax")
+	@ResponseBody
+	public String hrUserSyncAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		batchService.hrUserSync();
 		return "테스트";
 	}
 }

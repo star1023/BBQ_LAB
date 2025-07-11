@@ -11,7 +11,7 @@ public interface BatchDao {
 
 	void initMenuSeq();
 
-	void insertMaterial(List<Map<String, Object>> returnList);
+	int insertMaterial(List<Map<String, Object>> returnList);
 
 	void initSeq();
 

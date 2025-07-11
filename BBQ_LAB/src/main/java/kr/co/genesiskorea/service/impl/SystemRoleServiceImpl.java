@@ -65,4 +65,10 @@ public class SystemRoleServiceImpl implements SystemRoleService {
 		roleDao.deleteRole(param);
 	}
 
+	@Override
+	public List<HashMap<String, Object>> selectRoleList() {
+		// TODO Auto-generated method stub
+		return roleDao.selectRoleList();
+	}
+
 }

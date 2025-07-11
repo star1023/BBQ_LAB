@@ -306,11 +306,11 @@ function checkFileName(str){
 	var result = true;
     //1. 확장자 체크
     var ext =  str.split('.').pop().toLowerCase();
-    if($.inArray(ext, ['pdf']) == -1) {
+    if($.inArray(ext, ['pdf','png','jpg','jpeg']) == -1) {
     	var message = "";
     	message += ext+'파일은 업로드 할 수 없습니다.';
     	//message += "\n";
-    	message += "(pdf 만 가능합니다.)";
+    	message += "(pdf와 이미지(png,jpg,jpeg)만 가능합니다.)";
         alert(message);
         result = false;
     }
@@ -412,6 +412,7 @@ function fn_insert(){
 			formData.append("standard",$("#standard").val());
 			formData.append("origin",$("#origin").val());
 			formData.append("expireDate",$("#expireDate").val());
+			formData.append("supplier",$("#supplier").val());
 
 			for (var i = 0; i < attatchFileArr.length; i++) {
 				formData.append('file', attatchFileArr[i])
@@ -712,6 +713,12 @@ function selectNewCode() {
 						<dd>
 							<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 250px; float: left" readonly>
 							<button class="btn_small_search ml5" onclick="openDialog('open2')" style="float: left">조회</button>
+						</dd>
+					</li>
+					<li>
+						<dt>제조사/공급처</dt>
+						<dd>
+							<input type="text" class="req" style="width:302px;" name="supplier" id="supplier">
 						</dd>
 					</li>
 					<li>

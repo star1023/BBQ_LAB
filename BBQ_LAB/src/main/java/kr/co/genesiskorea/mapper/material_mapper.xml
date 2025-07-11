@@ -142,6 +142,7 @@
 			, EXPIRATION_DATE
 			, REG_USER
 			, DOC_OWNER
+			, SUPPLIER
 		)VALUES(
 			#{idx}
 			, #{matCode}
@@ -178,6 +179,7 @@
 			, #{expireDate}
 			, #{userId}
 			, #{userId}
+			, #{supplier}
 		)
 	</insert>
 	
@@ -216,6 +218,7 @@
 			, EXPIRATION_DATE
 			, REG_USER
 			, DOC_OWNER
+			, SUPPLIER
 		FROM 
 			lab_material
 		WHERE 1 = 1
@@ -246,7 +249,7 @@
 		FROM
 			lab_erp_material2
 		WHERE 1 = 1 
-			AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%')
+			<!-- AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%') -->
 		<include refid="material.whereErpMaterialList" />
 	</select>
 	
@@ -284,7 +287,7 @@
 			FROM
 				lab_erp_material2
 			WHERE 1 = 1 
-				AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%')
+			<!--  	AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%') -->
 			<include refid="material.whereErpMaterialList" />
 		)tmp WHERE rnum between #{startRow} and #{endRow}	
 	</select>
@@ -368,6 +371,7 @@
 			, EXPIRATION_DATE
 			, REG_USER
 			, DOC_OWNER
+			, SUPPLIER
 		)VALUES(
 			#{idx}
 			, #{matCode}
@@ -404,6 +408,7 @@
 			, #{expireDate}
 			, #{userId}
 			, #{userId}
+			, #{supplier}
 		)
 	</insert>
 	

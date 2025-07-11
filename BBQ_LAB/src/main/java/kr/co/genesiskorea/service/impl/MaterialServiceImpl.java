@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 import org.springframework.web.multipart.MultipartFile;
 
+import kr.co.genesiskorea.dao.BatchDao;
 import kr.co.genesiskorea.dao.CommonDao;
 import kr.co.genesiskorea.dao.MaterialDao;
 import kr.co.genesiskorea.service.MaterialService;
@@ -34,6 +36,9 @@ public class MaterialServiceImpl implements MaterialService {
 	
 	@Autowired 
 	MaterialDao materialDao;
+	
+	@Autowired 
+	BatchDao batchDao;
 	
 	@Autowired 
 	CommonDao commonDao;
@@ -84,6 +89,7 @@ public class MaterialServiceImpl implements MaterialService {
 		return materialDao.selectmaterialCode();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void insertMaterial(Map<String, Object> param, List<String> materialType, List<String> fileType,
 			List<String> fileTypeText, List<String> docType, List<String> docTypeText, MultipartFile[] file)
@@ -147,7 +153,13 @@ public class MaterialServiceImpl implements MaterialService {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
 							String result = FileUtil.upload3(multipartFile,path,fileIdx);
-							String content = FileUtil.getPdfContents(path, result);
+							String content = "";
+							String extension = FileNameUtils.getExtension(multipartFile.getOriginalFilename());
+							if( extension != null && "pdf".equals(extension.toLowerCase()) ) {
+								content = FileUtil.getPdfContents(path, result);
+							} else {
+								content = multipartFile.getOriginalFilename();
+							}							
 							Map<String,Object> fileMap = new HashMap<String,Object>();
 							fileMap.put("fileIdx", fileIdx);
 							fileMap.put("docIdx", materialIdx);
@@ -305,7 +317,13 @@ public class MaterialServiceImpl implements MaterialService {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
 							String result = FileUtil.upload3(multipartFile,path,fileIdx);
-							String content = FileUtil.getPdfContents(path, result);
+							String content = "";
+							String extension = FileNameUtils.getExtension(multipartFile.getOriginalFilename());
+							if( extension != null && "pdf".equals(extension.toLowerCase()) ) {
+								content = FileUtil.getPdfContents(path, result);
+							} else {
+								content = multipartFile.getOriginalFilename();
+							}
 							Map<String,Object> fileMap = new HashMap<String,Object>();
 							fileMap.put("fileIdx", fileIdx);
 							fileMap.put("docIdx", materialIdx);
@@ -371,6 +389,52 @@ public class MaterialServiceImpl implements MaterialService {
 	public int selectMyDataCheck(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return materialDao.selectMyDataCheck(param);
+	}
+
+	@Override
+	public Map<String, Object> updateErpMaterialData(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		//1.RFC를 호출해서 해당일의 원료 데이터를 조회한다.
+		System.err.println("param : "+param);
+		Map<String, Object> importParams = new HashMap<String, Object>();
+		String selectDate = (String)param.get("selectDate");
+		System.err.println("selectDate : "+selectDate);
+		if( selectDate != null && !"".equals(selectDate) ) {
+			try {
+				String inputFormat = "yyyy-MM-dd";
+				String outputFormat = "yyyyMMdd";
+				SimpleDateFormat inputDateFormat = new SimpleDateFormat(inputFormat);
+	            SimpleDateFormat outputDateFormat = new SimpleDateFormat(outputFormat);
+	            Date date = inputDateFormat.parse(selectDate);
+				
+				String inDay = outputDateFormat.format(date);
+				importParams.put("I_DATUM", inDay);
+			} catch( Exception e ) {
+				Calendar cal = Calendar.getInstance();
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+		        String toDay = sdf.format(cal.getTime());
+		        importParams.put("I_DATUM", toDay);
+			}
+		} else {
+			Calendar cal = Calendar.getInstance();
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
+	        String toDay = sdf.format(cal.getTime());
+	        importParams.put("I_DATUM", toDay);
+		}
+		System.err.println("importParams : "+importParams);
+		List<Map<String, Object>> erpMaterialList = batchDao.selectMaterial(importParams);
+		int totalCount = erpMaterialList.size();
+		System.err.println("erpMaterialList : "+erpMaterialList);
+		System.err.println("totalCount : "+totalCount);
+		//2.조회한 데이터를 INSERT/UPDATE 한다.
+		int resultCount = batchDao.insertMaterial(erpMaterialList);
+		//3.처리 결과를 반환한다.
+		System.err.println("resultCount : "+resultCount);
+		
+		resultMap.put("totalCount", totalCount);
+		resultMap.put("resultCount", resultCount);
+		return resultMap;
 	}	
 
 }

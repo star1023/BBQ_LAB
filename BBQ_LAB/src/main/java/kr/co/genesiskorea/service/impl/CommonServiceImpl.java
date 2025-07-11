@@ -171,4 +171,15 @@ public class CommonServiceImpl implements CommonService {
 		// TODO Auto-generated method stub
 		commonDao.insertHistory(param);
 	}
+
+	public List<HashMap<String, Object>> selectTeamList(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonDao.selectTeamList(param);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> selectUserList(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return commonDao.selectUserList(param);
+	}
 }

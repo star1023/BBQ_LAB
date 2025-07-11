@@ -139,4 +139,16 @@ public class CommonDaoImpl implements kr.co.genesiskorea.dao.CommonDao {
 		return sqlSessionTemplate.selectList("common.codeList",param);
 	}
 
+	@Override
+	public List<HashMap<String, Object>> selectTeamList(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("common.selectTeamList",param);
+	}
+
+	@Override
+	public List<HashMap<String, Object>> selectUserList(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("common.selectUserList",param);
+	}
+
 }

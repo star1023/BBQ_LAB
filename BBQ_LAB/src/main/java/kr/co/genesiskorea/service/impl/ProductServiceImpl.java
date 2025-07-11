@@ -2,6 +2,7 @@ package kr.co.genesiskorea.service.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -697,9 +698,12 @@ public class ProductServiceImpl implements ProductService {
 		
 		// 페이징: 페이징 정보 SET
 		PageNavigator navi = new PageNavigator(param, viewCount, totalCount);
-		
-		List<Map<String, Object>> productList = productDao.selectProductList(param);
-		
+		String searchFileTxt = (String)param.get("searchFileTxt");
+		if( searchFileTxt != null && !"".equals(searchFileTxt) ) {
+			//searchFileTxtTmp = searchFileTxt.replaceAll(" ", "|");
+			param.put("searchFileTxt", searchFileTxt.replaceAll(" ", "|"));
+		}
+		List<Map<String, Object>> productList = productDao.selectProductList(param);		
 		Map<String, Object> map = new HashMap<String, Object>();
 		map.put("pageNo", pageNo);
 		map.put("totalCount", totalCount);

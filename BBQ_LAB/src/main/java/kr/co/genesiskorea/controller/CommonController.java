@@ -127,5 +127,26 @@ public class CommonController {
 			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return commonService.selectNotification(param);
 	}
-
+	
+	@RequestMapping(value = "/teamListAjax", method = RequestMethod.POST)
+	@ResponseBody
+	public List<HashMap<String,Object>> teamListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
+		try {
+			return commonService.selectTeamList(param);
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+	}
+	
+	@RequestMapping(value = "/userListAjax", method = RequestMethod.POST)
+	@ResponseBody
+	public List<HashMap<String,Object>> userListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
+		try {
+			return commonService.selectUserList(param);
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+	}
 }
