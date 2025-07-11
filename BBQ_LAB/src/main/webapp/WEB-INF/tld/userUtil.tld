@@ -87,4 +87,25 @@
 			<function-signature>java.lang.String getMailCheck3(javax.servlet.http.HttpServletRequest)</function-signature>
 			<example>${userUtil:getMailCheck3(request)}</example>
 		</function>
+		<function>
+			<description>권한코드조회</description>
+			<name>getRoleCode</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getRoleCode(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getRoleCode(request)}</example>
+		</function>
+		<function>
+			<description>부서명조회</description>
+			<name>getDeptName</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getDeptName(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getDeptName(request)}</example>
+		</function>
+		<function>
+			<description>직급조회</description>
+			<name>getTitleName</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getTitleName(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getTitleName(request)}</example>
+		</function>
 </taglib>

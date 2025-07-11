@@ -52,6 +52,9 @@
 			, REG_USER
 			, DOC_OWNER
 			, STATUS
+			, CONTAIN_QUANTITY_FILE_NAME
+			, CONTAIN_QUANTITY_ORG_FILE_NAME
+			, CONTAIN_QUANTITY_FILE_PATH
 		)VALUES(
 			#{idx}
 			, #{productName}
@@ -89,7 +92,10 @@
 			, 'Y'
 			, #{userId}
 			, #{userId}
-			, #{status}			
+			, #{status}		
+			, #{fileName}	
+			, #{orgFileName}
+			, #{filePath}			
 		)
 	</insert>
 	
@@ -205,6 +211,9 @@
 			, REG_USER
 			, DOC_OWNER
 			, STATUS
+			, CONTAIN_QUANTITY_FILE_NAME
+			, CONTAIN_QUANTITY_ORG_FILE_NAME
+			, CONTAIN_QUANTITY_FILE_PATH
 		FROM 
 			lab_package_info
 		WHERE 1 = 1
@@ -253,6 +262,9 @@
 			, SUGGESTIONS = #{suggestions}
 			, COOK_METHOD = #{cookMethod}
 			, STATUS = #{status}
+			, CONTAIN_QUANTITY_FILE_NAME = #{fileName}
+			, CONTAIN_QUANTITY_ORG_FILE_NAME = #{orgFileName}
+			, CONTAIN_QUANTITY_FILE_PATH = #{filePath}
 		WHERE 1 = 1
 			AND PACKAGE_IDX = #{idx} 
 	</update>
@@ -308,6 +320,9 @@
 			, REG_USER
 			, DOC_OWNER
 			, STATUS
+			, CONTAIN_QUANTITY_FILE_NAME
+			, CONTAIN_QUANTITY_ORG_FILE_NAME
+			, CONTAIN_QUANTITY_FILE_PATH
 		)VALUES(
 			#{idx}
 			, #{productName}
@@ -338,7 +353,10 @@
 			, 'Y'
 			, #{userId}
 			, #{userId}
-			, #{status}			
+			, #{status}
+			, #{fileName}	
+			, #{orgFileName}
+			, #{filePath}
 		)
 	</insert>
 	
@@ -377,5 +395,50 @@
 			AND PACKAGE_IDX = #{idx}
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'	
+	</select>
+	
+	<select id="selectPackageInfoDataByProductCode" parameterType="map" resultType="hashmap">
+		/* package.selectPackageInfoData */
+		SELECT
+			PACKAGE_IDX			
+			, PRODUCT_NAME
+			, PRODUCT_CODE
+			, ETC_INFO
+			, WEIGHT
+			, KEEP_CONDITION
+			, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_NAME
+			, KEEP_CONDITION_TXT
+			, PRODUCT_NAME_BACK
+			, FOOD_TYPE
+			, FN_GET_CODE_NAME('FOOD_TYPE', FOOD_TYPE) AS FOOD_TYPE_NAME
+			, FOOD_TYPE_TXT
+			, CONTAIN_QUANTITY
+			, ALLERGY_OBJECT
+			, MANUFACTURING_NO
+			, EXPIRED_DATE
+			, PACKAGE_OBJECT
+			, MAKER
+			, DISTRIBUTION
+			, RETURNED
+			, CUSTOMER_COUNSEL
+			, SEPARATE_DISCHARGE
+			, FN_GET_CODE_NAME('DISCHARGE_DISPLAY', SEPARATE_DISCHARGE) AS SEPARATE_DISCHARGE_NAME
+			, SEPARATE_DISCHARGE_TXT
+			, SUGGESTIONS
+			, COOK_METHOD
+			, DOC_NO			
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+			, CONTAIN_QUANTITY_FILE_NAME
+			, CONTAIN_QUANTITY_ORG_FILE_NAME
+			, CONTAIN_QUANTITY_FILE_PATH
+		FROM 
+			lab_package_info
+		WHERE 1 = 1
+			AND PRODUCT_CODE = #{productCode}	
 	</select>
 </mapper>

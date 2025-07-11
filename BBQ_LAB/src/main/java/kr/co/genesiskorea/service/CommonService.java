@@ -37,4 +37,8 @@ public interface CommonService {
 	List<Map<String, Object>> getCodeList(Map<String, Object> param);
 
 	void notificationAll();
+
+	List<HashMap<String, Object>> selectTeamList(Map<String, Object> param);
+
+	List<HashMap<String, Object>> selectUserList(Map<String, Object> param);
 }

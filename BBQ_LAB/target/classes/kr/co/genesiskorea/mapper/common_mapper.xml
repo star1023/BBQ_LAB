@@ -332,4 +332,58 @@
 	    WHERE FILE_IDX = #{fileIdx}
 	</delete>
 	
+	<select id="selectTeamList" parameterType="map" resultType="hashmap">
+		/* common.selectTeamList */
+		SELECT 
+			lab_team.OBJTID AS TEAM_ID
+			, lab_team.OBJTTX AS TEAM_NAME 
+		FROM (
+			WITH RECURSIVE org_path(OBJTID, OBJTTX, TOBJID, SEQUEN, PRIORT, CSTCNT, BUKRS, level) AS 
+			(
+			select 
+				hr1010.OBJTID
+				, hr1010.OBJTTX 
+				, hr1010.TOBJID 
+				, hr1010.SEQUEN
+				, hr1010.PRIORT 
+				, hr1010.CSTCNT 
+				, hr1010.BUKRS
+				, 1 as level
+			from lab_interface_hr1010 hr1010
+			where hr1010.OBJTID = #{pTeamId}
+			union all
+			select 
+				hr1010_tmp.OBJTID
+				, hr1010_tmp.OBJTTX 
+				, hr1010_tmp.TOBJID 
+				, hr1010_tmp.SEQUEN
+				, hr1010_tmp.PRIORT 
+				, hr1010_tmp.CSTCNT 
+				, hr1010_tmp.BUKRS
+				, op.level+1 as level
+			from lab_interface_hr1010 hr1010_tmp
+			INNER JOIN org_path op ON hr1010_tmp.TOBJID = op.OBJTID
+			)
+			SELECT OBJTID, OBJTTX, TOBJID, SEQUEN, PRIORT, CSTCNT, BUKRS, level
+			FROM org_path
+			ORDER BY level
+			)lab_team
+		WHERE 1 = 1
+		AND lab_team.level > 1
+	</select>
+	
+	<select id="selectUserList" parameterType="map" resultType="hashmap">
+		/* common.selectUserList */
+		SELECT
+			lu.USER_ID 
+			, lu.USER_NAME 
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT 
+		FROM 
+			lab_user lu 
+		WHERE 1 = 1
+			AND lu.ORGAID = #{teamId}
+		ORDER BY RESPCD ASC	
+	</select>
 </mapper>

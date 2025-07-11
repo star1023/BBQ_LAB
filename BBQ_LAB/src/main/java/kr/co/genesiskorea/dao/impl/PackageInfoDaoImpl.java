@@ -93,4 +93,10 @@ public class PackageInfoDaoImpl implements PackageInfoDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("package.selectMyDataCheck", param);
 	}
+
+	@Override
+	public Map<String, Object> selectPackageInfoDataByProductCode(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("package.selectPackageInfoDataByProductCode", param);
+	}
 }

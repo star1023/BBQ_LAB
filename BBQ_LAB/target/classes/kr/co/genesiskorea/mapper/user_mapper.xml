@@ -94,7 +94,7 @@
 			SELECT	COUNT(*)
 			FROM	lab_user	
 			WHERE 1=1
-				AND EMSTAT = 1
+				<!--  AND EMSTAT = 1  -->
 			<if test="searchValue != null and searchValue != '' ">
 				AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
 			</if>
@@ -117,6 +117,7 @@
 			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = t.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
 			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = t.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
 			, (select TOBJID from lab_interface_hr1010 hr1010 where hr1010.OBJTID = t.ORGAID ) as TOBJID 
+			, (select ROLE_NAME from lab_system_role lsr where lsr.ROLE_IDX = t.roleCode ) as roleName
 			FROM	
 					(
 						SELECT	row_number() over (order by USER_ID desc) as rnum
@@ -137,6 +138,7 @@
 					      ,IS_ADMIN AS isAdmin	
 					      ,IS_DELETE AS isDelete
 					      ,IS_LOCK AS isLock
+					      ,ROLE_CODE AS roleCode
 					      , ORGAID
 						  , TITLCD
 						  , LEVLCD
@@ -144,7 +146,7 @@
 						  , EMSTAT
 						FROM	lab_user	
 						WHERE 1=1
-							AND EMSTAT = 1
+							<!--  AND EMSTAT = 1  -->
 						<if test="searchValue != null and searchValue != '' ">
 							AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
 						</if>
@@ -273,18 +275,20 @@
     
     <insert id="insertLog" parameterType="map">
 		/* user.insertLog   */
-		INSERT INTO userTable_log(
-			type
-		    ,description
-		    ,userId
-		    ,regUserId
-		    ,regDate
+		INSERT INTO lab_user_log(
+			LOG_IDX
+			, LOG_TYPE
+		    , DESCRIPTION
+		    , USER_ID 
+		    , REG_USER_ID
+		    , REG_DATE
 		)	VALUES (
-				#{type}
-			,	#{description}
-			,	#{userId}
-			,  	#{regUserId} 
-			, 	sysdate()
+			FN_NEXTVAL('user_log_seq')
+			, #{logType}
+			, #{description}
+			, #{userId}
+			, #{regUserId} 
+			, sysdate()
 		)
 	</insert>
 	<insert id="insertLoginLog" parameterType="map">
@@ -524,7 +528,7 @@
 	    , lu.USER_NAME AS userName
 	    , lu.USER_GRAD AS userGrade
 	    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
-	    , lu.REG_DATE AS regDate
+	    , DATE_FORMAT(lu.REG_DATE,'%Y-%m-%d') AS regDate
 	    , lu.USER_CODE AS userCode
 	    , lu.EMAIL AS email
 	    , lu.DEPT_CODE AS deptCode
@@ -556,8 +560,10 @@
     FROM 
     	lab_user lu
 	WHERE	1 = 1
+	    <!-- 
 	    AND lu.IS_DELETE != 'Y'
-	    AND lu.EMSTAT != 3         
+	    AND lu.EMSTAT != 3
+	     -->         
 		AND lu.USER_ID = #{userId, jdbcType=VARCHAR}
     </select>
     
@@ -567,6 +573,33 @@
 		SET 
 	      	USER_PWD =  #{encPwd}
 			, PWD_INIT =  #{pwdInit}  
+		WHERE	1 = 1
+			AND USER_ID = #{userId}
+    </update>
+    
+    <update id="deleteUser" parameterType="map">
+    	/*	user.deleteUser 사용자 퇴직처리 */
+    	UPDATE lab_user 
+		SET 
+	      	EMSTAT =  3
+		WHERE	1 = 1
+			AND USER_ID = #{userId}
+    </update>
+    
+    <update id="restoreUser" parameterType="map">
+    	/*	user.restoreUser 사용자 재직처리 */
+    	UPDATE lab_user 
+		SET 
+	      	EMSTAT =  1
+		WHERE	1 = 1
+			AND USER_ID = #{userId}
+    </update>
+    
+    <update id="updateUser" parameterType="map">
+    	/*	user.updateUser 사용자 정보 변경 */
+    	UPDATE lab_user 
+		SET 
+	      	ROLE_CODE =  #{userRole}
 		WHERE	1 = 1
 			AND USER_ID = #{userId}
     </update>

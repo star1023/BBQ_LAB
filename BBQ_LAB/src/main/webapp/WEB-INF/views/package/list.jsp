@@ -56,11 +56,11 @@
 						html += "	<td>";
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";
-							//if( item.STATUS == 'COMP' ) {
+							if( item.STATUS == 'COMP' ) {
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
-							//}
+							}
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-							if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' ) {
+							if( item.STATUS == 'TMP' ) {
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 							}
 							html += "		</li>";

@@ -1,6 +1,7 @@
 package kr.co.genesiskorea.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -100,47 +101,56 @@ public class BatchServiceImpl implements BatchService {
 	@Override
 	public void hrUserSync() {
 		// TODO Auto-generated method stub
-		//1.세과원 사용자 리스트를 조회 한다.
-		List<Map<String,Object>> userList = batchDao.selectResearchUserList();
-		//2.암호화 된 초기 비밀번호를 설정한다.
-		for( int i = 0 ; i < userList.size() ; i++ ) {
-			Map<String,Object> userData = userList.get(i);
-			String orgId = (String)userData.get("ORGAID");
-			String titleCode = (String)userData.get("TITLCD");
-			String respCode = (String)userData.get("RESPCD");
-			String roleCode = "";
-			//소속이 세과원인 경우
-			if( orgId != null && "10000065".equals(orgId) ) {		//나중에 10000752 로 변경		
-				if( titleCode != null && "e10".equals(titleCode) ) {	//e10 은 사장
-					roleCode = "5";
-				} else if( titleCode != null && "m10".equals(titleCode) ) {	//m10 상무
-					roleCode = "4";
-				} 
-			}
-			
-			//식품 안전팀일 경우
-			if( "".equals(roleCode) && orgId != null && "10000071".equals(orgId) ) {	//나중에 10001220 로 변경	
-				if( respCode != null && "906".equals(respCode) ) {
-					roleCode = "7";
-				} else {
-					roleCode = "6";
+		try {
+			//1.세과원 사용자 리스트를 조회 한다.
+			List<Map<String,Object>> userList = batchDao.selectResearchUserList();
+			System.err.println("사용자 수 : "+userList.size());
+			//2.암호화 된 초기 비밀번호를 설정한다.
+			List<Map<String,Object>> userDataList = new ArrayList<Map<String,Object>>();
+			for( int i = 0 ; i < userList.size() ; i++ ) {
+				Map<String,Object> userData = userList.get(i);
+				String orgId = (String)userData.get("ORGAID");
+				String titleCode = (String)userData.get("TITLCD");
+				String respCode = (String)userData.get("RESPCD");
+				String roleCode = "";
+				//소속이 세과원인 경우
+				if( orgId != null && "10000752".equals(orgId) ) {		//나중에 10000752 로 변경		
+					if( titleCode != null && "e10".equals(titleCode) ) {	//e10 은 사장
+						roleCode = "5";
+					} else if( titleCode != null && "m10".equals(titleCode) ) {	//m10 상무
+						roleCode = "4";
+					} 
 				}
+				
+				//식품 안전팀일 경우
+				if( "".equals(roleCode) && orgId != null && "10001220".equals(orgId) ) {	//나중에 10001220 로 변경	
+					if( respCode != null && "906".equals(respCode) ) {
+						roleCode = "7";
+					} else {
+						roleCode = "6";
+					}
+				}
+				//팀장
+				if( "".equals(roleCode) && respCode != null && "906".equals(respCode) ) {
+					roleCode = "2";
+				}
+				
+				//권한코드가 지정이 안된 경우 일반사용자 권한을 추가한다.
+				if( roleCode != null && "".equals(roleCode) ) {
+					roleCode = "3";
+				}
+				userData.put("ROLE_CODE", roleCode);
+				String encPwd = SecurityUtil.getEncrypt((String)userData.get("EMPNUM"), (String)userData.get("EMPNUM"));
+				userData.put("ENCPWD", encPwd);
+				//userList.add(i, userData);
+				userDataList.add(userData);
+				
+				System.err.println(i+"번째 사용자 : "+userData);
 			}
-			//팀장
-			if( "".equals(roleCode) && respCode != null && "906".equals(respCode) ) {
-				roleCode = "2";
-			}
-			
-			//권한코드가 지정이 안된 경우 일반사용자 권한을 추가한다.
-			if( roleCode != null && "".equals(roleCode) ) {
-				roleCode = "3";
-			}
-			userData.put("ROLE_CODE", roleCode);
-			String encPwd = SecurityUtil.getEncrypt((String)userData.get("EMPNUM"), (String)userData.get("EMPNUM"));
-			userData.put("ENCPWD", encPwd);
-			userList.add(i, userData);
+			//3.lab_user 테이블에 저장한다.
+			batchDao.insertHrUser(userDataList);
+		} catch( Exception e ) {
+			System.err.println(e.getMessage());
 		}
-		//3.lab_user 테이블에 저장한다.
-		batchDao.insertHrUser(userList);
 	}
 }

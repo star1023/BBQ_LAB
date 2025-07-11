@@ -94,4 +94,18 @@
 		WHERE 1 = 1
 			AND ROLE_IDX = #{roleIdx}
 	</update>
+	
+	<select id="selectRoleListAll" parameterType="map" resultType="hashmap">
+		/*	systemRole.selectRoleListAll */
+		select
+			ROLE_IDX
+			, ROLE_ID
+			, ROLE_NAME
+			, ROLE_DESC
+			, USE_YN
+			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') as REG_DATE
+		FROM lab_system_role
+		WHERE 1 = 1
+			AND USE_YN = 'Y'
+	</select>
 </mapper>

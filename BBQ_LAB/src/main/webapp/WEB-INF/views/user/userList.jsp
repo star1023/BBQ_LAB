@@ -75,16 +75,12 @@
 					
 					html += "	<td>"+item.userName+"</td>";
 					html += "	<td>"+item.userId+"</td>";
-					html += "	<td>"+nvl(item.userGradeName,'')+"</td>";
-					html += "	<td>"+nvl(item.deptCodeName,'')+"</td>";
-					html += "	<td>"+nvl(item.teamCodeName,'')+"</td>";
+					html += "	<td>"+nvl(item.roleName,'')+"</td>";
+					html += "	<td>"+nvl(item.OBJTTX,'')+"</td>";
+					html += "	<td>"+nvl(item.TITL_TXT,'')+"</td>";
+					html += "	<td>"+nvl(item.RESP_TXT,'')+"</td>";
 					if( item.isAdmin == 'Y' ) {
 						html += "	<td>관리자</td>";
-					} else {
-						html += "	<td>&nbsp;</td>";
-					}
-					if( item.isLock == 'Y' ) {
-						html += "	<td>잠김</td>";
 					} else {
 						html += "	<td>&nbsp;</td>";
 					}
@@ -93,7 +89,7 @@
 					html += "		<ul class=\"list_ul\">";
 					html += "		<li><button class=\"btn_doc\" onClick=\"javascript:selectUpdateUser('"+item.userId+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button></li>";
 					
-					if(item.isDelete != 'Y'){
+					if(item.EMSTAT != '3'){
 						html += "		<li><button class=\"btn_doc\" onClick=\"javascript:deleteUser('"+item.userId+"')\"><img src=\"/resources/images/icon_doc04.png\">퇴직처리</button></li>";
 					} else {
 						html += "		<li><button class=\"btn_doc\" onClick=\"javascript:restoreUser('"+item.userId+"')\"><img src=\"/resources/images/icon_doc17.png\">재직처리</button></li>";
@@ -102,7 +98,7 @@
 					if( item.isDelete != 'Y' && item.isLock == 'Y' ){
 						html += "		<li><button class=\"btn_doc\" onClick=\"javascript:unlockUser('"+item.userId+"')\"><img src=\"/resources/images/icon_unlock.png\">잠금해제</button></li>";	
 					}
-					
+					html += "		<li><button class=\"btn_doc\" onClick=\"javascript:fn_pwdInit('"+item.userId+"')\"><img src=\"/resources/images/icon_doc17.png\">비번초기화</button></li>";
 					html += "		</ul>";
 					html += "	</td>";
 					html += "</tr>"					
@@ -131,6 +127,7 @@
 	
 	//사용자 수정 페이지 이동
 	function selectUpdateUser(userId){
+		
 		$.ajax({
 			type: 'POST',
 			url: '../user/selectUserAjax',
@@ -142,23 +139,15 @@
 			success: function (data) {
 				if( data.userId != '' ) {
 					$("#userName").val(data.userName);
+					$("#userNameTxt").html(data.userName);
 					$("#userId").val(data.userId);
-					//$("#userId").prop('readonly', true);
-					$("#userId_txt").html(data.userId);
-					$("#userId").hide();
-					$("#email").val(data.email);
-					$("#deptCode").selectOptions(data.deptCode);
-					$("#teamCode").selectOptions(data.teamCode);
-					$("#userGrade").selectOptions(data.userGrade);
-					if( data.isAdmin == 'Y' ) {
-						$('input:checkbox[id="isAdmin"]').prop("checked",true);
-					} else {
-						$('input:checkbox[id="isAdmin"]').prop("checked",false);
-					}
-					$('#checkId').html('');
-					
-					$('#create').hide();
-					$('#update').show();
+					$("#userIdTxt").html(data.userId);
+					$("#emailTxt").html(data.email);
+					$("#orgTxt").html(data.OBJTTX);
+					$("#titleTxt").html(data.TITL_TXT);
+					$("#respTxt").html(data.RESP_TXT);
+					$("#userRole").selectOptions(""+data.roleCode);
+					$("#userRole_label").html($("#userRole").selectedTexts());
 					openDialog('open');
 				} else {
 					alert("삭제된 사용자 입니다.");	
@@ -173,6 +162,7 @@
 	}
 	
 	function updateUser() {
+		/*
 		if( !chkNull($("#userName").val()) ) {
         	alert("이름을 입력해주세요.");
         	$("#userName").focus();
@@ -213,6 +203,25 @@
 				}                               
 			});    			
         }
+		*/
+		$.ajax({
+			type: 'POST',
+			url: '../user/updateUserAjax',
+			data: {
+				"userId" : $("#userId").val(),
+				"userRole" : $("#userRole").selectedValues()[0]
+			},
+			dataType: 'json',
+			async : true,
+			success: function (data) {
+				alert("사용자 정보가 변경되었습니다.");
+				closePopup('open');
+				getUserList('1');
+			},error: function(){
+	            //에러발생을 위한 code페이지
+	           	alert("오류가 발생하였습니다.");
+			}                               
+		}); 
 	}
 	
 	//퇴직처리
@@ -383,21 +392,40 @@
 	
 	function closePopup(dName) {
 		$("#userName").val("");
+		$("#userNameTxt").html("");
 		$("#userId").val("");
-		$("#userId_txt").html('');
-		$("#userId").show();
+		$("#userIdTxt").html('');
 		$("#email").val("");
-		$("#deptCode").selectOptions("");
-		$("#teamCode").selectOptions("");
-		$("#userGrade").selectOptions("");
-		$("#deptCode_label").html("선택하세요");
-		$("#teamCode_label").html("선택하세요");
-		$("#userGrade_label").html("선택하세요");
-		$('input:checkbox[id="isAdmin"]').prop("checked",false);
-		$('#checkId').html('');
-		$('#create').show();
-		$('#update').hide();
+		$("#emailTxt").html('');
+		$("#orgTxt").html("");
+		$("#titleTxt").html("");
+		$("#respTxt").html("");
+		$("#userRole").selectOptions("");
+		$("#userRole_label").html($("#userRole").selectedTexts());
 		closeDialog(dName);
+	}
+	
+	function fn_pwdInit(userId) {
+		$.ajax({
+			type: 'POST',
+			url: '../user/pwdInitAjax',
+			data: {
+				"userId" : userId
+			},
+			dataType: 'json',
+			async : true,
+			success: function (data) {
+				if(data.RESULT == 'F'){
+					alert("비밀번호 초기화 오류가 발생했습니다.");
+					return;
+				} else {
+					alert("비밀번호가 초기화 되었습니다.");
+					getUserList($("#pageNo").val());
+				}
+			},error: function(XMLHttpRequest, textStatus, errorThrown){
+				alert('처리중 오류가 발생 하였습니다. 잠시 후 다시 시도 해주십시오.\n' +'errorCode : ' + textStatus );
+			}
+		});
 	}
 	
 </script>
@@ -475,25 +503,25 @@
 				<div class="main_tbl">
 					<table class="tbl01">
 						<colgroup>
-							<col width="9%">
-							<col width="9%">
 							<col width="10%">
-							<col width="16%">
+							<col width="8%">
 							<col width="10%">
+							<col width="15%">
 							<col width="10%">
-							<col width="6%">
+							<col width="8%">
+							<col width="8%">
 							<col width="12%">
-							<col width="18%">
+							<col />
 						</colgroup>
 						<thead>
 							<tr>
-								<th>사용자명</th>
+								<th>이름</th>
 								<th>아이디</th>
 								<th>권한</th>
 								<th>부서</th>
-								<th>팀</th>
+								<th>직책</th>
+								<th>직급</th>
 								<th>관리자</th>
-								<th>잠김</th>
 								<th>생성일</th>
 								<th>사용자설정</th>
 							</tr>
@@ -505,7 +533,7 @@
 					</div>
 				</div>
 				<div class="btn_box_con">
-					<button type="button" class="btn_admin_red" onClick="openDialog('open');">사용자 등록</button>
+					<!-- <button type="button" class="btn_admin_red" onClick="openDialog('open');">사용자 등록</button>  -->
 				</div>
 				<hr class="con_mode"/>
 			</div>
@@ -514,9 +542,9 @@
 
 <!-- 자재 생성레이어 start-->
 <div class="white_content" id="open">
-	<div class="modal" style="	width: 700px;margin-left:-350px;height: 520px;margin-top:-200px;">
+	<div class="modal" style="	width: 700px;margin-left:-350px;height: 450px;margin-top:-200px;">
 		<h5 style="position:relative">
-			<span class="title">사용자 생성</span>
+			<span class="title">사용자 수정</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -530,77 +558,61 @@
 				<li class="pt10">
 					<dt>이름</dt>
 					<dd>
-						<input type="text" value="" class="req" style="width:302px;" name="userName" id="userName"  /> 
+						<input type="hidden" name="userName" id="userName"/> 
+						<div id="userNameTxt"></div>
 					</dd>
 				</li>
 				<li>
 					<dt>아이디</dt>
 					<dd>
-						<input type="text"  style="width:302px;" class="req" name="userId" id="userId" placeholder="아이디를 입력해주세요."/>
-						<span id="userId_txt"></span>
-						<span id="checkId"></span>
+						<input type="hidden" name="userId" id="userId"/>
+						<span id="userIdTxt"></span>
 					</dd>
 				</li>
 				<li>
 					<dt>메일 주소</dt>
 					<dd>
-						<input type="text"  style="width:302px;" class="req" name="email" id="email" placeholder="메일주소를 입력해주세요.(예:test@aspnc.com)"/>
-						<span id="checkId"></span>
+						<input type="hidden"  name="email" id="email"/>
+						<span id="emailTxt"></span>
 					</dd>
 				</li>
 				<li>
 					<dt>부서</dt>
 					<dd>
-						<div class="selectbox req" style="width:300px;">  
-							<label for="deptCode" id="deptCode_label"> 선택</label> 
-							<select id="deptCode" name="deptCode">
-								<option value="">선택하세요</option>
-								<c:forEach  items="${deptList}" var = "dept">
-									<option value="${dept.itemCode}">${dept.itemName}</option>
-								</c:forEach>
-							</select>
-						</div>
+						<div id="orgTxt"></div>
 					</dd>
 				</li>
 				<li>
-					<dt>팀</dt>
+					<dt>직책</dt>
 					<dd class="pr20 pb10">
-						<div class="selectbox req" style="width:300px"> 
-							<label for="teamCode" id="teamCode_label">선택하세요</label>
-							<select name="teamCode" id="teamCode">
-								<option value="">선택하세요</option>
-								<c:forEach  items="${teamList}" var = "team">
-								<option value="${team.itemCode}">${team.itemName}</option>
-								</c:forEach>
-							</select>
-						</div>
+						<div id="titleTxt"></div>
+					</dd>
+				</li>
+				<li>
+					<dt>직급</dt>
+					<dd class="pr20 pb10">
+						<div id="respTxt"></div>
 					</dd>
 				</li>
 				<li>
 					<dt>권한</dt>
 					<dd class="pr20 pb10">
-						<div class="selectbox req" style="width:300px"> 
-							<label for="userGrade" id="userGrade_label">선택하세요</label>
-							<select name="userGrade" id="userGrade">
-								<option value="">선택하세요</option>
-								<c:forEach  items="${gradeList}" var = "grade">
-								<option value="${grade.itemCode}">${grade.itemName}</option>
-								</c:forEach>
-							</select>
-						</div>							
-					</dd>
-				</li>
-				<li>
-					<dt>시스템 관리자</dt>
-					<dd class="pr20 pb10">
-						<input type="checkbox" name="isAdmin" id="isAdmin" value="Y"><label for="isAdmin"><span></span>시스템 관리자</label>
-					</dd>
+							<div class="selectbox" style="width:150px"> 
+								<label for="userRole" id="userRole_label">선택하세요</label>
+								<select name="userRole" id="userRole">
+									<option value="">선택하세요</option>
+									<c:forEach  items="${roleList}" var="role">
+									<option value="${role.ROLE_IDX}">${role.ROLE_NAME}</option>
+									</c:forEach>
+								</select>
+							</div>							
+						</dd>
 				</li>
 			</ul>
 		</div>
 		<div class="btn_box_con">
-			<button class="btn_admin_red" id="create" onclick="javascript:inserUser();">저장</button> 
-			<button class="btn_admin_red" id="update" onclick="javascript:updateUser();" style="display:none">수정</button> 
+			<!--  <button class="btn_admin_red" id="create" onclick="javascript:inserUser();">저장</button> --> 
+			<button class="btn_admin_red" id="update" onclick="javascript:updateUser();">수정</button> 
 			<button class="btn_admin_gray" onclick="closePopup('open')"> 취소</button>
 		</div>
 	</div>

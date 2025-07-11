@@ -26,7 +26,7 @@
 		fn_loadCode("KEEP_CONDITION", "keepCondition");
 		fn_loadCode("FOOD_TYPE", "foodType");
 		fn_loadCode("DISCHARGE_DISPLAY", "separateDischarge");
-		ClassicEditor
+		/* ClassicEditor
         .create(document.getElementById("containQuantity"), {
 			language: 'ko',
         }).then( editor => {
@@ -34,7 +34,7 @@
     		console.log( editor1 );
     	}).catch( error => {
     		console.error( error );
-    	});
+    	}); */
 		
 		ClassicEditor
         .create(document.getElementById("suggestions"), {
@@ -330,7 +330,7 @@
 	}
 	
 	function fn_insertTmp(){
-		var containQuantity = editor1.getData();
+		//var containQuantity = editor1.getData();
 		var suggestions = editor2.getData();
 		var cookMethod = editor3.getData();
 		if( !chkNull($("#productName").val()) ) {
@@ -349,7 +349,8 @@
 			formData.append("productNameBack",$("#productNameBack").val());
 			formData.append("foodType",$("#foodType").selectedValues()[0]);
 			formData.append("foodTypeTxt",$("#foodTypeTxt").val());
-			formData.append("containQuantity",containQuantity);
+			//formData.append("containQuantity",containQuantity);
+			formData.append("containQuantity",$("#containQuantity").val());
 			formData.append("allergyObject",$("#allergyObject").val());
 			formData.append("manuNo",$("#manuNo").val());
 			formData.append("expiredDate",$("#expiredDate").val());
@@ -374,6 +375,12 @@
 			formData.append("docType",$("#docType").val());
 			formData.append("status", "TMP");
 			
+			// 이미지 파일
+			var imageFile = document.getElementById('fileImageInput').files[0];
+			if (imageFile) {
+			  formData.append("imageFile", imageFile); // name="imageFile"
+			}
+			
 			var URL = "../package/insertPackageInfoTmpAjax";
 			$.ajax({
 				type:"POST",
@@ -388,6 +395,9 @@
 						alert($("#productName").val()+" 표시사항 기재양식이 임시저장 되었습니다.");
 						$('#lab_loading').hide();
 						fn_goList();
+					} else if( result.RESULT == 'F' ) {
+						alert(result.MESSAGE);
+						$('#lab_loading').hide();						
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -403,7 +413,7 @@
 	
 	//입력확인
 	function fn_insert(){
-		var containQuantity = editor1.getData();
+		//var containQuantity = editor1.getData();
 		var suggestions = editor2.getData();
 		var cookMethod = editor3.getData();
 		if( !chkNull($("#productName").val()) ) {
@@ -421,7 +431,8 @@
 			formData.append("productNameBack",$("#productNameBack").val());
 			formData.append("foodType",$("#foodType").selectedValues()[0]);
 			formData.append("foodTypeTxt",$("#foodTypeTxt").val());
-			formData.append("containQuantity",containQuantity);
+			//formData.append("containQuantity",containQuantity);
+			formData.append("containQuantity",$("#containQuantity").val());
 			formData.append("allergyObject",$("#allergyObject").val());
 			formData.append("manuNo",$("#manuNo").val());
 			formData.append("expiredDate",$("#expiredDate").val());
@@ -444,7 +455,13 @@
 			formData.append("suggestions",suggestions);
 			formData.append("cookMethod",cookMethod);
 			formData.append("docType",$("#docType").val());
-			formData.append("status", "REG");
+			formData.append("status", "COMP");
+			
+			// 이미지 파일
+			var imageFile = document.getElementById('fileImageInput').files[0];
+			if (imageFile) {
+			  formData.append("imageFile", imageFile); // name="imageFile"
+			}
 			
 			$('#lab_loading').show();
 			var URL = "../package/insertPackageInfoAjax";
@@ -458,54 +475,12 @@
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT == 'S' ) {
-						if( result.IDX > 0 ) {
-							if( $("#apprLine option").length > 0 ) {
-								var apprFormData = new FormData();
-								apprFormData.append("docIdx", result.IDX );
-								apprFormData.append("apprComment", $("#apprComment").val());
-								apprFormData.append("apprLine", $("#apprLine").selectedValues());
-								apprFormData.append("refLine", $("#refLine").selectedValues());
-								apprFormData.append("title", $("#productName").val()+" 표시사항 기재양식 생성.");
-								apprFormData.append("docType", $("#docType").val());
-								apprFormData.append("status", "N");
-								var URL = "../approval/insertApprAjax";
-								$.ajax({
-									type:"POST",
-									url:URL,
-									dataType:"json",
-									data: apprFormData,
-									processData: false,
-							        contentType: false,
-							        cache: false,
-									success:function(data) {
-										if(data.RESULT == 'S') {
-											alert("결재상신이 완료되었습니다.");
-											$('#lab_loading').hide();
-											fn_goList();
-										} else {
-											alert("결재선 상신 오류가 발생하였습니다."+data.MESSAGE);
-											$('#lab_loading').hide();
-											fn_goList();
-											return;
-										}
-									},
-									error:function(request, status, errorThrown){
-										alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-										$('#lab_loading').hide();
-										fn_goList();
-									}			
-								});
-							} else {
-								alert($("#productName").val()+" 표시사항 기재양식이 정상적으로 생성되었습니다.");
-								$('#lab_loading').hide();
-								fn_goList();
-							}
-
-						} else {
-							alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-							$('#lab_loading').hide();
-							fn_goList();
-						}
+						alert($("#productName").val()+" 표시사항 기재양식이 정상적으로 생성되었습니다.");
+						$('#lab_loading').hide();
+						fn_goList();						
+					} else if( result.RESULT == 'F' ) {
+						alert(result.MESSAGE);
+						$('#lab_loading').hide();						
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -614,6 +589,33 @@
 		}
 	}
 	
+	function fn_fileDivClick(e){
+		e.stopPropagation();
+		$(e.target).children('input').click();
+	}
+	
+	function fn_changeImageFile(input, e) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				document.getElementById('preview').src = e.target.result;
+			};
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
+	function fn_deleteImageFile(element, e) {
+		const preview = document.getElementById('preview');
+		const fileInput = document.getElementById('fileImageInput');
+
+		if (preview) preview.src = "/resources/images/img_noimg3.png";
+		if (fileInput) fileInput.value = "";
+	}
+	
+	function fn_clearProductName() {
+		$("#productName").val("");
+		$("#productCode").val("");
+	}
+	
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -672,6 +674,7 @@
 								<input type="text" name="productName" id="productName" style="width:250px;float: left" class="req" placeholder="" value="올떡야채순대"/>
 								<input type="hidden" name="productCode" id="productCode"/>
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
+								<button class="btn_small_search ml5" onclick="fn_clearProductName();" style="float: left">초기화</button>
 							</td>
 							<td>
 								주표시면(14P이상)
@@ -746,10 +749,22 @@
 								<input type="text" name="foodTypeTxt" id="foodTypeTxt" style="width:300px;display:none;" class="req" placeholder="식품유형을 입력하세요."/>
 							</td>
 						</tr>
-						<tr>
+						<tr style="height:285px;">
 							<td>원재료명 및 함량</td>
-							<td colspan="2">
-								<textarea name="containQuantity" id="containQuantity" style="width: 95%; height: 40px; "></textarea>
+							<td>
+								<textarea name="containQuantity" id="containQuantity" style="resize: none;width:100%;height:285px"></textarea>
+							</td>
+							<td>
+								<p><img id="preview" src="/resources/images/img_noimg3.png" style="border:1px solid #e1e1e1; border-radius:5px; width:310px; height:250px;"></p>
+								<p class="pt10">
+									<div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+										<input type="file" name="file" id="fileImageInput" accept="image/*" style="display:none;" onchange="fn_changeImageFile(this, event)">
+										<label for="fileImageInput" style="cursor: pointer;">이미지파일 등록 <img src="/resources/images/icon_add_file.png"></label>
+									</div>	
+								</p>
+								<div style=" z-index:3; position:relative;right:-300px; top:-300px; width: 25px; height: 25px;">
+									<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
+								</div>
 							</td>
 						</tr>
 						<tr>
@@ -844,19 +859,6 @@
 								<textarea name="cookMethod" id="cookMethod" style="width: 95%; height: 40px; "></textarea>
 							</td>
 						</tr>																	
-						<tr>
-							<th style="border-left: none;">결재라인</th>
-							<td colspan="3">
-								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-							</td>
-						</tr>
-						<tr>
-							<th style="border-left: none;">참조자</th>
-							<td colspan="3">
-								<div id="refTxtFull" name="refTxtFull"></div>								
-							</td>
-						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -1025,7 +1027,7 @@
 	<input id="searchType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeMatRayer()"></button></li>
@@ -1056,7 +1058,7 @@
 					<thead>
 						<tr>
 							<th></th>
-							<th>원료코드</th>
+							<th>상품코드</th>
 							<th>ERP코드</th>
 							<th>상품명</th>
 							<th>보관기준</th>
@@ -1070,7 +1072,7 @@
 					<tbody id="matLayerBody">
 						<input type="hidden" id="matLayerPage" value="0"/>
 						<Tr>
-							<td colspan="10">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="10">상품코드 혹은 상품코드명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>

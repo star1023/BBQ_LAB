@@ -179,23 +179,29 @@
     <insert id="insertHrOrgMaster" parameterType="list">
 		/* batch.insertHrOrgMaster */
 		INSERT INTO lab_interface_hr1010 ( 
-			OBJTID
+			COMPCD
+			, OBJTID
 			, OBJTTX
 			, TOBJID
 			, SEQUEN
 			, PRIORT
 			, CSTCNT
 			, BUKRS
+			, LEVLCD
+			, LEVLTX
 		) VALUES 
 	    <foreach collection = "list" item = "item" separator = ","> 
 	    (
-	    	#{item.OBJTID}
+	    	#{item.COMPCD}
+	    	, #{item.OBJTID}
 	        , #{item.OBJTTX}
 	        , #{item.TOBJID}
 	        , #{item.SEQUEN}
 	        , #{item.PRIORT}
 	        , #{item.CSTCNT}
-	        , #{item.BUKRS}	       
+	        , #{item.BUKRS}	 
+	        , #{item.LEVLCD}	
+	        , #{item.LEVLTX}	      
 	     ) 
 	    </foreach> 
 	  ON DUPLICATE KEY UPDATE     
@@ -204,19 +210,25 @@
 		, SEQUEN = VALUES(SEQUEN)
 		, PRIORT = VALUES(PRIORT)
 		, CSTCNT = VALUES(CSTCNT)
-		, BUKRS = VALUES(BUKRS)		
+		, BUKRS = VALUES(BUKRS)	
+		, LEVLCD = VALUES(LEVLCD)	
+		, LEVLTX = VALUES(LEVLTX)		
 	</insert>
 	
 	<insert id="insertHrUserMaster" parameterType="list">
 		/* batch.insertHrUserMaster */
 		INSERT INTO lab_interface_hr2000 ( 
-			EMPNUM
+			COMPCD
+			, EMPNUM
+			, EMPNUM_OLD
 			, SBTYPE
 			, IPSAIL
 			, RETIRE
 			, NAMEKO
 			, BIRDAY
 			, ORGAID
+			, ORGTXT
+			, POGUBN
 			, TITLCD
 			, LEVLCD
 			, RESPCD
@@ -230,20 +242,21 @@
 			, SEXGUB
 			, CSTCNT
 			, BUKRS
-			, WORKCD
-			, EMPNUM_OLD
-			, ORGTXT
-			, COMPCD
+			, WORKCD			
 		) VALUES 
 	    <foreach collection = "list" item = "item" separator = ","> 
 	    (
-		#{item.EMPNUM}
+	    #{item.COMPCD}
+		, #{item.EMPNUM}
+		, #{item.EMPNUM_OLD}
 		, #{item.SBTYPE}
 		, #{item.IPSAIL}
 		, #{item.RETIRE}
 		, #{item.NAMEKO}
 		, #{item.BIRDAY}
 		, #{item.ORGAID}
+		, #{item.ORGTXT}
+		, #{item.POGUBN}
 		, #{item.TITLCD}
 		, #{item.LEVLCD}
 		, #{item.RESPCD}
@@ -257,22 +270,22 @@
 		, #{item.SEXGUB}
 		, #{item.CSTCNT}
 		, #{item.BUKRS}
-		, #{item.WORKCD}
-		, #{item.EMPNUM_OLD}
-		, #{item.ORGTXT}
-		, #{item.COMPCD}
+		, #{item.WORKCD}	
 	     ) 
 	    </foreach> 
 	  ON DUPLICATE KEY UPDATE     
-		SBTYPE = VALUES(SBTYPE)
+		EMPNUM_OLD = VALUES(EMPNUM_OLD)
+		, SBTYPE = VALUES(SBTYPE)
 		, IPSAIL = VALUES(IPSAIL)
 		, RETIRE = VALUES(RETIRE)
 		, NAMEKO = VALUES(NAMEKO)
 		, BIRDAY = VALUES(BIRDAY)
 		, ORGAID = VALUES(ORGAID)
+		, ORGTXT = VALUES(ORGTXT)
+		, POGUBN = VALUES(POGUBN)
 		, TITLCD = VALUES(TITLCD)
 		, LEVLCD = VALUES(LEVLCD)
-		, RESPCD = VALUES(RESPCD)
+		, RESPCD = VALUES(JOBOID)
 		, JOBOID = VALUES(JOBOID)
 		, EMAIL = VALUES(EMAIL)
 		, MOBILE = VALUES(MOBILE)
@@ -284,9 +297,6 @@
 		, CSTCNT = VALUES(CSTCNT)
 		, BUKRS = VALUES(BUKRS)
 		, WORKCD = VALUES(WORKCD)
-		, EMPNUM_OLD = VALUES(EMPNUM_OLD)
-		, ORGTXT = VALUES(ORGTXT)
-		, COMPCD = VALUES(COMPCD)
 	</insert>
 	
 	<insert id="insertHrCodeMaster" parameterType="list">
@@ -417,7 +427,7 @@
 			, RESPCD
 			, EMSTAT
 			, USER_PWD
-			, PWD_INIT)
+			, PWD_INIT) VALUES
 		<foreach collection = "list" item = "item" separator = ","> 
 		 (
 	    	#{item.EMPNUM}

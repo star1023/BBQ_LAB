@@ -70,15 +70,22 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	@ResponseBody
 	public Map<String, Object> insertPackageInfoTmpAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-
-			int infoIdx = packageInfoService.insertPackageInfoTmp(param, file);
-			returnMap.put("IDX", infoIdx);
-			returnMap.put("RESULT", "S");			
+			//동일한 상품코드가 있는지 조회한다.
+			Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoDataByProductCode(param);
+			if( packageInfoData != null && !packageInfoData.isEmpty() ) {
+				returnMap.put("RESULT", "F");	
+				returnMap.put("MESSAGE", "이미 등록 된 상품코드입니다.");
+			} else {
+				int infoIdx = packageInfoService.insertPackageInfoTmp(param, imageFile, file);
+				returnMap.put("IDX", infoIdx);
+				returnMap.put("RESULT", "S");	
+			}					
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			returnMap.put("RESULT", "E");
@@ -91,15 +98,21 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	@ResponseBody
 	public Map<String, Object> insertPackageInfoAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-
-			int infoIdx = packageInfoService.insertPackageInfo(param, file);
-			returnMap.put("IDX", infoIdx);
-			returnMap.put("RESULT", "S");			
+			Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoDataByProductCode(param);
+			if( packageInfoData != null && !packageInfoData.isEmpty() ) {
+				returnMap.put("RESULT", "F");	
+				returnMap.put("MESSAGE", "이미 등록 된 상품코드입니다.");
+			} else {
+				int infoIdx = packageInfoService.insertPackageInfo(param, imageFile, file);
+				returnMap.put("IDX", infoIdx);
+				returnMap.put("RESULT", "S");
+			}
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			returnMap.put("RESULT", "E");
@@ -126,13 +139,13 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 		
 		if( packageInfoService.selectMyDataCheck(param) > 0 ) {
 			HashMap<String,String> paramMap = new HashMap<String,String>();
-			paramMap.put("code", "KEEP_CONDITION");
+			paramMap.put("groupCode", "KEEP_CONDITION");
 			List<HashMap<String, String>> keepConditonList = commonService.getCodeList(paramMap);
 			
-			paramMap.put("code", "FOOD_TYPE");
+			paramMap.put("groupCode", "FOOD_TYPE");
 			List<HashMap<String, String>> foodTypeList = commonService.getCodeList(paramMap);
 			
-			paramMap.put("code", "DISCHARGE_DISPLAY");
+			paramMap.put("groupCode", "DISCHARGE_DISPLAY");
 			List<HashMap<String, String>> dischargeDisplayList = commonService.getCodeList(paramMap);
 			
 			Map<String,Object> map = new HashMap<String,Object>();
@@ -159,13 +172,14 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	@ResponseBody
 	public Map<String, Object> updatePackageInfoTmpAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			packageInfoService.updatePackageInfoTmp(param, file);
+			packageInfoService.updatePackageInfoTmp(param, imageFile, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
@@ -179,13 +193,14 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	@ResponseBody
 	public Map<String, Object> updatePackageInfoAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			packageInfoService.updatePackageInfo(param, file);
+			packageInfoService.updatePackageInfo(param, imageFile, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
@@ -202,13 +217,13 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 		
 		if( packageInfoService.selectMyDataCheck(param) > 0 ) {
 			HashMap<String,String> paramMap = new HashMap<String,String>();
-			paramMap.put("code", "KEEP_CONDITION");
+			paramMap.put("groupCode", "KEEP_CONDITION");
 			List<HashMap<String, String>> keepConditonList = commonService.getCodeList(paramMap);
 			
-			paramMap.put("code", "FOOD_TYPE");
+			paramMap.put("groupCode", "FOOD_TYPE");
 			List<HashMap<String, String>> foodTypeList = commonService.getCodeList(paramMap);
 			
-			paramMap.put("code", "DISCHARGE_DISPLAY");
+			paramMap.put("groupCode", "DISCHARGE_DISPLAY");
 			List<HashMap<String, String>> dischargeDisplayList = commonService.getCodeList(paramMap);
 			
 			Map<String,Object> map = new HashMap<String,Object>();
@@ -233,13 +248,14 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	@ResponseBody
 	public Map<String, Object> insertVersionUpTmpAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			int infoIdx = packageInfoService.insertVersionUpTmp(param, file);
+			int infoIdx = packageInfoService.insertVersionUpTmp(param, imageFile, file);
 			returnMap.put("IDX", infoIdx);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -254,13 +270,14 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	@ResponseBody
 	public Map<String, Object> insertVersionUpAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			int infoIdx = packageInfoService.insertVersionUp(param, file);
+			int infoIdx = packageInfoService.insertVersionUp(param, imageFile, file);
 			returnMap.put("IDX", infoIdx);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

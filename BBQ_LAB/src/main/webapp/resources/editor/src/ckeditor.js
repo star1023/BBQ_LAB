@@ -68,17 +68,17 @@ Editor.defaultConfig = {
 			'|',
 			'outdent',
 			'indent',
-			'|',
-			'imageUpload',
-			'blockQuote',
-			'insertTable',
-			'mediaEmbed',
-			'undo',
-			'redo'
+//			'|',
+//			'imageUpload',
+//			'blockQuote',
+//			'insertTable',
+//			'mediaEmbed',
+//			'undo',
+//			'redo'
 		]
 	},
 	language: 'ko',
-	image: {
+	/*image: {
 		toolbar: [
 			'imageTextAlternative',
 			'imageStyle:inline',
@@ -92,7 +92,7 @@ Editor.defaultConfig = {
 			'tableRow',
 			'mergeTableCells'
 		]
-	}
+	}*/
 };
 
 export default Editor;

@@ -203,7 +203,14 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 					    side : 'right'
 				 });
 				 
+				 
+				 
 				const eventSource = new EventSource('/subscribe/<%=userId%>');
+				window.addEventListener("beforeunload", function () {
+		            if (eventSource) {
+		                eventSource.close();
+		        	}
+		        });
 				eventSource.addEventListener("sse", function (event) {
 			    	console.log(event.data);
 			    	if( event.data == '<%=userId%>' ) {
@@ -280,6 +287,7 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 					}			
 				});	
 			}
+			
 			
 			function loadNotificationCount() {
 				/*

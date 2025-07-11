@@ -1,5 +1,8 @@
 package kr.co.genesiskorea.service.impl;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,6 +14,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -74,7 +78,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertPackageInfoTmp(Map<String, Object> param, MultipartFile[] file) throws Exception {
+	public int insertPackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -89,6 +93,26 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			//1. idx 조회
 			infoIdx = packageInfoDao.selectPackageInfoSeq();	//key value 조회
 			param.put("idx", infoIdx);
+			
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+			String path = config.getProperty("upload.file.path.images");
+			path += "/"+toDay;
+			
+			// 5. 이미지 파일 저장
+			if( imageFile != null && !imageFile.isEmpty() ) {
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(imageFile,path,fileIdx);
+				param.put("orgFileName", imageFile.getOriginalFilename());
+				param.put("filePath", "/"+toDay);
+				param.put("fileName", result);
+			} else {
+				param.put("orgFileName", "");
+				param.put("filePath", "");
+				param.put("fileName", "");
+			}
 			
 			//2. 표시사항 기재양식 등록
 			packageInfoDao.insertPackageInfo(param);
@@ -121,11 +145,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.package");
+				path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -169,7 +189,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 	
 	@Override
-	public int insertPackageInfo(Map<String, Object> param, MultipartFile[] file) throws Exception {
+	public int insertPackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		
@@ -185,6 +205,26 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			//1. idx 조회
 			infoIdx = packageInfoDao.selectPackageInfoSeq();	//key value 조회
 			param.put("idx", infoIdx);
+			
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+			String path = config.getProperty("upload.file.path.images");
+			path += "/"+toDay;
+			
+			// 5. 이미지 파일 저장
+			if( imageFile != null && !imageFile.isEmpty() ) {
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(imageFile,path,fileIdx);
+				param.put("orgFileName", imageFile.getOriginalFilename());
+				param.put("filePath", "/"+toDay);
+				param.put("fileName", result);
+			} else {
+				param.put("orgFileName", "");
+				param.put("filePath", "");
+				param.put("fileName", "");
+			}
 			
 			//2. 표시사항 기재양식 등록
 			packageInfoDao.insertPackageInfo(param);
@@ -217,11 +257,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.package");
+				path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -284,7 +320,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public void updatePackageInfoTmp(Map<String, Object> param, MultipartFile[] file) throws Exception {
+	public void updatePackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -294,7 +330,57 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+			String path = config.getProperty("upload.file.path.images");
+			
+			
+			String deleteFlag = String.valueOf(param.getOrDefault("imageDeleteFlag", "N"));
 
+			// "undefined" 문자열 정리
+			if ("undefined".equals(param.get("orgFileName"))) param.put("orgFileName", null);
+			if ("undefined".equals(param.get("fileName"))) param.put("fileName", null);
+			if ("undefined".equals(param.get("filePath"))) param.put("filePath", null);
+			
+
+			// 삭제 조건 확인
+			if ("Y".equals(deleteFlag) || (imageFile != null && !imageFile.isEmpty())) {
+			    Object filePathObj = param.get("filePath");
+			    Object fileNameObj = param.get("fileName");
+
+			    if (filePathObj != null && fileNameObj != null) {
+			        // 파일 경로 조합 (File.separator 대신 Paths.get을 써도 무방)
+			        String prevImgPath = path + File.separator
+			                           + filePathObj.toString().replaceFirst("^/", "")  // "/202505" → "202505"
+			                           + File.separator
+			                           + fileNameObj.toString();
+
+			        File prevImgFile = new File(prevImgPath);
+
+			        if (prevImgFile.exists()) {
+			            prevImgFile.delete(); // 삭제
+			        }
+			        // 존재하지 않으면 무시
+			    }
+			}
+			
+			// 5. 이미지 파일 저장
+			if( imageFile != null && !imageFile.isEmpty() ) {
+				path += "/"+toDay;
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(imageFile,path,fileIdx);
+				param.put("orgFileName", imageFile.getOriginalFilename());
+				param.put("filePath", "/"+toDay);
+				param.put("fileName", result);
+			} else {
+				param.put("orgFileName", "");
+				param.put("filePath", "");
+				param.put("fileName", "");
+			}
+			
 			//1. 표시사항 기재양식 등록
 			packageInfoDao.updatePackageInfo(param);
 			
@@ -327,11 +413,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.package");
+				path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -375,7 +457,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public void updatePackageInfo(Map<String, Object> param, MultipartFile[] file) throws Exception {
+	public void updatePackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -385,7 +467,55 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+			String path = config.getProperty("upload.file.path.images");
+			
+			String deleteFlag = String.valueOf(param.getOrDefault("imageDeleteFlag", "N"));
 
+			// "undefined" 문자열 정리
+			if ("undefined".equals(param.get("orgFileName"))) param.put("orgFileName", null);
+			if ("undefined".equals(param.get("fileName"))) param.put("fileName", null);
+			if ("undefined".equals(param.get("filePath"))) param.put("filePath", null);
+
+			// 삭제 조건 확인
+			if ("Y".equals(deleteFlag) || (imageFile != null && !imageFile.isEmpty())) {
+			    Object filePathObj = param.get("filePath");
+			    Object fileNameObj = param.get("fileName");
+
+			    if (filePathObj != null && fileNameObj != null) {
+			        // 파일 경로 조합 (File.separator 대신 Paths.get을 써도 무방)
+			        String prevImgPath = path + File.separator
+			                           + filePathObj.toString().replaceFirst("^/", "")  // "/202505" → "202505"
+			                           + File.separator
+			                           + fileNameObj.toString();
+
+			        File prevImgFile = new File(prevImgPath);
+
+			        if (prevImgFile.exists()) {
+			            prevImgFile.delete(); // 삭제
+			        }
+			        // 존재하지 않으면 무시
+			    }
+			}
+			
+			// 5. 이미지 파일 저장
+			if( imageFile != null && !imageFile.isEmpty() ) {
+				path += "/"+toDay;
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(imageFile,path,fileIdx);
+				param.put("orgFileName", imageFile.getOriginalFilename());
+				param.put("filePath", "/"+toDay);
+				param.put("fileName", result);
+			} else {
+				param.put("orgFileName", "");
+				param.put("filePath", "");
+				param.put("fileName", "");
+			}
+			
 			//1. 표시사항 기재양식 등록
 			packageInfoDao.updatePackageInfo(param);
 			
@@ -418,11 +548,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.package");
+				path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -465,7 +591,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertVersionUpTmp(Map<String, Object> param, MultipartFile[] file) throws Exception {
+	public int insertVersionUpTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -483,6 +609,47 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			//1. idx 조회
 			infoIdx = packageInfoDao.selectPackageInfoSeq();	//key value 조회
 			param.put("idx", infoIdx);
+			
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+			String path = config.getProperty("upload.file.path.images");
+			// 5. 이미지 파일 저장
+			if( imageFile != null && !imageFile.isEmpty() ) {
+				path += "/"+toDay;
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(imageFile,path,fileIdx);
+				param.put("orgFileName", imageFile.getOriginalFilename());
+				param.put("filePath", "/"+toDay);
+				param.put("fileName", result);
+			} else {
+				String deleteFlag = String.valueOf(param.getOrDefault("imageDeleteFlag", "N"));
+				if( deleteFlag != null && "N".equals(deleteFlag) ) {	//이미지 업로드하지 않고 삭제도 하지 않은경우
+					String orgFileName = (String)param.get("orgFileName");
+					String fileName = (String)param.get("fileName");
+					String filePath = (String)param.get("filePath");
+					//이전 파일 정보가 남은 경우
+					if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+						String currentFilePath = path+File.separator+filePath.toString().replaceFirst("^/", "")+File.separator+fileName;
+						String fileIdx = FileUtil.getUUID();
+						String newFilePath = path+File.separator+toDay;
+						String newFileName = fileIdx+"_"+orgFileName;
+						File currentFile = new File(currentFilePath);						
+						File newFile = new File(newFilePath+File.separator+newFileName);
+						//Files.copy(currentFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						FileUtils.copyFile(currentFile, newFile);
+						param.put("orgFileName", orgFileName);
+						param.put("filePath", File.separator+toDay);
+						param.put("fileName", newFileName);
+					}
+				} else {
+					//파일을 등록하지 않은 경우.
+					param.put("orgFileName", "");
+					param.put("filePath", "");
+					param.put("fileName", "");
+				}
+			}
 			
 			//2. 표시사항 기재양식 등록
 			packageInfoDao.insertVersionUp(param);
@@ -515,11 +682,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.package");
+				path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -564,7 +727,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertVersionUp(Map<String, Object> param, MultipartFile[] file) throws Exception {
+	public int insertVersionUp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -582,6 +745,47 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			//1. idx 조회
 			infoIdx = packageInfoDao.selectPackageInfoSeq();	//key value 조회
 			param.put("idx", infoIdx);
+			
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+			String path = config.getProperty("upload.file.path.images");
+			// 5. 이미지 파일 저장
+			if( imageFile != null && !imageFile.isEmpty() ) {
+				path += "/"+toDay;
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(imageFile,path,fileIdx);
+				param.put("orgFileName", imageFile.getOriginalFilename());
+				param.put("filePath", "/"+toDay);
+				param.put("fileName", result);
+			} else {
+				String deleteFlag = String.valueOf(param.getOrDefault("imageDeleteFlag", "N"));
+				if( deleteFlag != null && "N".equals(deleteFlag) ) {	//이미지 업로드하지 않고 삭제도 하지 않은경우
+					String orgFileName = (String)param.get("orgFileName");
+					String fileName = (String)param.get("fileName");
+					String filePath = (String)param.get("filePath");
+					//이전 파일 정보가 남은 경우
+					if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+						String currentFilePath = path+File.separator+filePath.toString().replaceFirst("^/", "")+File.separator+fileName;
+						String fileIdx = FileUtil.getUUID();
+						String newFilePath = path+File.separator+toDay;
+						String newFileName = fileIdx+"_"+orgFileName;
+						File currentFile = new File(currentFilePath);						
+						File newFile = new File(newFilePath+File.separator+newFileName);
+						//Files.copy(currentFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						FileUtils.copyFile(currentFile, newFile);
+						param.put("orgFileName", orgFileName);
+						param.put("filePath", File.separator+toDay);
+						param.put("fileName", newFileName);
+					}
+				} else {
+					//파일을 등록하지 않은 경우.
+					param.put("orgFileName", "");
+					param.put("filePath", "");
+					param.put("fileName", "");
+				}
+			}
 			
 			//2. 표시사항 기재양식 등록
 			packageInfoDao.insertVersionUp(param);
@@ -614,11 +818,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.package");
+				path = config.getProperty("upload.file.path.package");
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
@@ -672,5 +872,11 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	public int selectMyDataCheck(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return packageInfoDao.selectMyDataCheck(param);
+	}
+
+	@Override
+	public Map<String, Object> selectPackageInfoDataByProductCode(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return packageInfoDao.selectPackageInfoDataByProductCode(param);
 	}
 }

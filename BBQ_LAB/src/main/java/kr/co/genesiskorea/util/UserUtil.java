@@ -216,5 +216,37 @@ public class UserUtil {
 		return mailCheck3;
 	}
 	
+	public static String getRoleCode( HttpServletRequest request ) {
+		String roleCode = "";
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			roleCode = auth.getRoleCode();
+		} catch( Exception e ) {
+			
+		}
+		return roleCode;
+	}
+	
+	public static String getDeptName( HttpServletRequest request ) {
+		String roleCode = "";
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			roleCode = auth.getOBJTTX();
+		} catch( Exception e ) {
+			
+		}
+		return roleCode;
+	}
+	
+	public static String getTitleName( HttpServletRequest request ) {
+		String roleCode = "";
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			roleCode = auth.getTITL_TXT();
+		} catch( Exception e ) {
+			
+		}
+		return roleCode;
+	}
 	
 }

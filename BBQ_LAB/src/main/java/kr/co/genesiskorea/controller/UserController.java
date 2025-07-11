@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
 import kr.co.genesiskorea.service.CommonService;
+import kr.co.genesiskorea.service.SystemRoleService;
 import kr.co.genesiskorea.service.UserService;
 import kr.co.genesiskorea.util.CommonException;
 import kr.co.genesiskorea.util.SecurityUtil;
@@ -37,6 +38,9 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
+	
+	@Autowired
+	SystemRoleService  roleService;
 	
 	@Autowired
 	private CommonService commonService;
@@ -123,7 +127,7 @@ public class UserController {
 	public String manageUserList(Model model, HttpServletRequest request) throws Exception{
 		try {
 			HashMap<String,String> param = new HashMap<String,String>();
-			param.put("code", "DEPT");
+			/*param.put("code", "DEPT");
 			List<HashMap<String,String>> deptList = commonService.getCodeList(param);			
 			param.put("code", "GRADE");			
 			List<HashMap<String,String>> gradeList = commonService.getCodeList(param); 
@@ -131,7 +135,9 @@ public class UserController {
 			List<HashMap<String,String>> teamList = commonService.getCodeList(param);
 			model.addAttribute("deptList", deptList);
 			model.addAttribute("gradeList", gradeList);
-			model.addAttribute("teamList", teamList);
+			model.addAttribute("teamList", teamList);*/
+			List<HashMap<String,Object>> roleList = roleService.selectRoleList(); 
+			model.addAttribute("roleList", roleList);
 			return "/user/userList";
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
@@ -214,7 +220,7 @@ public class UserController {
 			userService.updateUser(param);
 			Map<String, Object> logParam = new HashMap<String, Object>();
 			Auth auth = AuthUtil.getAuth(request);
-			logParam.put("type", "U");
+			logParam.put("logType", "U");
 			logParam.put("description", "사용자 정보 변경");
 			logParam.put("userId", param.get("userId"));
 			logParam.put("regUserId",auth.getUserId());
@@ -235,7 +241,7 @@ public class UserController {
 			userService.deleteUser(userId);
 			Map<String, Object> logParam = new HashMap<String, Object>();
 			Auth auth = AuthUtil.getAuth(request);
-			logParam.put("type", "D");
+			logParam.put("logType", "D");
 			logParam.put("description", "사용자 퇴직처리");
 			logParam.put("userId", userId);
 			logParam.put("regUserId",auth.getUserId());
@@ -256,7 +262,7 @@ public class UserController {
 			userService.restoreUser(userId);
 			Map<String, Object> logParam = new HashMap<String, Object>();
 			Auth auth = AuthUtil.getAuth(request);
-			logParam.put("type", "R");
+			logParam.put("logType", "R");
 			logParam.put("description", "사용자 재직처리");
 			logParam.put("userId", userId);
 			logParam.put("regUserId",auth.getUserId());
@@ -400,6 +406,33 @@ public class UserController {
 				resultMap.put("RESULT_TYPE", "FAIL");
 				resultMap.put("MESSAGE", "입력하신 비밀번호가 올바르지 않거나 \n 존재하지 않는 사용자 입니다.");
 			}
+		} catch( Exception e ) {
+			resultMap.put("RESULT", "E");
+			resultMap.put("MESSAGE", "시스템 오류가 발생했습니다.\n관리자에게 문의하시기 바랍니다.");
+		}
+		return resultMap;
+	}
+	
+	@RequestMapping(value = "/user/pwdInitAjax", method = RequestMethod.POST)
+	@ResponseBody
+	public HashMap<String,Object> pwdInitAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
+		HashMap<String,Object> resultMap = new HashMap<String,Object>();
+		try {
+			//1. 비밀번호를 업데이트 한다.
+			String userId = (String)param.get("userId");
+			String encPwd = SecurityUtil.getEncrypt(userId, userId); 
+			param.put("encPwd", encPwd);
+			param.put("pwdInit", "Y");			
+			userService.updateUserPwd(param);
+			resultMap.put("RESULT", "S");
+			
+			Auth auth = AuthUtil.getAuth(request);
+			Map<String, Object> logParam = new HashMap<String, Object>();
+			logParam.put("logType", "PU");
+			logParam.put("description", "사용자 비밀번호 초기화");
+			logParam.put("userId", userId);
+			logParam.put("regUserId",auth.getUserId());
+			userService.insertLog(logParam);
 		} catch( Exception e ) {
 			resultMap.put("RESULT", "E");
 			resultMap.put("MESSAGE", "시스템 오류가 발생했습니다.\n관리자에게 문의하시기 바랍니다.");
