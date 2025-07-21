@@ -208,7 +208,9 @@
 							html += "		<td><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
 						}  else if( item.LAST_STATUS == 'Y' ) {
 							html += "		<td><span class=\"app02\">"+item.LAST_STATUS_TXT+"</span></td>";
-						}
+						} else {
+							html += "		<td>&nbsp;</td>";
+						}	
 						html += "	<td><a href=\"#\" onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
 						html += "	<td>";
 						if( item.LAST_STATUS == 'N' ) {
@@ -221,7 +223,7 @@
 						if( item.LAST_STATUS == 'N' ) {
 							html += "			<li><button class=\"btn_doc\" onClick=\"cancelAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"')\"><img src=\"/resources/images/icon_doc06.png\"> 상신취소</button></li>";
 						} else if( item.LAST_STATUS == 'CA' ) {
-							html += "			<li><button type=\"button\" class=\"btn_doc\" onClick=\"reAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"');\"><img src=\"/resources/images/icon_doc03.png\"> 재상신</button></li>";
+							//html += "			<li><button type=\"button\" class=\"btn_doc\" onClick=\"reAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"');\"><img src=\"/resources/images/icon_doc03.png\"> 재상신</button></li>";
 						}
 						html += "		</ul>";
 						html += "	</td>";

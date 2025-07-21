@@ -578,6 +578,11 @@ function fn_setMaterialPopupData(SAP_CODE, NAME, UNIT, KEEP_CONDITION, WIDTH, LE
 	fn_closeMatRayer();
 }
 
+function fn_initalCode() {
+	$("#name").val("");
+	$("#sapCode").val("");
+}
+
 /*
 function selectNewCode() {
 	console.log("새 코드를 조회한다.");
@@ -634,6 +639,7 @@ function selectNewCode() {
 							<input type="hidden"  name="isSample" id="isSample" value="N"/>
 							<input type="text"  style="width:200px; float: left" class="req" name="sapCode" id="sapCode" placeholder="코드를 조회/생성 하세요." readonly/>
 							<button class="btn_small_search ml5" onclick="openDialog('dialog_material')" style="float: left">조회</button>
+							<button class="btn_small_search ml5" onclick="fn_initalCode()" style="float: left">초기화</button>
 						</dd>
 					</li>
 					<li>

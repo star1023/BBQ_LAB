@@ -328,7 +328,12 @@
 		</dependency>
 
 		<!-- add end -->
-
+		
+		<dependency>
+		    <groupId>com.itextpdf</groupId>
+		    <artifactId>html2pdf</artifactId>
+		    <version>4.0.4</version> <!-- OpenHTMLtoPDF 기반 -->
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>
