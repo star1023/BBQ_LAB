@@ -198,7 +198,7 @@
 			<if test="planIdx != null and planIdx != '' ">
 			, PLAN_IDX = #{planIdx}
 			</if>
-			, TRIP_TYPE = = #{tripType}	
+			, TRIP_TYPE = #{tripType}	
 			, RESEARCH_DATE = #{researchDate}	
 			, COST = #{cost}	
 		WHERE 1 = 1
