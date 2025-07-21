@@ -45,6 +45,7 @@
 .imgDescriptbox{width: 90%;}
 
 </style>
+<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
 <script type="text/javascript">
 $(document).ready(function() {
 	  document.oncontextmenu = function (e) {
@@ -248,249 +249,246 @@ function downloadFile(idx){
 		<li><button type="button" class="btn_pop_close" onClick="self.close();"></button></li>
 	</ul>
 </div>
-<div id='print_page'  style="padding:60px 0 20px 20px;">
-	<div class="group01 mt20">
-		<div class="main_tbl">
-			<form name="form" id="form" method="post" action="">
-			<input type="hidden" name="apprIdx" id="apprIdx" value="${paramVO.apprIdx }">
-			<table width="100%" cellpadding="0" cellspacing="0" class="print_hidden">
-				<tr>
-					<td valign="top">
-						<div class="main_tbl">
-							<table class="insert_proc01 tbl_app">
-								<colgroup>
-									<col width="13%"/>
-									<col width="50%"/>
-									<col />
-								</colgroup>
-								<tbody>
-									<tr>
-										<th style="border-left: none;">결재요청의견</th>
-										<td colspan="3">
-											${apprHeader.COMMENT}
-										</td>
-									</tr>
-									<tr>
-										<th style="border-left: none;"> 결재자</th>
-										<td>
-											<div class="file_box_pop5">
-												<ul>
-													<c:forEach items = "${apprItem}" var = "item" varStatus= "status">
-													<input type="hidden" name="itemIdx" id="itemIdx" value="${item.ITEM_IDX }">
-													<fmt:parseNumber var="itemIdx" type="number" value="${item.ITEM_IDX}" />
-													<li onMouseOver="location.href='#'">
-														<span>
-															${item.APPR_NO}차 결재
-														</span> 
-														${item.TARGET_USER_NAME}
-														(${item.STATUS_TXT})
-														<c:if test="${item.COMMENT !=null && item.COMMENT ne '' }">
-															<a href="#" onclick="fn_viewComment('${item.ITEM_IDX}');">
-																의견 <img src="/resources/images/icon_app_mass.png"/>
-															</a>
-														</c:if>
-													</li>										
-													</c:forEach>
-												</ul>
-											</div>
-										</td>
-										<td id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
-									</tr>
-									<tr>
-										<th style="border-left: none; ">참조자</th>
-										<td colspan="2">
-											<div class="file_box_pop4">
-													<c:forEach items = "${refList}" var = "ref" varStatus= "status">
-														&nbsp;${ref.TARGET_USER_NAME}
-														<c:if test="${status.index > 0}"> , </c:if>
-													</c:forEach>												
-											</div>
-										</td>
-									</tr>
-									<c:if test="${paramVO.viewType eq 'myApprList' }">
-									<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
-									<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
-									<tr>
-										<th style="border-left: none; ">결재의견</th>
-										<td colspan="3">
-											<textarea style="width:100%; height:60px" name="comment" id="comment"></textarea>
-										</td>
-									</tr>
-									</c:if>
-									</c:if>
-									</c:if>
-								</tbody>
-							</table>
-						</div>
-						<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
-						<c:if test="${paramVO.viewType eq 'myApprList' }">
-						<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
-							<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
-								<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
-								<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
-								<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
-								</c:if>
-								<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
-							</c:if>	
-						</c:if>
-						</c:if>
-						</div>
-					</td>
-				</tr>
-			</table>
-			</form>
-		</div>
-	</div>	
-	<div class="group01 mt5">
-		<div class="main_tbl">
-			<table class="insert_proc01">
+<div style="height: 60px;"></div>
+<div class="group01 mt20">
+	<div class="mainTable">
+		<form name="form" id="form" method="post" action="">
+		<input type="hidden" name="apprIdx" id="apprIdx" value="${paramVO.apprIdx }">
+			<table class="insert_proc01 tbl_app">
 				<colgroup>
-					<col width="15%" />
-					<col width="35%" />
-					<col width="15%" />
-					<col width="35%" />
+					<col width="13%"/>
+					<col width="50%"/>
+					<col />
 				</colgroup>
 				<tbody>
 					<tr>
-						<th style="border-left: none;">제목</th>
+						<th style="border-left: none;">&nbsp;결재요청의견</th>
 						<td colspan="3">
-							${planData.data.TITLE}
+							${apprHeader.COMMENT}
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">출장구분</th>								
-						<td colspan="3">
-							${planData.data.TRIP_TYPE_TXT}
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">출장자</th>								
-						<td colspan="3">
-							<table width="100%">
-								<tr>
-									<td width="35%">소속</td>
-									<td width="35%">직위(직급)</td>
-									<td width="2305%">성명</td>
-								</tr>
-								<tbody id="user_tbody" name="user_tbody">
-								<c:forEach items="${userList}" var="userList" varStatus="status">
-									<tr>
-										<td>
-											${userList.DEPT}
-										</td>
-										<td>
-											${userList.POSITION}
-										</td>
-										<td>
-											${userList.NAME}
-										</td>
-									</tr>
-								</c:forEach>	
-								</tbody>
-							</table>
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">출장목적</th>								
-						<td colspan="3">
-							<c:forEach items="${infoList}" var="infoList" varStatus="status">
-							<c:if test="${infoList.INFO_TYPE == 'PUR' }">
-								${infoList.INFO_TEXT}<br>
-							</c:if>
-							</c:forEach>
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">출장기간</th>
-						<td colspan="3">
-							${planData.data.TRIP_START_DATE} 
-							<c:if test="${planData.data.TRIP_END_DATE != null && planData.data.TRIP_END_DATE != '' }">
-							~ 
-							${planData.data.TRIP_END_DATE}
-							</c:if>
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">출장지</th>
+						<th style="border-left: none;"> 결재자</th>
 						<td>
-							<c:forEach items="${infoList}" var="infoList" varStatus="status">
-							<c:if test="${infoList.INFO_TYPE == 'DEST' }">
-								${infoList.INFO_TEXT}<br>
-							</c:if>
-							</c:forEach>
+							<div class="file_box_pop5">
+								<ul>
+									<c:forEach items = "${apprItem}" var = "item" varStatus= "status">
+									<input type="hidden" name="itemIdx" id="itemIdx" value="${item.ITEM_IDX }">
+									<fmt:parseNumber var="itemIdx" type="number" value="${item.ITEM_IDX}" />
+									<li onMouseOver="location.href='#'">
+										<span>
+											${item.APPR_NO}차 결재
+										</span> 
+										${item.TARGET_USER_NAME}
+										(${item.STATUS_TXT})
+										<c:if test="${item.COMMENT !=null && item.COMMENT ne '' }">
+											<a href="#" onclick="fn_viewComment('${item.ITEM_IDX}');">
+												의견 <img src="/resources/images/icon_app_mass.png"/>
+											</a>
+										</c:if>
+									</li>										
+									</c:forEach>
+								</ul>
+							</div>
 						</td>
-						<th style="border-left: none;">경유지</th>
-						<td>
-							${planData.data.TRIP_TRANSIT}								
-						</td>
+						<td id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">업무수행내용</th>
+						<th style="border-left: none; ">참조자</th>
+						<td colspan="2">
+							<div class="file_box_pop4">
+									<c:forEach items = "${refList}" var = "ref" varStatus= "status">
+										&nbsp;${ref.TARGET_USER_NAME}
+										<c:if test="${status.index > 0}"> , </c:if>
+									</c:forEach>												
+							</div>
+						</td>
+					</tr>
+					<c:if test="${paramVO.viewType eq 'myApprList' }">
+					<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
+					<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
+					<tr>
+						<th style="border-left: none; ">결재의견</th>
 						<td colspan="3">
-							<table width="100%">
-								<tr>
-									<td width="25%">일정</td>
-									<td width="25%">세부내용</td>
-									<td width="25%">장소</td>
-									<td width="25%">비고</td>
-								</tr>
-								<tbody id="contents_tbody" name="contents_tbody">
-								<c:forEach items="${contentsList}" var="contentsList" varStatus="status">	
-									<tr>
-										<td>
-											${contentsList.SCHEDULE}
-										</td>
-										<td>
-											${contentsList.CONTENT}												
-										</td>
-										<td>
-											${contentsList.PLACE}												
-										</td>
-										<td>
-											${contentsList.NOTE}												
-										</td>
-									</tr>
-								</c:forEach>	
-								</tbody>
-							</table>
+							<textarea style="width:100%; height:60px" name="comment" id="comment"></textarea>
 						</td>
 					</tr>
-					<tr>
-						<th style="border-left: none;">예상경비</th>
-						<td colspan="3">
-							<p style="white-space: pre-line; text-align:left;">${planData.data.TRIP_COST}</p>
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">산출식</th>
-						<td colspan="3">
-							<p style="white-space: pre-line; text-align:left;">${planData.data.CAL_METHOD}</p>
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">기대효과</th>
-						<td colspan="3">
-							<p style="white-space: pre-line; text-align:left;">${planData.data.TRIP_EFFECT}</p>
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">첨부파일</th>
-						<td colspan="3" class="con_file">
-							<ul>
-								<li class="point_img">
-									<dd>
-										<ul>
-											<c:forEach items="${planData.fileList}" var="fileList" varStatus="status">
-												<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-											</c:forEach>
-										</ul>
-									</dd>
-								</li>
-							</ul>	
-						</td>
-					</tr>
+					</c:if>
+					</c:if>
+					</c:if>
 				</tbody>
 			</table>
-		</div>
+			<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
+			<c:if test="${paramVO.viewType eq 'myApprList' }">
+			<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
+				<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
+					<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
+					<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
+					<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
+					</c:if>
+					<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
+				</c:if>	
+			</c:if>
+			</c:if>
+			</div>
+		</form>
+	</div>
+</div>	
+<div class="group01 mt5">
+	<div id="wrapper">
+	<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+		<span>출장계획보고서</span>
+	</div>
+	<div class="mainTable">
+		<table>
+			<colgroup>
+				<col width="15%" />
+				<col width="35%" />
+				<col width="15%" />
+				<col width="35%" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th  >제목</th>
+					<td colspan="3">
+						${planData.data.TITLE}
+					</td>
+				</tr>
+				<tr>
+					<th  >출장구분</th>								
+					<td colspan="3">
+						${planData.data.TRIP_TYPE_TXT}
+					</td>
+				</tr>
+				<tr>
+					<th  >출장자</th>								
+					<td colspan="3" class="inner-table-cell">
+						<table width="100%" class="inner-table">
+							<tr>
+								<th width="35%">소속</th>
+								<th width="35%">직위(직급)</th>
+								<th width="30%">성명</th>
+							</tr>
+							<tbody id="user_tbody" name="user_tbody">
+							<c:forEach items="${userList}" var="userList" varStatus="status">
+								<tr>
+									<td>
+										${userList.DEPT}
+									</td>
+									<td>
+										${userList.POSITION}
+									</td>
+									<td>
+										${userList.NAME}
+									</td>
+								</tr>
+							</c:forEach>	
+							</tbody>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<th  >출장목적</th>								
+					<td colspan="3">
+						<c:forEach items="${infoList}" var="infoList" varStatus="status">
+						<c:if test="${infoList.INFO_TYPE == 'PUR' }">
+							${infoList.INFO_TEXT}<br>
+						</c:if>
+						</c:forEach>
+					</td>
+				</tr>
+				<tr>
+					<th  >출장기간</th>
+					<td colspan="3">
+						${planData.data.TRIP_START_DATE} 
+						<c:if test="${planData.data.TRIP_END_DATE != null && planData.data.TRIP_END_DATE != '' }">
+						~ 
+						${planData.data.TRIP_END_DATE}
+						</c:if>
+					</td>
+				</tr>
+				<tr>
+					<th >출장지</th>
+					<td>
+						<c:forEach items="${infoList}" var="infoList" varStatus="status">
+						<c:if test="${infoList.INFO_TYPE == 'DEST' }">
+							${infoList.INFO_TEXT}<br>
+						</c:if>
+						</c:forEach>
+					</td>
+					<th  >경유지</th>
+					<td>
+						${planData.data.TRIP_TRANSIT}								
+					</td>
+				</tr>
+				<tr>
+					<th >업무수행내용</th>
+					<td colspan="3" class="inner-table-cell">
+						<table width="100%" class="inner-table">
+							<tr>
+								<th width="25%">일정</th>
+								<th width="25%">세부내용</th>
+								<th width="25%">장소</th>
+								<th width="25%">비고</th>
+							</tr>
+							<tbody id="contents_tbody" name="contents_tbody">
+							<c:forEach items="${contentsList}" var="contentsList" varStatus="status">	
+								<tr>
+									<td>
+										${contentsList.SCHEDULE}
+									</td>
+									<td>
+										${contentsList.CONTENT}												
+									</td>
+									<td>
+										${contentsList.PLACE}												
+									</td>
+									<td>
+										${contentsList.NOTE}												
+									</td>
+								</tr>
+							</c:forEach>	
+							</tbody>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<th  >예상경비</th>
+					<td colspan="3">
+						<p style="white-space: pre-line; text-align:left;">${planData.data.TRIP_COST}</p>
+					</td>
+				</tr>
+				<tr>
+					<th  >산출식</th>
+					<td colspan="3">
+						<p style="white-space: pre-line; text-align:left;">${planData.data.CAL_METHOD}</p>
+					</td>
+				</tr>
+				<tr>
+					<th  >기대효과</th>
+					<td colspan="3">
+						<p style="white-space: pre-line; text-align:left;">${planData.data.TRIP_EFFECT}</p>
+					</td>
+				</tr>
+				<tr>
+					<th>첨부파일</th>
+					<td colspan="3">
+					<div class="con_file" style="">
+						<ul>
+							<li style="background-color:#fff; border:none;">
+								<dd>
+									<ul>
+										<c:forEach items="${planData.fileList}" var="fileList" varStatus="status">
+											<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+										</c:forEach>
+									</ul>
+								</dd>
+							</li>
+						</ul>
+					</div>
+					</td>
+				</tr>
+			</tbody>
+		</table>
 	</div>
 </div>

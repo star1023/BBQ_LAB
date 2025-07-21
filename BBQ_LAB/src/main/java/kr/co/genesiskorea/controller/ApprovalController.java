@@ -510,7 +510,7 @@ public class ApprovalController {
 		List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
 		Map<String, Object> newProductResultData = newProductResultService.selectNewProductResultData(param);
 		List<Map<String, Object>> newProductResultItemList = newProductResultService.selectNewProductResultItemList(param);
-		List<Map<String, Object>> newProductResultImageList = newProductResultService.selectNewProductResultItemList(param);
+		List<Map<String, Object>> newProductResultImageList = newProductResultService.selectNewProductResultItemImageList(param);
 		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
 		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
 			try {

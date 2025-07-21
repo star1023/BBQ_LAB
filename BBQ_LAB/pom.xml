@@ -398,9 +398,6 @@
 			<properties>
 				<environment>local</environment>
 			</properties>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 		</profile>
 		<profile>
 			<id>dev</id>
@@ -412,7 +409,10 @@
 			<id>prd</id>
 			<properties>
 				<environment>prd</environment>
-			</properties>			
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>			
 		</profile>
 	</profiles>
 </project>

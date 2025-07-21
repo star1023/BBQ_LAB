@@ -78,7 +78,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertPackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
+	public int insertPackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -112,6 +112,19 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				param.put("orgFileName", "");
 				param.put("filePath", "");
 				param.put("fileName", "");
+			}
+			
+			// 5. 마크 이미지 파일 저장
+			if( markFile != null && !markFile.isEmpty() ) {
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(markFile,path,fileIdx);
+				param.put("markorgFileName", markFile.getOriginalFilename());
+				param.put("markfilePath", "/"+toDay);
+				param.put("markfileName", result);
+			} else {
+				param.put("markorgFileName", "");
+				param.put("markfilePath", "");
+				param.put("markfileName", "");
 			}
 			
 			//2. 표시사항 기재양식 등록
@@ -189,7 +202,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 	
 	@Override
-	public int insertPackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
+	public int insertPackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		
@@ -224,6 +237,19 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				param.put("orgFileName", "");
 				param.put("filePath", "");
 				param.put("fileName", "");
+			}
+			
+			// 5. 마크 이미지 파일 저장
+			if( markFile != null && !markFile.isEmpty() ) {
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(markFile,path,fileIdx);
+				param.put("markorgFileName", markFile.getOriginalFilename());
+				param.put("markfilePath", "/"+toDay);
+				param.put("markfileName", result);
+			} else {
+				param.put("markorgFileName", "");
+				param.put("markfilePath", "");
+				param.put("markfileName", "");
 			}
 			
 			//2. 표시사항 기재양식 등록
@@ -320,7 +346,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public void updatePackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
+	public void updatePackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -335,15 +361,19 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	        Date day = cal.getTime();    //시간을 꺼낸다.
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 	        String toDay = sdf.format(day);
-			String path = config.getProperty("upload.file.path.images");
-			
+	        String baseDir = config.getProperty("upload.file.path.images"); // 예: C:/develop/upload/images
+			String path = baseDir + "/" + toDay;
 			
 			String deleteFlag = String.valueOf(param.getOrDefault("imageDeleteFlag", "N"));
+			String markDeleteFlag = String.valueOf(param.getOrDefault("markDeleteFlag", "N"));
 
 			// "undefined" 문자열 정리
 			if ("undefined".equals(param.get("orgFileName"))) param.put("orgFileName", null);
 			if ("undefined".equals(param.get("fileName"))) param.put("fileName", null);
 			if ("undefined".equals(param.get("filePath"))) param.put("filePath", null);
+			if ("undefined".equals(param.get("markorgFileName"))) param.put("markorgFileName", null);
+			if ("undefined".equals(param.get("markfileName"))) param.put("markfileName", null);
+			if ("undefined".equals(param.get("markfilePath"))) param.put("markfilePath", null);
 			
 
 			// 삭제 조건 확인
@@ -353,7 +383,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 
 			    if (filePathObj != null && fileNameObj != null) {
 			        // 파일 경로 조합 (File.separator 대신 Paths.get을 써도 무방)
-			        String prevImgPath = path + File.separator
+			        String prevImgPath = baseDir + File.separator
 			                           + filePathObj.toString().replaceFirst("^/", "")  // "/202505" → "202505"
 			                           + File.separator
 			                           + fileNameObj.toString();
@@ -367,19 +397,67 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			    }
 			}
 			
-			// 5. 이미지 파일 저장
-			if( imageFile != null && !imageFile.isEmpty() ) {
-				path += "/"+toDay;
-				String fileIdx = FileUtil.getUUID();
-				String result = FileUtil.upload3(imageFile,path,fileIdx);
-				param.put("orgFileName", imageFile.getOriginalFilename());
-				param.put("filePath", "/"+toDay);
-				param.put("fileName", result);
-			} else {
-				param.put("orgFileName", "");
-				param.put("filePath", "");
-				param.put("fileName", "");
+			// 삭제 조건 확인
+			if ("Y".equals(markDeleteFlag) || (markFile != null && !markFile.isEmpty())) {
+				Object filePathObj = param.get("markfilePath");
+				Object fileNameObj = param.get("markfileName");
+				
+				if (filePathObj != null && fileNameObj != null) {
+					// 파일 경로 조합 (File.separator 대신 Paths.get을 써도 무방)
+					String prevImgPath = baseDir + File.separator
+							+ filePathObj.toString().replaceFirst("^/", "")  // "/202505" → "202505"
+							+ File.separator
+							+ fileNameObj.toString();
+					
+					File prevImgFile = new File(prevImgPath);
+					
+					if (prevImgFile.exists()) {
+						prevImgFile.delete(); // 삭제
+					}
+					// 존재하지 않으면 무시
+				}
 			}
+			
+			
+			// 5. 이미지 파일 저장
+			if (imageFile != null && !imageFile.isEmpty()) {
+			    String fileIdx = FileUtil.getUUID();
+			    String result = FileUtil.upload3(imageFile, path, fileIdx);
+			    param.put("orgFileName", imageFile.getOriginalFilename());
+			    param.put("filePath", File.separator + toDay);
+			    param.put("fileName", result);
+			} else if ("Y".equals(deleteFlag)) {
+			    // 삭제한 경우만 빈값 처리
+			    param.put("orgFileName", "");
+			    param.put("filePath", "");
+			    param.put("fileName", "");
+			} else {
+			    // 아무것도 안 했으면 기존 값을 다시 넣어줘야 함
+			    param.put("orgFileName", param.get("orgFileName"));
+			    param.put("filePath", param.get("filePath"));
+			    param.put("fileName", param.get("fileName"));
+			}
+			// else 유지: 아무 수정 없으면 기존 값 유지
+			
+			// 5. 마크 이미지 파일 저장
+			if (markFile != null && !markFile.isEmpty()) {
+			    String fileIdx = FileUtil.getUUID();
+			    String result = FileUtil.upload3(markFile, path, fileIdx);
+			    param.put("markorgFileName", markFile.getOriginalFilename());
+			    param.put("markfilePath", File.separator + toDay);
+			    param.put("markfileName", result);
+			} else if ("Y".equals(markDeleteFlag)) {
+			    // 삭제한 경우만 빈값 처리
+			    param.put("markorgFileName", "");
+			    param.put("markfilePath", "");
+			    param.put("markfileName", "");
+			} else {
+			    // 아무것도 안 했으면 기존 값을 다시 넣어줘야 함
+			    param.put("markorgFileName", param.get("markorgFileName"));
+			    param.put("markfilePath", param.get("markfilePath"));
+			    param.put("markfileName", param.get("markfileName"));
+			}
+			// else 유지: 아무 수정 없으면 기존 값 유지
 			
 			//1. 표시사항 기재양식 등록
 			packageInfoDao.updatePackageInfo(param);
@@ -457,7 +535,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public void updatePackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
+	public void updatePackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -475,11 +553,15 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			String path = config.getProperty("upload.file.path.images");
 			
 			String deleteFlag = String.valueOf(param.getOrDefault("imageDeleteFlag", "N"));
+			String markDeleteFlag = String.valueOf(param.getOrDefault("markDeleteFlag", "N"));
 
 			// "undefined" 문자열 정리
 			if ("undefined".equals(param.get("orgFileName"))) param.put("orgFileName", null);
 			if ("undefined".equals(param.get("fileName"))) param.put("fileName", null);
 			if ("undefined".equals(param.get("filePath"))) param.put("filePath", null);
+			if ("undefined".equals(param.get("markorgFileName"))) param.put("markorgFileName", null);
+			if ("undefined".equals(param.get("markfileName"))) param.put("markfileName", null);
+			if ("undefined".equals(param.get("markfilePath"))) param.put("markfilePath", null);
 
 			// 삭제 조건 확인
 			if ("Y".equals(deleteFlag) || (imageFile != null && !imageFile.isEmpty())) {
@@ -502,19 +584,66 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			    }
 			}
 			
-			// 5. 이미지 파일 저장
-			if( imageFile != null && !imageFile.isEmpty() ) {
-				path += "/"+toDay;
-				String fileIdx = FileUtil.getUUID();
-				String result = FileUtil.upload3(imageFile,path,fileIdx);
-				param.put("orgFileName", imageFile.getOriginalFilename());
-				param.put("filePath", "/"+toDay);
-				param.put("fileName", result);
-			} else {
-				param.put("orgFileName", "");
-				param.put("filePath", "");
-				param.put("fileName", "");
+			// 삭제 조건 확인
+			if ("Y".equals(markDeleteFlag) || (markFile != null && !markFile.isEmpty())) {
+				Object filePathObj = param.get("markfilePath");
+				Object fileNameObj = param.get("markfileName");
+				
+				if (filePathObj != null && fileNameObj != null) {
+					// 파일 경로 조합 (File.separator 대신 Paths.get을 써도 무방)
+					String prevImgPath = path + File.separator
+							+ filePathObj.toString().replaceFirst("^/", "")  // "/202505" → "202505"
+							+ File.separator
+							+ fileNameObj.toString();
+					
+					File prevImgFile = new File(prevImgPath);
+					
+					if (prevImgFile.exists()) {
+						prevImgFile.delete(); // 삭제
+					}
+					// 존재하지 않으면 무시
+				}
 			}
+			
+			// 5. 이미지 파일 저장
+			if (imageFile != null && !imageFile.isEmpty()) {
+			    String fileIdx = FileUtil.getUUID();
+			    String result = FileUtil.upload3(imageFile, path, fileIdx);
+			    param.put("orgFileName", imageFile.getOriginalFilename());
+			    param.put("filePath", "/" + toDay);
+			    param.put("fileName", result);
+			} else if ("Y".equals(deleteFlag)) {
+			    // 삭제한 경우만 빈값 처리
+			    param.put("orgFileName", "");
+			    param.put("filePath", "");
+			    param.put("fileName", "");
+			} else {
+			    // 아무것도 안 했으면 기존 값을 다시 넣어줘야 함
+			    param.put("orgFileName", param.get("orgFileName"));
+			    param.put("filePath", param.get("filePath"));
+			    param.put("fileName", param.get("fileName"));
+			}
+			// else 유지: 아무 수정 없으면 기존 값 유지
+			
+			// 5. 마크 이미지 파일 저장
+			if (markFile != null && !markFile.isEmpty()) {
+			    String fileIdx = FileUtil.getUUID();
+			    String result = FileUtil.upload3(markFile, path, fileIdx);
+			    param.put("markorgFileName", markFile.getOriginalFilename());
+			    param.put("markfilePath", "/" + toDay);
+			    param.put("markfileName", result);
+			} else if ("Y".equals(markDeleteFlag)) {
+			    // 삭제한 경우만 빈값 처리
+			    param.put("markorgFileName", "");
+			    param.put("markfilePath", "");
+			    param.put("markfileName", "");
+			} else {
+			    // 아무것도 안 했으면 기존 값을 다시 넣어줘야 함
+			    param.put("orgFileName", param.get("markorgFileName"));
+			    param.put("filePath", param.get("markfilePath"));
+			    param.put("fileName", param.get("markfileName"));
+			}
+			// else 유지: 아무 수정 없으면 기존 값 유지
 			
 			//1. 표시사항 기재양식 등록
 			packageInfoDao.updatePackageInfo(param);
@@ -591,7 +720,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertVersionUpTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
+	public int insertVersionUpTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -648,6 +777,42 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 					param.put("orgFileName", "");
 					param.put("filePath", "");
 					param.put("fileName", "");
+				}
+			}
+			
+			// 5. 마크 파일 저장
+			if( markFile != null && !markFile.isEmpty() ) {
+				path += "/"+toDay;
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(markFile,path,fileIdx);
+				param.put("markorgFileName", markFile.getOriginalFilename());
+				param.put("markfilePath", "/"+toDay);
+				param.put("markfileName", result);
+			} else {
+				String markDeleteFlag = String.valueOf(param.getOrDefault("markDeleteFlag", "N"));
+				if( markDeleteFlag != null && "N".equals(markDeleteFlag) ) {	//이미지 업로드하지 않고 삭제도 하지 않은경우
+					String markorgFileName = (String)param.get("markorgFileName");
+					String markfileName = (String)param.get("markfileName");
+					String markfilePath = (String)param.get("markfilePath");
+					//이전 파일 정보가 남은 경우
+					if( markorgFileName != null && !"".equals(markorgFileName) && !"undefined".equals(markorgFileName) ) {
+						String currentFilePath = path+File.separator+markfilePath.toString().replaceFirst("^/", "")+File.separator+markfileName;
+						String fileIdx = FileUtil.getUUID();
+						String newFilePath = path+File.separator+toDay;
+						String newFileName = fileIdx+"_"+markorgFileName;
+						File currentFile = new File(currentFilePath);						
+						File newFile = new File(newFilePath+File.separator+newFileName);
+						//Files.copy(currentFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						FileUtils.copyFile(currentFile, newFile);
+						param.put("markorgFileName", markorgFileName);
+						param.put("markfilePath", File.separator+toDay);
+						param.put("markfileName", newFileName);
+					}
+				} else {
+					//파일을 등록하지 않은 경우.
+					param.put("markorgFileName", "");
+					param.put("markfilePath", "");
+					param.put("markfileName", "");
 				}
 			}
 			
@@ -727,7 +892,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertVersionUp(Map<String, Object> param, MultipartFile imageFile, MultipartFile[] file) throws Exception {
+	public int insertVersionUp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -784,6 +949,42 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 					param.put("orgFileName", "");
 					param.put("filePath", "");
 					param.put("fileName", "");
+				}
+			}
+			
+			// 5. 마크 파일 저장
+			if( markFile != null && !markFile.isEmpty() ) {
+				path += "/"+toDay;
+				String fileIdx = FileUtil.getUUID();
+				String result = FileUtil.upload3(markFile,path,fileIdx);
+				param.put("markorgFileName", markFile.getOriginalFilename());
+				param.put("markfilePath", "/"+toDay);
+				param.put("markfileName", result);
+			} else {
+				String markDeleteFlag = String.valueOf(param.getOrDefault("markDeleteFlag", "N"));
+				if( markDeleteFlag != null && "N".equals(markDeleteFlag) ) {	//이미지 업로드하지 않고 삭제도 하지 않은경우
+					String markorgFileName = (String)param.get("markorgFileName");
+					String markfileName = (String)param.get("markfileName");
+					String markfilePath = (String)param.get("markfilePath");
+					//이전 파일 정보가 남은 경우
+					if( markorgFileName != null && !"".equals(markorgFileName) && !"undefined".equals(markorgFileName) ) {
+						String currentFilePath = path+File.separator+markfilePath.toString().replaceFirst("^/", "")+File.separator+markfileName;
+						String fileIdx = FileUtil.getUUID();
+						String newFilePath = path+File.separator+toDay;
+						String newFileName = fileIdx+"_"+markorgFileName;
+						File currentFile = new File(currentFilePath);						
+						File newFile = new File(newFilePath+File.separator+newFileName);
+						//Files.copy(currentFile.toPath(), newFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+						FileUtils.copyFile(currentFile, newFile);
+						param.put("markorgFileName", markorgFileName);
+						param.put("markfilePath", File.separator+toDay);
+						param.put("markfileName", newFileName);
+					}
+				} else {
+					//파일을 등록하지 않은 경우.
+					param.put("markorgFileName", "");
+					param.put("markfilePath", "");
+					param.put("markfileName", "");
 				}
 			}
 			

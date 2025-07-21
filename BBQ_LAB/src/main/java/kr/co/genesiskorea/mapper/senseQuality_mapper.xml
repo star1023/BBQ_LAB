@@ -40,6 +40,7 @@
 			, tmp.REG_USER
 			, DATE_FORMAT(tmp.REG_DATE, '%Y-%m-%d') as REG_DATE
 			, tmp.STATUS
+			, tmp.DOC_OWNER
 			, FN_GET_USER_NAME(tmp.REG_USER) as REG_USER_NAME
 			, CASE 
 				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
@@ -62,11 +63,12 @@
 				, IS_DELETE
 				, REG_USER
 				, REG_DATE
-				, STATUS				
+				, STATUS
+				, DOC_OWNER				
 			FROM 	
 				lab_sense_quality_report
 			WHERE 1 = 1
-				AND REG_USER = #{userId}
+				AND DOC_OWNER = #{userId}
 				AND IS_DELETE = 'N'
 				<include refid="senseQuality.whereSenseQuality" />	
 		)tmp
@@ -91,7 +93,8 @@
 			, STATUS
 			, IS_DELETE
 			, REG_USER
-			, REG_DATE			
+			, REG_DATE
+			, DOC_OWNER			
 		)VALUES(
 			#{idx}
 			, #{title} 
@@ -104,6 +107,7 @@
 			, 'N'
 			, #{userId}
 			, sysdate()
+			, #{userId}
 		)
 	</insert>
 	
@@ -153,6 +157,7 @@
 			, REG_USER
 			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
 			, STATUS
+			, DOC_OWNER
 		FROM 
 			lab_sense_quality_report
 		WHERE 1 = 1
@@ -350,7 +355,7 @@
 			lab_sense_quality_report
 		WHERE 1 = 1
 			AND REPORT_IDX = #{idx}	
-			AND REG_USER = #{userId}
+			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N' 
 	</select>
 </mapper>

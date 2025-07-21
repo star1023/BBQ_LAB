@@ -2705,7 +2705,7 @@ var selectedArr = new Array();
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
 					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
-					<button class="btn_admin_sky" onclick="fn_insert()">개정</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">개정 및 결재</button>
 					<button class="btn_admin_gray" onclick="fn_goList();">취소</button>
 				</div>
 				<hr class="con_mode" />

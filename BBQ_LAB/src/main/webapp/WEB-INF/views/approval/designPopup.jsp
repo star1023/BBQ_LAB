@@ -45,6 +45,7 @@
 .imgDescriptbox{width: 90%;}
 
 </style>
+<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
 <script type="text/javascript">
 $(document).ready(function() {
 	  document.oncontextmenu = function (e) {
@@ -241,109 +242,105 @@ function downloadFile(idx){
 }
 </script>
 <h2 style=" position:fixed;" class="print_hidden">
-	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">결재</span>
+	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;결재</span>
 </h2>
 <div  class="top_btn_box" style=" position:fixed;">
 	<ul>
 		<li><button type="button" class="btn_pop_close" onClick="self.close();"></button></li>
 	</ul>
 </div>
-<div id='print_page'  style="padding:60px 0 20px 20px;">
+<div style="height: 60px;"></div>
 	<div class="group01 mt20">
-		<div class="main_tbl">
+		<div class="mainTable">
 			<form name="form" id="form" method="post" action="">
 			<input type="hidden" name="apprIdx" id="apprIdx" value="${paramVO.apprIdx }">
-			<table width="100%" cellpadding="0" cellspacing="0" class="print_hidden">
-				<tr>
-					<td valign="top">
-						<div class="main_tbl">
-							<table class="insert_proc01 tbl_app">
-								<colgroup>
-									<col width="13%"/>
-									<col width="50%"/>
-									<col />
-								</colgroup>
-								<tbody>
-									<tr>
-										<th style="border-left: none;">결재요청의견</th>
-										<td colspan="3">
-											${apprHeader.COMMENT}
-										</td>
-									</tr>
-									<tr>
-										<th style="border-left: none;"> 결재자</th>
-										<td>
-											<div class="file_box_pop5">
-												<ul>
-													<c:forEach items = "${apprItem}" var = "item" varStatus= "status">
-													<input type="hidden" name="itemIdx" id="itemIdx" value="${item.ITEM_IDX }">
-													<fmt:parseNumber var="itemIdx" type="number" value="${item.ITEM_IDX}" />
-													<li onMouseOver="location.href='#'">
-														<span>
-															${item.APPR_NO}차 결재
-														</span> 
-														${item.TARGET_USER_NAME}
-														(${item.STATUS_TXT})
-														<c:if test="${item.COMMENT !=null && item.COMMENT ne '' }">
-															<a href="#" onclick="fn_viewComment('${item.ITEM_IDX}');">
-																의견 <img src="/resources/images/icon_app_mass.png"/>
-															</a>
-														</c:if>
-													</li>										
-													</c:forEach>
-												</ul>
-											</div>
-										</td>
-										<td id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
-									</tr>
-									<tr>
-										<th style="border-left: none; ">참조자</th>
-										<td colspan="2">
-											<div class="file_box_pop4">
-													<c:forEach items = "${refList}" var = "ref" varStatus= "status">
-														&nbsp;${ref.TARGET_USER_NAME}
-														<c:if test="${status.index > 0}"> , </c:if>
-													</c:forEach>												
-											</div>
-										</td>
-									</tr>
-									<c:if test="${paramVO.viewType eq 'myApprList' }">
-									<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
-									<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
-									<tr>
-										<th style="border-left: none; ">결재의견</th>
-										<td colspan="3">
-											<textarea style="width:100%; height:60px" name="comment" id="comment"></textarea>
-										</td>
-									</tr>
-									</c:if>
-									</c:if>
-									</c:if>
-								</tbody>
-							</table>
-						</div>
-						<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
-						<c:if test="${paramVO.viewType eq 'myApprList' }">
-						<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
-							<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
-								<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
-								<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
-								<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
-								</c:if>
-								<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
-							</c:if>	
-						</c:if>
-						</c:if>
-						</div>
-					</td>
-				</tr>
+			<table class="insert_proc01 tbl_app">
+				<colgroup>
+					<col width="13%"/>
+					<col width="50%"/>
+					<col />
+				</colgroup>
+				<tbody>
+					<tr>
+						<th style="border-left: none;">결재요청의견</th>
+						<td colspan="3">
+							${apprHeader.COMMENT}
+						</td>
+					</tr>
+					<tr>
+						<th style="border-left: none;"> 결재자</th>
+						<td>
+							<div class="file_box_pop5">
+								<ul>
+									<c:forEach items = "${apprItem}" var = "item" varStatus= "status">
+									<input type="hidden" name="itemIdx" id="itemIdx" value="${item.ITEM_IDX }">
+									<fmt:parseNumber var="itemIdx" type="number" value="${item.ITEM_IDX}" />
+									<li onMouseOver="location.href='#'">
+										<span>
+											${item.APPR_NO}차 결재
+										</span> 
+										${item.TARGET_USER_NAME}
+										(${item.STATUS_TXT})
+										<c:if test="${item.COMMENT !=null && item.COMMENT ne '' }">
+											<a href="#" onclick="fn_viewComment('${item.ITEM_IDX}');">
+												의견 <img src="/resources/images/icon_app_mass.png"/>
+											</a>
+										</c:if>
+									</li>										
+									</c:forEach>
+								</ul>
+							</div>
+						</td>
+						<td id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
+					</tr>
+					<tr>
+						<th style="border-left: none; ">참조자</th>
+						<td colspan="2">
+							<div class="file_box_pop4">
+									<c:forEach items = "${refList}" var = "ref" varStatus= "status">
+										&nbsp;${ref.TARGET_USER_NAME}
+										<c:if test="${status.index > 0}"> , </c:if>
+									</c:forEach>												
+							</div>
+						</td>
+					</tr>
+					<c:if test="${paramVO.viewType eq 'myApprList' }">
+					<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
+					<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
+					<tr>
+						<th style="border-left: none; ">결재의견</th>
+						<td colspan="3">
+							<textarea style="width:100%; height:60px" name="comment" id="comment"></textarea>
+						</td>
+					</tr>
+					</c:if>
+					</c:if>
+					</c:if>
+				</tbody>
 			</table>
+		<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
+		<c:if test="${paramVO.viewType eq 'myApprList' }">
+		<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
+			<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
+				<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
+				<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
+				<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
+				</c:if>
+				<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
+			</c:if>	
+		</c:if>
+		</c:if>
+		</div>
 			</form>
 		</div>
 	</div>	
 	<div class="group01 mt5">
-		<div class="main_tbl">
-			<table class="insert_proc01">
+		<div id="wrapper">
+		<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+			<span>상품설계변경보고서</span>
+		</div>
+		<div class="mainTable">
+			<table >
 				<colgroup>
 					<col width="15%" />
 					<col width="35%" />
@@ -352,21 +349,21 @@ function downloadFile(idx){
 				</colgroup>
 				<tbody>
 					<tr>
-						<th style="border-left: none;">제목</th>
+						<th  >제목</th>
 						<td colspan="3">${designData.data.TITLE}</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">제품명</th>
+						<th  >제품명</th>
 						<td>
 							${designData.data.PRODUCT_NAME}
 						</td>
-						<th style="border-left: none;">ERP코드</th>
+						<th  >ERP코드</th>
 						<td>
 							${designData.data.SAP_CODE}
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">변경사유</th>
+						<th  >변경사유</th>
 						<td colspan="3">
 							<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
 							<c:if test="${addInfoList.INFO_TYPE == 'REA' }">	
@@ -376,9 +373,9 @@ function downloadFile(idx){
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">변경사항</th>
-						<td colspan="3">
-							<table class="tbl05" style="border-top: 2px solid #4b5165;">
+						<th  >변경사항</th>
+						<td colspan="3" class="inner-table-cell">
+							<table >
 								<colgroup>
 									<col width="15%">
 									<col width="34%">
@@ -415,7 +412,7 @@ function downloadFile(idx){
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">변경 적용 시점</th>
+						<th >변경 적용 시점</th>
 						<td colspan="3">
 							<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
 							<c:if test="${addInfoList.INFO_TYPE == 'TIME' }">	
@@ -424,32 +421,15 @@ function downloadFile(idx){
 							</c:forEach>
 						</td>
 					</tr>
-					<tr>
-						<th style="border-left: none;">첨부파일</th>
-						<td colspan="3" class="con_file">
-							<ul>
-								<li class="point_img">
-									<dd>
-										<ul>
-											<c:forEach items="${designData.fileList}" var="fileList" varStatus="status">
-												<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-											</c:forEach>
-										</ul>
-									</dd>
-								</li>
-							</ul>	
-						</td>
-					</tr>
 				</tbody>
 			</table>
 		</div>
 			
 		<div>
-			<table class="insert_proc01">
+			<table>
 				<tr>
 					<td><pre>${designData.data.CONTENTS}</pre></td>
 				</tr>
 			</table>
 		</div>
 	</div>
-</div>

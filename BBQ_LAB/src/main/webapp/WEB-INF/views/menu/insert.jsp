@@ -2724,7 +2724,7 @@ li {
 						<button class="btn_admin_navi">임시저장</button>
 						 -->
 						 <button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
-						<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
+						<button class="btn_admin_sky" onclick="fn_insert()">등록 및 결재</button>
 						<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 					</div>
 					<hr class="con_mode" />
@@ -2811,7 +2811,7 @@ li {
 	<input id="erpItemType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px ">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeErpMatRayer()"></button></li>
@@ -2854,7 +2854,7 @@ li {
 					<tbody id="erpMatLayerBody">
 						<input type="hidden" id="erpMatLayerPage" value="0"/>
 						<Tr>
-							<td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="9">상품코드 혹은 상품코드명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>
@@ -2971,7 +2971,7 @@ li {
 	<input id="searchType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeMatRayer()"></button></li>
@@ -3002,7 +3002,7 @@ li {
 					<thead>
 						<tr>
 							<th></th>
-							<th>원료코드</th>
+							<th>상품코드</th>
 							<th>ERP코드</th>
 							<th>상품명</th>
 							<th>보관기준</th>
@@ -3016,7 +3016,7 @@ li {
 					<tbody id="matLayerBody">
 						<input type="hidden" id="matLayerPage" value="0"/>
 						<Tr>
-							<td colspan="10">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="10">상품코드 혹은 상품코드명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>
@@ -3087,15 +3087,15 @@ li {
 				<thead>
 					<tr>
 						<th></th>
-						<th>제품코드</th>
-						<th>제품명</th>
+						<th>메뉴코드</th>
+						<th>메뉴명</th>
 						<th>버젼</th>
-						<th>제품구분</th>
+						<th>메뉴구분</th>
 					<tr>
 				</thead>
 				<tbody id="menuLayerBody">
 					<tr>
-						<td colspan="5">제품코드 혹은 제품명을 검색해주세요</td>
+						<td colspan="5">메뉴코드 혹은 메뉴명을 검색해주세요</td>
 					</tr>
 				</tbody>
 			</table>

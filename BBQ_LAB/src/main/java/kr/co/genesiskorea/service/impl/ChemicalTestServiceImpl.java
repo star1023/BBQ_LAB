@@ -62,14 +62,6 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 	public Map<String, Object> selectChemicalTestList(Map<String, Object> param) throws Exception{
 		// TODO Auto-generated method stub
 		int totalCount = reportDao.selectChemicalTestCount(param);
-
-		HashMap<String, Object> userMap = userDao.selectUser(param);
-		
-		if("10000071".equals(userMap.get("ORGAID"))) {
-			param.put("isSafeTeam", "S");
-		} else {
-			param.put("isSafeTeam", "N");			
-		}
 		
 		int viewCount = 10;
 		int pageNo = 1;
@@ -164,8 +156,11 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 				}
 				
 				itemList.add(itemMap);
-			}			
-			reportDao.insertChemicalTestItem(itemList);
+			}
+			
+			if( itemList != null && itemList.size() > 0 ) {
+				reportDao.insertChemicalTestItem(itemList);
+			}
 			
 			//4. lab_chemical_test_standard 등록
 			ArrayList<HashMap<String,Object>> standardList = new ArrayList<HashMap<String,Object>>();
@@ -198,7 +193,11 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 			Map<String, Object> historyParam = new HashMap<String, Object>();
 			historyParam.put("docIdx", param.get("idx"));
 			historyParam.put("docType", param.get("docType"));
-			historyParam.put("historyType", "I");
+			if (param.get("status") == "REG") {
+				historyParam.put("historyType", "T");				
+			}else {
+				historyParam.put("historyType", "I");								
+			}
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
@@ -373,7 +372,9 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 				
 				itemList.add(itemMap);
 			}			
-			reportDao.insertChemicalTestItem(itemList);
+			if( itemList != null && itemList.size() > 0 ) {
+				reportDao.insertChemicalTestItem(itemList);
+			}
 	
 			reportDao.deleteChemicalTestStandards(param);  // chemical_test_standard 삭제
 			
@@ -408,7 +409,11 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 			Map<String, Object> historyParam = new HashMap<String, Object>();
 			historyParam.put("docIdx", param.get("idx"));
 			historyParam.put("docType", param.get("docType"));
-			historyParam.put("historyType", "U");
+			if (param.get("status") == "REG") {
+				historyParam.put("historyType", "T");				
+			}else {
+				historyParam.put("historyType", "I");								
+			}
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
@@ -497,6 +502,51 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 	public int selectMyDataCheck(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return reportDao.selectMyDataCheck(param);
+	}
+	
+	@Override
+	public int updateBySafeTeam(Map<String, Object> param) {
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		
+	    int result = 0;
+	    
+		try {
+			// 헤더 정보 처리
+			result = reportDao.updateBySafeTeam(param);
+			
+		    // itemList 꺼내서 처리
+		    @SuppressWarnings("unchecked")
+		    List<Map<String, Object>> itemList = (List<Map<String, Object>>) param.get("itemList");
+		    Object idx = param.get("idx");
+
+		    if (itemList != null) {
+		        for (Map<String, Object> item : itemList) {
+		            item.put("idx", idx); // 각 아이템에 CHEMICAL_IDX 주입
+		            item.put("ITEM_IDX", item.get("itemIdx")); // 👈 이 줄 추가
+		            item.put("ITEM_RESULT", item.get("itemResult")); // 👈 이 줄 추가
+		            reportDao.updateBySafeTeamItem(item);
+		        }
+		    }
+			
+			//history 저장
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", param.get("idx"));
+			historyParam.put("docType", "CHEMICAL");
+			historyParam.put("historyType", "R");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+		    
+			txManager.commit(status);
+		} catch (Exception err) {
+			txManager.rollback(status);
+		}
+
+	    return result;
 	}
 
 }

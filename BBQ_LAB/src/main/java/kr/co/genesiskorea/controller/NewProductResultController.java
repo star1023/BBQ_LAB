@@ -122,6 +122,11 @@ public class NewProductResultController {
 
 	@RequestMapping("/view")
 	public String newProductResultView(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		//유저정보 DOC_OWNER 확인용
+		Auth auth = AuthUtil.getAuth(request);
+		String userId = auth.getUserId();
+		model.addAttribute("userId", userId);
+		
 		//1. lab_new_product_result 테이블 조회, lab_chemical_test 테이블 조회
 		Map<String, Object> newProductResultData = newProductResult.selectNewProductResultData(param);
 		//2. lab_new_product_result_item 조회

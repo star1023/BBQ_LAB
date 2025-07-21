@@ -8,8 +8,7 @@
 <script type="text/javascript">
 $(document).ready(function () {
 	
-	fn_loadList(1);
-
+	fn_loadList(1, isUserSafeTeam(), isRequestList());
 	// 요청일자
 	$("#requestDate").datepicker({
 		showOn: "both",
@@ -46,13 +45,16 @@ $(document).ready(function () {
 
 let currentTabType = "R"; // 기본값
 
-function fn_loadList(pageNo) {
+function fn_loadList(pageNo, isSafeTeam, isRequestList) {
     var URL = "../chemicalTest/selectChemicalTestListAjax";
     var viewCount = $("#viewCount").selectedValues()[0];
     if (viewCount == '') {
         viewCount = "10";
     }
 
+ // 현재 탭에 따라 대상 tbody 선택
+	var $listBody = isRequestList ? $("#requestListBody") : $("#resultListBody");
+    
     $("#list").html("<tr><td align='center' colspan='5'>조회중입니다.</td></tr>");
     $('.page_navi').html("");
 
@@ -65,6 +67,8 @@ function fn_loadList(pageNo) {
             "searchFileTxt": $("#searchFileTxt").val(),
             "requestDate": $("#requestDate").val(),
             "completeDate": $("#completeDate").val(),
+            "isSafeTeam": isSafeTeam ? 'Y' : 'N',
+            "isRequestList": isRequestList ? 'N' : 'C',
             "listType": currentTabType,
             "viewCount": viewCount,
             "pageNo": pageNo,
@@ -73,33 +77,52 @@ function fn_loadList(pageNo) {
 		dataType:"json",
 		success:function(data) {
 			var html = "";
-			if( data.totalCount > 0 ) {
-				$("#list").html(html);
+			if (data.totalCount > 0) {
 				data.list.forEach(function (item) {
 					html += "<tr>";
-					html += "	<td><a href=\"#\" onClick=\"fn_view('"+item.CHEMICAL_IDX+"')\">"+nvl(item.PRODUCT_NAME,'&nbsp;')+"</a></td>";
-					html += "	<td>"+nvl(item.REQUEST_DATE,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.COMPLETION_DATE,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.REQUEST_USER,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.DOC_OWNER_NAME,'&nbsp;')+"</td>";
+					html += "	<td><a href=\"#\" onClick=\"fn_view('" + item.CHEMICAL_IDX + "')\">" + nvl(item.PRODUCT_NAME, '&nbsp;') + "</a></td>";
+					html += "	<td>" + nvl(item.REQUEST_DATE, '&nbsp;') + "</td>";
+					html += "	<td>" + nvl(item.COMPLETION_DATE, '&nbsp;') + "</td>";
+
+					if (!isRequestList) {
+						html += "	<td>" + nvl(item.TEST_COMPLETION_DATE, '&nbsp;') + "</td>";
+					}
+
+					html += "	<td>" + nvl(item.REQUEST_USER, '&nbsp;') + "</td>";
+
+					if (!isRequestList) {
+						html += "	<td>" + nvl(item.TEST_MANAGER_NAME, '&nbsp;') + "</td>";
+					}
+					
+					if (!isRequestList) {
+						html += "	<td>" + nvl(item.TEST_STATUS_TXT, '&nbsp;') + "</td>";
+					} else {
+						html += "	<td>" + nvl(item.STATUS_TXT, '&nbsp;') + "</td>";
+					}
+					
+					html += "	<td>" + nvl(item.DOC_OWNER_NAME, '&nbsp;') + "</td>";
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
-					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.CHEMICAL_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-					if( item.STATUS == 'COND_APPR' ) {
-						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.CHEMICAL_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+					html += "			<button class=\"btn_doc\" onclick=\"fn_viewHistory('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
+
+					if (item.STATUS == 'REG') {
+						html += "			<button class=\"btn_doc\" onclick=\"fn_update('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+					}
+					
+					if (isUserSafeTeam() && item.TEST_STATUS != 'C') {
+						html += "			&nbsp;<button class=\"btn_doc\" onclick=\"fn_update('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">결과입력</button>";
 					}
 					html += "		</li>";
 					html += "	</td>";
-					html += "</tr>"		
-				});				
+					html += "</tr>";
+				});
 			} else {
-				$("#list").html(html);
-				html += "<tr><td align='center' colspan='7'>데이터가 없습니다.</td></tr>";
-			}			
-			$("#list").html(html);
-			$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
-			$('#pageNo').val(data.navi.pageNo);			
+				html = "<tr><td align='center' colspan='10'>데이터가 없습니다.</td></tr>";
+			}
+
+			$listBody.html(html);
+			$(".page_navi").html(data.navi.prevBlock + data.navi.pageList + data.navi.nextBlock);
+			$("#pageNo").val(data.navi.pageNo);		
 		},
 		error:function(request, status, errorThrown){
 			var html = "";
@@ -113,7 +136,7 @@ function fn_loadList(pageNo) {
 }
 
 function fn_search() {
-	fn_loadList(1);
+	fn_loadList(1, isUserSafeTeam(), isRequestList());
 }
 
 function fn_insertForm() {
@@ -152,6 +175,8 @@ function fn_viewHistory(idx) {
 					html += " 삭제되었습니다.";
 				} else if( item.HISTORY_TYPE == 'U' ) {
 					html += " 수정되었습니다.";
+				} else if( item.HISTORY_TYPE == 'R' ) {
+					html += " 검사가 완료되었습니다.";
 				} 
 				html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
 				html += "</li>"; 
@@ -190,16 +215,32 @@ function fn_changeTab(type) {
 	if (type === "R") {
 		$("#myCount").addClass("select");
 		$("#apprCount").removeClass("select");
-		
+
+		// 테이블 표시 제어
+		$(".requestList").show();
+		$(".resultList").hide();
 	} else {
 		$("#apprCount").addClass("select");
 		$("#myCount").removeClass("select");
+
+		// 테이블 표시 제어
+		$(".requestList").hide();
+		$(".resultList").show();
 	}
 
-	fn_loadList(1); // 페이지 1번으로 다시 조회
+	// 리스트 로딩
+	fn_loadList(1, isUserSafeTeam(), isRequestList());
+}
+
+function isUserSafeTeam() {
+	return ('${userUtil:getRoleCode(pageContext.request)}' == '6' || '${userUtil:getRoleCode(pageContext.request)}' == '7');
+}
+
+function isRequestList() {
+	return currentTabType === 'R';
 }
 </script>
-
+<c:set var="isSafeTeam" value="${userUtil:getRoleCode(pageContext.request) == '6' || userUtil:getRoleCode(pageContext.request) == '7'}" />
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">이화학 검사 의뢰서&nbsp;&nbsp;
@@ -213,7 +254,9 @@ function fn_changeTab(type) {
 			<div  class="top_btn_box">
 				<ul>
 					<li>
-						<button type="button" class="btn_circle_red" onClick="javascript:fn_insertForm();">&nbsp;</button>
+						<c:if test="${not isSafeTeam}">
+							<button type="button" class="btn_circle_red" onClick="javascript:fn_insertForm();">&nbsp;</button>
+						</c:if>
 					</li>
 				</ul>
 			</div>
@@ -287,7 +330,7 @@ function fn_changeTab(type) {
 				</div>
 			</div>
 			<div class="main_tbl">
-				<table class="tbl01">
+				<table class="tbl01 requestList">
 					<colgroup id="list_colgroup">
 						<col />
 						<col width="13%">
@@ -306,16 +349,46 @@ function fn_changeTab(type) {
 							<th>문서상태</th> 
 							<th>담당자</th> 
 							<th></th> 
-						<tr>
+						</tr>
 					</thead>
-					<tbody id="list">						
+					<tbody id="requestListBody">						
+					</tbody>
+				</table>
+				<table class="tbl01 resultList" style="display:none;">
+					<colgroup id="list_colgroup">
+						<col />
+						<col width="10%">
+						<col width="10%">
+						<col width="10%">						
+						<col width="10%">						
+						<col width="10%">						
+						<col width="10%">						
+						<col width="10%">						
+						<col width="12%">						
+					</colgroup>
+					<thead id="list_header">
+						<tr>
+							<th>시료명</th>
+							<th>요청일</th>
+							<th>희망완료일</th>
+							<th>검사완료일</th>
+							<th>의뢰자</th>
+							<th>검사자</th>
+							<th>검사상태</th> 
+							<th>담당자</th> 
+							<th></th> 
+						</tr>
+					</thead>
+					<tbody id="resultListBody">						
 					</tbody>
 				</table>
 				<div class="page_navi  mt10">
 				</div>
 			</div>
-			<div class="btn_box_con"> 
-				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">이화학 검사 의뢰서 생성</button>
+			<div class="btn_box_con">
+				<c:if test="${not isSafeTeam}">
+					<button class="btn_admin_red" onclick="javascript:fn_insertForm();">이화학 검사 의뢰서 생성</button>
+				</c:if> 
 			</div>
 	 		<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>

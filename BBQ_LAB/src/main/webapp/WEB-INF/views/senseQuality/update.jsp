@@ -740,6 +740,166 @@ table{font-size: 12px}
 			if($('#'+checkBoxId).is(':checked')) $(v).remove();
 		})
 	}
+	
+	function fn_previewDataBinding(popup) {
+		  const $doc = popup.document;
+
+		  // 기본 항목 바인딩
+		  $doc.getElementById("prev_title").innerText = document.getElementById("title")?.value || '';
+		  $doc.getElementById("prev_companyName").innerText = document.getElementById("companyName")?.value || '';
+		  $doc.getElementById("prev_productName").innerText = document.getElementById("productName")?.value || '';
+		  $doc.getElementById("prev_sapCode").innerText = document.getElementById("sapCode")?.value || '';
+		  $doc.getElementById("prev_testPurpose").innerText = document.getElementById("testPurpose")?.value || '';
+
+		  const contentTbody = $doc.getElementById("prev_content_tbody");
+		  const resultTbody = $doc.getElementById("prev_result_tbody");
+
+		  const containerDivs = Array.from(document.querySelectorAll("div[id^='contents_div_']"))
+        .filter(div => div.offsetParent !== null);
+			console.log(containerDivs);
+		  containerDivs.forEach((div, idx) => {
+		    const isFirst = (idx === 0);
+
+		    const header = div.querySelector("input[id='contentsHeader']")?.value || '';
+
+		    const contents = Array.from(div.querySelectorAll("input[id='contentsDiv']"))
+		      .filter(el => el.offsetParent !== null);
+
+		    const results = Array.from(div.querySelectorAll("textarea[id='contentsResult']"))
+		      .filter(el => el.offsetParent !== null);
+
+		    const note = Array.from(div.querySelectorAll("textarea[id='contentsNote']"))
+		      .find(el => el.offsetParent !== null)?.value || '';
+
+		    const images = Array.from(div.querySelectorAll("img[id='preview']"))
+		      .filter(img => img.offsetParent !== null);
+
+		    // 1. 헤더행 (첫 번째 세트만)
+		    if (isFirst) {
+		      const trHeader = $doc.createElement("tr");
+
+		      const th1 = $doc.createElement("th");
+		      th1.rowSpan = 2;
+		      th1.innerText = "구분";
+
+		      const tdHeader = $doc.createElement("td");
+		      tdHeader.colSpan = 4;
+		      tdHeader.style.textAlign = "center";
+		      tdHeader.innerText = header;
+
+		      trHeader.appendChild(th1);
+		      trHeader.appendChild(tdHeader);
+		      contentTbody.appendChild(trHeader);
+		    }
+
+		    // 2. 구분행
+		    const trDiv = $doc.createElement("tr");
+
+		    if (!isFirst) {
+		      const thDiv = $doc.createElement("th");
+		      thDiv.innerText = "구분";
+		      trDiv.appendChild(thDiv);
+		    }
+
+		    contents.forEach(input => {
+		      const td = $doc.createElement("td");
+		      td.innerText = input?.value || '';
+		      trDiv.appendChild(td);
+		    });
+
+		    // 빈 칸 채우기 (max 3칸)
+		    while (trDiv.children.length < (isFirst ? 3 : 4)) {
+		      const td = $doc.createElement("td");
+		      td.innerHTML = "&nbsp;";
+		      trDiv.appendChild(td);
+		    }
+
+		    const thNote = $doc.createElement("th");
+		    thNote.innerText = "비고";
+		    trDiv.appendChild(thNote);
+		    contentTbody.appendChild(trDiv);
+
+		    // 3. 사진행
+		    const trImg = $doc.createElement("tr");
+		    const thImg = $doc.createElement("th");
+		    thImg.innerText = "사진";
+		    trImg.appendChild(thImg);
+
+		    images.forEach(imgEl => {
+		      const td = $doc.createElement("td");
+		      td.style = "height: 200px; text-align: center; border: 1px solid #bbb;";
+		      const src = imgEl?.getAttribute("src");
+		      if (src) {
+		        const img = $doc.createElement("img");
+		        img.src = src;
+		        img.style = "width: 100%; height: 100%; object-fit: contain; border-radius: 5px;";
+		        td.appendChild(img);
+		      }
+		      trImg.appendChild(td);
+		    });
+
+		    while (trImg.children.length < 4) {
+		      const td = $doc.createElement("td");
+		      td.innerHTML = "&nbsp;";
+		      trImg.appendChild(td);
+		    }
+
+		    const tdNote = $doc.createElement("td");
+		    tdNote.rowSpan = 2;
+		    tdNote.innerHTML = "<p style='white-space: pre-line; text-align:left;'>" + note + "</p>";
+		    trImg.appendChild(tdNote);
+		    contentTbody.appendChild(trImg);
+
+		    // 4. 결과행
+		    const trResult = $doc.createElement("tr");
+		    const thResult = $doc.createElement("th");
+		    thResult.innerText = "결과";
+		    trResult.appendChild(thResult);
+
+		    results.forEach(textarea => {
+		      const td = $doc.createElement("td");
+		      td.style = "border: 1px solid #bbb;";
+		      td.innerHTML = "<p style='white-space: pre-line; text-align:left;'>" + (textarea?.value || '') + "</p>";
+		      trResult.appendChild(td);
+		    });
+
+		    while (trResult.children.length < 4) {
+		      const td = $doc.createElement("td");
+		      td.innerHTML = "&nbsp;";
+		      trResult.appendChild(td);
+		    }
+
+		    contentTbody.appendChild(trResult);
+		  });
+
+		  // 5. 결론 바인딩
+		  const resultInputs = document.querySelectorAll("input[name='result']");
+		  resultInputs.forEach((el, idx) => {
+		    // 비어 있는 경우는 제외
+		    const value = el.value?.trim();
+		    if (!value) return;
+
+		    const tr = $doc.createElement("tr");
+		    tr.id = "result_tr_" + (idx + 1);
+		    const td = $doc.createElement("td");
+		    td.innerText = value;
+		    tr.appendChild(td);
+		    resultTbody.appendChild(tr);
+		  });
+		}
+	
+	function fn_openPreview() {
+		var url = "/preview/senseQualityPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -759,9 +919,11 @@ table{font-size: 12px}
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">

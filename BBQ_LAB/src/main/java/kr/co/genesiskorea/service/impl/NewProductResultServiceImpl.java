@@ -109,7 +109,6 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	        // 날짜 경로 (yyyyMM)
 	        String datePath = new SimpleDateFormat("yyyyMM").format(new Date());
 
-	        param.put("status", "REG");
 	        param.put("isDelete", "N");
 	        
 	        // ✅ 경로 설정
@@ -211,7 +210,11 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	        Map<String, Object> historyParam = new HashMap<String, Object>();
 	        historyParam.put("docIdx", resultIdx);
 	        historyParam.put("docType", "RESULT");
-	        historyParam.put("historyType", "I");
+	        if ( "TMP".equals(param.get("status")) ){
+	        	historyParam.put("historyType", "T");	        	
+	        } else {
+	        	historyParam.put("historyType", "I");	        		        			        	
+	        }
 	        historyParam.put("historyData", param.toString());
 	        historyParam.put("userId", param.get("userId"));
 	        commonDao.insertHistory(historyParam);
@@ -265,7 +268,6 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	        String userId = String.valueOf(param.get("userId"));
 	        String datePath = new SimpleDateFormat("yyyyMM").format(new Date());
 
-	        param.put("status", "REG");
 	        param.put("isDelete", "N");
 	        
 	        String imageBasePath = config.getProperty("upload.file.path.images") + "/" + datePath;
@@ -284,8 +286,13 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	                itemList.add(cell);
 	            }
 	        }
-	        newProductResultDao.insertNewProductResultItems(itemList);
-
+	        
+	        
+	        // ✅ 한 번에 insert ( 직접입력이 아닌경우에는 인서트 회피 )
+	        if (!itemList.isEmpty()) {
+	            newProductResultDao.insertNewProductResultItems(itemList);
+	        }
+	        
 		     // ✅ 3. 기존 이미지 삭제 후 새로 저장
 	
 		     // 1. 기존 이미지 목록을 로딩 (ROW_NO 기준 Map 생성)
@@ -432,7 +439,12 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	        Map<String, Object> historyParam = new HashMap<String, Object>();
 	        historyParam.put("docIdx", idx);
 	        historyParam.put("docType", "RESULT");
-	        historyParam.put("historyType", "U");
+	        if ("TMP".equals(param.get("status"))) {
+	        	historyParam.put("historyType", "T");
+	        } else {
+	        	historyParam.put("historyType", "U");	        	
+	        }
+	        
 	        historyParam.put("historyData", param.toString());
 	        historyParam.put("userId", userId);
 	        commonDao.insertHistory(historyParam);

@@ -240,23 +240,20 @@ function downloadFile(idx){
 	location.href = '/test/fileDownload?idx='+idx;
 }
 </script>
+<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
 <h2 style=" position:fixed; background-color: #38b6e6 !important;" class="print_hidden">
-	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">결재</span>
+	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;결재</span>
 </h2>
 <div  class="top_btn_box" style=" position:fixed;">
 	<ul>
 		<li><button type="button" class="btn_pop_close" onClick="self.close();"></button></li>
 	</ul>
 </div>
-<div id='print_page'  style="padding:60px 0 20px 20px;">
+<div style="height: 60px;"></div>
 	<div class="group01 mt20">
-		<div class="main_tbl">
+		<div class="mainTable">
 			<form name="form" id="form" method="post" action="">
 			<input type="hidden" name="apprIdx" id="apprIdx" value="${paramVO.apprIdx }">
-			<table width="100%" cellpadding="0" cellspacing="0" class="print_hidden">
-				<tr>
-					<td valign="top">
-						<div class="main_tbl">
 							<table class="insert_proc01 tbl_app">
 								<colgroup>
 									<col width="13%"/>
@@ -321,7 +318,6 @@ function downloadFile(idx){
 									</c:if>
 								</tbody>
 							</table>
-						</div>
 						<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
 						<c:if test="${paramVO.viewType eq 'myApprList' }">
 						<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
@@ -335,15 +331,16 @@ function downloadFile(idx){
 						</c:if>
 						</c:if>
 						</div>
-					</td>
-				</tr>
-			</table>
 			</form>
 		</div>
 	</div>	
 	<div class="group01 mt5">
-		<div class="main_tbl">
-			<table class="insert_proc01">
+		<div id="wrapper">
+		<div style="width:100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+			<span>메뉴완료보고서</span>
+		</div>
+    	<div class="mainTable">
+			<table >
 				<colgroup>
 					<col width="15%" />
 					<col width="35%" />
@@ -352,91 +349,144 @@ function downloadFile(idx){
 				</colgroup>
 				<tbody>
 					<tr>
-						<th style="border-left: none;">제목</th>
+						<th >제목</th>
 						<td colspan="3">${menuData.data.TITLE}</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">제품명</th>
+						<th >제품명</th>
 						<td colspan="3">
 							${menuData.data.NAME}
 						</td>
 					</tr>
-					<tr>
-						<th style="border-left: none;">개발 목적</th>
-						<td colspan="3">
-							<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
-								<c:if test="${addInfoList.INFO_TYPE == 'PUR' }">
-									${addInfoList.INFO_TEXT} <br>
+					<c:if test="${menuData.data.VERSION_NO == 1 && addInfoCount.PUR_CNT > 0 }">
+						<tr>
+							<th >개발 목적</th>
+							<td colspan="3">
+								<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
+									<c:if test="${addInfoList.INFO_TYPE == 'PUR' }">
+										${addInfoList.INFO_TEXT} <br>
+									</c:if>
+								</c:forEach>
+							</td>
+						</tr>
+					</c:if>
+					<c:if test="${menuData.data.VERSION_NO == 1 && addInfoCount.FEA_CNT > 0 }">
+						<tr>
+							<th >메뉴 특징</th>
+							<td colspan="3">
+								<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
+									<c:if test="${addInfoList.INFO_TYPE == 'FEA' }">
+										${addInfoList.INFO_TEXT} <br>
+									</c:if>
+								</c:forEach>
+							</td>
+						</tr>
+					</c:if>
+					<c:if test="${menuData.data.VERSION_NO != 1 && fn:length(imporvePurposeList) > 0 }">
+						<tr>
+							<th >개선 목적</th>
+							<td colspan="3" class="inner-table-cell">
+								<div id="wrapper_prev_improve_pur" >
+									<table class="inner-table">
+										<colgroup>
+											<col width="33.33%">
+											<col width="33.33%">
+											<col width="33.33%">
+										</colgroup>
+										<thead>
+											<tr>
+												<th>개선</th>
+												<th>기존</th>
+												<th>비고</th>
+											</tr>
+										</thead>
+										<tbody id="improve_pur_tbody" name="improve_pur_tbody">
+											<c:forEach items="${imporvePurposeList}" var="imporvePurposeList" varStatus="status">
+												<tr id="improve_pur_tr__${status.count}" >
+													<td>
+														${imporvePurposeList.IMPROVE}
+													</td>
+													<td>
+														${imporvePurposeList.EXIST}
+													</td>
+													<td>
+														${imporvePurposeList.NOTE}
+													</td>
+												</tr>
+											</c:forEach>	
+										</tbody>
+									</table>
+								</div>
+							</td>
+						</tr>
+					</c:if>
+					<c:if test="${menuData.data.VERSION_NO != 1 && fn:length(addInfoCount) > 0 }">
+						<tr class="tr_prev_version2">
+							<th >개선 사항</th>
+							<td colspan="3" id="prev_improve">
+								<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
+								<c:if test="${addInfoList.INFO_TYPE == 'IMP' }">
+										${addInfoList.INFO_TEXT}<br>
 								</c:if>
 							</c:forEach>
-						</td>
+							</td>
+						</tr>
+					</c:if>
+					<c:set var="brandText" value="" />
+					<c:set var="usageText" value="" />
+					
+					<c:forEach items="${addInfoList}" var="item">
+					    <c:if test="${item.INFO_TYPE == 'USB'}">
+					        <c:choose>
+					            <c:when test="${empty brandText}">
+					                <c:set var="brandText" value="${item.INFO_TEXT_NAME}" />
+					            </c:when>
+					            <c:otherwise>
+					                <c:set var="brandText" value="${brandText}, ${item.INFO_TEXT_NAME}" />
+					            </c:otherwise>
+					        </c:choose>
+					    </c:if>
+					    <c:if test="${item.INFO_TYPE == 'USC' && empty usageText}">
+					        <c:set var="usageText" value="${item.INFO_TEXT}" />
+					    </c:if>
+					</c:forEach>
+					<tr>
+					    <th >브랜드</th>
+					    <td colspan="3">
+					        ${brandText}
+					    </td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">메뉴 특징</th>
-						<td colspan="3">
-							<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
-								<c:if test="${addInfoList.INFO_TYPE == 'FEA' }">
-									${addInfoList.INFO_TEXT} <br>
-								</c:if>
-							</c:forEach>
-						</td>
+					    <th >용도</th>
+					    <td colspan="3">
+					        ${usageText}
+					    </td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">용도</th>
-						<td colspan="3">
-							<c:set var="usageText" value="" />
-							<c:forEach items="${addInfoList}" var="item" varStatus="status">
-							<c:if test="${item.INFO_TYPE == 'USB' || item.INFO_TYPE == 'USC'}">
-								<c:choose>
-									<c:when test="${empty usageText}">
-										<c:choose>
-											<c:when test="${item.INFO_TYPE == 'USB'}">
-												<c:set var="usageText" value="${item.INFO_TEXT_NAME}" />
-											</c:when>
-											<c:otherwise>
-												<c:set var="usageText" value="${item.INFO_TEXT}" />
-											</c:otherwise>
-										</c:choose>
-									</c:when>
-									<c:otherwise>
-										<c:choose>
-											<c:when test="${item.INFO_TYPE == 'USB'}">
-												<c:set var="usageText" value="${usageText}, ${item.INFO_TEXT_NAME}" />
-											</c:when>
-											<c:otherwise>
-												<c:set var="usageText" value="${usageText}, ${item.INFO_TEXT}" />
-											</c:otherwise>
-										</c:choose>
-									</c:otherwise>
-								</c:choose>
-							</c:if>
-							</c:forEach>
-							${usageText}
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">신규도입품/제품규격</th>
-						<td colspan="3">
-							<table class="tbl01 " style="border-bottom: 2px solid #4b5165;">
+						<th >신규도입품 /<br>제품규격</th>
+						<td colspan="3" class="inner-table-cell">
+							<c:if test="${not empty newDataList}">
+							<table class="inner-table">
 								<colgroup>
-									<col width="140">
-									<col width="140">
-									<col width="250">
-									<col width="150">
-									<col />
+									<col width="20%"></col>
+									<col width="20%"></col>
+									<col width="20%"></col>
+									<col width="20%"></col>
+									<col width="20%"></col>
 								</colgroup>
 								<thead>
 									<tr>
 										<th>제품명</th>
 										<th>포장규격</th>
 										<th>공급처 및 담당자</th>
-										<th>보관조건 및 소비기한</th>
+										<th>보관조건 및<br>소비기한</th>
 										<th>비고</th>
 									</tr>
 								</thead>
 								<tbody>
 									<c:forEach items="${newDataList}" var="newDataList" varStatus="status">
-										<tr id="new_tr_${status.count}" class="temp_color">
+										<c:if  test="${newDataList.TYPE_CODE == 'A'}">
+										<tr id="new_tr_${status.count}" >
 											<td>
 												${newDataList.PRODUCT_NAME}
 											</td>
@@ -449,35 +499,81 @@ function downloadFile(idx){
 											<td>${newDataList.KEEP_EXP}</td>
 											<td>${newDataList.NOTE}</td>
 										</tr>
+										</c:if>
 									</c:forEach>
 								</tbody>
-							</table>	
+							</table>
+							</c:if>	
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">도입 예정일</th>
+						<th >추정원가</th>
+						<td colspan="3" class="inner-table-cell">
+							<c:if test="${not empty newDataList}">
+							<table class="inner-table">
+								<colgroup>
+									<col width="20%"></col>
+									<col width="20%"></col>
+									<col width="20%"></col>
+									<col width="20%"></col>
+									<col width="20%"></col>
+								</colgroup>
+								<thead>
+									<tr>
+										<th>메뉴명</th>
+										<th>예상판매가</th>
+										<th>예상원가</th>
+										<th>원가율(%)</th>
+										<th>비고</th>
+									</tr>
+								</thead>
+								<tbody id="new1_tbody" name="new1_tbody">
+									<c:forEach items="${newDataList}" var="newDataList" varStatus="status">
+										<c:if  test="${newDataList.TYPE_CODE == 'B'}">
+											<tr id="new1_tr_${status.count}" >
+												<td>
+													${newDataList.PRODUCT_NAME}
+												</td>
+												<td>
+													${newDataList.PACKAGE_STANDARD}
+												</td>
+												<td>
+													${newDataList.SUPPLIER}
+												</td>
+												<td>${newDataList.KEEP_EXP}</td>
+												<td>${newDataList.NOTE}</td>
+											</tr>
+										</c:if>
+									</c:forEach>							
+								</tbody>
+							</table>
+							</c:if>
+						</td>
+					</tr>
+					<tr>
+						<th >도입 예정일</th>
 						<td colspan="3">
 							${menuData.data.SCHEDULE_DATE}
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">제품코드</th>
+						<th >제품코드</th>
 						<td>
 							${menuData.data.MENU_CODE}
 						</td>
-						<th style="border-left: none;">상품코드</th>
+						<th >상품코드</th>
 						<td>
 							${menuData.data.SAP_CODE}
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">버젼 No.</th>
+						<th >버젼 No.</th>
 						<td colspan="3">
 							${menuData.data.VERSION_NO}
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">제품유형</th>
+						<th >제품유형</th>
 						<td colspan="5">
 							<c:if test="${menuData.data.MENU_TYPE1 != null }">
 							${menuData.data.MENU_TYPE_NAME1}
@@ -491,7 +587,7 @@ function downloadFile(idx){
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">첨부파일 유형</th>
+						<th >첨부파일 유형</th>
 						<td colspan="3">
 							<c:forEach items="${menuData.fileType}" var="fileType" varStatus="status">
 								<c:if test="${status.index != 0 }">
@@ -502,10 +598,11 @@ function downloadFile(idx){
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">첨부파일</th>
-						<td colspan="3" class="con_file">
+						<th>첨부파일</th>
+						<td colspan="3">
+						<div class="con_file" style="">
 							<ul>
-								<li class="point_img">
+								<li style="background-color:#fff; border:none;">
 									<dd>
 										<ul>
 											<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
@@ -514,23 +611,27 @@ function downloadFile(idx){
 										</ul>
 									</dd>
 								</li>
-							</ul>	
+							</ul>
+						</div>
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 		<c:if test="${menuData.data.IS_NEW_MATERIAL == 'Y' }">
-		<div class="main_tbl">				
-			<table class="tbl01">
+		<div>
+			<span style="font-size: 14px;">※ 신규원료</span>
+		</div>
+		<div class="mainTable">				
+			<table>
 				<colgroup>
-					<col width="140">
-					<col width="140">
-					<col width="250">
-					<col width="150">
-					<col width="200">
-					<col width="8%">
-					<col />
+					<col width="6%">
+					<col width="5%">
+					<col width="12%">
+					<col width="6%">
+					<col width="10%">
+					<col width="7%">
+					<col width="6%">
 				</colgroup>
 				<thead>
 					<tr>
@@ -538,7 +639,7 @@ function downloadFile(idx){
 						<th>ERP코드</th>
 						<th>원료명</th>
 						<th>규격</th>
-						<th>보관방법 및 유통기한</th>
+						<th>보관방법 및<br>유통기한</th>
 						<th>공급가</th>
 						<th>비고</th>
 					</tr>
@@ -548,7 +649,7 @@ function downloadFile(idx){
 				<c:if test="${menuMaterialData.MATERIAL_TYPE == 'Y' }">
 					<tr>
 						<td>
-							<div class=""><a href="#" onClick="fn_view('${menuMaterialData.MATERIAL_IDX}')">${menuMaterialData.MATERIAL_CODE}</a></div>
+							<div>${menuMaterialData.MATERIAL_CODE}</div>
 						</td>
 						<td>
 							${menuMaterialData.SAP_CODE}
@@ -578,82 +679,84 @@ function downloadFile(idx){
 		</div>
 		</c:if>
 		
-		<div class="main_tbl">				
-			<table class="tbl01 ">
-				<colgroup>
-					<col width="140">					
-					<col width="140">
-					<col width="250">
-					<col width="150">
-					<col width="200">
-					<col width="8%">
-					<col />
-				</colgroup>
-				<thead>
+		<c:set var="hasErpMaterial" value="false" />
+		<c:forEach items="${menuMaterialData}" var="item">
+		    <c:if test="${item.MATERIAL_TYPE == 'N'}">
+		        <c:set var="hasErpMaterial" value="true" />
+		    </c:if>
+		</c:forEach>
+		<c:if test="${hasErpMaterial}">
+			<div>
+				<span style="font-size: 14px;">※ 기존원료</span>
+			</div>
+			<div class="mainTable">				
+				<table >
+					<colgroup>
+						<col width="6%">
+						<col width="5%">
+						<col width="12%">
+						<col width="6%">
+						<col width="10%">
+						<col width="7%">
+						<col width="6%">
+					</colgroup>
+					<thead>
+						<tr>
+							<th>원료코드</th>
+							<th>ERP코드</th>
+							<th>원료명</th>
+							<th>규격</th>
+							<th>보관방법 및<br>유통기한</th>
+							<th>공급가</th>
+							<th>비고</th>
+						</tr>
+					</thead>
+					<tbody>
+					<c:forEach items="${menuMaterialData}" var="menuMaterialData" varStatus="status">
+					<c:if test="${menuMaterialData.MATERIAL_TYPE == 'N' }">
+						<tr>
+							<td>
+								<div class=""><a href="#" onClick="fn_erpview('${menuMaterialData.SAP_CODE}')">${menuMaterialData.MATERIAL_CODE}</a></div>
+							</td>
+							<td>
+								${menuMaterialData.SAP_CODE}
+							</td>
+							<td>
+								${menuMaterialData.NAME}
+							</td>
+							<td>
+								${menuMaterialData.STANDARD}
+							</td>
+							<td>
+								${menuMaterialData.KEEP_EXP}
+							</td>
+							<td>
+								${menuMaterialData.UNIT_PRICE}
+							</td>
+							<td>
+								${menuMaterialData.DESCRIPTION}
+							</td>
+						</tr>
+					</c:if>	
+					</c:forEach>	
+					</tbody>
+					<tfoot>
+					</tfoot>
+				</table>
+			</div>
+		</c:if>
+		<c:if test="${not empty menuData.data.CONTENTS}">
+			<div>
+				<span style="font-size: 14px;">※ 비고</span>
+			</div>
+			<div class="mainTable">
+				<table >
 					<tr>
-						<th>원료코드</th>
-						<th>ERP코드</th>
-						<th>원료명</th>
-						<th>규격</th>
-						<th>보관방법 및 유통기한</th>
-						<th>공급가</th>
-						<th>비고</th>
+						<td><pre>${menuData.data.CONTENTS}</pre></td>
 					</tr>
-				</thead>
-				<tbody>
-				<c:forEach items="${menuMaterialData}" var="menuMaterialData" varStatus="status">
-				<c:if test="${menuMaterialData.MATERIAL_TYPE == 'N' }">
-					<tr>
-						<td>
-							<div class=""><a href="#" onClick="fn_erpview('${menuMaterialData.SAP_CODE}')">${menuMaterialData.MATERIAL_CODE}</a></div>
-						</td>
-						<td>
-							${menuMaterialData.SAP_CODE}
-						</td>
-						<td>
-							${menuMaterialData.NAME}
-						</td>
-						<td>
-							${menuMaterialData.STANDARD}
-						</td>
-						<td>
-							${menuMaterialData.KEEP_EXP}
-						</td>
-						<td>
-							${menuMaterialData.UNIT_PRICE}
-						</td>
-						<td>
-							${menuMaterialData.DESCRIPTION}
-						</td>
-					</tr>
-				</c:if>	
-				</c:forEach>	
-				</tbody>
-				<tfoot>
-				</tfoot>
-			</table>
-		</div>
-		<!-- 
-		<div class="con_file" style="">
-			<ul>
-				<li class="point_img">
-					<dt>첨부파일</dt><dd>
-						<ul>
-							<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
-								<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-							</c:forEach>
-						</ul>
-					</dd>
-				</li>
-			</ul>
-		</div>
-		 -->
-		<div>
-			<table class="insert_proc01">
-				<tr>
-					<td><pre>${menuData.data.CONTENTS}</pre></td>
-				</tr>
-			</table>
-		</div>
+				</table>
+			</div>
+		</c:if>
+    </div>
 	</div>
 </div>

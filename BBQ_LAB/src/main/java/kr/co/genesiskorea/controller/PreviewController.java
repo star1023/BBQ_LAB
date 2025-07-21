@@ -31,13 +31,19 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.font.FontProvider;
 
+import kr.co.genesiskorea.common.auth.AuthUtil;
 import kr.co.genesiskorea.service.BusinessTripPlanService;
 import kr.co.genesiskorea.service.BusinessTripService;
+import kr.co.genesiskorea.service.ChemicalTestService;
+import kr.co.genesiskorea.service.CodeManagementService;
 import kr.co.genesiskorea.service.CommonService;
 import kr.co.genesiskorea.service.DesignReportService;
 import kr.co.genesiskorea.service.MarketResearchService;
 import kr.co.genesiskorea.service.MenuService;
+import kr.co.genesiskorea.service.NewProductResultService;
+import kr.co.genesiskorea.service.PackageInfoService;
 import kr.co.genesiskorea.service.ProductService;
+import kr.co.genesiskorea.service.SenseQualityService;
 
 @Controller
 @RequestMapping("/preview")
@@ -60,6 +66,21 @@ public class PreviewController {
 	
 	@Autowired
 	MarketResearchService marketResearchService;
+	
+	@Autowired
+	ChemicalTestService chemicalTestService;
+	
+	@Autowired
+	SenseQualityService senseQualityService;
+	
+	@Autowired
+	NewProductResultService newProductResultService;
+	
+	@Autowired
+	CodeManagementService codeManagementService;
+	
+	@Autowired
+	PackageInfoService packageInfoService;
 	
 	@Autowired
 	CommonService commonService;
@@ -220,6 +241,77 @@ public class PreviewController {
     	return "preview/marketResearchPrevPopup";
     }
     
+    @RequestMapping("/chemicalTestViewPopup")
+    public String chemicalTestViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+    	//1. lab_chemical_test 테이블 조회, lab_chemical_test 테이블 조회
+		Map<String, Object> chemicalData = chemicalTestService.selectChemicalTestData(param);
+		//2. lab_chemical_test_item 조회
+		List<Map<String, Object>> itemList = chemicalTestService.selectChemicalTestItemList(param);
+		//3. lab_chemical_test_standard 조회
+		List<Map<String, Object>> standardList = chemicalTestService.selectChemicalTestStandardList(param);
+		
+		model.addAttribute("chemicalTestData", chemicalData);
+		model.put("itemList", itemList);
+		model.put("standardList", standardList);
+    	
+    	return "preview/chemicalTestViewPopup";
+    }
+    
+    @RequestMapping("/chemicalTestPrevPopup")
+    public String chemicalTestPrevPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+    	return "preview/chemicalTestPrevPopup";
+    }
+    
+    @RequestMapping("/senseQualityViewPopup")
+    public String senseQualityViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		Map<String, Object> senseQualityData = senseQualityService.selectSenseQualityData(param);
+		model.addAttribute("userId", AuthUtil.getAuth(request).getUserId());
+		model.addAttribute("senseQualityData", senseQualityData);
+    	return "preview/senseQualityViewPopup";
+    }
+    
+    @RequestMapping("/senseQualityPrevPopup")
+    public String senseQualityPrevPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+    	return "preview/senseQualityPrevPopup";
+    }
+    
+    @RequestMapping("/newProductViewPopup")
+    public String newProductViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+    	//결재 정보 조회
+		Map<String, Object> newProductResultData = newProductResultService.selectNewProductResultData(param);
+		List<Map<String, Object>> newProductResultItemList = newProductResultService.selectNewProductResultItemList(param);
+		List<Map<String, Object>> newProductResultImageList = newProductResultService.selectNewProductResultItemImageList(param);
+		Map<String, String> codeParam = new HashMap<>();
+		codeParam.put("groupCode", "COLUMN");
+		List<HashMap<String, Object>> columnCodeList = codeManagementService.getItemList(codeParam);
+		model.addAttribute("codeList", columnCodeList);
+		model.addAttribute("newProductResultData", newProductResultData);
+		model.addAttribute("newProductResultItemList", newProductResultItemList);
+		model.addAttribute("newProductResultImageList", newProductResultImageList);
+    	return "preview/newProductViewPopup";
+    }
+    
+    @RequestMapping("/newProductPrevPopup")
+    public String newProductPrevPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+    	return "preview/newProductPrevPopup";
+    }
+    
+    @RequestMapping("/packageInfoViewPopup")
+    public String packageInfoViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoData(param);
+		List<Map<String, Object>> addInfoList = packageInfoService.selectAddInfoList(param);
+		
+		model.addAttribute("packageInfoData", packageInfoData);		
+		model.addAttribute("addInfoList", addInfoList);
+    	
+    	return "preview/packageInfoViewPopup";
+    }
+    
+    @RequestMapping("/packageInfoPrevPopup")
+    public String packageInfoPrevPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+    	return "preview/packageInfoPrevPopup";
+    }
+    
     @RequestMapping("/downloadPdf")
     public void downloadPdf(@RequestParam("htmlContent") String htmlContent, HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) {
         try {
@@ -252,7 +344,7 @@ public class PreviewController {
                 PdfCanvas canvas = new PdfCanvas(page.newContentStreamAfter(), page.getResources(), pdfDoc);
                 canvas.beginText()
                       .setFontAndSize(koreanFont, 10)
-                      .moveText(540, 20)
+                      .moveText(540, 10)
                       .showText("Page " + pageNumber)
                       .endText()
                       .release();

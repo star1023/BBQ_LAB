@@ -2764,7 +2764,7 @@ var selectedArr = new Array();
 					<c:if test="${productData.data.STATUS == 'TMP' }">
 					<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
 					</c:if>
-					<button class="btn_admin_sky" onclick="fn_update()">수정</button>
+					<button class="btn_admin_sky" onclick="fn_update()">수정 및 결재</button>
 					<button class="btn_admin_gray" onclick="fn_list();">취소</button>
 				</div>
 				<hr class="con_mode" />

@@ -290,17 +290,9 @@ input:disabled {
 	}
 	
 	//입력확인
-	function fn_insert(){
+	function fn_tmp_insert(){
 		var requestContent = editor2.getData();
 		if( false ) {		
-		} else if( !chkNull($("#requestDate").val()) ) {
-			alert("완료일자를 선택해 주세요.");
-			$("#requestDate").focus();
-			return;
-		} else if( !chkNull($("#completionDate").val()) ) {
-			alert("희망 완료일을 선택해 주세요.");
-			$("#completionDate").focus();
-			return;
 		} else if( !chkNull($("#requestUser").val()) ) {
 			alert("의뢰자를 입력해 주세요ㅕ.");
 			$("#requestUser").focus();
@@ -308,27 +300,6 @@ input:disabled {
 		} else if( !chkNull($("#productName").val()) ) {
 			alert("시료명을 선택해 주세요.");
 			$("#productName").focus();
-			return;
-		} else if( !chkNull($("#productCount").val()) ) {
-			alert("시료수량을 입력해 주세요.");
-			$("#productCount").focus();
-			return;
-		} else if ($("select[id^='testSelect_']").filter(function() { return $(this).val(); }).length === 0) {
-			alert("검사요청 항목은 한개 이상 선택되어야 합니다.");
-			$("select[id^='testSelect_']").first().focus();
-			return;
-		} else if ($("tr[id^='standard1_tr'] input[name='standard1']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
-			alert("검사 요청 방법을 하나 이상 입력해 주세요.");
-			$("tr[id^='standard1_tr'] input[name='standard1']").first().focus();
-			return;
-		} else if ($("tr[id^='standard2_tr'] input[name='standard2']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
-			alert("검사 진행 일정을 하나 이상 입력해 주세요.");
-			$("tr[id^='standard2_tr'] input[name='standard2']").first().focus();
-			return;
-		} else if( !fn_validateTestRange() ) {
-			return;
-		} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
 			return;		
 		} else {
 			var formData = new FormData();
@@ -401,8 +372,203 @@ input:disabled {
 			
 			//formData.append("standardContent",standardContent);
 			formData.append("requestContent",requestContent);
-			formData.append("docType", $("#docType").val())
+			formData.append("docType", $("#docType").val());
+			formData.append("insertType", "tempReg");
 			
+			// 이미지 파일
+			var imageFile = document.getElementById('fileImageInput').files[0];
+			if (imageFile) {
+			  formData.append("imageFile", imageFile); // name="imageFile"
+			}
+			
+			for (let pair of formData.entries()) {
+				console.log(pair[0] + ':', pair[1]);
+			}
+			
+			$('#lab_loading').show();
+			var URL = "../chemicalTest/insertChemicalTestAjax";
+			$.ajax({
+				type:"POST",
+				url:URL,
+				data: formData,
+				processData: false,
+		        contentType: false,
+		        cache: false,
+				dataType:"json",
+				success:function(result) {
+					if( result.RESULT == 'S' ) {
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", result.IDX );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#productName").val()+" 이화학검사의뢰서");
+								apprFormData.append("docType", $("#docType").val());
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										if(data.RESULT == 'S') {
+											alert("결재상신이 완료되었습니다.");
+											$('#lab_loading').hide();
+											fn_goList();
+										} else {
+											alert("결재상신 오류가 발생하였습니다."+data.MESSAGE);
+											$('#lab_loading').hide();
+											fn_goList();
+											return;
+										}
+									},
+									error:function(request, status, errorThrown){
+										alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+										$('#lab_loading').hide();
+										fn_goList();
+									}			
+								});
+							} else {
+								alert("시료명 "+$("#productName").val()+"에 대한 이화학 검사 의뢰서가 정상적으로 생성되었습니다.");
+								$('#lab_loading').hide();
+								fn_goList();
+							}
+						} else {
+							alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+							$('#lab_loading').hide();
+							fn_goList();
+						}
+					} else {
+						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+						$('#lab_loading').hide();
+					}
+				},
+				error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+					$('#lab_loading').hide();
+				}			
+			});
+		}
+	}
+	//입력확인
+	function fn_insert(){
+		var requestContent = editor2.getData();
+		if( false ) {		
+		} else if( !chkNull($("#requestDate").val()) ) {
+			alert("완료일자를 선택해 주세요.");
+			$("#requestDate").focus();
+			return;
+		} else if( !chkNull($("#completionDate").val()) ) {
+			alert("희망 완료일을 선택해 주세요.");
+			$("#completionDate").focus();
+			return;
+		} else if( !chkNull($("#requestUser").val()) ) {
+			alert("의뢰자를 입력해 주세요ㅕ.");
+			$("#requestUser").focus();
+			return;
+		} else if( !chkNull($("#productName").val()) ) {
+			alert("시료명을 선택해 주세요.");
+			$("#productName").focus();
+			return;
+		} else if( !chkNull($("#productCount").val()) ) {
+			alert("시료수량을 입력해 주세요.");
+			$("#productCount").focus();
+			return;
+		} else if ($("select[id^='testSelect_']").filter(function() { return $(this).val(); }).length === 0) {
+			alert("검사요청 항목은 한개 이상 선택되어야 합니다.");
+			$("select[id^='testSelect_']").first().focus();
+			return;
+		} else if ($("tr[id^='standard1_tr'] input[name='standard1']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
+			alert("검사 요청 방법을 하나 이상 입력해 주세요.");
+			$("tr[id^='standard1_tr'] input[name='standard1']").first().focus();
+			return;
+		} else if ($("tr[id^='standard2_tr'] input[name='standard2']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
+			alert("검사 진행 일정을 하나 이상 입력해 주세요.");
+			$("tr[id^='standard2_tr'] input[name='standard2']").first().focus();
+			return;
+		} else if( !fn_validateTestRange() ) {
+			return;
+		} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
+			alert("첨부파일을 등록해주세요.");		
+			return;		
+		} else {
+			var formData = new FormData();
+			formData.append("requestDate",$("#requestDate").val());
+			formData.append("completionDate",$("#completionDate").val());
+			formData.append("requestUser",$("#requestUser").val());
+			formData.append("productCode",$("#productCode").val());
+			formData.append("productName",$("#productName").val());
+			formData.append("sapCode",$("#sapCode").val());
+			formData.append("productCount",$("#productCount").val());
+			//formData.append("preservation", $("input[name='preservation']:checked").val());
+			let preservationValues = [];
+			$("input[name='preservation']:checked").each(function () {
+				preservationValues.push($(this).val());
+			});
+			formData.append("preservation", preservationValues.join(","));
+			formData.append("status", "COMP");
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
+			const typeCodeArr = [];
+			const itemContentArr = [];
+
+			$("select[id^='testSelect_']").each(function () {
+				const code = $(this).val();
+				const idx = $(this).attr("id").split("_")[1];
+				const $input = $("input[data-input-index='" + idx + "']");
+				const content = $input.val();
+
+				if (code) {
+					typeCodeArr.push(code);
+					itemContentArr.push(content || "");
+				}
+			});
+			
+			formData.append("typeCodeArr", JSON.stringify(typeCodeArr));
+			formData.append("itemContentArr", JSON.stringify(itemContentArr));
+			
+			// 검사 요청 방법
+			var standard1Arr = [];
+			$('tr[id^=standard1_tr]').toArray().forEach(function(standard1Row){
+				var rowId = $(standard1Row).attr('id'); 
+			    var value = $('#' + rowId + ' input[name=standard1]').val();
+			    if (value && value.trim() !== "") {
+			        standard1Arr.push(value.trim());
+			    }
+			});
+			formData.append("standard1Arr", JSON.stringify(standard1Arr));
+
+			// 검사 진행 일정
+			var standard2Arr = [];
+			$('tr[id^=standard2_tr]').toArray().forEach(function(standard2Row){
+				var rowId = $(standard2Row).attr('id'); 
+			    var value = $('#' + rowId + ' input[name=standard2]').val();
+			    if (value && value.trim() !== "") {
+			        standard2Arr.push(value.trim());
+			    }
+			});
+			formData.append("standard2Arr", JSON.stringify(standard2Arr));
+			
+			//formData.append("standardContent",standardContent);
+			formData.append("requestContent",requestContent);
+			formData.append("docType", $("#docType").val())
 			
 			// 이미지 파일
 			var imageFile = document.getElementById('fileImageInput').files[0];
@@ -927,6 +1093,25 @@ input:disabled {
 			}
 
 			$tbody.append($trCheck).append($trRange);
+			
+			// ▶ 여기에 검사 결과 행 추가
+			const $trResult = $("<tr>").css("height", "60px");
+			$trResult.append(
+			    $("<th></th>")
+			        .addClass("contentBlock")
+			        .css("border-left", "none")
+			        .html("검사 결과<br>(식품안전팀 기입)")
+			);
+			for (let k = 0; k < chunkSize; k++) {
+				const $input = $("<input>")
+					.attr("type", "text")
+					.attr("name", "resultInput_" + k)
+					.attr("id", "resultInput_" + k)
+					.css("width", "95%")
+					.prop("disabled", true);  // 비활성화 처리
+				$trResult.append($("<td></td>").append($input));
+			}
+			$tbody.append($trResult);
 		}
 
 		// 초기 이전값 저장
@@ -942,6 +1127,7 @@ input:disabled {
 		const $tbody = $("#testItemsTbody");
 		let $checkRow = $tbody.find("tr.checkRow").last();
 		let $rangeRow = $tbody.find("tr.rangeRow").last();
+		let $resultRow = $tbody.find("tr.resultRow").last();
 
 		const totalCount = $("select[id^='testSelect_']").length;
 		if (totalCount >= chemicalTestCategory.length) {
@@ -949,25 +1135,31 @@ input:disabled {
 			return;
 		}
 
-		const idx = globalChemicalIndex++; // 항상 증가
+		const idx = globalChemicalIndex++;
 		const item = chemicalTestCategory[totalCount];
-		const code = item.itemCode;
-		const name = item.itemName;
 
 		// 필요한 tr 생성
-		if ($checkRow.find("td").length >= 4 || $checkRow.length === 0 || $rangeRow.length === 0) {
+		if ($checkRow.find("td").length >= 4 || $checkRow.length === 0 || $rangeRow.length === 0 || $resultRow.length === 0) {
 			$checkRow = $("<tr class='checkRow' style='height:60px; border-top: 2px solid #aaaaaa;'></tr>");
 			$rangeRow = $("<tr class='rangeRow' style='height:60px;'></tr>");
+			$resultRow = $("<tr class='resultRow' style='height:60px;'></tr>");
+
 			$checkRow.append($("<th class='contentBlock' style='border-left:none;'>검사요청 항목</th>"));
 			$rangeRow.append($("<th class='contentBlock' style='border-left:none;'>범위<br>(시료의 대략적인 범위 기재)</th>"));
-			$tbody.append($checkRow).append($rangeRow);
+			$resultRow.append($("<th class='contentBlock' style='border-left:none;'>검사 결과<br>(식품안전팀 기입)</th>"));
+
+			$tbody.append($checkRow).append($rangeRow).append($resultRow);
 		}
 
+		const selectId = "testSelect_" + idx;
+		const inputId = "itemContent_" + idx;
+		const resultId = "resultInput_" + idx;
+
 		const $select = $("<select></select>")
-			.attr("name", "testSelect_" + idx)
-			.attr("id", "testSelect_" + idx)
+			.attr("name", selectId)
+			.attr("id", selectId)
 			.css("width", "90%");
-		$select.append($("<option></option>").val("").text("--선택--").prop("selected", true));  // ✅ selected 추가
+		$select.append($("<option></option>").val("").text("--선택--").prop("selected", true));
 
 		$.each(chemicalTestCategory, function (i, opt) {
 			$select.append($("<option></option>").val(opt.itemCode).text(opt.itemName));
@@ -975,27 +1167,33 @@ input:disabled {
 
 		const $input = $("<input>")
 			.attr("type", "text")
-			.attr("id", "itemContent_" + idx)
+			.attr("id", inputId)
 			.attr("data-input-index", idx)
-			.attr("placeholder", "")  // ✅ placeholder 추가
+			.attr("placeholder", "")
 			.css("width", "95%")
 			.prop("disabled", true);
 
-		const $searchBox = $("<div></div>").addClass("search_box").append($select);
-		$checkRow.append($("<td></td>").append($searchBox));
-		$rangeRow.append($("<td></td>").append($input));
+		const $resultInput = $("<input>")
+			.attr("type", "text")
+			.attr("id", resultId)
+			.attr("name", resultId)
+			.css("width", "95%")
+			.prop("disabled", true);  // 비활성화 처리
 
-		bindChemicalTestSelectEvents();  // ✅ 이벤트 재바인딩
+		$checkRow.append($("<td></td>").append($("<div></div>").addClass("search_box").append($select)));
+		$rangeRow.append($("<td></td>").append($input));
+		$resultRow.append($("<td></td>").append($resultInput));
+
+		bindChemicalTestSelectEvents();
 	}
 	
 	function deleteChemicalTestColumn() {
 		const $tbody = $("#testItemsTbody");
 
-		// 마지막 체크박스 row & 입력 row
 		let $checkRow = $tbody.find("tr.checkRow").last();
 		let $rangeRow = $tbody.find("tr.rangeRow").last();
+		let $resultRow = $tbody.find("tr.resultRow").last();
 
-		// 현재 열 개수
 		const checkTdCount = $checkRow.find("td").length;
 
 		if (checkTdCount === 0) {
@@ -1003,20 +1201,20 @@ input:disabled {
 			return;
 		}
 
-		// 마지막 td 삭제
+		// 마지막 열(td) 제거
 		$checkRow.find("td").last().remove();
 		$rangeRow.find("td").last().remove();
+		$resultRow.find("td").last().remove();
 
-		// td가 모두 제거되면 해당 tr도 삭제
+		// 열이 모두 제거되면 행 자체도 제거
 		if ($checkRow.find("td").length === 0) {
 			$checkRow.remove();
 			$rangeRow.remove();
+			$resultRow.remove();
 		}
 
-		// (선택) 인덱스 감소
 		if (globalChemicalIndex > 0) globalChemicalIndex--;
 
-		// 🔁 select 이벤트 재바인딩
 		bindChemicalTestSelectEvents();
 	}
 	
@@ -1070,6 +1268,161 @@ input:disabled {
 		});
 	}
 
+	function fn_previewDataBinding(popup) {
+	    const $doc = popup.document;
+	    $doc.title = document.getElementById("productName").value+'_이화학 검사 의로서'
+	    // 기본 항목
+	    $doc.getElementById("prev_requestDate").innerText = document.getElementById("requestDate").value;
+	    $doc.getElementById("prev_completionDate").innerText = document.getElementById("completionDate").value;
+	    $doc.getElementById("prev_requestUser").innerText = document.getElementById("requestUser").value;
+	    $doc.getElementById("prev_productCount").innerText = document.getElementById("productCount").value;
+	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
+	    
+	    // 보관 방법
+	    const preservationLabels = [];
+
+		document.querySelectorAll("input[name='preservation']:checked").forEach(chk => {
+		    preservationLabels.push(chk.value);
+		});
+		
+		$doc.getElementById("prev_preservation").innerText = preservationLabels.join(", ");
+		
+		// 요청 항목 & 범위 & 결과
+		// prev_preservation 이 있는 td 의 부모 tr 다음에 삽입
+		var $preserveRow = $doc.getElementById("prev_preservation").parentElement;
+		var $tbody = $preserveRow.parentElement;
+		
+		var chunkSize = 4;
+		var itemCount = document.querySelectorAll("#testItemsTbody select[id^='testSelect_']").length;
+		const itemList = [];
+		
+		const $selectList = document.querySelectorAll("#testItemsTbody select[id^='testSelect_']");
+		
+		$selectList.forEach(select => {
+		    const idx = select.id.replace("testSelect_", "");
+		    const contentInput = document.getElementById("itemContent_" + idx);
+		    const resultInput = document.getElementById("itemResult_" + idx);
+		
+		    const item = {
+		        TYPE_CODE_TEXT: select?.options[select.selectedIndex]?.text || "",
+		        ITEM_CONTENT: contentInput?.value || "",
+		        ITEM_RESULT: resultInput?.value || ""
+		    };
+		
+		    if (item.TYPE_CODE_TEXT === "--선택--") return;
+		
+		    itemList.push(item);
+		});
+		
+		var rowCount = Math.ceil(itemList.length / chunkSize);
+		var htmlList = [];
+		
+		for (var row = 0; row < rowCount; row++) {
+		    var start = row * chunkSize;
+		    var end = Math.min(start + chunkSize, itemList.length);
+		
+		    var row1 = "<tr><th style='width: 10%; text-align: center; font-weight: bold;'>검사요청 항목</th>";
+		    row1 += "<td colspan='5' style='padding: 0;'><table style='width: 100%; table-layout: fixed; border-collapse: collapse;'><tr>";
+		
+		    var row2 = "<tr><th style='width: 10%; text-align: center; font-weight: bold;'>범위</th>";
+		    row2 += "<td colspan='5' style='padding: 0;'><table style='width: 100%; table-layout: fixed; border-collapse: collapse;'><tr>";
+		
+		    var row3 = "<tr><th style='width: 10%; text-align: center; font-weight: bold;'>검사 결과</th>";
+		    row3 += "<td colspan='5' style='padding: 0;'><table style='width: 100%; table-layout: fixed; border-collapse: collapse;'><tr>";
+		
+		    for (var i = start; i < end; i++) {
+		        var item = itemList[i];
+		        row1 += "<th style='width: 25%; text-align: center;'>" + item.TYPE_CODE_TEXT + "</th>";
+		        row2 += "<td style='width: 25%; text-align: center;'>" + item.ITEM_CONTENT + "</td>";
+		        row3 += "<td style='width: 25%; text-align: center; border: 1px solid #ccc;'>" + (item.ITEM_RESULT || "&nbsp;") + "</td>";
+		    }
+		
+		    var blank = chunkSize - (end - start);
+		    for (var b = 0; b < blank; b++) {
+		        row1 += "<th style='width: 25%;'></th>";
+		        row2 += "<td style='width: 25%;'></td>";
+		        row3 += "<td style='width: 25%; border: 1px solid #ccc;'>&nbsp;</td>";
+		    }
+		
+		    row1 += "</tr></table></td></tr>";
+		    row2 += "</tr></table></td></tr>";
+		    row3 += "</tr></table></td></tr>";
+		
+		    htmlList.push(row1, row2, row3);
+		}
+		
+		// 정방향으로 삽입
+		for (let i = htmlList.length - 1; i >= 0; i--) {
+		    $preserveRow.insertAdjacentHTML("afterend", htmlList[i]);
+		}
+
+
+		// 검사 요청 방법
+		var reasonHTML1 = "";
+		document.querySelectorAll('#standard1_tbody input[name=standard1]').forEach(function(input) {
+		    var val = input.value || "";
+		    if (val.trim()) reasonHTML1 += val + "<br/>";
+		});
+		$doc.getElementById("prev_standard1").innerHTML = reasonHTML1;
+
+		// 검사 진행 일정
+		var reasonHTML2 = "";
+		document.querySelectorAll('#standard2_tbody input[name=standard2]').forEach(function(input) {
+		    var val = input.value || "";
+		    if (val.trim()) reasonHTML2 += val + "<br/>";
+		});
+		$doc.getElementById("prev_standard2").innerHTML = reasonHTML2;
+	    
+	    // 요청 사항
+	    var content = editor2.getData().trim();
+	    $doc.getElementById("prev_content").innerHTML = content
+
+	 	// ✅ 시료 이미지 처리
+	    var fileInput = document.getElementById("fileImageInput");
+	    var previewImgContainer = $doc.getElementById("prev_previewImg"); // <td> 자체
+
+	    // 이미지 엘리먼트 생성
+	    var img = $doc.createElement("img");
+	    img.style.width = "100%";
+	    img.style.maxWidth = "220px";
+	    img.style.height = "auto";
+	    img.style.border = "1px solid #e1e1e1";
+	    img.style.borderRadius = "5px";
+	    img.style.objectFit = "contain";
+
+	    // 이미지 삽입
+	    previewImgContainer.innerHTML = ""; // 혹시 기존에 있을 수도 있으니 초기화
+	    previewImgContainer.appendChild(img);
+
+	    // 이미지 소스 지정
+	    if (fileInput && fileInput.files && fileInput.files[0]) {
+	        var reader = new FileReader();
+	        reader.onload = function (e) {
+	            img.src = e.target.result;
+	        };
+	        reader.readAsDataURL(fileInput.files[0]);
+	    } else {
+	        var originPreviewImg = document.getElementById("preview"); // 기존 이미지
+	        if (originPreviewImg && originPreviewImg.src) {
+	            img.src = originPreviewImg.src;
+	        } else {
+	            img.src = "/resources/images/img_noimg3.png"; // fallback
+	        }
+	    }
+	}
+	
+	function fn_openPreview() {
+		var url = "/preview/chemicalTestPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -1089,9 +1442,11 @@ input:disabled {
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">개요</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">개요</span>
+				<div class="pr15">
+					<button class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">
@@ -1115,7 +1470,7 @@ input:disabled {
 							</td>
 							<th style="border-left: none; width:120px;">의뢰자</th>
 							<td>
-								<input type="text" name="requestUser" id="requestUser" class="req"/>
+								<input type="text" name="requestUser" id="requestUser" class="req" value="${userName}"/>
 							</td>
 						</tr>
 					</tbody>
@@ -1139,7 +1494,7 @@ input:disabled {
 							<th style="border-left: none;" class="contentBlock">시료명</th>
 							<td >
 								<input type="text"  style="float: left; display: none;" class="req" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
-								<input type="text"  style="float: left" class="req" name="productName" id="productName" placeholder="코드를 조회 하세요." readonly/>
+								<input type="text"  style="float: left" class="req" name="productName" id="productName" placeholder="코드를 조회 하세요." />
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 							</td>
@@ -1328,7 +1683,7 @@ input:disabled {
 				</table>
 			</div>
 			
-		
+			<!-- 		
 			<div class="title2"  style="width: 80%; margin-top:10px;"><span class="txt">결재</span></div>
 			<div class="title2" style="width: 20%; display: inline-block;">
 			</div>
@@ -1357,7 +1712,8 @@ input:disabled {
 					</tbody>
 				</table>
 			</div>
-			
+			 -->
+			 
 			<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
 			<div class="title2 mt20" style="width:10%; display: inline-block;">
 				<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
@@ -1395,7 +1751,8 @@ input:disabled {
 					<button class="btn_admin_red">임시/템플릿저장</button>
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
-					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
+					<button class="btn_admin_gray" onclick="fn_tmp_insert()">임시 저장</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">등록</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

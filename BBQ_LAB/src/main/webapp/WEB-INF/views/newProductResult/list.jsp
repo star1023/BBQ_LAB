@@ -81,8 +81,12 @@ function fn_loadList(pageNo) {
 					html += "	<td style='text-align:center;'>"+nvl(item.EXCUTE_DATE,'&nbsp;')+"</td>";
 					html += "	<td>";
 					var columnItems = item.COLUMN_STATE_TEXT && item.COLUMN_STATE_TEXT.trim() !== ""
-					    ? item.COLUMN_STATE_TEXT.split(',')
-					    : ['업로드'];
+						  ? item.COLUMN_STATE_TEXT.split(',').filter(v => v && v.trim() !== "")
+						  : [];
+
+						if (columnItems.length === 0) {
+						  columnItems = ['업로드'];
+						}
 					for (var i = 0; i < columnItems.length; i++) {
 						html += columnItems[i] + "<br>";
 					}
@@ -185,6 +189,8 @@ function fn_viewHistory(idx) {
 					html += " 개정되었습니다.";
 				} else if( item.HISTORY_TYPE == 'D' ) {
 					html += " 삭제되었습니다.";
+				} else if( item.HISTORY_TYPE == 'T' ) {
+					html += " 임시 저장되었습니다.";
 				} else if( item.HISTORY_TYPE == 'U' ) {
 					html += " 수정되었습니다.";
 				} 

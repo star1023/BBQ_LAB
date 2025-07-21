@@ -71,14 +71,32 @@ $(document).ready(function(){
 	        _multiSelectCache.column = data.RESULT;
 	        console.log(_multiSelectCache);
 	        initDynamicTable();
+	        const hasData = (resultItemList && resultItemList.length > 0) || 
+            (resultImageList && resultImageList.length > 0);
+
+			if (hasData) {
+			// ✅ 기존 데이터 있으면 "직접 입력" 모드
+			$("#manual").prop("checked", true);
+			$("#upload").prop("checked", false);
+			toggleInputMode("manual"); // 직접 입력 처리
+			$("#dynamicTableSection").show();
+			} else {
+			// ✅ 없으면 업로드 모드
+			$("#upload").prop("checked", true);
+			$("#manual").prop("checked", false);
+			toggleInputMode("upload"); // 업로드 처리
+			$("#dynamicTableSection").hide();
+			}
 	    },
 	    error: function () {
 	        alert(" 정보를 불러오는데 실패했습니다.");
 	    }
 	});
+	
+	$("#dynamicTableSection").hide();
 });
 var resultItemList = [];
-<c:forEach var="item" items="${itemList}">
+<c:forEach var="item" items="${itemList}">	
     resultItemList.push({
         "ROW_NO": ${item.ROW_NO},
         "COLUMN_CODE": '${item.COLUMN_CODE}',
@@ -123,6 +141,189 @@ function fn_apprSubmit(){
 	}
 	closeDialog('approval_dialog');
 }
+function fn_tmp_update() {
+    const resultItemArr = [];
+    const itemImageArr = [];
+
+    var title = document.getElementById("title").value.trim();
+    var excuteDate = document.getElementById("excuteDate").value.trim();
+    var idx = document.getElementById("idx").value;
+
+    if (!chkNull(title)) {
+        alert("제목을 입력해 주세요.");
+        document.getElementById("title").focus();
+        return;
+    }
+
+ // ✅ 컬럼 선택 유효성 검사
+	const columnSelects = document.querySelectorAll('#columnHeaderRow select');
+	const hasUnselectedColumn = Array.from(columnSelects).some(select => select.value === "");
+
+	const inputMode = document.querySelector('input[name="inputMode"]:checked')?.value;
+
+	if (inputMode !== 'upload') {
+		const hasUnselectedColumn = Array.from(columnSelects).some(function(select) {
+			return select.value === "";
+		});
+
+		if (hasUnselectedColumn) {
+			const proceed = confirm("컬럼 헤더가 선택되지 않은 컬럼은 저장되지 않습니다.\n그래도 진행하시겠습니까?");
+			if (!proceed) return;
+		}
+	}
+    var formData = new FormData();
+
+    // ✅ 헤더 정보
+    formData.append("idx", idx);
+    formData.append("title", title);
+    formData.append("excuteDate", excuteDate);
+
+    // ✅ 첨부파일 (신규)
+    for (var i = 0; i < attatchFileArr.length; i++) {
+        formData.append("file", attatchFileArr[i]);
+    }
+
+    // ✅ 삭제된 첨부파일
+    $('#deletedFileList option').each(function () {
+        formData.append("deletedFileList", $(this).val());
+    });
+    
+    // ✅ 셀 데이터 수집
+    if (document.querySelector('input[name="inputMode"]:checked')?.value === 'upload') {
+        // 업로드 모드인 경우: 빈 배열만 전달
+        formData.append("resultItemArr", JSON.stringify([]));
+        formData.append("itemImageArr", JSON.stringify([]));
+        formData.append("columnStates", "");
+    } else {
+    	// ✅ 컬럼 코드 순서
+        const columnCodes = Array.from(columnSelects).map(function(select) {
+            return select.value;
+        });
+        formData.append("columnStates", columnCodes.join(','));
+    	
+        // 직접입력 모드: 테이블에서 데이터 추출
+        const rows = document.querySelectorAll('#columnBodyRows tr');
+        rows.forEach(function (row, rowIndex) {
+            const rowItems = [];
+            const cells = row.querySelectorAll('td');
+
+            for (let colIndex = 1; colIndex < cells.length; colIndex++) {
+                const td = cells[colIndex];
+                const input = td.querySelector('input');
+                const columnCode = columnCodes[colIndex - 1];
+                if (!input || !columnCode) continue;
+
+                if (input.type === "file") {
+                    const file = input.files[0];
+                    const img = td.querySelector("img#preview");
+                    const isEmptyPreview = img && img.src.includes("img_noimg3.png");
+
+                    if (file) {
+                        formData.append("imageFiles", file);
+                        itemImageArr.push({
+                            rowNo: rowIndex,
+                            columnCode: columnCode,
+                            keepExisting: false
+                        });
+                    } else {
+                        itemImageArr.push({
+                            rowNo: rowIndex,
+                            columnCode: columnCode,
+                            keepExisting: !isEmptyPreview
+                        });
+                    }
+
+                    rowItems.push({
+                        rowNo: rowIndex,
+                        columnCode: columnCode,
+                        columnValue: ""
+                    });
+                } else {
+                    rowItems.push({
+                        rowNo: rowIndex,
+                        columnCode: columnCode,
+                        columnValue: input.value
+                    });
+                }
+            }
+
+            resultItemArr.push(rowItems);
+        });
+
+        formData.append("resultItemArr", JSON.stringify(resultItemArr));
+        formData.append("itemImageArr", JSON.stringify(itemImageArr));
+    }
+
+    formData.append("status", "TMP");
+
+    // ✅ 디버깅 로그
+    console.log("🔄 [UPDATE] FormData Preview:");
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ":", pair[1]);
+    }
+    
+    $('#lab_loading').show();
+    $.ajax({
+        type: "POST",
+        url: "../newProductResult/updateNewProductResult",
+        data: formData,
+        processData: false,
+        contentType: false,
+        cache: false,
+        dataType: "json",
+        success: function (result) {
+            if (result.RESULT === 'S' && result.IDX > 0) {
+                if (document.getElementById("apprLine").options.length > 0) {
+                    var apprFormData = new FormData();
+                    apprFormData.append("docIdx", result.IDX);
+                    apprFormData.append("apprComment", document.getElementById("apprComment").value);
+                    apprFormData.append("apprLine", $("#apprLine").selectedValues());
+                    apprFormData.append("refLine", $("#refLine").selectedValues());
+                    apprFormData.append("title", title);
+                    apprFormData.append("docType", 'RESULT');
+                    apprFormData.append("status", "N");
+
+                    $.ajax({
+                        type: "POST",
+                        url: "../approval/insertApprAjax",
+                        dataType: "json",
+                        data: apprFormData,
+                        processData: false,
+                        contentType: false,
+                        cache: false,
+                        success: function (data) {
+                            if (data.RESULT === 'S') {
+                                alert("결재상신이 완료되었습니다.");
+                                $('#lab_loading').hide();
+                                fn_goList();
+                            } else {
+                                alert("결재선 상신 오류가 발생하였습니다." + data.MESSAGE);
+                                $('#lab_loading').hide();
+                                fn_goList();
+                            }
+                        },
+                        error: function () {
+                            alert("결재 요청 중 오류가 발생하였습니다.");
+                            $('#lab_loading').hide();
+                            fn_goList();
+                        }
+                    });
+                } else {
+                    alert("[" + title + "] 문서가 정상적으로 수정되었습니다.");
+                    $('#lab_loading').hide();
+                    fn_goList();
+                }
+            } else {
+                alert("저장 중 오류가 발생하였습니다.\n" + result.MESSAGE);
+                $('#lab_loading').hide();
+            }
+        },
+        error: function () {
+            alert("업데이트 요청 중 오류가 발생하였습니다.");
+            $('#lab_loading').hide();
+        }
+    });
+}
 function fn_update() {
     const resultItemArr = [];
     const itemImageArr = [];
@@ -148,11 +349,15 @@ function fn_update() {
     }
 
     const columnSelects = document.querySelectorAll('#columnHeaderRow select');
-    for (let select of columnSelects) {
-        if (select.value === "") {
-            alert("모든 컬럼의 항목을 선택해 주세요.");
-            select.focus();
-            return;
+    const inputMode = document.querySelector('input[name="inputMode"]:checked')?.value;
+
+    if (inputMode === 'manual') {
+        for (let select of columnSelects) {
+            if (select.value === "") {
+                alert("모든 컬럼의 항목을 선택해 주세요.");
+                select.focus();
+                return;
+            }
         }
     }
 
@@ -173,67 +378,73 @@ function fn_update() {
         formData.append("deletedFileList", $(this).val());
     });
 
-    // ✅ 컬럼 코드 순서
-    const columnCodes = Array.from(columnSelects).map(function(select) {
-        return select.value;
-    });
-    formData.append("columnStates", columnCodes.join(','));
-
     // ✅ 셀 데이터 수집
-    const rows = document.querySelectorAll('#columnBodyRows tr');
-    rows.forEach(function (row, rowIndex) {
-        const rowItems = [];
-        const cells = row.querySelectorAll('td');
+    if (document.querySelector('input[name="inputMode"]:checked')?.value === 'upload') {
+        // 업로드 모드인 경우: 빈 배열만 전달
+        formData.append("resultItemArr", JSON.stringify([]));
+        formData.append("itemImageArr", JSON.stringify([]));
+        formData.append("columnStates", "");
+    } else {
+    	// ✅ 컬럼 코드 순서
+        const columnCodes = Array.from(columnSelects).map(function(select) {
+            return select.value;
+        });
+        formData.append("columnStates", columnCodes.join(','));
+    	
+        // 직접입력 모드: 테이블에서 데이터 추출
+        const rows = document.querySelectorAll('#columnBodyRows tr');
+        rows.forEach(function (row, rowIndex) {
+            const rowItems = [];
+            const cells = row.querySelectorAll('td');
 
-        for (let colIndex = 1; colIndex < cells.length; colIndex++) {
-            const td = cells[colIndex];
-            const input = td.querySelector('input');
-            const columnCode = columnCodes[colIndex - 1];
-            if (!input) continue;
+            for (let colIndex = 1; colIndex < cells.length; colIndex++) {
+                const td = cells[colIndex];
+                const input = td.querySelector('input');
+                const columnCode = columnCodes[colIndex - 1];
+                if (!input || !columnCode) continue;
 
-            if (input.type === "file") {
-                const file = input.files[0];
-                const img = td.querySelector("img#preview");
-                const isEmptyPreview = img && img.src.includes("img_noimg3.png");
+                if (input.type === "file") {
+                    const file = input.files[0];
+                    const img = td.querySelector("img#preview");
+                    const isEmptyPreview = img && img.src.includes("img_noimg3.png");
 
-                if (file) {
-                    // 🔄 새로 업로드된 이미지
-                    formData.append("imageFiles", file);
-                    itemImageArr.push({
+                    if (file) {
+                        formData.append("imageFiles", file);
+                        itemImageArr.push({
+                            rowNo: rowIndex,
+                            columnCode: columnCode,
+                            keepExisting: false
+                        });
+                    } else {
+                        itemImageArr.push({
+                            rowNo: rowIndex,
+                            columnCode: columnCode,
+                            keepExisting: !isEmptyPreview
+                        });
+                    }
+
+                    rowItems.push({
                         rowNo: rowIndex,
                         columnCode: columnCode,
-                        keepExisting: false
+                        columnValue: ""
                     });
                 } else {
-                    // ✅ 기존 이미지 유지 여부 판단
-                    itemImageArr.push({
+                    rowItems.push({
                         rowNo: rowIndex,
                         columnCode: columnCode,
-                        keepExisting: !isEmptyPreview
+                        columnValue: input.value
                     });
                 }
-
-                rowItems.push({
-                    rowNo: rowIndex,
-                    columnCode: columnCode,
-                    columnValue: ""
-                });
-            } else {
-                // 일반 텍스트 셀 처리
-                rowItems.push({
-                    rowNo: rowIndex,
-                    columnCode: columnCode,
-                    columnValue: input.value
-                });
             }
-        }
 
-        resultItemArr.push(rowItems);
-    });
+            resultItemArr.push(rowItems);
+        });
 
-    // ✅ 데이터 직렬화
-    formData.append("resultItemArr", JSON.stringify(resultItemArr));
-    formData.append("itemImageArr", JSON.stringify(itemImageArr));
+        formData.append("resultItemArr", JSON.stringify(resultItemArr));
+        formData.append("itemImageArr", JSON.stringify(itemImageArr));
+    }
+
+    formData.append("status", "REG");
 
     // ✅ 디버깅 로그
     console.log("🔄 [UPDATE] FormData Preview:");
@@ -307,24 +518,63 @@ function fn_update() {
 
 //////// 동적 테이블 함수 시작 /////////
 function initDynamicTable() {
-  const columnStateStr = document.getElementById("columnState").value; // ex: "1,2,4,3"
-  if (!columnStateStr) return;
+  const columnStateStr = document.getElementById("columnState").value; // ex: ",2,,,"
 
-  const columnCodes = columnStateStr.split(',');
+  const defaultColumns = [
+    { code: 'col1', name: '-- 선택 --' },
+    { code: 'col2', name: '-- 선택 --' },
+    { code: 'col3', name: '-- 선택 --' },
+    { code: 'col4', name: '-- 선택 --' }
+  ];
+
   const columnDefs = [];
 
-  columnCodes.forEach(code => {
-    const matched = (_multiSelectCache.column || []).find(col => col.itemCode === code);
-    if (matched) {
-      columnDefs.push({ code: matched.itemCode, name: matched.itemName });
-    }
-  });
+  if (columnStateStr) {
+    const columnCodes = columnStateStr.split(',');
+    var colCounter = 1;
 
+    for (var i = 0; i < columnCodes.length; i++) {
+      var code = columnCodes[i];
+      if (code && code.trim() !== "") {
+        var matched = (_multiSelectCache.column || []).find(function(col) {
+          return col.itemCode === code;
+        });
+        if (matched) {
+          columnDefs.push({ code: matched.itemCode, name: matched.itemName });
+        } else {
+          columnDefs.push({ code: 'col' + (colCounter++), name: '-- 선택 --' });
+        }
+      } else {
+        columnDefs.push({ code: 'col' + (colCounter++), name: '-- 선택 --' });
+      }
+    }
+  }
+
+  if (columnDefs.length === 0) {
+    for (var j = 0; j < defaultColumns.length; j++) {
+      columnDefs.push(defaultColumns[j]);
+    }
+  }
+
+  // 헤더 렌더링
   initUpdateColumns(columnDefs);
 
-  const dataRows = buildRowData(columnDefs);
+  // 데이터 바인딩
+  var dataRows = [];
+
+  if ((resultItemList.length === 0) && (resultImageList.length === 0)) {
+    var emptyRow = { ROW_NO: 0 };
+    for (var k = 0; k < columnDefs.length; k++) {
+      emptyRow[columnDefs[k].code] = "";
+    }
+    dataRows.push(emptyRow);
+  } else {
+    dataRows = buildRowData(columnDefs);
+  }
+
   initUpdateRows(dataRows, columnDefs);
 }
+
 
 function toggleAllRows(checkbox) {
   const checked = checkbox.checked;
@@ -665,20 +915,18 @@ function handleColumnSelectChange(selectEl) {
 	      oldTableData.push(rowData);
 	    });
 
-	    // ✅ 컬럼 리스트 새로 생성
-	    const columns = Array.from(document.querySelectorAll("#columnHeaderRow select")).map(function(sel) {
-	      return {
-	        code: sel.value,
-	        name: sel.options[sel.selectedIndex].textContent
-	      };
-	    });
+	  const columns = Array.from(document.querySelectorAll("#columnHeaderRow select")).map(function (sel) {
+	    return {
+	      code: sel.value,
+	      name: sel.options[sel.selectedIndex].textContent
+	    };
+	  });
 
-	    // ✅ 컬럼 재구성
-	    initUpdateRows(oldTableData, columns); // buildRowData 없이 기존 데이터 그대로 사용
-	  }
-
+	  initUpdateRows(oldTableData, columns);
 	  selectEl.dataset.prevIndex = selectEl.selectedIndex;
 	}
+}
+
 //컬럼 추가 함수
 function createColumn() {
 	const columnOptions = _multiSelectCache.column || [];
@@ -1050,6 +1298,109 @@ function initDialog(){
 function fn_goList() {
 	location.href = '/newProductResult/list';
 }
+
+function toggleInputMode(mode) {
+	  const tableSection = document.getElementById("dynamicTableSection");
+	  const prevBtn = document.getElementById("prevBtn");
+	  if (mode === 'manual') {
+	    tableSection.style.display = '';
+	    prevBtn.style.display = '';
+	  } else {
+	    tableSection.style.display = 'none';
+	    prevBtn.style.display = 'none';
+	  }
+	}
+
+	function fn_previewDataBinding(popup) {
+		const $doc = popup.document;
+		const columnSelects = document.querySelectorAll('#columnHeaderRow select');
+
+		// ✅ 유효한 컬럼만 추출 (value가 있는 경우만)
+		const validColumnDefs = [];
+		columnSelects.forEach(select => {
+			if (select.value) {
+				validColumnDefs.push({
+					code: select.value,
+					name: select.options[select.selectedIndex].textContent
+				});
+			}
+		});
+
+		const dynamicColCount = validColumnDefs.length;
+
+		// ✅ 제목 / 시행월 채우기 (colspan 적용)
+		$doc.getElementById("prev_title").innerText = document.getElementById("title").value;
+		$doc.getElementById("prev_title").setAttribute("colspan", dynamicColCount);
+		$doc.getElementById("prev_excuteDate").innerText = document.getElementById("excuteDate").value;
+		$doc.getElementById("prev_excuteDate").setAttribute("colspan", dynamicColCount);
+		$doc.getElementById("prev_dynamicTableTd").setAttribute("colspan", dynamicColCount);
+
+		// ✅ <colgroup> 생성 (thead, tbody 이전에!)
+		const colgroup = $doc.getElementById("prev_colgroup");
+		colgroup.innerHTML = "";
+		for (let i = 0; i < dynamicColCount; i++) {
+			const col = $doc.createElement("col");
+			col.style.width = (100 / dynamicColCount) + "%";
+			colgroup.appendChild(col);
+		}
+		
+		// ✅ 헤더 구성
+		const thead = $doc.getElementById("prev_dynamicThead");
+		thead.innerHTML = ""; // 초기화
+		validColumnDefs.forEach(col => {
+			const th = $doc.createElement("th");
+			th.innerText = col.name;
+			thead.appendChild(th);
+		});
+
+		// ✅ 본문 구성
+		const prevTbody = $doc.getElementById("prev_dynamicTbody");
+		prevTbody.innerHTML = ""; // 초기화
+		const rows = document.querySelectorAll("#columnBodyRows tr");
+
+		rows.forEach((row, rowIdx) => {
+			const tr = $doc.createElement("tr");
+			const cells = row.querySelectorAll("td");
+
+			for (let colIndex = 0; colIndex < validColumnDefs.length; colIndex++) {
+				const td = $doc.createElement("td");
+				const realIndex = Array.from(columnSelects).findIndex(sel => sel.value === validColumnDefs[colIndex].code);
+				const cell = cells[realIndex + 1]; // +1 to skip checkbox column
+				const input = cell.querySelector("input");
+
+				if (input?.type === "file") {
+					const img = cell.querySelector("img#preview");
+					const newImg = $doc.createElement("img");
+					newImg.src = img?.src || "/resources/images/img_noimg3.png";
+					newImg.style.width = "100%";
+					newImg.style.height = "150px";
+					newImg.style.objectFit = "contain";
+					newImg.style.border = "1px solid #ddd";
+					td.style.padding = "0px";
+					td.appendChild(newImg);
+				} else {
+					td.innerText = input?.value || "";
+				}
+
+				tr.appendChild(td);
+			}
+
+			prevTbody.appendChild(tr);
+		});
+	}
+
+	function fn_openPreview() {
+		var url = "/preview/newProductPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in">
     <span class="path">
@@ -1065,7 +1416,12 @@ function fn_goList() {
         <!-- ✅ 기본 정보 -->
         <input type="hidden" id="idx" name="idx" value="${newProductResultData.data.RESULT_IDX}">
         <div class="group01 mt20">
-            <div class="title2"><span class="txt">기본정보</span></div>
+            <div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()" style="display:none;">미리보기</button>
+				</div>
+			</div>
             <div class="main_tbl">
                 <table class="insert_proc01">
                     <colgroup>
@@ -1094,6 +1450,15 @@ function fn_goList() {
 								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
+                        <tr>
+						  <th style="border-left: none;">입력 방식</th>
+						  <td colspan="3">
+						    <input type="radio" name="inputMode" id="upload" value="upload" checked onchange="toggleInputMode(this.value)">
+						    <label for="upload"><span></span>업로드</label>
+						    <input type="radio" name="inputMode" id="manual" value="manual" onchange="toggleInputMode(this.value)">
+						    <label for="manual"><span></span>직접 입력</label>
+						  </td>
+						</tr>
                     </tbody>
                 </table>
             </div>
@@ -1101,27 +1466,29 @@ function fn_goList() {
 
         <!-- ✅ 동적 컬럼/행 테이블 -->
         <input type="hidden" id="columnState" value="${newProductResultData.data.COLUMN_STATE}">
-        <div class="group01 mt10">
-            <div class="title2" style="width:100%; display:flex; justify-content:space-between;">
-                <span class="txt">내용</span>
-                <div>
-                    <button class="btn_con_search" onclick="createColumn()">컬럼 추가</button>
-                    <span style="color: #9a9a9a; padding: 0 10px;">|</span>
-                    <button class="btn_con_search" onclick="createRow()">로우 추가</button>
-                    <button class="btn_con_search" onclick="deleteRow()">로우 삭제</button>
-                </div>
-            </div>
-            <div class="main_tbl">
-                <table id="dynamicTable" class="tbl05 insert_proc01">
-            		<colgroup>
+        <div id="dynamicTableSection">
+	       <div class="group01">
+	           <div class="title2" style="width:100%; display:flex; padding-top: 0px; justify-content:space-between;">
+	               <span class="txt">내용</span>
+	               <div>
+	                   <button class="btn_con_search" onclick="createColumn()">컬럼 추가</button>
+	                   <span style="color: #9a9a9a; padding: 0 10px;">|</span>
+	                   <button class="btn_con_search" onclick="createRow()">로우 추가</button>
+	                   <button class="btn_con_search" onclick="deleteRow()">로우 삭제</button>
+	               </div>
+	           </div>
+	           <div class="main_tbl">
+	               <table id="dynamicTable" class="tbl05 insert_proc01">
+	           		<colgroup>
 				  		<col width="26px">
 				  	</colgroup>
-                    <thead>
-                        <tr id="columnHeaderRow"></tr>
-                    </thead>
-                    <tbody id="columnBodyRows"></tbody>
-                </table>
-            </div>
+	                   <thead>
+	                       <tr id="columnHeaderRow"></tr>
+	                   </thead>
+	                   <tbody id="columnBodyRows"></tbody>
+	               </table>
+	           </div>
+	       </div>
         </div>
 		
         <!-- ✅ 첨부파일 영역 -->
@@ -1172,6 +1539,7 @@ function fn_goList() {
                 <button class="btn_admin_gray" onclick="fn_goList();" style="width: 120px;">목록</button>
             </div>
             <div class="btn_box_con4">
+                <button class="btn_admin_gray" onclick="fn_tmp_update()">임시 저장</button>
                 <button class="btn_admin_sky" onclick="fn_update()">저장</button>
                 <button class="btn_admin_gray" onclick="fn_goList()">취소</button>
             </div>

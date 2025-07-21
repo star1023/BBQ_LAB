@@ -28,4 +28,6 @@ public interface ChemicalTestService {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+    int updateBySafeTeam(Map<String, Object> param);
+
 }

@@ -16,6 +16,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -25,6 +26,7 @@ import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
 import kr.co.genesiskorea.service.ChemicalTestService;
 import kr.co.genesiskorea.util.StringUtil;
+import kr.co.genesiskorea.util.UserUtil;
 
 @Controller
 @RequestMapping("/chemicalTest")
@@ -48,6 +50,9 @@ public class ChemicalTestController {
 	public Map<String, Object> selectChemicalTestListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		Auth auth = AuthUtil.getAuth(request);
 		param.put("userId", auth.getUserId());
+	    param.put("isSafeTeam", String.valueOf(param.get("isSafeTeam")));
+	    param.put("isRequestList", String.valueOf(param.get("isRequestList")));
+		
 		Map<String, Object> returnMap = reportService.selectChemicalTestList(param);
 		return returnMap;
 	}
@@ -64,7 +69,12 @@ public class ChemicalTestController {
 	}
 	
 	@RequestMapping(value = "/insert")
-	public String chemicalTestInsert( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
+	public String chemicalTestInsert( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
+		//유저정보 DOC_OWNER 확인용
+		Auth auth = AuthUtil.getAuth(request);
+		String userName = auth.getUserName();
+		model.addAttribute("userName", userName);
+		
 		return "/chemicalTest/insert";
 	}
 	
@@ -110,6 +120,11 @@ public class ChemicalTestController {
 	
 	@RequestMapping("/view")
 	public String chemicalTestView(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		//유저정보 DOC_OWNER 확인용
+		Auth auth = AuthUtil.getAuth(request);
+		String userId = auth.getUserId();
+		model.addAttribute("userId", userId);
+		
 		//1. lab_chemical_test 테이블 조회, lab_chemical_test 테이블 조회
 		Map<String, Object> chemicalData = reportService.selectChemicalTestData(param);
 		//2. lab_chemical_test_item 조회
@@ -128,9 +143,11 @@ public class ChemicalTestController {
 	public String chemicalTestUpdate(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
 		try {
 			Auth auth = AuthUtil.getAuth(request);
-			param.put("userId", auth.getUserId());
+			String userId = auth.getUserId();
+			param.put("userId", userId);
+			String userRole = UserUtil.getRoleCode(request);
 			
-			if( reportService.selectMyDataCheck(param) > 0 ) {
+			if( reportService.selectMyDataCheck(param) > 0 || "6".equals(userRole) || "7".equals(userRole)) {
 				//1. lab_chemical_test 테이블 조회, lab_chemical_test 테이블 조회
 				Map<String, Object> chemicalData = reportService.selectChemicalTestData(param);
 				//2. lab_chemical_test_item 조회
@@ -138,6 +155,7 @@ public class ChemicalTestController {
 				//3. lab_chemical_test_standard 조회
 				List<Map<String, Object>> standardList = reportService.selectChemicalTestStandardList(param);
 				
+				model.addAttribute("userId", userId);
 				model.addAttribute("chemicalTestData", chemicalData);
 				model.put("itemList", itemList);
 				model.put("standardList", standardList);
@@ -231,5 +249,27 @@ public class ChemicalTestController {
 
 	}
 
+	@RequestMapping("/updateSafeResult")
+	@ResponseBody
+    public Map<String, Object> updateSafeTeamResult( HttpServletRequest request, @RequestBody Map<String, Object> param) {
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+	    try {
+	        Auth auth = AuthUtil.getAuth(request);
+	        String userId = auth.getUserId();
+	        param.put("userId", userId);  // 통합 서비스에서 사용 가능하도록 넣어줌
+
+	        // 전체 처리 통합 호출
+	        reportService.updateBySafeTeam(param);
+
+	        returnMap.put("RESULT", "S");
+	        returnMap.put("IDX", param.get("idx"));
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        returnMap.put("RESULT", "E");
+	        returnMap.put("MESSAGE", e.toString());
+	    }
+	    return returnMap;
+    }
+	
 }
 

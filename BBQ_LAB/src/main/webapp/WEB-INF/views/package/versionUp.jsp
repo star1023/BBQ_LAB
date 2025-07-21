@@ -521,6 +521,87 @@
 			$("#imageDeleteFlag").val("Y");	
 		}
 	}
+	
+	function getSelectValue(labelEl, txtEl) {
+	    var labelText = labelEl?.innerText?.trim() || "";
+	    var txtValue = (txtEl && txtEl.style.display !== "none" && txtEl.value) ? txtEl.value.trim() : labelText;
+	    return (txtValue === "선택") ? "" : txtValue;
+	}
+	
+	function fn_previewDataBinding(popup) {
+	    var $doc = popup.document;
+
+	    // 텍스트 항목
+	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
+	    $doc.getElementById("prev_etcInfo").innerText = document.getElementById("etcInfo").value;
+	    $doc.getElementById("prev_weight").innerText = document.getElementById("weight").value;
+
+	    // 셀렉트 항목
+	    $doc.getElementById("prev_keepCondition").innerText = getSelectValue(
+	        document.getElementById("keepCondition_label"),
+	        document.getElementById("keepConditionTxt")
+	    );
+
+	    $doc.getElementById("prev_foodType").innerText = getSelectValue(
+	        document.getElementById("foodType_label"),
+	        document.getElementById("foodTypeTxt")
+	    );
+
+	    $doc.getElementById("prev_separateDischarge").innerText = getSelectValue(
+	        document.getElementById("separateDischarge_label"),
+	        document.getElementById("separateDischargeTxt")
+	    );
+
+	    // 이미지
+	    var markImg = document.getElementById("markPreview").getAttribute("src");
+	    $doc.getElementById("prev_markImage").innerHTML =
+	        '<img src="' + markImg + '" style="max-width: 100%; height: 200px;">';
+
+	    var containImg = document.getElementById("preview").getAttribute("src");
+	    $doc.getElementById("prev_containQuantityImg").innerHTML =
+	        '<img src="' + containImg + '" style="max-width: 100%; height: 200px;">';
+
+	    // 나머지 단순 항목
+	    $doc.getElementById("prev_productNameBack").innerText = document.getElementById("productNameBack").value;
+	    $doc.getElementById("prev_containQuantity").innerText = document.getElementById("containQuantity").value;
+	    $doc.getElementById("prev_allergyObject").innerText = document.getElementById("allergyObject").value;
+	    $doc.getElementById("prev_manufacturingNo").innerText = document.getElementById("manuNo").value;
+	    $doc.getElementById("prev_expiredDate").innerText = document.getElementById("expiredDate").value;
+	    $doc.getElementById("prev_packageObject").innerText = document.getElementById("packageObject").value;
+	    $doc.getElementById("prev_maker").innerText = document.getElementById("maker").value;
+	    $doc.getElementById("prev_distribution").innerText = document.getElementById("distribution").value;
+	    $doc.getElementById("prev_returned").innerText = document.getElementById("returned").value;
+	    $doc.getElementById("prev_customerCounsel").innerText = document.getElementById("customerCounsel").value;
+
+	    // 에디터
+	    $doc.getElementById("prev_suggestions").innerHTML = editor2.getData();
+	    $doc.getElementById("prev_cookMethod").innerHTML = editor3.getData();
+
+	    // 기타사항 목록
+	    var etcInputs = document.getElementsByName("etc");
+	    var etcHtml = "";
+	    for (var i = 0; i < etcInputs.length; i++) {
+	        var val = etcInputs[i].value.trim();
+	        if (val) {
+	            etcHtml += val + "<br>";
+	        }
+	    }
+	    $doc.getElementById("prev_infoText").innerHTML = etcHtml;
+	}
+
+
+	function fn_openPreview() {
+		var url = "/preview/packageInfoPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -540,9 +621,11 @@
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">

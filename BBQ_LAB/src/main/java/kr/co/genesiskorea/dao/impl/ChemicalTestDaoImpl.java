@@ -105,5 +105,16 @@ public class ChemicalTestDaoImpl implements ChemicalTestDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("chemicalTest.selectMyDataCheck", param);
 	}
+	
+	@Override
+	public int updateBySafeTeam(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.update("chemicalTest.updateBySafeTeam", param);
+	}
+	@Override
+	public int updateBySafeTeamItem(Map<String, Object> item) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.update("chemicalTest.updateBySafeTeamItem", item);
+	}
 
 }

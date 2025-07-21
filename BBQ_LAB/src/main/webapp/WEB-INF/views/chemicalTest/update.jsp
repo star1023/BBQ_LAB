@@ -37,7 +37,9 @@ input:disabled {
 <script type="text/javascript" src="/resources/editor/build/ckeditor.js"></script>
 <script type="text/javascript" src="/resources/js/appr/apprClass.js?v=<%= System.currentTimeMillis()%>"></script>
 <script type="text/javascript">
-	//var editor1;
+const USER_ROLE_CODE = '${userUtil:getRoleCode(pageContext.request)}';
+const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
+	var editor1;
 	var editor2;
 	$(document).ready(function(){
 		$("#requestDate").datepicker({
@@ -67,27 +69,29 @@ input:disabled {
 			}
 		});
 		
-		/*
-		ClassicEditor
-        .create(document.getElementById("standardContents"), {
-			language: 'ko',
-        }).then( editor => {
-        	editor1 = editor;
-    		console.log( editor1 );
-    	}).catch( error => {
-    		console.error( error );
-    	});
-		*/
+		console.log(IS_SAFE_TEAM);
 		
 		ClassicEditor
-        .create(document.getElementById("requestContents"), {
-			language: 'ko',
-        }).then( editor => {
-        	editor2 = editor;
-    		console.log( editor2 );
-    	}).catch( error => {
-    		console.error( error );
-    	});
+	    .create(document.getElementById("resultContent"), {
+	        language: 'ko'
+	    })
+	    .then(editor => {
+	        editor1 = editor;
+	        if (!IS_SAFE_TEAM) {
+	            editor1.enableReadOnlyMode('lock');
+	        }
+	    });
+
+		ClassicEditor
+	    .create(document.getElementById("requestContents"), {
+	        language: 'ko'
+	    })
+	    .then(editor => {
+	        editor2 = editor;
+	        if (IS_SAFE_TEAM) {
+	            editor2.enableReadOnlyMode('lock');
+	        }
+	    });
 		fn.autoComplete($("#keyword"));
 		
 		$.ajax({
@@ -104,10 +108,41 @@ input:disabled {
 	        }
 	    });
 		
+	    if (IS_SAFE_TEAM) {
+	        // 모든 input, select, textarea를 비활성화
+	        $("input[type='text'], select, textarea").prop("disabled", true);
+	        $("input[type='radio'], input[type='checkbox']").prop("disabled", true);
+	        // 조회/초기화 버튼도 비활성화
+	        $(".btn_small_search").prop("disabled", true);
+	        $("#requestDate").datepicker("disable");
+	        $("#completionDate").datepicker("disable");
+	        // 모든 input, select, textarea를 비활성화
+	        $("input[type='text'], select, textarea").prop("disabled", true);
+	        $("input[type='radio'], input[type='checkbox']").prop("disabled", true);
+
+	        // 조회/초기화 버튼도 비활성화
+	        $(".btn_small_search").prop("disabled", true);
+
+	        // 날짜 선택 막기
+	        $("#requestDate").datepicker("disable");
+	        $("#completionDate").datepicker("disable");
+	    }
+
 	});
 	
 	var chemicalTestCategory = [];
-	
+	const itemList = [
+		<c:forEach items="${itemList}" var="item" varStatus="status">
+		{
+			TYPE_CODE_TEXT: "${item.TYPE_CODE_TEXT}",
+			ITEM_IDX: ${item.ITEM_IDX},
+			TYPE_CODE: "${item.TYPE_CODE}",
+			ITEM_CONTENT: "${item.ITEM_CONTENT}",
+			CHEMICAL_IDX: ${item.CHEMICAL_IDX}
+		}<c:if test="${!status.last}">,</c:if>
+		</c:forEach>
+	];
+	console.log(itemList);
 	function CreateEditor(editorId) {
 	    ClassicEditor
 	        .create(document.getElementById(editorId), {
@@ -209,6 +244,13 @@ input:disabled {
 	            selected: true
 	        })
 	    );
+	    
+	    // tempFileList에서 해당 옵션도 제거
+	    $('#tempFileList option').each(function () {
+	        if ($(this).val() == fileIdx) {
+	            $(this).remove();
+	        }
+	    });
 	}
 	
 	function uploadFiles(){
@@ -299,47 +341,14 @@ input:disabled {
 	}
 	
 	//입력확인
-	function fn_update(){
+	function fn_tmp_update(){
 		//var standardContent = editor1.getData();
 		var requestContent = editor2.getData();
 		if( false ) {
-		} else if( !chkNull($("#requestDate").val()) ) {
-			alert("완료일자를 선택해 주세요.");
-			$("#requestDate").focus();
-			return;
-		} else if( !chkNull($("#completionDate").val()) ) {
-			alert("희망 완료일을 선택해 주세요.");
-			$("#completionDate").focus();
-			return;
-		} else if( !chkNull($("#requestUser").val()) ) {
-			alert("의뢰자를 입력해 주세요ㅕ.");
-			$("#requestUser").focus();
-			return;
 		} else if( !chkNull($("#productName").val()) ) {
 			alert("시료명을 선택해 주세요.");
 			$("#productName").focus();
 			return;
-		} else if( !chkNull($("#productCount").val()) ) {
-			alert("시료수량을 입력해 주세요.");
-			$("#productCount").focus();
-			return;
-		} else if ($("select[id^='testSelect_']").filter(function() { return $(this).val(); }).length === 0) {
-			alert("검사요청 항목은 한개 이상 선택되어야 합니다.");
-			$("select[id^='testSelect_']").first().focus();
-			return;
-		} else if ($("tr[id^='standard1_tr'] input[name='standard1']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
-			alert("검사 요청 방법을 하나 이상 입력해 주세요.");
-			$("tr[id^='standard1_tr'] input[name='standard1']").first().focus();
-			return;
-		} else if ($("tr[id^='standard2_tr'] input[name='standard2']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
-			alert("검사 진행 일정을 하나 이상 입력해 주세요.");
-			$("tr[id^='standard2_tr'] input[name='standard2']").first().focus();
-			return;
-		} else if( !fn_validateTestRange() ) {
-			return;
-		} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
-			return;		
 		} else {
 			var formData = new FormData();
 			formData.append("idx",$("#idx").val());
@@ -350,7 +359,8 @@ input:disabled {
 			formData.append("productName",$("#productName").val());
 			formData.append("sapCode",$("#sapCode").val());
 			formData.append("productCount",$("#productCount").val());
-			formData.append("FILE_NAME", $("#orgFileName").val());
+			formData.append("ORG_FILE_NAME", $("#orgFileName").val());
+			formData.append("FILE_NAME", $("#fileName").val());
 			formData.append("FILE_PATH", $("#filePath").val());
 			formData.append("imageDeleteFlag",$("#imageDeleteFlag").val());
 			//formData.append("preservation", $("input[name='preservation']:checked").val());
@@ -377,13 +387,19 @@ input:disabled {
 			    formData.append('deletedFileList', $(this).val());
 			});
 			
-			var typeCodeArr = [];
-			var itemContentArr = [];
-			$("input[name='testItems']:checked").each(function () {
-				let typeCode = $(this).val(); // PH, BRI, etc
-				let content = $("input[name='itemContent_"+typeCode+"']").val() || ""; // 대응되는 범위값
-				typeCodeArr.push(typeCode);
-				itemContentArr.push(content);
+			const typeCodeArr = [];
+			const itemContentArr = [];
+
+			$("select[id^='testSelect_']").each(function () {
+				const code = $(this).val();
+				const idx = $(this).attr("id").split("_")[1];
+				const $input = $("input[data-input-index='" + idx + "']");
+				const content = $input.val();
+
+				if (code) {
+					typeCodeArr.push(code);
+					itemContentArr.push(content || "");
+				}
 			});
 			
 			formData.append("typeCodeArr", JSON.stringify(typeCodeArr));
@@ -446,7 +462,214 @@ input:disabled {
 								apprFormData.append("apprComment", $("#apprComment").val());
 								apprFormData.append("apprLine", $("#apprLine").selectedValues());
 								apprFormData.append("refLine", $("#refLine").selectedValues());
-								apprFormData.append("title", $("#title").val());
+								apprFormData.append("title", $("#productName").val()+" 이화학검사의뢰서");
+								apprFormData.append("docType", $("#docType").val());
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										if(data.RESULT == 'S') {
+											alert("결재상신이 완료되었습니다.");
+											$('#lab_loading').hide();
+											fn_goList();
+										} else {
+											alert("결재상신 오류가 발생하였습니다."+data.MESSAGE);
+											$('#lab_loading').hide();
+											fn_goList();
+											return;
+										}
+									},
+									error:function(request, status, errorThrown){
+										alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+										$('#lab_loading').hide();
+										fn_goList();
+									}			
+								});
+							} else {
+								alert("시료명 "+$("#productName").val()+"의 이화학 검사 의뢰서가 정상적으로 생성되었습니다.");
+								$('#lab_loading').hide();
+								fn_goList();
+							}
+						} else {
+							alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+							$('#lab_loading').hide();
+							fn_goList();
+						}
+					} else {
+						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+						$('#lab_loading').hide();
+					}
+				},
+				error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+					$('#lab_loading').hide();
+				}			
+			});
+		}
+	}
+	//입력확인
+	function fn_update(){
+		//var standardContent = editor1.getData();
+		var requestContent = editor2.getData();
+		if( false ) {
+		} else if( !chkNull($("#requestDate").val()) ) {
+			alert("완료일자를 선택해 주세요.");
+			$("#requestDate").focus();
+			return;
+		} else if( !chkNull($("#completionDate").val()) ) {
+			alert("희망 완료일을 선택해 주세요.");
+			$("#completionDate").focus();
+			return;
+		} else if( !chkNull($("#requestUser").val()) ) {
+			alert("의뢰자를 입력해 주세요ㅕ.");
+			$("#requestUser").focus();
+			return;
+		} else if( !chkNull($("#productName").val()) ) {
+			alert("시료명을 선택해 주세요.");
+			$("#productName").focus();
+			return;
+		} else if( !chkNull($("#productCount").val()) ) {
+			alert("시료수량을 입력해 주세요.");
+			$("#productCount").focus();
+			return;
+		} else if ($("select[id^='testSelect_']").filter(function() { return $(this).val(); }).length === 0) {
+			alert("검사요청 항목은 한개 이상 선택되어야 합니다.");
+			$("select[id^='testSelect_']").first().focus();
+			return;
+		} else if ($("tr[id^='standard1_tr'] input[name='standard1']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
+			alert("검사 요청 방법을 하나 이상 입력해 주세요.");
+			$("tr[id^='standard1_tr'] input[name='standard1']").first().focus();
+			return;
+		} else if ($("tr[id^='standard2_tr'] input[name='standard2']").filter(function() { return $(this).val().trim() !== ""; }).length === 0) {
+			alert("검사 진행 일정을 하나 이상 입력해 주세요.");
+			$("tr[id^='standard2_tr'] input[name='standard2']").first().focus();
+			return;
+		} else if( !fn_validateTestRange() ) {
+			return;
+		} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
+			alert("첨부파일을 등록해주세요.");		
+			return;		
+		} else {	
+			var formData = new FormData();
+			formData.append("idx",$("#idx").val());
+			formData.append("requestDate",$("#requestDate").val());
+			formData.append("completionDate",$("#completionDate").val());
+			formData.append("requestUser",$("#requestUser").val());
+			formData.append("productCode",$("#productCode").val());
+			formData.append("productName",$("#productName").val());
+			formData.append("sapCode",$("#sapCode").val());
+			formData.append("productCount",$("#productCount").val());
+			formData.append("ORG_FILE_NAME", $("#orgFileName").val());
+			formData.append("FILE_NAME", $("#fileName").val());
+			formData.append("FILE_PATH", $("#filePath").val());
+			formData.append("imageDeleteFlag",$("#imageDeleteFlag").val());
+			//formData.append("preservation", $("input[name='preservation']:checked").val());
+			let preservationValues = [];
+			$("input[name='preservation']:checked").each(function () {
+				preservationValues.push($(this).val());
+			});
+			formData.append("preservation", preservationValues.join(","));
+			formData.append("status", "COMP");
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
+			$('#deletedFileList option:selected').each(function() {
+			    formData.append('deletedFileList', $(this).val());
+			});
+			
+			const typeCodeArr = [];
+			const itemContentArr = [];
+
+			$("select[id^='testSelect_']").each(function () {
+				const code = $(this).val();
+				const idx = $(this).attr("id").split("_")[1];
+				const $input = $("input[data-input-index='" + idx + "']");
+				const content = $input.val();
+
+				if (code) {
+					typeCodeArr.push(code);
+					itemContentArr.push(content || "");
+				}
+			});
+			
+			formData.append("typeCodeArr", JSON.stringify(typeCodeArr));
+			formData.append("itemContentArr", JSON.stringify(itemContentArr));
+			
+			// 검사 요청 방법
+			var standard1Arr = [];
+			$('tr[id^=standard1_tr]').toArray().forEach(function(standard1Row){
+				var rowId = $(standard1Row).attr('id'); 
+			    var value = $('#' + rowId + ' input[name=standard1]').val();
+			    if (value && value.trim() !== "") {
+			        standard1Arr.push(value.trim());
+			    }
+			});
+			formData.append("standard1Arr", JSON.stringify(standard1Arr));
+
+			// 검사 진행 일정
+			var standard2Arr = [];
+			$('tr[id^=standard2_tr]').toArray().forEach(function(standard2Row){
+				var rowId = $(standard2Row).attr('id'); 
+			    var value = $('#' + rowId + ' input[name=standard2]').val();
+			    if (value && value.trim() !== "") {
+			        standard2Arr.push(value.trim());
+			    }
+			});
+			formData.append("standard2Arr", JSON.stringify(standard2Arr));
+
+			
+			//formData.append("standardContent",standardContent);
+			formData.append("requestContent",requestContent);
+			formData.append("docType", $("#docType").val())
+			
+			
+			// 이미지 파일
+			var imageFile = document.getElementById('fileImageInput').files[0];
+			if (imageFile) {
+			  formData.append("imageFile", imageFile); // name="imageFile"
+			}
+			
+			for (let pair of formData.entries()) {
+				console.log(pair[0] + ':', pair[1]);
+			}
+			
+			$('#lab_loading').show();
+			var URL = "../chemicalTest/updateChemicalTestAjax";
+			$.ajax({
+				type:"POST",
+				url:URL,
+				data: formData,
+				processData: false,
+		        contentType: false,
+		        cache: false,
+				dataType:"json",
+				success:function(result) {
+					if( result.RESULT == 'S' ) {
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", result.IDX );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#productName").val()+" 이화학검사의뢰서");
 								apprFormData.append("docType", $("#docType").val());
 								apprFormData.append("status", "N");
 								var URL = "../approval/insertApprAjax";
@@ -870,72 +1093,113 @@ input:disabled {
 	}
 	
 	function renderChemicalTestTable() {
-		const $tbody = $("#testItemsTbody");
-		$tbody.empty();
-		globalChemicalIndex = 0;  // 초기화
+	    const $tbody = $("#testItemsTbody");
+	    $tbody.empty();
+	    globalChemicalIndex = 0;
 
-		const chunkSize = 4;
+	    const safeItemList = Array.isArray(itemList) ? itemList : [];
+	    const chunkSize = 4;
+	    const totalItems = Math.max(chunkSize, safeItemList.length);
+	    const rowCount = Math.ceil(totalItems / chunkSize);
 
-		for (let i = 0; i < 1; i++) {
-			const $trCheck = $("<tr>").css("height", "60px");
-			const $trRange = $("<tr>").css("height", "60px");
+	    for (let i = 0; i < rowCount; i++) {
+	        const $trCheck = $("<tr>").addClass("checkRow").css("height", "60px");
+	        const $trRange = $("<tr>").addClass("rangeRow").css("height", "60px");
+	        const $trResult = $("<tr>").addClass("resultRow").css("height", "60px");
 
-			// 설명 <th>
-			$trCheck.append(
-				$("<th></th>").addClass("contentBlock").css("border-left", "none").text("검사요청 항목")
-			);
-			$trRange.append(
-				$("<th></th>").addClass("contentBlock").css("border-left", "none").html("범위<br>(시료의 대략적인 범위 기재)")
-			);
+	        $trCheck.append(
+	            $("<th></th>").addClass("contentBlock").css("border-left", "none").text("검사요청 항목")
+	        );
+	        $trRange.append(
+	            $("<th></th>").addClass("contentBlock").css("border-left", "none").html("범위<br>(시료의 대략적인 범위 기재)")
+	        );
+	        $trResult.append(
+	            $("<th></th>").addClass("contentBlock").css("border-left", "none").html("검사 결과<br>(식품안전팀 기입)")
+	        );
 
-			for (let j = 0; j < chunkSize; j++) {
-				if (globalChemicalIndex >= chemicalTestCategory.length) {
-					$trCheck.append($("<td></td>"));
-					$trRange.append($("<td></td>"));
-					continue;
-				}
+	        for (let j = 0; j < chunkSize; j++) {
+	            if (globalChemicalIndex >= chemicalTestCategory.length) {
+	                $trCheck.append($("<td></td>"));
+	                $trRange.append($("<td></td>"));
+	                $trResult.append($("<td></td>"));
+	                continue;
+	            }
 
-				const item = chemicalTestCategory[globalChemicalIndex];
-				const code = item.itemCode;
-				const name = item.itemName;
-				const idx = globalChemicalIndex++;
+	            const item = chemicalTestCategory[globalChemicalIndex];
+	            const idx = globalChemicalIndex++;
 
-				const selectId = "testSelect_" + idx;
-				const inputId = "itemContent_" + idx;
+	            const selectId = "testSelect_" + idx;
+	            const inputId = "itemContent_" + idx;
+	            const resultInputId = "itemResult_" + idx;
 
-				// select box
-				const $select = $("<select></select>")
-					.attr("name", selectId)
-					.attr("id", selectId)
-					.css("width", "90%");
+	            // 검사 항목 select
+	            const $select = $("<select></select>")
+	                .attr("name", selectId)
+	                .attr("id", selectId)
+	                .css("width", "90%")
+	                .prop("disabled", IS_SAFE_TEAM); // 일반 사용자만 선택 가능
 
-				$select.append($("<option></option>").val("").text("--선택--").prop("selected", true));
-				$.each(chemicalTestCategory, function (k, opt) {
-					$select.append($("<option></option>").val(opt.itemCode).text(opt.itemName));
-				});
+	            $select.append($("<option></option>").val("").text("--선택--").prop("selected", true));
+	            $.each(chemicalTestCategory, function (k, opt) {
+	                $select.append($("<option></option>").val(opt.itemCode).text(opt.itemName));
+	            });
 
-				const $searchBox = $("<div></div>").addClass("search_box").append($select);
-				$trCheck.append($("<td></td>").append($searchBox));
+	            const $searchBox = $("<div></div>").addClass("search_box").append($select);
+	            $trCheck.append($("<td></td>").append($searchBox));
 
-				// input field
-				const $input = $("<input>")
-					.attr("type", "text")
-					.attr("id", inputId)
-					.attr("placeholder", "")
-					.attr("data-input-index", idx)
-					.css("width", "95%")
-					.prop("disabled", true);
-				$trRange.append($("<td></td>").append($input));
-			}
+	            // 범위 input
+	            const $input = $("<input>")
+	                .attr("type", "text")
+	                .attr("id", inputId)
+	                .attr("placeholder", "")
+	                .attr("data-input-index", idx)
+	                .css("width", "95%")
+	                .prop("disabled", IS_SAFE_TEAM); // 일반 사용자만 입력 가능
+	            $trRange.append($("<td></td>").append($input));
 
-			$tbody.append($trCheck).append($trRange);
-		}
+	            // 검사 결과 input
+	            const $resultInput = $("<input>")
+	                .attr("type", "text")
+	                .attr("id", resultInputId)
+	                .attr("placeholder", "")
+	                .attr("data-result-index", idx)
+	                .css("width", "95%")
+	                .prop("disabled", !IS_SAFE_TEAM); // 안전팀만 입력 가능
+	            $trResult.append($("<td></td>").append($resultInput));
+	        }
 
-		// 초기 이전값 저장
-		$("select[id^='testSelect_']").each(function () {
-			$(this).data("prev", $(this).val());
-		});
-		bindChemicalTestSelectEvents();
+	        $tbody.append($trCheck).append($trRange).append($trResult);
+	    }
+
+	    // 초기값 세팅
+	    $("select[id^='testSelect_']").each(function () {
+	        const $select = $(this);
+	        const idx = $select.attr("id").split("_")[1];
+	        const $input = $("input[data-input-index='" + idx + "']");
+	        const $resultInput = $("input[data-result-index='" + idx + "']");
+
+	        const item = safeItemList[idx];
+	        if (item) {
+	            $select.val(item.TYPE_CODE);
+	            $input.val(item.ITEM_CONTENT);
+	            $resultInput.val(item.ITEM_RESULT);
+	            $resultInput.attr("data-item-idx", item.ITEM_IDX);
+	        }
+
+	        // 권한에 따라 다시 disabled 설정 (초기값 세팅 후 변경 방지용)
+	        $select.prop("disabled", IS_SAFE_TEAM);
+	        // ✅ 셀렉트가 비어있으면 무조건 비활성화
+	        if (!$select.val()) {
+	            $input.prop("disabled", true).val("").attr("placeholder", "").removeAttr("name");
+	        } else {
+	            $input.prop("disabled", IS_SAFE_TEAM);
+	        }
+	        $resultInput.prop("disabled", !IS_SAFE_TEAM);
+
+	        $select.data("prev", $select.val());
+	    });
+
+	    bindChemicalTestSelectEvents();
 	}
 	
 	let globalChemicalIndex = 0;  // 전역 변수
@@ -944,6 +1208,7 @@ input:disabled {
 		const $tbody = $("#testItemsTbody");
 		let $checkRow = $tbody.find("tr.checkRow").last();
 		let $rangeRow = $tbody.find("tr.rangeRow").last();
+		let $resultRow = $tbody.find("tr.resultRow").last();
 
 		const totalCount = $("select[id^='testSelect_']").length;
 		if (totalCount >= chemicalTestCategory.length) {
@@ -951,25 +1216,31 @@ input:disabled {
 			return;
 		}
 
-		const idx = globalChemicalIndex++; // 항상 증가
+		const idx = globalChemicalIndex++;
 		const item = chemicalTestCategory[totalCount];
-		const code = item.itemCode;
-		const name = item.itemName;
 
 		// 필요한 tr 생성
-		if ($checkRow.find("td").length >= 4 || $checkRow.length === 0 || $rangeRow.length === 0) {
+		if ($checkRow.find("td").length >= 4 || $checkRow.length === 0 || $rangeRow.length === 0 || $resultRow.length === 0) {
 			$checkRow = $("<tr class='checkRow' style='height:60px; border-top: 2px solid #aaaaaa;'></tr>");
 			$rangeRow = $("<tr class='rangeRow' style='height:60px;'></tr>");
+			$resultRow = $("<tr class='resultRow' style='height:60px;'></tr>");
+
 			$checkRow.append($("<th class='contentBlock' style='border-left:none;'>검사요청 항목</th>"));
 			$rangeRow.append($("<th class='contentBlock' style='border-left:none;'>범위<br>(시료의 대략적인 범위 기재)</th>"));
-			$tbody.append($checkRow).append($rangeRow);
+			$resultRow.append($("<th class='contentBlock' style='border-left:none;'>검사 결과<br>(식품안전팀 기입)</th>"));
+
+			$tbody.append($checkRow).append($rangeRow).append($resultRow);
 		}
 
+		const selectId = "testSelect_" + idx;
+		const inputId = "itemContent_" + idx;
+		const resultId = "resultInput_" + idx;
+
 		const $select = $("<select></select>")
-			.attr("name", "testSelect_" + idx)
-			.attr("id", "testSelect_" + idx)
+			.attr("name", selectId)
+			.attr("id", selectId)
 			.css("width", "90%");
-		$select.append($("<option></option>").val("").text("--선택--").prop("selected", true));  // ✅ selected 추가
+		$select.append($("<option></option>").val("").text("--선택--").prop("selected", true));
 
 		$.each(chemicalTestCategory, function (i, opt) {
 			$select.append($("<option></option>").val(opt.itemCode).text(opt.itemName));
@@ -977,48 +1248,56 @@ input:disabled {
 
 		const $input = $("<input>")
 			.attr("type", "text")
-			.attr("id", "itemContent_" + idx)
+			.attr("id", inputId)
 			.attr("data-input-index", idx)
-			.attr("placeholder", "")  // ✅ placeholder 추가
+			.attr("placeholder", "")
 			.css("width", "95%")
 			.prop("disabled", true);
 
-		const $searchBox = $("<div></div>").addClass("search_box").append($select);
-		$checkRow.append($("<td></td>").append($searchBox));
-		$rangeRow.append($("<td></td>").append($input));
+		const $resultInput = $("<input>")
+			.attr("type", "text")
+			.attr("id", resultId)
+			.attr("name", resultId)
+			.css("width", "95%")
+			.prop("disabled", true);  // 비활성화 처리
 
-		bindChemicalTestSelectEvents();  // ✅ 이벤트 재바인딩
+		$checkRow.append($("<td></td>").append($("<div></div>").addClass("search_box").append($select)));
+		$rangeRow.append($("<td></td>").append($input));
+		$resultRow.append($("<td></td>").append($resultInput));
+
+		bindChemicalTestSelectEvents();
 	}
 	
 	function deleteChemicalTestColumn() {
 		const $tbody = $("#testItemsTbody");
 
-		// 마지막 체크박스 row & 입력 row
 		let $checkRow = $tbody.find("tr.checkRow").last();
 		let $rangeRow = $tbody.find("tr.rangeRow").last();
+		let $resultRow = $tbody.find("tr.resultRow").last();
 
-		// 현재 열 개수
+		const checkRowCount = $tbody.find("tr.checkRow").length;
 		const checkTdCount = $checkRow.find("td").length;
 
-		if (checkTdCount === 0) {
+		// ✅ 마지막 한 줄이고 td가 정확히 4개면 삭제 불가 (보호)
+		if (checkRowCount === 1 && checkTdCount === 4) {
 			alert("더 이상 칸을 삭제할 수 없습니다.");
 			return;
 		}
 
-		// 마지막 td 삭제
+		// 마지막 열(td) 제거
 		$checkRow.find("td").last().remove();
 		$rangeRow.find("td").last().remove();
+		$resultRow.find("td").last().remove();
 
-		// td가 모두 제거되면 해당 tr도 삭제
+		// 열이 모두 제거되면 행 자체도 제거
 		if ($checkRow.find("td").length === 0) {
 			$checkRow.remove();
 			$rangeRow.remove();
+			$resultRow.remove();
 		}
 
-		// (선택) 인덱스 감소
 		if (globalChemicalIndex > 0) globalChemicalIndex--;
 
-		// 🔁 select 이벤트 재바인딩
 		bindChemicalTestSelectEvents();
 	}
 	
@@ -1071,8 +1350,246 @@ input:disabled {
 			}
 		});
 	}
+	
+	function fn_safeTeamUpdate() {
+		$('#lab_loading').show();
+	    const idx = $("#idx").val();
+	    const testResult = editor1.getData();
+	    const itemList = [];
 
+	    if (IS_SAFE_TEAM) {
+	        let hasEmptyResult = false;
+
+	        // 검사 요청 항목 결과 누락 여부 확인
+	        $("input[data-result-index]").each(function () {
+			    const resultIndex = $(this).data("result-index");
+			    const resultValue = $(this).val().trim();
+			
+			    const typeCode = $('#testSelect_' + resultIndex).val();
+			
+			    // 검사 항목 선택 안된 경우는 제외
+			    if (!typeCode || typeCode === "" || typeCode === "--선택--") {
+			        return; // 검사 대상에서 제외
+			    }
+			
+			    // 검사 항목이 선택되었는데 결과값이 비어있는 경우
+			    if (resultValue === "") {
+			        hasEmptyResult = true;
+			    }
+			});
+
+	        if (hasEmptyResult) {
+	            alert("검사요청 항목에 대한 결과를 입력 해주세요.");
+	            $('#lab_loading').hide();
+	            return;
+	        }
+
+	        // 에디터 검사 결과 입력 확인
+	        if (testResult === "" || testResult === "<p>&nbsp;</p>" || testResult === "<p></p>") {
+	            alert("검사 결과 내용을 입력 해주세요.");
+	            $('#lab_loading').hide();
+	            return;
+	        }
+	    }
+
+	    $("input[data-result-index]").each(function () {
+	        const resultIndex = $(this).data("result-index");
+	        const resultValue = $(this).val();
+	        const typeCode = $("#testSelect_" + resultIndex).val();
+	        const itemIdx = $(this).data("item-idx"); // 여기서 추출
+			
+	        if (typeCode && itemIdx) {
+	            itemList.push({
+	                itemIdx: itemIdx,
+	                itemResult: resultValue
+	            });
+	        }
+	    });
+		
+	    $.ajax({
+	        type: "POST",
+	        url: "/chemicalTest/updateSafeResult",
+	        contentType: "application/json",
+	        data: JSON.stringify({
+	            idx: idx,
+	            testResult: testResult,
+	            itemList: itemList
+	        }),
+	        success: function (res) {
+	            if (res.RESULT === "S") {
+	                alert("검사 결과가 저장되었습니다.");
+	                fn_goList();
+	            } else {
+	                alert("저장에 실패했습니다.\n" + res.MESSAGE);
+	            }
+	            $('#lab_loading').hide();
+	        },
+	        error: function () {
+	            alert("서버와 통신 중 오류가 발생했습니다.");
+	            $('#lab_loading').hide();
+	        }
+	    });
+	}
+	
+	function fn_previewDataBinding(popup) {
+	    const $doc = popup.document;
+	    $doc.title = document.getElementById("productName").value+'_이화학 검사 의로서'
+	    // 기본 항목
+	    $doc.getElementById("prev_requestDate").innerText = document.getElementById("requestDate").value;
+	    $doc.getElementById("prev_completionDate").innerText = document.getElementById("completionDate").value;
+	    $doc.getElementById("prev_requestUser").innerText = document.getElementById("requestUser").value;
+	    $doc.getElementById("prev_productCount").innerText = document.getElementById("productCount").value;
+	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
+	    
+	    // 보관 방법
+	    const preservationLabels = [];
+
+		document.querySelectorAll("input[name='preservation']:checked").forEach(chk => {
+		    preservationLabels.push(chk.value);
+		});
+		
+		$doc.getElementById("prev_preservation").innerText = preservationLabels.join(", ");
+		
+		// 요청 항목 & 범위 & 결과
+		// prev_preservation 이 있는 td 의 부모 tr 다음에 삽입
+		var $preserveRow = $doc.getElementById("prev_preservation").parentElement;
+		var $tbody = $preserveRow.parentElement;
+		
+		var chunkSize = 4;
+		var itemCount = document.querySelectorAll("#testItemsTbody select[id^='testSelect_']").length;
+		const itemList = [];
+		
+		const $selectList = document.querySelectorAll("#testItemsTbody select[id^='testSelect_']");
+		
+		$selectList.forEach(select => {
+		    const idx = select.id.replace("testSelect_", "");
+		    const contentInput = document.getElementById("itemContent_" + idx);
+		    const resultInput = document.getElementById("itemResult_" + idx);
+		
+		    const item = {
+		        TYPE_CODE_TEXT: select?.options[select.selectedIndex]?.text || "",
+		        ITEM_CONTENT: contentInput?.value || "",
+		        ITEM_RESULT: resultInput?.value || ""
+		    };
+		
+		    if (item.TYPE_CODE_TEXT === "--선택--") return;
+		
+		    itemList.push(item);
+		});
+		
+		var rowCount = Math.ceil(itemList.length / chunkSize);
+		var htmlList = [];
+		
+		for (var row = 0; row < rowCount; row++) {
+		    var start = row * chunkSize;
+		    var end = Math.min(start + chunkSize, itemList.length);
+		
+		    var row1 = "<tr><th style='width: 10%; text-align: center; font-weight: bold;'>검사요청 항목</th>";
+		    row1 += "<td colspan='5' style='padding: 0;'><table style='width: 100%; table-layout: fixed; border-collapse: collapse;'><tr>";
+		
+		    var row2 = "<tr><th style='width: 10%; text-align: center; font-weight: bold;'>범위</th>";
+		    row2 += "<td colspan='5' style='padding: 0;'><table style='width: 100%; table-layout: fixed; border-collapse: collapse;'><tr>";
+		
+		    var row3 = "<tr><th style='width: 10%; text-align: center; font-weight: bold;'>검사 결과</th>";
+		    row3 += "<td colspan='5' style='padding: 0;'><table style='width: 100%; table-layout: fixed; border-collapse: collapse;'><tr>";
+		
+		    for (var i = start; i < end; i++) {
+		        var item = itemList[i];
+		        row1 += "<th style='width: 25%; text-align: center;'>" + item.TYPE_CODE_TEXT + "</th>";
+		        row2 += "<td style='width: 25%; text-align: center;'>" + item.ITEM_CONTENT + "</td>";
+		        row3 += "<td style='width: 25%; text-align: center; border: 1px solid #ccc;'>" + (item.ITEM_RESULT || "&nbsp;") + "</td>";
+		    }
+		
+		    var blank = chunkSize - (end - start);
+		    for (var b = 0; b < blank; b++) {
+		        row1 += "<th style='width: 25%;'></th>";
+		        row2 += "<td style='width: 25%;'></td>";
+		        row3 += "<td style='width: 25%; border: 1px solid #ccc;'>&nbsp;</td>";
+		    }
+		
+		    row1 += "</tr></table></td></tr>";
+		    row2 += "</tr></table></td></tr>";
+		    row3 += "</tr></table></td></tr>";
+		
+		    htmlList.push(row1, row2, row3);
+		}
+		
+		// 정방향으로 삽입
+		for (let i = htmlList.length - 1; i >= 0; i--) {
+		    $preserveRow.insertAdjacentHTML("afterend", htmlList[i]);
+		}
+
+
+		// 검사 요청 방법
+		var reasonHTML1 = "";
+		document.querySelectorAll('#standard1_tbody input[name=standard1]').forEach(function(input) {
+		    var val = input.value || "";
+		    if (val.trim()) reasonHTML1 += val + "<br/>";
+		});
+		$doc.getElementById("prev_standard1").innerHTML = reasonHTML1;
+
+		// 검사 진행 일정
+		var reasonHTML2 = "";
+		document.querySelectorAll('#standard2_tbody input[name=standard2]').forEach(function(input) {
+		    var val = input.value || "";
+		    if (val.trim()) reasonHTML2 += val + "<br/>";
+		});
+		$doc.getElementById("prev_standard2").innerHTML = reasonHTML2;
+	    
+	    // 요청 사항
+	    var content = editor2.getData().trim();
+	    $doc.getElementById("prev_content").innerHTML = content
+
+	 	// ✅ 시료 이미지 처리
+	    var fileInput = document.getElementById("fileImageInput");
+	    var previewImgContainer = $doc.getElementById("prev_previewImg"); // <td> 자체
+
+	    // 이미지 엘리먼트 생성
+	    var img = $doc.createElement("img");
+	    img.style.width = "100%";
+	    img.style.maxWidth = "220px";
+	    img.style.height = "auto";
+	    img.style.border = "1px solid #e1e1e1";
+	    img.style.borderRadius = "5px";
+	    img.style.objectFit = "contain";
+
+	    // 이미지 삽입
+	    previewImgContainer.innerHTML = ""; // 혹시 기존에 있을 수도 있으니 초기화
+	    previewImgContainer.appendChild(img);
+
+	    // 이미지 소스 지정
+	    if (fileInput && fileInput.files && fileInput.files[0]) {
+	        var reader = new FileReader();
+	        reader.onload = function (e) {
+	            img.src = e.target.result;
+	        };
+	        reader.readAsDataURL(fileInput.files[0]);
+	    } else {
+	        var originPreviewImg = document.getElementById("preview"); // 기존 이미지
+	        if (originPreviewImg && originPreviewImg.src) {
+	            img.src = originPreviewImg.src;
+	        } else {
+	            img.src = "/resources/images/img_noimg3.png"; // fallback
+	        }
+	    }
+
+
+	}
+	
+	function fn_openPreview() {
+		var url = "/preview/chemicalTestPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
+<c:set var="isSafeTeam" value="${userUtil:getRoleCode(pageContext.request) == '6' || userUtil:getRoleCode(pageContext.request) == '7'}" />
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
 		이화학 검사 의뢰서&nbsp;&nbsp;
@@ -1085,15 +1602,24 @@ input:disabled {
 			<div class="top_btn_box">
 				<ul>
 					<li>
-						<button class="btn_circle_save" onclick="fn_update()">&nbsp;</button>
+						<c:if test="${isSafeTeam}">
+							<button class="btn_circle_save" onclick="fn_safeTeamUpdate()">&nbsp;</button>
+						</c:if>
+						<c:if test="${not isSafeTeam}">
+							<button class="btn_circle_save" onclick="fn_update()">&nbsp;</button>
+						</c:if>
 					</li>
 				</ul>
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">개요</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">개요</span>
+				<div class="pr15">
+					<c:if test="${chemicalTestData.data.DOC_OWNER eq userId}">
+						<button class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+					</c:if>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">
@@ -1145,7 +1671,7 @@ input:disabled {
 							<td >
 								<input type="text"  style="float: left; display: none;" class="req" name="productCode" id="productCode" value="${chemicalTestData.data.PRODUCT_CODE}" placeholder="코드를 조회 하세요." readonly/>
 								<input type="text"  style="float: left; display: none;" class="req" name="sapCode" id="sapCode" value="${chemicalTestData.data.SAP_CODE}" placeholder="코드를 조회 하세요." readonly/>
-								<input type="text"  style="float: left" class="req" name="productName" id="productName" value="${chemicalTestData.data.PRODUCT_NAME}" placeholder="코드를 조회 하세요." readonly/>
+								<input type="text"  style="float: left" class="req" name="productName" id="productName" value="${chemicalTestData.data.PRODUCT_NAME}" placeholder="코드를 조회 하세요." />
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 							</td>
@@ -1188,38 +1714,16 @@ input:disabled {
 				</table>
 			</div>
 			<br>
+			<c:if test="${not isSafeTeam}">
+				<div style="float:right;">
+					<button class="btn_small_search" style="margin:5px;" type="button" onclick="addChemicalTestColumn()">+ 항목 추가</button>
+					<button class="btn_small_search" style="margin:5px;" type="button" onclick="deleteChemicalTestColumn()">- 항목 삭제</button>
+				</div>
+			</c:if>
 			<div class="main_tbl">
 				<table class="insert_proc01">
-					<tbody>
-						<c:forEach var="start" begin="0" end="${fn:length(itemList)-1}" step="4" varStatus="status">
-							<%-- border-top은 두 번째 묶음부터만 적용 --%>
-							<tr style="height:40px; <c:if test='${status.index gt 0}'>border-top:2px solid #aaaaaa;</c:if>">
-								<th class="contentBlock">검사요청 항목</th>
-								<c:forEach var="i" begin="${start}" end="${start + 3}">
-									<c:choose>
-										<c:when test="${i lt fn:length(itemList)}">
-											<td style="text-align:center;">${itemList[i].TYPE_CODE_TEXT}</td>
-										</c:when>
-										<c:otherwise>
-											<td></td>
-										</c:otherwise>
-									</c:choose>
-								</c:forEach>
-							</tr>
-							<tr style="height:40px; <c:if test='${status.index gt 0}'>border-top:2px solid #aaaaaa;</c:if>">
-								<th class="contentBlock">범위<br>(시료의 대략적인 범위 기재)</th>
-								<c:forEach var="i" begin="${start}" end="${start + 3}">
-									<c:choose>
-										<c:when test="${i lt fn:length(itemList)}">
-											<td style="text-align:center;">${itemList[i].ITEM_CONTENT}</td>
-										</c:when>
-										<c:otherwise>
-											<td></td>
-										</c:otherwise>
-									</c:choose>
-								</c:forEach>
-							</tr>
-						</c:forEach>
+					<tbody id="testItemsTbody">
+						
 					</tbody>
 				</table>
 			</div>
@@ -1240,18 +1744,29 @@ input:disabled {
 						</div>
 						 -->
 			<c:set var="standardList" value="${standardList}" />
+			<c:set var="hasMET" value="false" />
+			<c:set var="hasSCH" value="false" />
 			
+			<c:forEach var="item" items="${standardList}">
+				<c:if test="${item.TYPE_CODE eq 'MET'}">
+					<c:set var="hasMET" value="true" />
+				</c:if>
+				<c:if test="${item.TYPE_CODE eq 'SCH'}">
+					<c:set var="hasSCH" value="true" />
+				</c:if>
+			</c:forEach>
 			<!-- 1. 검사 요청 방법 -->
 			<span class="title3" style="width: 76%; margin-left: 30px;">1. 검사 요청 방법</span>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				<button class="btn_con_search" onClick="fn_addCol('standard1')" id="standard1_add_btn">
-					<img src="/resources/images/icon_s_write.png" />추가 
-				</button>
-				<button class="btn_con_search" onClick="fn_delCol('standard1')">
-					<img src="/resources/images/icon_s_del.png" />삭제 
-				</button>
-			</div>
-			
+			<c:if test="${not isSafeTeam}">
+				<div class="title2" style="width: 20%; display: inline-block;">
+					<button class="btn_con_search" onClick="fn_addCol('standard1')" id="standard1_add_btn">
+						<img src="/resources/images/icon_s_write.png" />추가 
+					</button>
+					<button class="btn_con_search" onClick="fn_delCol('standard1')">
+						<img src="/resources/images/icon_s_del.png" />삭제 
+					</button>
+				</div>
+			</c:if>
 			<div class="main_tbl">
 				<table class="insert_proc01">
 					<colgroup>
@@ -1272,16 +1787,27 @@ input:disabled {
 								</tr>
 							</c:if>
 						</c:forEach>
+						<!-- MET이 없을 경우 기본 1줄 출력 -->
+						<c:if test="${not hasMET}">
+							<tr id="standard1_tr_0">
+								<td>
+									<input type="checkbox" id="standard1_0">
+									<label for="standard1_0"><span></span></label>
+								</td>
+								<td>
+									<input type="text" name="standard1" class="req" style="width:99%; float: left" />
+								</td>
+							</tr>
+						</c:if>
 					</tbody>
-			
-					<!-- 추가용 임시 템플릿 -->
-					<tbody id="standard1_tbody_temp" name="standard1_tbody_temp" style="display:none">
-						<tr id="standard1_tmp_tr_1"> 
+					<tbody id="standard1_tbody_temp" name="standard1_tbody_temp" style="display:none;">
+						<tr>
 							<td>
-								<input type="checkbox" id="standard1_1"><label for="standard1_1"><span></span></label>
+								<input type="checkbox" id="standard1_TEMP">
+								<label for="standard1_TEMP"><span></span></label>
 							</td>
 							<td>
-								<input type="text" style="width:99%; float: left" class="req" name="standard1"/>
+								<input type="text" name="standard1" class="req" style="width:99%; float: left" />
 							</td>
 						</tr>
 					</tbody>
@@ -1291,15 +1817,16 @@ input:disabled {
 			<!-- 2. 검사 진행 일정 -->
 			<li style="list-style: none;">
 				<span class="title3" style="width: 76%; margin-left: 30px;">2. 검사 진행 일정</span>
-				<div class="title2" style="width: 20%; display: inline-block;">
-					<button class="btn_con_search" onClick="fn_addCol('standard2')" id="standard2_add_btn">
-						<img src="/resources/images/icon_s_write.png" />추가 
-					</button>
-					<button class="btn_con_search" onClick="fn_delCol('standard2')">
-						<img src="/resources/images/icon_s_del.png" />삭제 
-					</button>
-				</div>
-			
+				<c:if test="${not isSafeTeam}">
+					<div class="title2" style="width: 20%; display: inline-block;">
+						<button class="btn_con_search" onClick="fn_addCol('standard2')" id="standard2_add_btn">
+							<img src="/resources/images/icon_s_write.png" />추가 
+						</button>
+						<button class="btn_con_search" onClick="fn_delCol('standard2')">
+							<img src="/resources/images/icon_s_del.png" />삭제 
+						</button>
+					</div>
+				</c:if>
 				<div class="main_tbl">
 					<table class="insert_proc01">
 						<colgroup>
@@ -1320,16 +1847,27 @@ input:disabled {
 									</tr>
 								</c:if>
 							</c:forEach>
+							<!-- SCH이 없을 경우 기본 1줄 출력 -->
+							<c:if test="${not hasSCH}">
+								<tr id="standard2_tr_0">
+									<td>
+										<input type="checkbox" id="standard2_0">
+										<label for="standard2_0"><span></span></label>
+									</td>
+									<td>
+										<input type="text" name="standard2" class="req" style="width:99%; float: left" />
+									</td>
+								</tr>
+							</c:if>
 						</tbody>
-			
-						<!-- 추가용 임시 템플릿 -->
-						<tbody id="standard2_tbody_temp" name="standard2_tbody_temp" style="display:none">
-							<tr id="standard2_tmp_tr_1"> 
+						<tbody id="standard2_tbody_temp" name="standard2_tbody_temp" style="display:none;">
+							<tr>
 								<td>
-									<input type="checkbox" id="standard2_1"><label for="standard2_1"><span></span></label>
+									<input type="checkbox" id="standard2_TEMP">
+									<label for="standard2_TEMP"><span></span></label>
 								</td>
 								<td>
-									<input type="text" style="width:99%; float: left" class="req" name="standard2"/>
+									<input type="text" name="standard2" class="req" style="width:99%; float: left" />
 								</td>
 							</tr>
 						</tbody>
@@ -1364,10 +1902,12 @@ input:disabled {
 								<!-- 이미지 영역 -->
 								<div style="position: relative; display: inline-block;">
 									<!-- 삭제 버튼 -->
-									<div style="position: absolute; top: 0; right: 0; z-index: 3;">
-										<img src="/resources/images/btn_table_header01_del02.png"
-											onClick="fn_deleteImageFile(this, event)" style="cursor: pointer;">
-									</div>
+									<c:if test="${not isSafeTeam}">
+										<div style="position: absolute; top: 0; right: 0; z-index: 3;">
+											<img src="/resources/images/btn_table_header01_del02.png"
+												onClick="fn_deleteImageFile(this, event)" style="cursor: pointer;">
+										</div>
+									</c:if>
 									<!-- 미리보기 이미지 -->
 									<img id="preview"
 										src="<c:choose>
@@ -1380,16 +1920,18 @@ input:disabled {
 											</c:choose>"
 										style="border:1px solid #e1e1e1; border-radius:5px; min-height:300px; max-height:300px; object-fit: contain; min-width:440px; max-width: 440px;">
 								</div>
-			
+								
 								<!-- 업로드 영역 -->
 								<p class="pt10" style="margin-top: 8px;">
-									<div class="add_file2" style="width:100%; text-align:center;" onclick="fn_fileDivClick(event)">
-										<input type="file" name="file" id="fileImageInput" accept="image/*"
-											style="display:none;" onchange="fn_changeImageFile(this, event)" />
-										<label for="fileImageInput" style="cursor: pointer;">
-											이미지파일 등록 <img src="/resources/images/icon_add_file.png">
-										</label>
-									</div>
+									<c:if test="${not isSafeTeam}">
+										<div class="add_file2" style="width:100%; text-align:center;" onclick="fn_fileDivClick(event)">
+											<input type="file" name="file" id="fileImageInput" accept="image/*"
+												style="display:none;" onchange="fn_changeImageFile(this, event)" />
+											<label for="fileImageInput" style="cursor: pointer;">
+												이미지파일 등록 <img src="/resources/images/icon_add_file.png">
+											</label>
+										</div>
+									</c:if>
 								</p>
 							</td>
 						</tr>
@@ -1397,10 +1939,29 @@ input:disabled {
 				</table>
 			</div>
 			<input type="hidden" name="imageDeleteFlag" id="imageDeleteFlag" value="N">
-			<input type="hidden" name="orgFileName" id="orgFileName" value="${chemicalTestData.data.FILE_NAME}">
+			<input type="hidden" name="orgFileName" id="orgFileName" value="${chemicalTestData.data.ORG_FILE_NAME}">
+			<input type="hidden" name="fileName" id="fileName" value="${chemicalTestData.data.FILE_NAME}">
 			<input type="hidden" name="filePath" id="filePath" value="${chemicalTestData.data.FILE_PATH}">
 			
-		
+			<div class="title2" style="width: 80%; margin-top:10px;"><span class="txt">검사 결과 내용 (식품안전팀 작성)</span></div>
+			<div class="title2" style="width: 20%; display: inline-block;"></div>
+			
+			<div class="main_tbl">
+				<table class="insert_proc01">
+					<tbody>
+						<tr style="height:365px;">
+							<!-- 왼쪽: 요청사항 에디터 -->
+							<td>
+								<textarea name="resultContent" id="resultContent" style="width:100%; height:300px;">
+									${chemicalTestData.data.TEST_RESULT}
+								</textarea>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+<%-- 		
 			<div class="title2"  style="width: 80%; margin-top:10px;"><span class="txt">결재</span></div>
 			<div class="title2" style="width: 20%; display: inline-block;">
 			</div>
@@ -1428,46 +1989,51 @@ input:disabled {
 						</tr>						
 					</tbody>
 				</table>
-			</div>
-			
-			<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
-			<div class="title2 mt20" style="width:10%; display: inline-block;">
-				<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
-					<img src="/resources/images/icon_s_file.png" />파일첨부 
-				</button>
-			</div>
-			<div class="con_file" style="">
-				<ul>
-					<li class="point_img">
-						<dt>첨부파일</dt><dd>
-							<ul id="attatch_file">
-							</ul>
-						</dd>
-					</li>
-				</ul>
-			</div>
-			<c:if test="${not empty chemicalTestData.fileList}">
-			<div class="con_file" style="">
-				<ul>
-					<li class="point_img">
-						<dt>기존파일</dt><dd>
-							<ul id="attatch_file">
-					              <c:forEach var="file" items="${chemicalTestData.fileList}">
-					              <li data-file-idx="${file.FILE_IDX}">
-					                <a href="${file.FILE_PATH}" onclick="removeTempFile('${file.FILE_IDX}', this); return false;">
-					                  <img src="/resources/images/icon_del_file.png">
-					                </a>&nbsp;${file.ORG_FILE_NAME}
-					              </li>
-					            </c:forEach>
-							</ul>
-						</dd>
-					</li>
-				</ul>
-			</div>
-		    <!-- 숨겨진 select 박스 -->
-			<select name="deletedFileList" id="deletedFileList" multiple style="display: none;"></select>
+			</div> --%>
+			<c:if test="${not isSafeTeam}">
+				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
+				<div class="title2 mt20" style="width:10%; display: inline-block;">
+					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
+						<img src="/resources/images/icon_s_file.png" />파일첨부 
+					</button>
+				</div>
+				<div class="con_file" style="">
+					<ul>
+						<li class="point_img">
+							<dt>첨부파일</dt><dd>
+								<ul id="attatch_file">
+								</ul>
+							</dd>
+						</li>
+					</ul>
+				</div>
+				<c:if test="${not empty chemicalTestData.fileList}">
+				<select id="tempFileList" name="tempFileList" multiple style="display:none">
+				  <c:forEach var="file" items="${chemicalTestData.fileList}">
+				    <option value="${file.FILE_IDX}">${file.ORG_FILE_NAME}</option>
+				  </c:forEach>
+				</select>
+				<div class="con_file" style="">
+					<ul>
+						<li class="point_img">
+							<dt>기존파일</dt><dd>
+								<ul id="attatch_file">
+						              <c:forEach var="file" items="${chemicalTestData.fileList}">
+						              <li data-file-idx="${file.FILE_IDX}">
+						                <a href="${file.FILE_PATH}" onclick="removeTempFile('${file.FILE_IDX}', this); return false;">
+						                  <img src="/resources/images/icon_del_file.png" style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
+						                </a>&nbsp;${file.ORG_FILE_NAME}
+						              </li>
+						            </c:forEach>
+								</ul>
+							</dd>
+						</li>
+					</ul>
+				</div>
+			    <!-- 숨겨진 select 박스 -->
+				<select name="deletedFileList" id="deletedFileList" multiple style="display: none;"></select>
+				</c:if>
 			</c:if>
-			
 					
 			<div class="main_tbl">
 				<div class="btn_box_con5">
@@ -1478,7 +2044,13 @@ input:disabled {
 					<button class="btn_admin_red">임시/템플릿저장</button>
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
-					<button class="btn_admin_sky" onclick="fn_update()">저장</button>
+					<c:if test="${isSafeTeam}">
+						<button class="btn_admin_sky" onclick="fn_safeTeamUpdate()">결과 입력</button>
+					</c:if>
+					<c:if test="${not isSafeTeam}">
+						<button class="btn_admin_gray" onclick="fn_tmp_update()">임시저장</button>
+						<button class="btn_admin_sky" onclick="fn_update()">등록</button>
+					</c:if>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

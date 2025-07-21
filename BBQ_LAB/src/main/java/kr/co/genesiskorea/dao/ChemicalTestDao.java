@@ -37,4 +37,7 @@ public interface ChemicalTestDao {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+    int updateBySafeTeam(Map<String, Object> param);
+
+    int updateBySafeTeamItem(Map<String, Object> item);
 }

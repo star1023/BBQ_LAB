@@ -231,6 +231,163 @@
 	}
 	
 	// 입력 확인 및 저장 요청 함수
+	function fn_tmp_insert() {
+		const resultItemArr = [];
+		const itemImageArr = [];
+	    var title = document.getElementById("title").value.trim();
+	    var excuteDate = document.getElementById("excuteDate").value.trim();
+	    const inputMode = document.querySelector('input[name="inputMode"]:checked')?.value;
+	    // var storeCodes = document.getElementById("storeCodeValues_1").value.trim();
+	    // var productCodes = document.getElementById("productCodeValues_1") ? document.getElementById("productCodeValues_1").value.trim() : "";
+
+	    if (!chkNull(title)) {
+	        alert("제목을 입력해 주세요.");
+	        document.getElementById("title").focus();
+	        return;
+	    }
+	    
+		// ✅ 컬럼 선택 유효성 검사
+		const columnSelects = document.querySelectorAll('#columnHeaderRow select');
+		const hasUnselectedColumn = Array.from(columnSelects).some(select => select.value === "");
+
+		if (hasUnselectedColumn) {
+			const proceed = confirm("컬럼 헤더가 선택되지 않은 컬럼은 저장되지 않습니다.\n그래도 진행하시겠습니까?");
+			if (!proceed) return;
+		}
+		
+	    var formData = new FormData();
+	    // ✅ 헤더 정보 (lab_new_product_result)
+	    formData.append("title", title);
+	    formData.append("excuteDate", excuteDate);
+	    //formData.append("productCodes", productCodes);
+
+	    for (var i = 0; i < attatchFileArr.length; i++) {
+	        formData.append("file", attatchFileArr[i]);
+	    }
+	    
+	 	// 1. 컬럼 코드 순서 추출
+	    let columnCodes = Array.from(columnSelects).map(select => select.value);
+
+		// 업로드 모드이고, 컬럼 선택된 게 하나도 없거나 모두 빈값일 경우
+		if (inputMode === 'upload') {
+		  formData.append("columnStates", ""); // ✅ 완전히 빈 문자열로 서버 전송
+		} else {
+		  formData.append("columnStates", columnCodes.join(','));
+		}
+	    
+		// 2. 셀데이터 추출
+		const rows = document.querySelectorAll('#columnBodyRows tr');
+
+		rows.forEach((row, rowIndex) => {
+		  const rowItems = [];
+		  const cells = row.querySelectorAll('td');
+
+		  for (let colIndex = 1; colIndex < cells.length; colIndex++) {
+		    const td = cells[colIndex];
+		    const input = td.querySelector('input');
+		    const columnCode = columnCodes[colIndex - 1]; // ex: "col1", "" (빈값)
+
+		    // ✅ 컬럼이 선택되지 않은 경우 무시
+		    if (!input || !columnCode) continue;
+
+		    if (input.type === "file" && input.files.length > 0) {
+		      const file = input.files[0];
+
+		      formData.append("imageFiles", file); // 실제 이미지 파일 전송
+		      itemImageArr.push({ rowNo: rowIndex }); // 이미지 위치만 저장
+
+		      rowItems.push({
+		        rowNo: rowIndex,
+		        columnCode,
+		        columnValue: ""
+		      });
+		    } else {
+		      rowItems.push({
+		        rowNo: rowIndex,
+		        columnCode,
+		        columnValue: input.value
+		      });
+		    }
+		  }
+
+		  resultItemArr.push(rowItems);
+		});
+
+	    // JSON 직렬화 후 append
+	    formData.append("resultItemArr", JSON.stringify(resultItemArr));
+	    formData.append("itemImageArr", JSON.stringify(itemImageArr));
+	    formData.append("status", "TMP");
+	    
+	      // ✅ 디버깅용 출력
+	      console.log("🔎 FormData Preview:");
+	      for (let [key, val] of formData.entries()) {
+	        console.log(key, ":", val);
+	      }
+		
+		$('#lab_loading').show();
+	    $.ajax({
+	        type: "POST",
+	        url: "../newProductResult/insertNewProductResultAjax",
+	        data: formData,
+	        processData: false,
+	        contentType: false,
+	        cache: false,
+	        dataType: "json",
+	        success: function(result) {
+	            console.log(result);
+	            if (result.RESULT === 'S' && result.IDX > 0) {
+	                if (document.getElementById("apprLine").options.length > 0) {
+	                    var apprFormData = new FormData();
+	                    apprFormData.append("docIdx", result.IDX);
+	                    apprFormData.append("apprComment", document.getElementById("apprComment").value);
+	                    apprFormData.append("apprLine", $("#apprLine").selectedValues());
+	                    apprFormData.append("refLine", $("#refLine").selectedValues());
+	                    apprFormData.append("title", title);
+	                    apprFormData.append("docType", document.getElementById("docType").value);
+	                    apprFormData.append("status", "N");
+
+	                    $.ajax({
+	                        type: "POST",
+	                        url: "../approval/insertApprAjax",
+	                        dataType: "json",
+	                        data: apprFormData,
+	                        processData: false,
+	                        contentType: false,
+	                        cache: false,
+	                        success: function(data) {
+	                            if (data.RESULT === 'S') {
+	                                alert("결재상신이 완료되었습니다.");
+	                                $('#lab_loading').hide();
+	                                fn_goList();
+	                            } else {
+	                                alert("결재선 상신 오류가 발생하였습니다." + data.MESSAGE);
+	                                $('#lab_loading').hide();
+	                                fn_goList();
+	                            }
+	                        },
+	                        error: function() {
+	                            alert("결재 요청 중 오류가 발생하였습니다.");
+	                            $('#lab_loading').hide();
+	                            fn_goList();
+	                        }
+	                    });
+	                } else {
+	                    alert(title + "가 정상적으로 생성되었습니다.");
+	                    $('#lab_loading').hide();
+	                    fn_goList();
+	                }
+	            } else {
+	                alert("저장 중 오류가 발생하였습니다.\n" + result.MESSAGE);
+	                $('#lab_loading').hide();
+	            }
+	        },
+	        error: function() {
+	            alert("저장 요청 중 오류가 발생하였습니다.");
+	            $('#lab_loading').hide();
+	        }
+	    });
+	}
+	// 입력 확인 및 저장 요청 함수
 	function fn_insert() {
 		const resultItemArr = [];
 		const itemImageArr = [];
@@ -248,14 +405,6 @@
 	        alert("시행월을 입력해 주세요.");
 	        document.getElementById("excuteDate").focus();
 	        return;
-        /*
-	    } else if (!chkNull(storeCodes)) {
-	        alert("매장을 입력해 주세요.");
-	        return;
-	    } else if (!chkNull(productCodes)) {
-	        alert("제품을 입력해 주세요.");
-	        return;
-	        */
 	    } else if (inputMode === 'manual' && document.querySelectorAll('#columnBodyRows tr').length === 0) {
 	        alert("내용 테이블에 최소 한 개의 행이 필요합니다.");
 	        return;
@@ -336,6 +485,7 @@
 	    // JSON 직렬화 후 append
 	    formData.append("resultItemArr", JSON.stringify(resultItemArr));
 	    formData.append("itemImageArr", JSON.stringify(itemImageArr));
+	    formData.append("status", "REG");
 	    
 	      // ✅ 디버깅용 출력
 	      console.log("🔎 FormData Preview:");
@@ -1362,11 +1512,105 @@ function handleColumnSelectChange(select) {
 
 function toggleInputMode(mode) {
   const tableSection = document.getElementById("dynamicTableSection");
+  const prevBtn = document.getElementById("prevBtn");
   if (mode === 'manual') {
     tableSection.style.display = '';
+    prevBtn.style.display = '';
   } else {
     tableSection.style.display = 'none';
+    prevBtn.style.display = 'none';
   }
+}
+
+function fn_previewDataBinding(popup) {
+	const $doc = popup.document;
+	const columnSelects = document.querySelectorAll('#columnHeaderRow select');
+
+	// ✅ 유효한 컬럼만 추출 (value가 있는 경우만)
+	const validColumnDefs = [];
+	columnSelects.forEach(select => {
+		if (select.value) {
+			validColumnDefs.push({
+				code: select.value,
+				name: select.options[select.selectedIndex].textContent
+			});
+		}
+	});
+
+	const dynamicColCount = validColumnDefs.length;
+
+	// ✅ 제목 / 시행월 채우기 (colspan 적용)
+	$doc.getElementById("prev_title").innerText = document.getElementById("title").value;
+	$doc.getElementById("prev_title").setAttribute("colspan", dynamicColCount);
+	$doc.getElementById("prev_excuteDate").innerText = document.getElementById("excuteDate").value;
+	$doc.getElementById("prev_excuteDate").setAttribute("colspan", dynamicColCount);
+	$doc.getElementById("prev_dynamicTableTd").setAttribute("colspan", dynamicColCount);
+
+	// ✅ <colgroup> 생성 (thead, tbody 이전에!)
+	const colgroup = $doc.getElementById("prev_colgroup");
+	colgroup.innerHTML = "";
+	for (let i = 0; i < dynamicColCount; i++) {
+		const col = $doc.createElement("col");
+		col.style.width = (100 / dynamicColCount) + "%";
+		colgroup.appendChild(col);
+	}
+	
+	// ✅ 헤더 구성
+	const thead = $doc.getElementById("prev_dynamicThead");
+	thead.innerHTML = ""; // 초기화
+	validColumnDefs.forEach(col => {
+		const th = $doc.createElement("th");
+		th.innerText = col.name;
+		thead.appendChild(th);
+	});
+
+	// ✅ 본문 구성
+	const prevTbody = $doc.getElementById("prev_dynamicTbody");
+	prevTbody.innerHTML = ""; // 초기화
+	const rows = document.querySelectorAll("#columnBodyRows tr");
+
+	rows.forEach((row, rowIdx) => {
+		const tr = $doc.createElement("tr");
+		const cells = row.querySelectorAll("td");
+
+		for (let colIndex = 0; colIndex < validColumnDefs.length; colIndex++) {
+			const td = $doc.createElement("td");
+			const realIndex = Array.from(columnSelects).findIndex(sel => sel.value === validColumnDefs[colIndex].code);
+			const cell = cells[realIndex + 1]; // +1 to skip checkbox column
+			const input = cell.querySelector("input");
+
+			if (input?.type === "file") {
+				const img = cell.querySelector("img#preview");
+				const newImg = $doc.createElement("img");
+				newImg.src = img?.src || "/resources/images/img_noimg3.png";
+				newImg.style.width = "100%";
+				newImg.style.height = "150px";
+				newImg.style.objectFit = "contain";
+				newImg.style.border = "1px solid #ddd";
+				td.style.padding = "0px";
+				td.appendChild(newImg);
+			} else {
+				td.innerText = input?.value || "";
+			}
+
+			tr.appendChild(td);
+		}
+
+		prevTbody.appendChild(tr);
+	});
+}
+
+function fn_openPreview() {
+	var url = "/preview/newProductPrevPopup";
+
+	// 팝업 창 열기
+	var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+	// 팝업이 완전히 열린 뒤에 데이터 전달
+	popup.onload = function () {
+		// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+		fn_previewDataBinding(popup);
+	};
 }
 </script>
 <div class="wrap_in" id="fixNextTag">
@@ -1388,9 +1632,11 @@ function toggleInputMode(mode) {
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()" style="display:none;">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">
@@ -1511,6 +1757,7 @@ function toggleInputMode(mode) {
 					<button class="btn_admin_red">임시/템플릿저장</button>
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
+					<button class="btn_admin_gray" onclick="fn_tmp_insert()">임시 저장</button>
 					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>

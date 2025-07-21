@@ -535,7 +535,8 @@ display:inline-block;width:19px; height:19px; margin:-2px 4px 0 0;  vertical-ali
 /* 결재 게시판 처리 */
 
 .app01{ width:80px; display:inline-block; list-style:none; padding:1px 5px 2px 4px; font-size:11px;  border-radius:10px; background-color:#eef2fa; color:#4a90ed; border:1px solid #4a90ed;}
-.app02{ width:80px; display:inline-block; list-style:none; padding:1px 5px 2px 4px; font-size:11px;  border-radius:10px; background-color:#fff; color:#ababab; border:1px solid #d0d0d0;}
+.app04{ width:80px; display:inline-block; list-style:none; padding:1px 5px 2px 4px; font-size:11px;  border-radius:10px; background-color:#fff; color:#ababab; border:1px solid #d0d0d0;}
+.app02{ width:80px; display:inline-block; list-style:none; padding:1px 5px 2px 4px; font-size:11px;  border-radius:10px; background-color:#f6fff2; color:#19ab11; border:1px solid #19ab11;}
 
 .app03{ width:80px; display:inline-block; list-style:none; padding:1px 5px 2px 4px; font-size:11px;  border-radius:10px; background-color:#fff; color:#d3504e; border:1px solid #d3504e;}
 /* 댓글처리 */

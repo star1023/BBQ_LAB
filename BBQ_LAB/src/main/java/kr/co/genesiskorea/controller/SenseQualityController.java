@@ -152,6 +152,11 @@ public class SenseQualityController {
 	
 	@RequestMapping("/view")
 	public String view(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+		//유저정보 DOC_OWNER 확인용
+		Auth auth = AuthUtil.getAuth(request);
+		String userId = auth.getUserId();
+		model.addAttribute("userId", userId);
+		
 		Map<String, Object> senseQualityData = reportService.selectSenseQualityData(param);
 		model.addAttribute("senseQualityData", senseQualityData);
 		return "/senseQuality/view";

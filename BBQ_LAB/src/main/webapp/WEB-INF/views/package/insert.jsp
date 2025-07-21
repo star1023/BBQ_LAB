@@ -375,6 +375,12 @@
 			formData.append("docType",$("#docType").val());
 			formData.append("status", "TMP");
 			
+			// 마크 이미지 파일
+			var markFile = document.getElementById('markImageInput').files[0];
+			if (markFile) {
+			  formData.append("markFile", markFile); // name="markFile"
+			}
+			
 			// 이미지 파일
 			var imageFile = document.getElementById('fileImageInput').files[0];
 			if (imageFile) {
@@ -456,6 +462,12 @@
 			formData.append("cookMethod",cookMethod);
 			formData.append("docType",$("#docType").val());
 			formData.append("status", "COMP");
+			
+			// 마크 이미지 파일
+			var markFile = document.getElementById('markImageInput').files[0];
+			if (markFile) {
+			  formData.append("markFile", markFile); // name="markFile"
+			}
 			
 			// 이미지 파일
 			var imageFile = document.getElementById('fileImageInput').files[0];
@@ -603,9 +615,25 @@
 			reader.readAsDataURL(input.files[0]);
 		}
 	}
+	function fn_changeImageFile2(input, e) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				document.getElementById('markPreview').src = e.target.result;
+			};
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
 	function fn_deleteImageFile(element, e) {
 		const preview = document.getElementById('preview');
 		const fileInput = document.getElementById('fileImageInput');
+
+		if (preview) preview.src = "/resources/images/img_noimg3.png";
+		if (fileInput) fileInput.value = "";
+	}
+	function fn_deleteImageFile2(element, e) {
+		const preview = document.getElementById('markPreview');
+		const fileInput = document.getElementById('markImageInput');
 
 		if (preview) preview.src = "/resources/images/img_noimg3.png";
 		if (fileInput) fileInput.value = "";
@@ -616,6 +644,86 @@
 		$("#productCode").val("");
 	}
 	
+	function getSelectValue(labelEl, txtEl) {
+	    var labelText = labelEl?.innerText?.trim() || "";
+	    var txtValue = (txtEl && txtEl.style.display !== "none" && txtEl.value) ? txtEl.value.trim() : labelText;
+	    return (txtValue === "선택") ? "" : txtValue;
+	}
+	
+	function fn_previewDataBinding(popup) {
+	    var $doc = popup.document;
+
+	    // 텍스트 항목
+	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
+	    $doc.getElementById("prev_etcInfo").innerText = document.getElementById("etcInfo").value;
+	    $doc.getElementById("prev_weight").innerText = document.getElementById("weight").value;
+
+	    // 셀렉트 항목
+	    $doc.getElementById("prev_keepCondition").innerText = getSelectValue(
+	        document.getElementById("keepCondition_label"),
+	        document.getElementById("keepConditionTxt")
+	    );
+
+	    $doc.getElementById("prev_foodType").innerText = getSelectValue(
+	        document.getElementById("foodType_label"),
+	        document.getElementById("foodTypeTxt")
+	    );
+
+	    $doc.getElementById("prev_separateDischarge").innerText = getSelectValue(
+	        document.getElementById("separateDischarge_label"),
+	        document.getElementById("separateDischargeTxt")
+	    );
+
+	    // 이미지
+	    var markImg = document.getElementById("markPreview").getAttribute("src");
+	    $doc.getElementById("prev_markImage").innerHTML =
+	        '<img src="' + markImg + '" style="max-width: 100%; height: 200px;">';
+
+	    var containImg = document.getElementById("preview").getAttribute("src");
+	    $doc.getElementById("prev_containQuantityImg").innerHTML =
+	        '<img src="' + containImg + '" style="max-width: 100%; height: 200px;">';
+
+	    // 나머지 단순 항목
+	    $doc.getElementById("prev_productNameBack").innerText = document.getElementById("productNameBack").value;
+	    $doc.getElementById("prev_containQuantity").innerText = document.getElementById("containQuantity").value;
+	    $doc.getElementById("prev_allergyObject").innerText = document.getElementById("allergyObject").value;
+	    $doc.getElementById("prev_manufacturingNo").innerText = document.getElementById("manuNo").value;
+	    $doc.getElementById("prev_expiredDate").innerText = document.getElementById("expiredDate").value;
+	    $doc.getElementById("prev_packageObject").innerText = document.getElementById("packageObject").value;
+	    $doc.getElementById("prev_maker").innerText = document.getElementById("maker").value;
+	    $doc.getElementById("prev_distribution").innerText = document.getElementById("distribution").value;
+	    $doc.getElementById("prev_returned").innerText = document.getElementById("returned").value;
+	    $doc.getElementById("prev_customerCounsel").innerText = document.getElementById("customerCounsel").value;
+
+	    // 에디터
+	    $doc.getElementById("prev_suggestions").innerHTML = editor2.getData();
+	    $doc.getElementById("prev_cookMethod").innerHTML = editor3.getData();
+
+	    // 기타사항 목록
+	    var etcInputs = document.getElementsByName("etc");
+	    var etcHtml = "";
+	    for (var i = 0; i < etcInputs.length; i++) {
+	        var val = etcInputs[i].value.trim();
+	        if (val) {
+	            etcHtml += val + "<br>";
+	        }
+	    }
+	    $doc.getElementById("prev_infoText").innerHTML = etcHtml;
+	}
+
+
+	function fn_openPreview() {
+		var url = "/preview/packageInfoPrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -635,9 +743,11 @@
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">
@@ -671,7 +781,7 @@
 								제품명
 							</td>
 							<td>
-								<input type="text" name="productName" id="productName" style="width:250px;float: left" class="req" placeholder="" value="올떡야채순대"/>
+								<input type="text" name="productName" id="productName" style="width:250px;float: left" class="req" placeholder=""/>
 								<input type="hidden" name="productCode" id="productCode"/>
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_clearProductName();" style="float: left">초기화</button>
@@ -685,7 +795,7 @@
 								&nbsp;
 							</td>
 							<td>
-								<input type="text" name="etcInfo" id="etcInfo" style="width:300px;" class="req" placeholder="" value="야채 7.3% 함유"/>
+								<input type="text" name="etcInfo" id="etcInfo" style="width:300px;" class="req" placeholder="" />
 							</td>
 							<td rowspan="3">
 								주표시면 주원료 함량 표시시
@@ -697,7 +807,7 @@
 								중량
 							</td>
 							<td>
-								<input type="text" name="weight" id="weight" style="width:300px;" class="req" placeholder="" value="2Kg"/>
+								<input type="text" name="weight" id="weight" style="width:300px;" class="req" placeholder="" />
 							</td>
 						</tr>
 						<tr>
@@ -718,7 +828,16 @@
 								마크
 							</td>
 							<td>
-								HACCP
+								<p><img id="markPreview" src="/resources/images/img_noimg3.png" style="border:1px solid #e1e1e1; border-radius:5px; width:310px; height:250px;"></p>
+								<p class="pt10">
+									<div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+										<input type="file" name="file" id="markImageInput" accept="image/*" style="display:none;" onchange="fn_changeImageFile2(this, event)">
+										<label for="markImageInput" style="cursor: pointer;">이미지파일 등록 <img src="/resources/images/icon_add_file.png"></label>
+									</div>	
+								</p>
+								<div style=" z-index:3; position:relative;right:-300px; top:-300px; width: 25px; height: 25px;">
+									<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
+								</div>
 							</td>
 							<td>
 								&nbsp;
@@ -735,7 +854,7 @@
 						<tr>
 							<td>제품명</td>
 							<td colspan="2">
-								<input type="text" name="productNameBack" id="productNameBack" style="width:300px;" class="req" placeholder="" value="올떡야채순대"/>
+								<input type="text" name="productNameBack" id="productNameBack" style="width:300px;" class="req" placeholder="" />
 							</td>
 						</tr>
 						<tr>
@@ -770,49 +889,49 @@
 						<tr>
 							<td>알러지 유발물질</td>
 							<td colspan="2">
-								<input type="text" name="allergyObject" id="allergyObject" style="width:95%;" class="req" placeholder="알러지 유발물질을 입력하세요." value="돼지고기, 대두, 밀, 쇠고기, 이산화황 함유"/>
+								<input type="text" name="allergyObject" id="allergyObject" style="width:95%;" class="req" placeholder="알러지 유발물질을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>품목보고번호</td>
 							<td colspan="2">
-								<input type="text" name="manuNo" id="manuNo" style="width:300px;" class="req" placeholder="품목보고번호를 입력하세요." value="20090618022118"/>
+								<input type="text" name="manuNo" id="manuNo" style="width:300px;" class="req" placeholder="품목보고번호를 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>소비기한</td>
 							<td colspan="2">
-								<input type="text" name="expiredDate" id="expiredDate" style="width:300px;" class="req" placeholder="소비기한을 입력하세요." value="측면 별도표시일까지"/>
+								<input type="text" name="expiredDate" id="expiredDate" style="width:300px;" class="req" placeholder="소비기한을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>포장재질</td>
 							<td colspan="2">
-								<input type="text" name="packageObject" id="packageObject" style="width:300px;" class="req" placeholder="포장재질을 입력하세요." value="(내면)폴리에틸렌"/>
+								<input type="text" name="packageObject" id="packageObject" style="width:300px;" class="req" placeholder="포장재질을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>제조원</td>
 							<td colspan="2">
-								<input type="text" name="maker" id="maker" style="width:95%;" class="req" placeholder="제조원을 입력하세요." value="(주)해드림에스에프 / 경상남도 창년군 대지면 경남대로 4897-26"/>
+								<input type="text" name="maker" id="maker" style="width:95%;" class="req" placeholder="제조원을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>유통전문판매원</td>
 							<td colspan="2">
-								<input type="text" name="distribution" id="distribution" style="width:95%;" class="req" placeholder="유통전문판매원을 입력하세요." value="(주)지엔에스 올리브 떡복이 / 서울시 송파구 중대로 64"/>
+								<input type="text" name="distribution" id="distribution" style="width:95%;" class="req" placeholder="유통전문판매원을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>반품 및 교환장소</td>
 							<td colspan="2">
-								<input type="text" name="returned" id="returned" style="width:95%;" class="req" placeholder="반품 및 교환장소를 입력하세요." value="구입처 및 판매원"/>
+								<input type="text" name="returned" id="returned" style="width:95%;" class="req" placeholder="반품 및 교환장소를 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>소비자상담실</td>
 							<td colspan="2">
-								<input type="text" name="customerCounsel" id="customerCounsel" style="width:300px;" class="req" placeholder="소비자상담실 정보를 입력하세요." value=""/>
+								<input type="text" name="customerCounsel" id="customerCounsel" style="width:300px;" class="req" placeholder="소비자상담실 정보를 입력하세요." />
 							</td>
 						</tr>
 						<tr>

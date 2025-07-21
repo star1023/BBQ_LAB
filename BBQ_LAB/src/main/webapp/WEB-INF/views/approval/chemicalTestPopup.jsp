@@ -49,6 +49,7 @@ table.insert_proc01 {
 .imgDescriptbox{width: 90%;}
 
 </style>
+<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
 <script type="text/javascript">
 $(document).ready(function() {
 	  document.oncontextmenu = function (e) {
@@ -245,109 +246,107 @@ function downloadFile(idx){
 }
 </script>
 <h2 style=" position:fixed; background-color: #38b6e6 !important;" class="print_hidden">
-	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">결재</span>
+	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;결재</span>
 </h2>
 <div  class="top_btn_box" style=" position:fixed;">
 	<ul>
 		<li><button type="button" class="btn_pop_close" onClick="self.close();"></button></li>
 	</ul>
 </div>
-<div id='print_page'  style="padding:60px 0 20px 20px;">
+<div style="height: 60px;"></div>
 	<div class="group01 mt20">
-		<div class="main_tbl">
+		<div class="mainTable">
 			<form name="form" id="form" method="post" action="">
 			<input type="hidden" name="apprIdx" id="apprIdx" value="${paramVO.apprIdx }">
-			<table width="100%" cellpadding="0" cellspacing="0" class="print_hidden">
-				<tr>
-					<td valign="top">
-						<div class="main_tbl">
-							<table class="insert_proc01 tbl_app">
-								<colgroup>
-									<col width="13%"/>
-									<col width="50%"/>
-									<col />
-								</colgroup>
-								<tbody>
-									<tr>
-										<th style="border-left: none;">결재요청의견</th>
-										<td colspan="3">
-											${apprHeader.COMMENT}
-										</td>
-									</tr>
-									<tr>
-										<th style="border-left: none;"> 결재자</th>
-										<td>
-											<div class="file_box_pop5">
-												<ul>
-													<c:forEach items = "${apprItem}" var = "item" varStatus= "status">
-													<input type="hidden" name="itemIdx" id="itemIdx" value="${item.ITEM_IDX }">
-													<fmt:parseNumber var="itemIdx" type="number" value="${item.ITEM_IDX}" />
-													<li onMouseOver="location.href='#'">
-														<span>
-															${item.APPR_NO}차 결재
-														</span> 
-														${item.TARGET_USER_NAME}
-														(${item.STATUS_TXT})
-														<c:if test="${item.COMMENT !=null && item.COMMENT ne '' }">
-															<a href="#" onclick="fn_viewComment('${item.ITEM_IDX}');">
-																의견 <img src="/resources/images/icon_app_mass.png"/>
-															</a>
-														</c:if>
-													</li>										
-													</c:forEach>
-												</ul>
-											</div>
-										</td>
-										<td id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
-									</tr>
-									<tr>
-										<th style="border-left: none; ">참조자</th>
-										<td colspan="2">
-											<div class="file_box_pop4">
-													<c:forEach items = "${refList}" var = "ref" varStatus= "status">
-														&nbsp;${ref.TARGET_USER_NAME}
-														<c:if test="${status.index > 0}"> , </c:if>
-													</c:forEach>												
-											</div>
-										</td>
-									</tr>
-									<c:if test="${paramVO.viewType eq 'myApprList' }">
-									<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
-									<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
-									<tr>
-										<th style="border-left: none; ">결재의견</th>
-										<td colspan="3">
-											<textarea style="width:100%; height:60px" name="comment" id="comment"></textarea>
-										</td>
-									</tr>
-									</c:if>
-									</c:if>
-									</c:if>
-								</tbody>
-							</table>
-						</div>
-						<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
-							<c:if test="${paramVO.viewType eq 'myApprList' }">
-								<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
-									<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
-										<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
-										<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
-											<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
-										</c:if>
-										<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
-									</c:if>	
+			
+					
+				<table class="insert_proc01 tbl_app">
+					<colgroup>
+						<col width="13%"/>
+						<col width="50%"/>
+						<col />
+					</colgroup>
+					<tbody>
+						<tr>
+							<th style="border-left: none;">결재요청의견</th>
+							<td colspan="3">
+								${apprHeader.COMMENT}
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;"> 결재자</th>
+							<td>
+								<div class="file_box_pop5">
+									<ul>
+										<c:forEach items = "${apprItem}" var = "item" varStatus= "status">
+										<input type="hidden" name="itemIdx" id="itemIdx" value="${item.ITEM_IDX }">
+										<fmt:parseNumber var="itemIdx" type="number" value="${item.ITEM_IDX}" />
+										<li onMouseOver="location.href='#'">
+											<span>
+												${item.APPR_NO}차 결재
+											</span> 
+											${item.TARGET_USER_NAME}
+											(${item.STATUS_TXT})
+											<c:if test="${item.COMMENT !=null && item.COMMENT ne '' }">
+												<a href="#" onclick="fn_viewComment('${item.ITEM_IDX}');">
+													의견 <img src="/resources/images/icon_app_mass.png"/>
+												</a>
+											</c:if>
+										</li>										
+										</c:forEach>
+									</ul>
+								</div>
+							</td>
+							<td id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
+						</tr>
+						<tr>
+							<th style="border-left: none; ">참조자</th>
+							<td colspan="2">
+								<div class="file_box_pop4">
+										<c:forEach items = "${refList}" var = "ref" varStatus= "status">
+											&nbsp;${ref.TARGET_USER_NAME}
+											<c:if test="${status.index > 0}"> , </c:if>
+										</c:forEach>												
+								</div>
+							</td>
+						</tr>
+						<c:if test="${paramVO.viewType eq 'myApprList' }">
+						<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
+						<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
+						<tr>
+							<th style="border-left: none; ">결재의견</th>
+							<td colspan="3">
+								<textarea style="width:100%; height:60px" name="comment" id="comment"></textarea>
+							</td>
+						</tr>
+						</c:if>
+						</c:if>
+						</c:if>
+					</tbody>
+				</table>
+				<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
+					<c:if test="${paramVO.viewType eq 'myApprList' }">
+						<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
+							<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
+								<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
+								<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
+									<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
 								</c:if>
-							</c:if>
-						</div>
-					</td>
-				</tr>
-			</table>
+								<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
+							</c:if>	
+						</c:if>
+					</c:if>
+				</div>
 			</form>
 		</div>
 	</div>	
 	<div class="group01 mt5">
-		<div class="main_tbl">
-			<table class="insert_proc01">
+		<div id="wrapper">
+		<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+			<span>이화학 검사 의뢰서</span>
+		</div>
+		<div class="mainTable">
+			<table  >
 				<colgroup>
 					<col width="16.66%">
 					<col width="16.66%">
@@ -358,70 +357,106 @@ function downloadFile(idx){
 				</colgroup>
 				<tbody>
 					<tr>
-						<th style="border-left: none;">의뢰일</th>
+						<th  >의뢰일</th>
 						<td >${chemicalTestData.data.REQUEST_DATE}</td>
-						<th style="border-left: none;">희망 완료일</th>
+						<th  >희망 완료일</th>
 						<td >${chemicalTestData.data.COMPLETION_DATE}</td>
-						<th style="border-left: none;">의뢰자</th>
+						<th  >의뢰자</th>
 						<td >${chemicalTestData.data.REQUEST_USER}</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">시료명</th>
+						<th  >시료명</th>
 						<td colspan="5">
 							${chemicalTestData.data.PRODUCT_NAME}
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">시료 수량</th>
+						<th  >시료 수량</th>
 						<td colspan="5">
 							${chemicalTestData.data.PRODUCT_COUNT}
 						</td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">보관방법</th>
+						<th  >보관방법</th>
 						<td colspan="5">
 							${chemicalTestData.data.PRESERVATION}
 						</td>
-					<tr>
-						<th style="border-left: none;">검사 요청 항목</th>
-						<td colspan="5">
-							<table class="tbl01 " style="border-bottom: 2px solid #4b5165;">
-								<colgroup>
-									<col width="25%">
-									<col width="25%">
-									<col width="25%">
-									<col width="25%">
-								</colgroup>
-								<thead>
-									<tr>
-										<th style="text-align:center;">pH</th>
-										<th style="text-align:center;">Brix</th>
-										<th style="text-align:center;">염도</th>
-										<th style="text-align:center;">점도</th>
-									</tr>
-								</thead>
-								<tbody>
-									<tr>
-									    <c:forEach var="type" items="${fn:split('PH,BRI,SAL,VIS', ',')}">
-										     <c:set var="matchedContent" value="" />
-										     <c:set var="found" value="false" />
-										     <c:forEach var="item" items="${chemicalTestItemList}">
-										         <c:if test="${not found and item.TYPE_CODE eq type}">
-										             <c:set var="matchedContent" value="${item.ITEM_CONTENT}" />
-										             <c:set var="found" value="true" />
-										         </c:if>
-										     </c:forEach>
-										     <td style="text-align:center;">${matchedContent}</td>
-										 </c:forEach>
-									</tr>
-								</tbody>
-							</table>	
-						</td>
 					</tr>
+					<c:forEach var="start" begin="0" end="${fn:length(itemList)-1}" step="4">
+					  <!-- 검사 요청 항목 -->
+					  <tr>
+					    <th style="width: 10%; text-align: center; font-weight: bold;">검사요청 항목</th>
+					    <td colspan="5" style="padding: 0;">
+					      <table style="border:none; width: 100%; table-layout: fixed; border-collapse: collapse;">
+					        <tr>
+					          <c:forEach var="i" begin="${start}" end="${start + 3}">
+					            <c:choose>
+					              <c:when test="${i lt fn:length(itemList)}">
+					                <th style="width: 25%; text-align: center;">
+					                  ${itemList[i].TYPE_CODE_TEXT}
+					                </th>
+					              </c:when>
+					              <c:otherwise>
+					                <th style="width: 25%;"></th>
+					              </c:otherwise>
+					            </c:choose>
+					          </c:forEach>
+					        </tr>
+					      </table>
+					    </td>
+					  </tr>
+					
+					  <!-- 범위 -->
+					  <tr>
+					    <th style="width: 10%; text-align: center; font-weight: bold;">범위</th>
+					    <td colspan="5" style="padding: 0;">
+					      <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
+					        <tr>
+					          <c:forEach var="i" begin="${start}" end="${start + 3}">
+					            <c:choose>
+					              <c:when test="${i lt fn:length(itemList)}">
+					                <td style="width: 25%; text-align: center;">
+					                  ${itemList[i].ITEM_CONTENT}
+					                </td>
+					              </c:when>
+					              <c:otherwise>
+					                <td style="width: 25%;"></td>
+					              </c:otherwise>
+					            </c:choose>
+					          </c:forEach>
+					        </tr>
+					      </table>
+					    </td>
+					  </tr>
+					  
+					  <!-- 검사 결과 -->
+					  <tr>
+					  	<th style="width: 10%; text-align: center; font-weight: bold;">검사 결과</th>
+					    <td colspan="5" style="padding: 0;">
+					      <table style="border:none; width: 100%; table-layout: fixed; border-collapse: collapse;">
+					        <tr>
+					          <c:forEach var="i" begin="${start}" end="${start + 3}">
+					            <c:choose>
+					              <c:when test="${i lt fn:length(itemList)}">
+					                <td style="width: 25%; text-align: center;">
+					                  ${empty itemList[i].ITEM_RESULT ? '&nbsp;' : itemList[i].ITEM_RESULT}
+					                </td>
+					              </c:when>
+					              <c:otherwise>
+					                <td style="width: 25%;">&nbsp;</td>
+					              </c:otherwise>
+					            </c:choose>
+					          </c:forEach>
+					        </tr>
+					      </table>
+					    </td>
+					  </tr>
+					</c:forEach>
+					
 					<tr>
-					    <th style="border-left: none;">검사 요청 방법</th>
+					    <th  >검사 요청 방법</th>
 					    <td colspan="5">
-					        <c:forEach var="item" items="${chemicalTestStandardList}">
+					        <c:forEach var="item" items="${standardList}">
 					            <c:if test="${item.TYPE_CODE eq 'MET'}">
 					                ${item.STANDARD_CONTENT}<br/>
 					            </c:if>
@@ -429,9 +464,9 @@ function downloadFile(idx){
 					    </td>
 					</tr>
 					<tr>
-					    <th style="border-left: none;">검사 진행 일정</th>
+					    <th  >검사 진행 일정</th>
 					    <td colspan="5">
-					        <c:forEach var="item" items="${chemicalTestStandardList}">
+					        <c:forEach var="item" items="${standardList}">
 					            <c:if test="${item.TYPE_CODE eq 'SCH'}">
 					                ${item.STANDARD_CONTENT}<br/>
 					            </c:if>
@@ -439,46 +474,54 @@ function downloadFile(idx){
 					    </td>
 					</tr>
 					<tr>
-						<th style="border-left: none;">요청사항</th>
-						<td>
-							${chemicalTestData.data.REQUEST_CONTENT}
-						</td>
+						<th colspan="3">요청사항</th>
+						<th colspan="3">시료 사진</th>
 					</tr>
 					<tr>
-						<th style="border-left: none;">시료 사진</th>
-						<td colspan="5" style="max-width: 440px; text-align: center;">
+						<td colspan="3">
+							<pre>${chemicalTestData.data.REQUEST_CONTENT}</pre>
+						</td>
+						<td colspan="3" style="text-align: center;">
 							<c:choose>
 								<c:when test="${not empty chemicalTestData.data.FILE_NAME}">
 									<img id="preview"
 										src="/images${chemicalTestData.data.FILE_PATH}/${chemicalTestData.data.FILE_NAME}"
-										style="width: 100%; max-width: 440px; height: auto; border:1px solid #e1e1e1; border-radius:5px; object-fit: contain;">
+										style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
 								</c:when>
 								<c:otherwise>
 									<img id="preview"
 										src="/resources/images/img_noimg3.png"
 										alt="이미지 없음"
-										style="width: 100%; max-width: 440px; height: auto; border:1px solid #e1e1e1; border-radius:5px; object-fit: contain;">
+										style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
 								</c:otherwise>
 							</c:choose>
-						</td>
-					</tr>
-					<tr>
-						<th style="border-left: none;">첨부파일</th>
-						<td colspan="5" style="text-align: left; vertical-align: top;">
-							<ul style="margin: 0; padding-left: 20px; list-style-type: none;">
-								<c:forEach items="${chemicalTestData.fileList}" var="fileList">
-									<li style="margin-bottom: 4px;">
-										<img src="/resources/images/icon_file01.png" style="vertical-align: middle; margin-right: 5px;">
-										<a href="javascript:downloadFile('${fileList.FILE_IDX}')" style="text-decoration: none; color: #007acc;">
-											${fileList.ORG_FILE_NAME}
-										</a>
-									</li>
-								</c:forEach>
-							</ul>
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
+		<div>
+			<span style="font-size: 14px;">※ 검사 결과 내용</span>
+		</div>
+		<div class="mainTable">
+			<c:choose>
+				<c:when test="
+					    ${not empty chemicalTestData.data.TEST_RESULT}
+					">
+					<table >
+						<tr>
+							<td><pre>${chemicalTestData.data.TEST_RESULT}</pre></td>
+						</tr>
+					</table>
+				</c:when>
+				<c:otherwise>
+					<table style="min-height:250px;">
+						<tr >
+							<td><pre></pre></td>
+						</tr>
+					</table>
+				</c:otherwise>
+			</c:choose>
+		</div>
 	</div>
-</div>
+	</div>

@@ -318,6 +318,95 @@ table{font-size: 12px}
 			contentsDiv--;
 		}
 	}
+	
+	function fn_pdfDownload(idx) {
+		$('#lab_loading').show();
+		//var url = "/preview/senseQualityViewPopup?idx=" + idx
+		//var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	    fetch("/preview/senseQualityViewPopup?idx=" + idx)
+	        .then(function(res) {
+	            return res.text();
+	        })
+	        .then(function(html) {
+	            var parser = new DOMParser();
+	            var doc = parser.parseFromString(html, "text/html");
+
+	            var imgTags = doc.querySelectorAll("img");
+
+	            // 이미지 base64 변환
+	            var imagePromises = Array.from(imgTags).map(function(img) {
+	            var src = img.getAttribute("src");
+	                if (!src || src.startsWith("data:")) {
+	                    return Promise.resolve();
+	                }
+
+	                var absoluteSrc = src.startsWith("http") ? src : location.origin + src;
+
+	                return fetch(absoluteSrc)
+	                    .then(function(res) { return res.blob(); })
+	                    .then(function(blob) {
+	                        return new Promise(function(resolve) {
+	                            var reader = new FileReader();
+	                            reader.onloadend = function() {
+	                                img.setAttribute("src", reader.result);
+	                                resolve();
+	                            };
+	                            reader.readAsDataURL(blob);
+	                        });
+	                    })
+	                    .catch(function(e) {
+	                        console.warn("이미지 변환 실패", src, e);
+	                    });
+	            });
+
+	            Promise.all(imagePromises).then(function() {
+	                var wrapperHTML = doc.querySelector("#wrapper")?.outerHTML;
+	                if (!wrapperHTML) {
+	                    alert("PDF 생성 실패: 출력할 wrapper 요소가 없습니다.");
+	                    $('#lab_loading').hide();
+	                    return;
+	                }
+
+	                // 기존 스타일/레이아웃 절대 수정하지 않음
+	                var fullHtml = ""
+	                    + "<html>"
+	                    + "<head>"
+	                    + "<meta charset='UTF-8'>"
+	                    + "<style>"
+	                    + "@page{margin:0}body{margin:0;padding:0;}@media print{body{margin:0;background:white!important;padding:10px}html,body{width:210mm;height:auto;background:white!important}}#wrapper{background:white;padding:20px;box-sizing:border-box}table{table-layout:fixed;border-collapse:collapse;width:100%}.main_tbl{margin:2.5px 0;table-layout:fixed;border-collapse:collapse;width:100%;border:1px solid #333}th{background-color:#f2f2f2;-webkit-print-color-adjust:exact}td,th{border-collapse:collapse;border:1px solid #bbb;text-align:left;font-size:12px;padding:7px}td{background-color:#fff}pre{margin:0;padding:0;line-height:1.5;white-space:pre-wrap}.inner-table-cell{padding:0;border-collapse:collapse}td.inner-table-cell{padding:1px!important}td.inner-table-cell table{border:1px solid #333}.mainTable{border:1px solid #000;margin:2.5px 0}.btn_print{width:36px;height:36px;border:none;background-color:transparent;cursor:pointer;margin-top:7px}"
+	                    + "</style>"
+	                    + "</head>"
+	                    + "<body>"
+	                    + wrapperHTML
+	                    + "</body>"
+	                    + "</html>";
+
+	                var formData = new FormData();
+	                formData.append("htmlContent", fullHtml);
+	                formData.append("docIdx", idx);
+	                formData.append("docType", "SENSE_QUALITY");
+	                formData.append("userId", "${userId}");
+	                formData.append("title", "${senseQualityData.reportMap.TITLE}_관능&품질평가테스트결과보고서");
+
+	                fetch("/preview/downloadPdf", {
+	                    method: "POST",
+	                    body: formData
+	                })
+	                    .then(function(res) {
+	                        return res.blob();
+	                    })
+	                    .then(function(blob) {
+	                        var url = window.URL.createObjectURL(blob);
+	                        var a = document.createElement("a");
+	                        a.href = url;
+	                        a.download = "${senseQualityData.reportMap.TITLE}_관능&품질평가테스트결과보고서.pdf";
+	                        a.click();
+	                        window.URL.revokeObjectURL(url);
+	                        $('#lab_loading').hide();
+	                    });
+	            });
+	        });
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -339,9 +428,13 @@ table{font-size: 12px}
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+					<c:if test="${senseQualityData.reportMap.STATUS eq 'COMP' && senseQualityData.reportMap.DOC_OWNER eq userId}">
+						<button class="btn_small_search" onclick="fn_pdfDownload('${senseQualityData.reportMap.REPORT_IDX}')">PDF 다운로드</button>
+					</c:if>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">

@@ -34,7 +34,7 @@ th.contentBlock {
 	}
 	
 	function downloadFile(idx){
-		location.href = '/test/fileDownload?idx='+idx;
+		location.href = '/common/fileDownload?idx='+idx;
 	}
 	
 	function fn_apprSubmit(){
@@ -79,8 +79,94 @@ th.contentBlock {
 		}
 	}
 	
-	
+	function fn_pdfDownload(idx) {
+		$('#lab_loading').show();
+	    fetch("/preview/chemicalTestViewPopup?idx=" + idx)
+	        .then(function(res) {
+	            return res.text();
+	        })
+	        .then(function(html) {
+	            var parser = new DOMParser();
+	            var doc = parser.parseFromString(html, "text/html");
+
+	            var imgTags = doc.querySelectorAll("img");
+
+	            // 이미지 base64 변환
+	            var imagePromises = Array.from(imgTags).map(function(img) {
+	                var src = img.getAttribute("src");
+	                if (!src || src.startsWith("data:")) {
+	                    return Promise.resolve();
+	                }
+
+	                var absoluteSrc = src.startsWith("http") ? src : location.origin + src;
+
+	                return fetch(absoluteSrc)
+	                    .then(function(res) { return res.blob(); })
+	                    .then(function(blob) {
+	                        return new Promise(function(resolve) {
+	                            var reader = new FileReader();
+	                            reader.onloadend = function() {
+	                                img.setAttribute("src", reader.result);
+	                                resolve();
+	                            };
+	                            reader.readAsDataURL(blob);
+	                        });
+	                    })
+	                    .catch(function(e) {
+	                        console.warn("이미지 변환 실패", src, e);
+	                    });
+	            });
+
+	            Promise.all(imagePromises).then(function() {
+	                var wrapperHTML = doc.querySelector("#wrapper")?.outerHTML;
+	                if (!wrapperHTML) {
+	                    alert("PDF 생성 실패: 출력할 wrapper 요소가 없습니다.");
+	                    $('#lab_loading').hide();
+	                    return;
+	                }
+
+	                // 기존 스타일/레이아웃 절대 수정하지 않음
+	                var fullHtml = ""
+	                    + "<html>"
+	                    + "<head>"
+	                    + "<meta charset='UTF-8'>"
+	                    + "<style>"
+	                    + "@page{margin:0}body{margin:0;padding:0;}@media print{body{margin:0;background:white!important;padding:10px}html,body{width:210mm;height:auto;background:white!important}}#wrapper{background:white;padding:20px;box-sizing:border-box}table{table-layout:fixed;border-collapse:collapse;width:100%}.main_tbl{margin:2.5px 0;table-layout:fixed;border-collapse:collapse;width:100%;border:1px solid #333}th{background-color:#f2f2f2;-webkit-print-color-adjust:exact}td,th{border-collapse:collapse;border:1px solid #bbb;text-align:left;font-size:12px;padding:7px}td{background-color:#fff}pre{margin:0;padding:0;line-height:1.5;white-space:pre-wrap}.inner-table-cell{padding:0;border-collapse:collapse}td.inner-table-cell{padding:1px!important}td.inner-table-cell table{border:1px solid #333}.mainTable{border:1px solid #000;margin:2.5px 0}.btn_print{width:36px;height:36px;border:none;background-color:transparent;cursor:pointer;margin-top:7px}"
+	                    + "</style>"
+	                    + "</head>"
+	                    + "<body>"
+	                    + wrapperHTML
+	                    + "</body>"
+	                    + "</html>";
+
+	                var formData = new FormData();
+	                formData.append("htmlContent", fullHtml);
+	                formData.append("docIdx", idx);
+	                formData.append("docType", "CHEMICAL");
+	                formData.append("userId", "${userId}");
+	                formData.append("title", "${chemicalTestData.data.PRODUCT_NAME}_이화학검사의뢰서");
+
+	                fetch("/preview/downloadPdf", {
+	                    method: "POST",
+	                    body: formData
+	                })
+	                    .then(function(res) {
+	                        return res.blob();
+	                    })
+	                    .then(function(blob) {
+	                        var url = window.URL.createObjectURL(blob);
+	                        var a = document.createElement("a");
+	                        a.href = url;
+	                        a.download = "${chemicalTestData.data.PRODUCT_NAME}_이화학검사의뢰서.pdf";
+	                        a.click();
+	                        window.URL.revokeObjectURL(url);
+	                        $('#lab_loading').hide();
+	                    });
+	            });
+	        });
+	}
 </script>
+<c:set var="isSafeTeam" value="${userUtil:getRoleCode(pageContext.request) == '6' || userUtil:getRoleCode(pageContext.request) == '7'}" />
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
 		이화학 검사 의뢰서&nbsp;&nbsp;
@@ -93,17 +179,23 @@ th.contentBlock {
 			<div class="top_btn_box">
 				<ul>
 					<li>
+						<!-- 
 						<c:if test="${chemicalTestData.data.STATUS == 'REG' }">
 							<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
 						</c:if>
+						 -->
 					</li>
 				</ul>
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title2"  style="width: 80%;"><span class="txt">개요</span></div>
-			<div class="title2" style="width: 20%; display: inline-block;">
-				
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">개요</span>
+				<div class="pr15">
+					<c:if test="${chemicalTestData.data.STATUS eq 'COMP' && chemicalTestData.data.DOC_OWNER eq userId}">
+						<button class="btn_small_search" onclick="fn_pdfDownload('${chemicalTestData.data.CHEMICAL_IDX}')">PDF 다운로드</button>
+					</c:if>
+				</div>
 			</div>
 			<div class="main_tbl">
 				<table class="insert_proc01">
@@ -201,45 +293,89 @@ th.contentBlock {
 			<br>
 			<table class="insert_proc01" style="width:100%; table-layout:fixed; border-collapse:collapse;">
 			    <tbody>
-			        <c:forEach var="start" begin="0" end="${fn:length(itemList)-1}" step="4">
-				    <c:set var="isFirstRow" value="${start == 0}" />
-				    
-				    <tr style="height:60px;<c:if test='${!isFirstRow}'>border-top:2px solid #aaaaaa;</c:if>">
-				        <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">
-				            검사요청 항목
-				        </th>
-				        <c:forEach var="i" begin="${start}" end="${start + 3}">
-				            <c:choose>
-				                <c:when test="${i lt fn:length(itemList)}">
-				                    <td style="width:20%; border:1px solid #ddd; text-align:center; padding:10px;">
-				                        ${itemList[i].TYPE_CODE_TEXT}
-				                    </td>
-				                </c:when>
-				                <c:otherwise>
-				                    <td style="width:20%; border:1px solid #ddd;"></td>
-				                </c:otherwise>
-				            </c:choose>
-				        </c:forEach>
-				    </tr>
-				
-				    <tr style="height:60px;">
-				        <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">
-				            범위<br>(시료의 대략적인 범위 기재)
-				        </th>
-				        <c:forEach var="i" begin="${start}" end="${start + 3}">
-				            <c:choose>
-				                <c:when test="${i lt fn:length(itemList)}">
-				                    <td style="width:20%; border:1px solid #ddd; text-align:center; padding:10px;">
-				                        ${itemList[i].ITEM_CONTENT}
-				                    </td>
-				                </c:when>
-				                <c:otherwise>
-				                    <td style="width:20%; border:1px solid #ddd;"></td>
-				                </c:otherwise>
-				            </c:choose>
-				        </c:forEach>
-				    </tr>
-				</c:forEach>
+			    <c:choose>
+				    <c:when test="${not empty itemList}">
+				        <c:forEach var="start" begin="0" end="${fn:length(itemList)-1}" step="4">
+					    <c:set var="isFirstRow" value="${start == 0}" />
+					    
+					    <tr style="height:60px;<c:if test='${!isFirstRow}'>border-top:2px solid #aaaaaa;</c:if>">
+					        <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">
+					            검사요청 항목
+					        </th>
+					        <c:forEach var="i" begin="${start}" end="${start + 3}">
+					            <c:choose>
+					                <c:when test="${i lt fn:length(itemList)}">
+					                    <td style="width:20%; border:1px solid #ddd; text-align:center; padding:10px; font-weight: bold;">
+					                        ${itemList[i].TYPE_CODE_TEXT}
+					                    </td>
+					                </c:when>
+					                <c:otherwise>
+					                    <td style="width:20%; border:1px solid #ddd;"></td>
+					                </c:otherwise>
+					            </c:choose>
+					        </c:forEach>
+					    </tr>
+					
+					    <tr style="height:60px;">
+					        <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">
+					            범위<br>(시료의 대략적인 범위 기재)
+					        </th>
+					        <c:forEach var="i" begin="${start}" end="${start + 3}">
+					            <c:choose>
+					                <c:when test="${i lt fn:length(itemList)}">
+					                    <td style="width:20%; border:1px solid #ddd; text-align:center; padding:10px;">
+					                        ${itemList[i].ITEM_CONTENT}
+					                    </td>
+					                </c:when>
+					                <c:otherwise>
+					                    <td style="width:20%; border:1px solid #ddd;"></td>
+					                </c:otherwise>
+					            </c:choose>
+					        </c:forEach>
+					    </tr>
+					    
+					    <!-- 검사 결과 -->
+						  <tr>
+						  	<th style="width: 10%; text-align: center; font-weight: bold;">검사 결과<br>(식품안전팀 작성)</th>
+					          <c:forEach var="i" begin="${start}" end="${start + 3}">
+					            <c:choose>
+					              <c:when test="${i lt fn:length(itemList)}">
+					                <td style="height: 100%; width: 25%; text-align: center; border: 1px solid #ddd;">
+					                  ${empty itemList[i].ITEM_RESULT ? '&nbsp;' : itemList[i].ITEM_RESULT}
+					                </td>
+					              </c:when>
+					              <c:otherwise>
+					                <td style="height: 100%; width: 25%; border: 1px solid #ddd;">&nbsp;</td>
+					              </c:otherwise>
+					            </c:choose>
+					          </c:forEach>
+						  </tr>
+					</c:forEach>
+					</c:when>
+					<c:otherwise>
+		                <tr style="height:60px;">
+		                    <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">검사요청 항목</th>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                </tr>
+		                <tr style="height:60px;">
+		                    <th class="contentBlock" style="width:20%; border:1px solid #ddd; padding:10px;">범위<br>(시료의 대략적인 범위 기재)</th>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                    <td style="width:20%; border:1px solid #ddd;"></td>
+		                </tr>
+		                <tr>
+		                    <th style="width: 10%; text-align: center; font-weight: bold;">검사 결과<br>(식품안전팀 작성)</th>
+		                    <td style="height: 100%; width: 25%; border: 1px solid #ddd;">&nbsp;</td>
+		                    <td style="height: 100%; width: 25%; border: 1px solid #ddd;">&nbsp;</td>
+		                    <td style="height: 100%; width: 25%; border: 1px solid #ddd;">&nbsp;</td>
+		                    <td style="height: 100%; width: 25%; border: 1px solid #ddd;">&nbsp;</td>
+		                </tr>
+		            </c:otherwise>
+            	</c:choose>
 			    </tbody>
 			</table>
 			
@@ -327,9 +463,27 @@ th.contentBlock {
 								                          /resources/images/img_noimg3.png
 								                      </c:otherwise>
 								                  </c:choose>"
-								             style="border:1px solid #e1e1e1; border-radius:5px; min-height:300px; max-height:300px; object-fit: contain; min-width:440px; max-width: 440px;">
+								             style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
 								    </a>
 								</p>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="title2" style="width: 80%; margin-top:10px;"><span class="txt">검사 결과 내용 (식품안전팀 작성)</span></div>
+			<div class="title2" style="width: 20%; display: inline-block;"></div>
+			
+			<div class="main_tbl">
+				<table class="insert_proc01">
+					<tbody>
+						<tr style="height:300px;">
+							<!-- 왼쪽: 요청사항 에디터 -->
+							<td>
+								<pre style="max-height: 300px; overflow: auto; white-space: pre-wrap;">
+								    ${chemicalTestData.data.TEST_RESULT}
+								</pre>						
 							</td>
 						</tr>
 					</tbody>
@@ -356,11 +510,11 @@ th.contentBlock {
 					
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${chemicalTestData.data.STATUS == 'REG'}">
+					<c:if test="${chemicalTestData.data.STATUS == 'REG' and not isSafeTeam}">
 						<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">수정</button>
 					</c:if>
-					<c:if test="${chemicalTestData.data.STATUS == 'COND_APPR'}">
-						<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">수정</button>
+					<c:if test="${chemicalTestData.data.STATUS == 'COMP' and isSafeTeam}">
+						<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">결과 입력</button>
 					</c:if>
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>

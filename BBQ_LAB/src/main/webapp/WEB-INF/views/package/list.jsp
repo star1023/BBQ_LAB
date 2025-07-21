@@ -60,7 +60,7 @@
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
 							}
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-							if( item.STATUS == 'TMP' ) {
+							if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR') {
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 							}
 							html += "		</li>";
@@ -126,6 +126,8 @@
 						html += " 삭제되었습니다.";
 					} else if( item.HISTORY_TYPE == 'U' ) {
 						html += " 수정되었습니다.";
+					} else if( item.HISTORY_TYPE == 'P' ) {
+						html += " PDF 다운로드 되었습니다.";
 					} else if( item.HISTORY_TYPE == 'T' ) {
 						html += " 임시저장 되었습니다.";
 					} 
