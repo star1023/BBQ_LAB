@@ -274,7 +274,24 @@
 			count(MENU_IDX) as cnt
 		FROM lab_menu
 		WHERE 1 = 1
-			AND DOC_OWNER = #{userId}
+			<choose>
+				<when test="listType != null and listType == 'my' "> 
+				AND DOC_OWNER = #{userId} 
+				</when>
+			    <when test="listType != null and listType == 'team'">
+			    AND DOC_OWNER IN (
+			    	SELECT USER_ID from lab_team_manager_view ltmv
+					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+			    ) 
+			    </when>
+			    <when test="listType != null and listType == 'share'">
+			    	AND MENU_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+			    </when>
+			    <when test="listType != null and listType == 'all'">
+			    
+			    </when>
+				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+			</choose>
 			AND IS_DELETE = 'N'
 			AND IS_LAST = 'Y'
 			<include refid="menu.whereMenuList" />
@@ -328,7 +345,24 @@
 						, DOC_NO
 					FROM lab_menu
 					WHERE 1 = 1
-						AND DOC_OWNER = #{userId}
+						<choose>
+							<when test="listType != null and listType == 'my' "> 
+							AND DOC_OWNER = #{userId} 
+							</when>
+						    <when test="listType != null and listType == 'team'">
+						    AND DOC_OWNER IN (
+						    	SELECT USER_ID from lab_team_manager_view ltmv
+								WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+						    ) 
+						    </when>
+						    <when test="listType != null and listType == 'share'">
+						    	AND MENU_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+						    </when>
+						    <when test="listType != null and listType == 'all'">
+						    
+						    </when>
+							<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+						</choose>
 						AND IS_DELETE = 'N'
 						AND IS_LAST = 'Y'
 						<include refid="menu.whereMenuList" />
@@ -378,7 +412,10 @@
 			, MENU_IDX
 			, MATERIAL_IDX
 			, MATERIAL_CODE			
-			, SAP_CODE
+			, CASE WHEN SAP_CODE = '' or SAP_CODE IS NULL 
+				THEN (SELECT lm.SAP_CODE FROM lab_material lm WHERE 1 = 1 AND lm.IS_LAST = 'Y' AND lm.MATERIAL_CODE = lmm.MATERIAL_CODE)
+				ELSE ''
+				END	AS SAP_CODE
 			, NAME
 			, SAP_PRICE
 			, VOLUMN
@@ -388,7 +425,7 @@
 			, DESCRIPTION
 			, MATERIAL_TYPE
 		FROM 
-			lab_menu_material
+			lab_menu_material lmm
 		WHERE 1 = 1
 			AND MENU_IDX = #{idx}
 		ORDER BY M_MATERIAL_IDX ASC

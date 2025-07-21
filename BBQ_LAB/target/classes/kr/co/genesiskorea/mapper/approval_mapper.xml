@@ -277,6 +277,7 @@
 				lab_approval_header
 			WHERE 1 = 1
 				AND CURRENT_USER_ID = #{userId}
+				AND LAST_STATUS != 'CA'
 			)tmp
 		WHERE 1 = 1
 			AND tmp.STATUS = 'APPR'
@@ -340,6 +341,7 @@
 					lab_approval_header
 				WHERE 1 = 1
 					AND CURRENT_USER_ID = #{userId}
+					AND LAST_STATUS != 'CA'
 				)itmp
 			WHERE 1 = 1
 				AND itmp.STATUS = 'APPR'

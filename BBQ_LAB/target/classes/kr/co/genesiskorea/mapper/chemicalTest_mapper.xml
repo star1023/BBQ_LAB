@@ -121,7 +121,29 @@
 		FROM 	
 			lab_chemical_test
 		WHERE 1 = 1
+		<!-- 안전팀 + 요청 탭 -->
+		<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "Y" and isRequestList == "N"'>
+			AND STATUS = 'COMP'
+			AND TEST_STATUS != 'C'
+		</if>
+		
+		<!-- 안전팀 + 결과 탭 -->
+		<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "Y" and isRequestList == "C"'>
+			AND STATUS = 'COMP'
+			AND TEST_STATUS = 'C'
+		</if>
+		
+		<!-- 일반사용자 + 요청 탭 -->
+		<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "N" and isRequestList == "N"'>
 			AND REG_USER = #{userId}
+			AND TEST_STATUS != 'C'
+		</if>
+		
+		<!-- 일반사용자 + 결과 탭 -->
+		<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "N" and isRequestList == "C"'>
+			AND REG_USER = #{userId}
+			AND TEST_STATUS = 'C'
+		</if>
 			AND IS_DELETE = 'N'
 			<include refid="chemicalTest.whereChemicalTestList" />
 	</select>
@@ -141,14 +163,24 @@
 			, tmp.IS_DELETE
 			, tmp.STATUS
 			, tmp.REG_USER
+			, tmp.TEST_STATUS
+			, tmp.TEST_MANAGER
+			, FN_GET_USER_NAME(tmp.TEST_MANAGER) as TEST_MANAGER_NAME
+			, tmp.TEST_COMPLETION_DATE
+			, tmp.TEST_RESULT
 			, FN_GET_USER_NAME(tmp.REG_USER) as DOC_OWNER_NAME
 			, CASE 
 				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
-				WHEN tmp.STATUS = 'REG' THEN '등록'
+				WHEN tmp.STATUS = 'REG' THEN '임시저장'
 				WHEN tmp.STATUS = 'APPR' THEN '결재중'
 				WHEN tmp.STATUS = 'COMP' THEN '완료'
 				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
 				END	AS STATUS_TXT
+			, CASE 
+				WHEN tmp.TEST_STATUS = 'C' THEN '완료'
+				WHEN tmp.TEST_STATUS = 'N' THEN '요청중'
+				WHEN tmp.TEST_STATUS = 'R' THEN '미검사'
+				END	AS TEST_STATUS_TXT
 		FROM
 		(	
 			SELECT
@@ -172,31 +204,30 @@
 			FROM 	
 				lab_chemical_test
 			WHERE 1 = 1
-				AND REG_USER = #{userId}
+				<!-- 안전팀 + 요청 탭 -->
+				<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "Y" and isRequestList == "N"'>
+					AND STATUS = 'COMP'
+					AND TEST_STATUS != 'C'
+				</if>
+				
+				<!-- 안전팀 + 결과 탭 -->
+				<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "Y" and isRequestList == "C"'>
+					AND STATUS = 'COMP'
+					AND TEST_STATUS = 'C'
+				</if>
+				
+				<!-- 일반사용자 + 요청 탭 -->
+				<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "N" and isRequestList == "N"'>
+					AND REG_USER = #{userId}
+					AND TEST_STATUS != 'C'
+				</if>
+				
+				<!-- 일반사용자 + 결과 탭 -->
+				<if test='isSafeTeam != null and isRequestList != null and isSafeTeam == "N" and isRequestList == "C"'>
+					AND REG_USER = #{userId}
+					AND TEST_STATUS = 'C'
+				</if>
 				AND IS_DELETE = 'N'
-				
-				<!-- 일반 사용자 - 의뢰문서 -->
-				<!-- <if test="isSafeTeam != null and !isSafeTeam.equals('S') and listType == 'R'">
-				    AND NOT (STATUS = 'COMP' AND TEST_STATUS = 'C')
-				</if> -->
-				
-				<!-- 일반 사용자 - 결과문서 -->
-				<!-- <if test="isSafeTeam != null and !isSafeTeam.equals('S') and listType == 'C'">
-				    AND STATUS = 'COMP'
-				    AND TEST_STATUS = 'C'
-				</if> -->
-				
-				<!-- 안전팀 사용자 - 의뢰문서 -->
-				<!-- <if test="isSafeTeam != null and isSafeTeam.equals('S') and listType == 'R'">
-				    AND STATUS = 'COMP'
-				    AND TEST_STATUS = 'R'
-				</if> -->
-				
-				<!-- 안전팀 사용자 - 결과문서 -->
-				<!-- <if test="isSafeTeam != null and isSafeTeam.equals('S') and listType == 'C'">
-				    AND STATUS = 'COMP'
-				    AND TEST_STATUS = 'C'
-				</if> -->
 				<include refid="chemicalTest.whereChemicalTestList" />
 		)tmp
 		WHERE rnum between #{startRow} and #{endRow}		
@@ -232,6 +263,8 @@
 			, FILE_NAME
 			, ORG_FILE_NAME
 			, FILE_PATH
+			, DOC_OWNER
+			, TEST_STATUS
 		)VALUES(
 			#{idx}
 			, #{requestDate} 
@@ -250,6 +283,8 @@
 			, #{fileName}
 			, #{orgFileName}
 			, #{filePath}
+			, #{userId}
+			, 'R'
 		)
 	</insert>
 	
@@ -301,6 +336,11 @@
 			, FILE_NAME
 			, ORG_FILE_NAME
 			, FILE_PATH
+			, DOC_OWNER
+			, TEST_STATUS
+			, TEST_MANAGER
+			, TEST_COMPLETION_DATE
+			, TEST_RESULT
 		FROM
 			lab_chemical_test
 		WHERE 1 = 1
@@ -315,6 +355,7 @@
 			, TYPE_CODE
 			, FN_GET_CODE_NAME('CHEMICALTEST',TYPE_CODE) as TYPE_CODE_TEXT
 			, ITEM_CONTENT
+			, ITEM_RESULT
 		FROM 
 			lab_chemical_test_item
 		WHERE 1 = 1
@@ -356,10 +397,11 @@
 			, FILE_NAME
 			, ORG_FILE_NAME
 			, FILE_PATH
+			, DOC_OWNER
 		FROM 	
 			lab_chemical_test
 		WHERE 1 = 1
-			AND REG_USER = #{userId}
+			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'
 			AND ( PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%') OR REQUEST_DATE LIKE CONCAT('%',#{searchValue},'%') OR COMPLETION_DATE LIKE CONCAT('%',#{searchValue},'%') OR REQUEST_USER LIKE CONCAT('%',#{searchValue},'%'))
 	</select>
@@ -379,7 +421,8 @@
             REQUEST_CONTENT = #{requestContent},
             FILE_NAME = #{fileName},
             FILE_PATH = #{filePath},
-            ORG_FILE_NAME = #{orgFileName}
+            ORG_FILE_NAME = #{orgFileName},
+            STATUS = #{status}
         WHERE CHEMICAL_IDX = #{idx}
     </update>
 
@@ -405,4 +448,23 @@
 			AND REG_USER = #{userId}
 			AND IS_DELETE = 'N' 
 	</select>
+	
+	<update id="updateBySafeTeam" parameterType="map">
+    /*	chemicalTest.updateBySafeTeam */
+        UPDATE lab_chemical_test
+        SET 
+            TEST_STATUS = 'C'
+			, TEST_MANAGER = #{userId}
+			, TEST_COMPLETION_DATE = DATE_FORMAT(NOW(), '%Y-%m-%d')
+			, TEST_RESULT = #{testResult}
+        WHERE CHEMICAL_IDX = #{idx}
+    </update>
+    
+	<update id="updateBySafeTeamItem" parameterType="map">
+	/*	chemicalTest.updateBySafeTeamItem */
+	  UPDATE lab_chemical_test_item
+	  SET ITEM_RESULT = #{itemResult}
+	  WHERE CHEMICAL_IDX = #{idx}
+	    AND ITEM_IDX = #{itemIdx}
+	</update>
 </mapper>

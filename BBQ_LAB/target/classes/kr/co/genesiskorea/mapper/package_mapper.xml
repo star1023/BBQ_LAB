@@ -55,6 +55,9 @@
 			, CONTAIN_QUANTITY_FILE_NAME
 			, CONTAIN_QUANTITY_ORG_FILE_NAME
 			, CONTAIN_QUANTITY_FILE_PATH
+			, MARK_FILE_NAME
+			, MARK_ORG_FILE_NAME
+			, MARK_FILE_PATH
 		)VALUES(
 			#{idx}
 			, #{productName}
@@ -96,6 +99,9 @@
 			, #{fileName}	
 			, #{orgFileName}
 			, #{filePath}			
+			, #{markfileName}	
+			, #{markorgFileName}
+			, #{markfilePath}			
 		)
 	</insert>
 	
@@ -214,6 +220,9 @@
 			, CONTAIN_QUANTITY_FILE_NAME
 			, CONTAIN_QUANTITY_ORG_FILE_NAME
 			, CONTAIN_QUANTITY_FILE_PATH
+			, MARK_FILE_NAME
+			, MARK_ORG_FILE_NAME
+			, MARK_FILE_PATH
 		FROM 
 			lab_package_info
 		WHERE 1 = 1
@@ -265,6 +274,9 @@
 			, CONTAIN_QUANTITY_FILE_NAME = #{fileName}
 			, CONTAIN_QUANTITY_ORG_FILE_NAME = #{orgFileName}
 			, CONTAIN_QUANTITY_FILE_PATH = #{filePath}
+			, MARK_FILE_NAME = #{markfileName}
+			, MARK_ORG_FILE_NAME = #{markorgFileName}
+			, MARK_FILE_PATH = #{markfilePath}
 		WHERE 1 = 1
 			AND PACKAGE_IDX = #{idx} 
 	</update>
@@ -323,6 +335,9 @@
 			, CONTAIN_QUANTITY_FILE_NAME
 			, CONTAIN_QUANTITY_ORG_FILE_NAME
 			, CONTAIN_QUANTITY_FILE_PATH
+			, MARK_FILE_NAME
+			, MARK_ORG_FILE_NAME
+			, MARK_FILE_PATH
 		)VALUES(
 			#{idx}
 			, #{productName}
@@ -357,6 +372,9 @@
 			, #{fileName}	
 			, #{orgFileName}
 			, #{filePath}
+			, #{markfileName}	
+			, #{markorgFileName}
+			, #{markfilePath}
 		)
 	</insert>
 	
@@ -398,7 +416,7 @@
 	</select>
 	
 	<select id="selectPackageInfoDataByProductCode" parameterType="map" resultType="hashmap">
-		/* package.selectPackageInfoData */
+		/* package.selectPackageInfoDataByProductCode */
 		SELECT
 			PACKAGE_IDX			
 			, PRODUCT_NAME
@@ -436,6 +454,9 @@
 			, CONTAIN_QUANTITY_FILE_NAME
 			, CONTAIN_QUANTITY_ORG_FILE_NAME
 			, CONTAIN_QUANTITY_FILE_PATH
+			, MARK_FILE_NAME
+			, MARK_ORG_FILE_NAME
+			, MARK_FILE_PATH
 		FROM 
 			lab_package_info
 		WHERE 1 = 1

@@ -28,6 +28,7 @@
 		, lh.HISTORY_TYPE
 		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
 			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'T' then '임시저장'
 			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
 			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
 			END HISTORY_TYPE_TXT 
@@ -82,6 +83,7 @@
 			, FN_GET_COLUMN_STATE_TEXT('COLUMN', tmp.COLUMN_STATE) AS COLUMN_STATE_TEXT
 			, CASE 
 				WHEN tmp.STATUS = 'REG' THEN '등록'
+				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
 				WHEN tmp.STATUS = 'APPR' THEN '결재중'
 				WHEN tmp.STATUS = 'COMP' THEN '완료'
 				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
