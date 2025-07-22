@@ -152,7 +152,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 			Map<String, Object> paramMap = new HashMap<String, Object>();
 			paramMap.put("docIdx", param.get("docIdx"));
 			paramMap.put("docType", param.get("docType"));
-			paramMap.put("lastStatus", "C");
+			//paramMap.put("lastStatus", "C");
 			Map<String, Object> headerData = approvalDao.selectApprHeaderData(paramMap);
 			if( headerData != null && !"".equals(headerData.get("APPR_IDX")) ) {
 				//기존 결재 정보를 삭제한다.

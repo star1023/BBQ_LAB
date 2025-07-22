@@ -81,6 +81,152 @@ public class DesignReportServiceImpl implements DesignReportService {
 		map.put("navi", navi);
 		return map;
 	}
+	
+	@Override
+	@Transactional
+	public int insertTmpDesign(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file)
+			throws Exception {
+		// TODO Auto-generated method stub
+		int designIdx = 0;
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		try {
+			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
+			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
+			JSONParser parser = new JSONParser();
+			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
+			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
+			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
+			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
+			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
+			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+
+			designIdx = reportDao.selectDesignSeq();	//key value 조회
+			param.put("idx", designIdx);
+			
+			//제품 등록
+			reportDao.insertDesign(param);
+			
+			ArrayList<HashMap<String,Object>> addInfoList = new ArrayList<HashMap<String,Object>>();
+			if( changeReasonArr.size() > 0 ) {
+				for( int i = 0 ; i < changeReasonArr.size() ; i++ ) {
+					HashMap<String,Object> changeReasonData = new HashMap<String,Object>();
+					changeReasonData.put("idx", designIdx);
+					changeReasonData.put("displayOrder", i+1);
+					changeReasonData.put("infoType", "REA");
+					changeReasonData.put("infoText", changeReasonArr.get(i));
+					addInfoList.add(changeReasonData);
+				}				
+			}
+			
+			if( changeTimeArr.size() > 0 ) {
+				for( int i = 0 ; i < changeTimeArr.size() ; i++ ) {
+					HashMap<String,Object> changeTimeData = new HashMap<String,Object>();
+					changeTimeData.put("idx", designIdx);
+					changeTimeData.put("displayOrder", i+1);
+					changeTimeData.put("infoType", "TIME");
+					changeTimeData.put("infoText", changeTimeArr.get(i));
+					addInfoList.add(changeTimeData);
+				}				
+			}
+			
+			if( addInfoList != null && addInfoList.size() > 0 ) {
+				//등록한다.
+				reportDao.insertAddInfo(addInfoList);
+			}
+			
+			ArrayList<HashMap<String,String>> changeList = new ArrayList<HashMap<String,String>>();
+			for( int i = 0 ; i < itemDivArr.size() ; i++ ) {
+				HashMap<String,String> matMap = new HashMap<String,String>();
+				try{
+					matMap.put("itemDiv", (String)itemDivArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemDiv", "");
+				}				
+				try{
+					matMap.put("itemCurrent", (String)itemCurrentArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemCurrent", "");
+				}				
+				try{
+					matMap.put("itemChange", (String)itemChangeArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemChange", "");
+				}
+				try{
+					matMap.put("itemNote", (String)itemNoteArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemNote", "");
+				}
+				
+				changeList.add(matMap);
+			}
+			param.put("changeList", changeList);
+			reportDao.insertChangeList(param);
+			
+			//history 저장
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", designIdx);
+			historyParam.put("docType", "DESIGN");
+			historyParam.put("historyType", "I");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				Calendar cal = Calendar.getInstance();
+		        Date day = cal.getTime();    //시간을 꺼낸다.
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+		        String toDay = sdf.format(day);
+				String path = config.getProperty("upload.file.path.design");
+				path += "/"+toDay; 
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					System.err.println("=================================");
+					System.err.println("isEmpty : "+multipartFile.isEmpty());
+					System.err.println("name : " + multipartFile.getName());
+					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
+					System.err.println("size : " + multipartFile.getSize());				
+					System.err.println("=================================");
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", designIdx);
+							fileMap.put("docType", "DESIGN");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							System.err.println(fileMap);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+		return designIdx;
+	}
 
 	@Override
 	@Transactional

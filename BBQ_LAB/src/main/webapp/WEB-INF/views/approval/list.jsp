@@ -11,7 +11,7 @@
 	};
 	$(document).ready(function(){
 		loadCount();
-		loadMyList('1');
+		//loadMyList('1');
 		
 		// 🔥 tab 파라미터가 있으면 해당 탭 실행
 		const urlParams = new URLSearchParams(window.location.search);
@@ -24,7 +24,8 @@
 		} else if (tabParam === 'comp') {
 			fn_changeTab('compCount');
 		} else {
-			fn_changeTab('myCount'); // 기본값
+			//fn_changeTab('myCount'); // 기본값
+			loadMyList('1');
 		}
 	});	
 	
@@ -122,23 +123,23 @@
 		var url = "";
 		mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
 		if( docType == 'PROD' ) {
-			url = "/approval/productPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			url = "/approval/productPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		} else if( docType == 'MENU' ) {
-			url = "/approval/menuPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();;
+			url = "/approval/menuPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();;
 		} else if( docType == 'DESIGN' ) {
-			url = "/approval/designPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/designPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'PLAN' ) {
-			url = "/approval/businessTripPlanPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/businessTripPlanPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'TRIP' ) {
-			url = "/approval/businessTripPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/businessTripPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'RESEARCH' ) {
-			url = "/approval/marketResearchPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/marketResearchPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'SENSE_QUALITY' ) {
-			url = "/approval/senseQualityReportPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/senseQualityReportPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'RESULT' ) {
-			url = "/approval/newProductResultPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			url = "/approval/newProductResultPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		} else if( docType == 'CHEMICAL' ) {
-			url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		}
 		window.open(url, "RefPopup", mode );
 	}
@@ -502,7 +503,7 @@
 				, "docType" : docType
 				, "docIdx" : docIdx
 				, "status" : 'CA'
-				, "docStatus" : 'TMP'
+				, "docStatus" : 'APPR_CANCEL'
 			},
 			dataType:"json",
 			async:false,

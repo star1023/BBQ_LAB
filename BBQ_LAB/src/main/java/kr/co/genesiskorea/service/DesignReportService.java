@@ -24,4 +24,7 @@ public interface DesignReportService {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	int insertTmpDesign(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file)
+			throws Exception;
+
 }

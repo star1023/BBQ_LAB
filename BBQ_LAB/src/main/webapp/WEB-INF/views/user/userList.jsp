@@ -7,8 +7,9 @@
 	var idFlag ;
 	$(document).ready(function(){
 		getUserList('1');
-		
-		bindSearchEnter('searchValue');
+		fn_loadTeam();
+		bindSearchEnter('searchName');		
+		fn_loadCode("USER_TYPE", "userType");
 		
 		$('#userId').keyup(function(event){
 			if($('#userId').val().length<4){
@@ -46,16 +47,64 @@
 		})
 	}
 	
+	function fn_loadCode(codeId,selectBoxId) {
+		var URL = "../common/codeListAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{ groupCode : codeId
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				var list = data.RESULT;
+				$("#"+selectBoxId).removeOption(/./);
+				$("#"+selectBoxId).addOption("", "전체", false);
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#"+selectBoxId).addOption(value.itemCode, value.itemName, false);
+				});
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}			
+		});
+	}
+	
+	function fn_loadTeam() {
+		var URL = "../common/teamListAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				"pTeamId" : "10000752"
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				var list = data;
+				$("#searchTeam").removeOption(/./);
+				$("#searchTeam").addOption("", "전체", false);
+				$("#searchTeam_label").html("전체");
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#searchTeam").addOption(value.TEAM_ID, value.TEAM_NAME, false);
+				});
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}			
+		});
+	}
+	
 	//사용자권한관리 리스트 ajax
 	function getUserList(pageNo){
 		$.ajax({
 			type: 'POST',
 			url: '../user/userListAjax',
 			data: {
-				searchValue : $("#searchValue").val(),
-				deptCode : $("#dept").selectedValues()[0],
-				teamCode : $("#team").selectedValues()[0],
-				userGrade : $("#grade").selectedValues()[0],
+				searchTeam : $("#searchTeam").selectedValues()[0],
+				searchRole : $("#searchRole").selectedValues()[0],
+				searchName : $("#searchName").selectedValues()[0],
+				viewCount : $("#viewCount").selectedValues()[0],
 				pageNo : pageNo
 			},
 			dataType: 'json',
@@ -79,11 +128,12 @@
 					html += "	<td>"+nvl(item.OBJTTX,'')+"</td>";
 					html += "	<td>"+nvl(item.TITL_TXT,'')+"</td>";
 					html += "	<td>"+nvl(item.RESP_TXT,'')+"</td>";
-					if( item.isAdmin == 'Y' ) {
+					/* if( item.isAdmin == 'Y' ) {
 						html += "	<td>관리자</td>";
 					} else {
 						html += "	<td>&nbsp;</td>";
-					}
+					} */
+					html += "	<td>"+nvl(item.userTypeName,'')+"</td>";
 					html += "	<td>"+item.regDate+"</td>";
 					html += "	<td>";
 					html += "		<ul class=\"list_ul\">";
@@ -146,6 +196,8 @@
 					$("#orgTxt").html(data.OBJTTX);
 					$("#titleTxt").html(data.TITL_TXT);
 					$("#respTxt").html(data.RESP_TXT);
+					$("#userType").selectOptions(nvl(data.userType,''));
+					$("#userType_label").html($("#userType").selectedTexts());
 					$("#userRole").selectOptions(""+data.roleCode);
 					$("#userRole_label").html($("#userRole").selectedTexts());
 					openDialog('open');
@@ -209,6 +261,7 @@
 			url: '../user/updateUserAjax',
 			data: {
 				"userId" : $("#userId").val(),
+				"userType" : $("#userType").selectedValues()[0],
 				"userRole" : $("#userRole").selectedValues()[0]
 			},
 			dataType: 'json',
@@ -454,43 +507,47 @@
 				<div class="search_box" >
 					<ul>
 						<li style=" width:100%">
-							<dt>검색조건</dt>
-							<dd style="width:700px;">
+							<dt>부서</dt>
+							<dd >
 								<div class="selectbox ml5" style="width:180px;">  
-									<label for="dept" id="deptL">부서</label> 
-									<select id="dept" name="dept">
-										<option value="">전체</option>
-										<c:forEach  items="${deptList}" var = "dept">
-											<option value="${dept.itemCode}">${dept.itemName}</option>
-										</c:forEach>										
-									</select>
-								</div>
-								
-								<div class="selectbox ml5" style="width:180px;">  
-									<label for="team" id="teamL">팀</label> 
-									<select id="team" name="team">
+									<label for="searchTeam" id="searchTeam_label">팀</label> 
+									<select id="searchTeam" name="searchTeam">
 										<option value="">전체</option>
 										<c:forEach  items="${teamList}" var = "team">
 										<option value="${team.itemCode}">${team.itemName}</option>
 										</c:forEach>
 									</select>
 								</div>
-								
-								<div class="selectbox ml5" style="width:180px;">  
-									<label for="grade" id="gradeL">권한</label> 
-									<select id="grade" name="grade">
-										<option value="">전체</option>
-										<c:forEach  items="${gradeList}" var = "grade">
-										<option value="${grade.itemCode}">${grade.itemName}</option>
+							<dt>권한</dt>
+							<dd>	
+								<div class="selectbox" style="width:180px;">  
+									<label for="searchRole" id="searchRole_label">선택</label> 
+									<select id="searchRole" name="searchRole">
+										<option value="">선택</option>
+										<c:forEach  items="${roleList}" var="role">
+										<option value="${role.ROLE_IDX}">${role.ROLE_NAME}</option>
 										</c:forEach>
 									</select>
 								</div>
 							</dd>
 						</li>
 						<li style=" width:100%">
-							<dt>검색어</dt>
-							<dd style="width:700px;">
-								<input type="text" class="ml5" name="searchValue" id="searchValue" style="width:180px;"/>
+							<dt>이름</dt>
+							<dd>
+								<input type="text" class="ml5" name="searchName" id="searchName" style="width:180px;"/>
+							</dd>
+							<dt>표시수</dt>
+							<dd >
+								<div class="selectbox" style="width:100px;">  
+									<label for="viewCount" id="viewCount_label">선택</label> 
+									<select name="viewCount" id="viewCount">		
+										<option value="">선택</option>													
+										<option value="10">10</option>
+										<option value="20">20</option>
+										<option value="50">50</option>
+										<option value="100">100</option>
+									</select>
+								</div>
 							</dd>
 						</li>
 						
@@ -521,7 +578,7 @@
 								<th>부서</th>
 								<th>직책</th>
 								<th>직급</th>
-								<th>관리자</th>
+								<th>구분</th>
 								<th>생성일</th>
 								<th>사용자설정</th>
 							</tr>
@@ -542,7 +599,7 @@
 
 <!-- 자재 생성레이어 start-->
 <div class="white_content" id="open">
-	<div class="modal" style="	width: 700px;margin-left:-350px;height: 450px;margin-top:-200px;">
+	<div class="modal" style="	width: 700px;margin-left:-350px;height: 500px;margin-top:-200px;">
 		<h5 style="position:relative">
 			<span class="title">사용자 수정</span>
 			<div  class="top_btn_box">
@@ -595,18 +652,28 @@
 					</dd>
 				</li>
 				<li>
+					<dt>사용자구분</dt>
+					<dd class="pr20 pb10">
+						<div class="selectbox" style="width:150px"> 
+							<label for="userType" id="userType_label">선택하세요</label>
+							<select name="userType" id="userType">
+							</select>
+						</div>
+					</dd>
+				</li>
+				<li>
 					<dt>권한</dt>
 					<dd class="pr20 pb10">
-							<div class="selectbox" style="width:150px"> 
-								<label for="userRole" id="userRole_label">선택하세요</label>
-								<select name="userRole" id="userRole">
-									<option value="">선택하세요</option>
-									<c:forEach  items="${roleList}" var="role">
-									<option value="${role.ROLE_IDX}">${role.ROLE_NAME}</option>
-									</c:forEach>
-								</select>
-							</div>							
-						</dd>
+						<div class="selectbox" style="width:150px"> 
+							<label for="userRole" id="userRole_label">선택하세요</label>
+							<select name="userRole" id="userRole">
+								<option value="">선택하세요</option>
+								<c:forEach  items="${roleList}" var="role">
+								<option value="${role.ROLE_IDX}">${role.ROLE_NAME}</option>
+								</c:forEach>
+							</select>
+						</div>							
+					</dd>
 				</li>
 			</ul>
 		</div>
