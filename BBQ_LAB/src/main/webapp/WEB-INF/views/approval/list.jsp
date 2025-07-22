@@ -95,23 +95,23 @@
 		} else if( $("#listType").val() == 'myCompList' ) {
 			mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
 			if( docType == 'PROD' ) {
-				url = "";
+				url = "/approval/productPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			} else if( docType == 'MENU' ) {
-				url = "";
+				url = "/approval/menuPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();;
 			} else if( docType == 'DESIGN' ) {
-				url = "";	
+				url = "/approval/designPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 			} else if( docType == 'PLAN' ) {
-				url = "";
+				url = "/approval/businessTripPlanPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 			} else if( docType == 'TRIP' ) {
-				url = "";
+				url = "/approval/businessTripPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 			} else if( docType == 'RESEARCH' ) {
-				url = "";	
+				url = "/approval/marketResearchPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 			} else if( docType == 'SENSE_QUALITY' ) {
-				url = "";	
+				url = "/approval/senseQualityReportPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 			} else if( docType == 'RESULT' ) {
-				url = "";	
+				url = "/approval/newProductResultPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			} else if( docType == 'CHEMICAL' ) {
-				url = "";	
+				url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			}
 		}
 		
@@ -120,25 +120,25 @@
 	
 	function fn_refInfo( apprIdx, refIdx,  docType, docIdx ) {
 		var url = "";
-		var mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
+		mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
 		if( docType == 'PROD' ) {
 			url = "/approval/productPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		} else if( docType == 'MENU' ) {
-			url = "";
+			url = "/approval/menuPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();;
 		} else if( docType == 'DESIGN' ) {
-			url = "/approval/designPopup?apprIdx="+apprId+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/designPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'PLAN' ) {
-			url = "/approval/businessTripPlanPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/businessTripPlanPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'TRIP' ) {
-			url = "/approval/businessTripPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/businessTripPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'RESEARCH' ) {
-			url = "/approval/marketResearchPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/marketResearchPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'SENSE_QUALITY' ) {
-			url = "/approval/senseQualityReportPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
+			url = "/approval/senseQualityReportPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();	
 		} else if( docType == 'RESULT' ) {
-			url = "/approval/newProductResultPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			url = "/approval/newProductResultPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		} else if( docType == 'CHEMICAL' ) {
-			url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		}
 		window.open(url, "RefPopup", mode );
 	}
