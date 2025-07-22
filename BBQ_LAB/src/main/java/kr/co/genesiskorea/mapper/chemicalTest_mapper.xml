@@ -169,13 +169,7 @@
 			, tmp.TEST_COMPLETION_DATE
 			, tmp.TEST_RESULT
 			, FN_GET_USER_NAME(tmp.REG_USER) as DOC_OWNER_NAME
-			, CASE 
-				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
-				WHEN tmp.STATUS = 'REG' THEN '임시저장'
-				WHEN tmp.STATUS = 'APPR' THEN '결재중'
-				WHEN tmp.STATUS = 'COMP' THEN '완료'
-				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
-				END	AS STATUS_TXT
+			, FN_GET_CODE_NAME('DOC_STATUS', tmp.STATUS) AS STATUS_TXT
 			, CASE 
 				WHEN tmp.TEST_STATUS = 'C' THEN '완료'
 				WHEN tmp.TEST_STATUS = 'N' THEN '요청중'

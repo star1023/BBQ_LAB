@@ -84,7 +84,18 @@ public class UserServiceImpl implements UserService {
 		// 페이징: 페이징 정보 SET
 		int totalCount = userDao.getUserCount(param);
 		
-		PageNavigator navi = new PageNavigator(param, totalCount);
+		int viewCount = 10;
+		int pageNo = 1;
+		try {			
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
+			pageNo = Integer.parseInt((String)param.get("pageNo"));
+		} catch( Exception e ) {
+			System.err.println(e.getMessage());
+			viewCount = 10;
+			pageNo = 1;
+		}
+		
+		PageNavigator navi = new PageNavigator(param, viewCount, totalCount);
 		
 		List<HashMap<String, Object>> list = userDao.getUserList(param);
 		

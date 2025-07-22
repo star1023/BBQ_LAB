@@ -77,13 +77,7 @@
 			, tmp.STATUS
 			, tmp.DOC_OWNER
 			, FN_GET_USER_NAME(tmp.REG_USER) as REG_USER_NAME
-			, CASE 
-				WHEN tmp.STATUS = 'TMP' THEN '임시저장'
-				WHEN tmp.STATUS = 'REG' THEN '등록'
-				WHEN tmp.STATUS = 'APPR' THEN '결재중'
-				WHEN tmp.STATUS = 'COMP' THEN '완료'
-				WHEN tmp.STATUS = 'COND_APPR' THEN '부분승인'
-				END	AS STATUS_TXT
+			, FN_GET_CODE_NAME('DOC_STATUS', tmp.STATUS) AS STATUS_TXT
 		FROM
 		(	
 			SELECT

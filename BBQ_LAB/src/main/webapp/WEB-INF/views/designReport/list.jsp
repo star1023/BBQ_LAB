@@ -195,7 +195,7 @@ function fn_loadList(pageNo) {
 					if( item.IS_LAST == 'Y' ) {
 						html += "		<li style=\"float:none; display:inline\">";
 						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-						if( item.STATUS == 'COND_APPR' ) {
+						if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' ) {
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 						}
 						html += "		</li>";

@@ -280,6 +280,124 @@
 		$('#attatch_common').val('')
 	}
 	
+	function fn_updateTmp(){
+		//var containQuantity = editor1.getData();
+		var contents = editor.getData();
+		if( !chkNull($("#productName").val()) ) {
+			alert("제품명을 입력해 주세요.");
+			$("#productName").focus();
+			return;
+		} else {
+			var formData = new FormData();
+			formData.append("idx",$("#idx").val());
+			formData.append("currentStatus",$("#currentStatus").val());
+			formData.append("title",$("#title").val());
+			formData.append("productCode",$("#productCode").val());
+			formData.append("sapCode",$("#sapCode").val());
+			formData.append("productName",$("#productName").val());
+			//formData.append("changeComment",$("#changeComment").val());
+			//formData.append("changeTime",$("#changeTime").val());
+			formData.append("contents",contents);
+			formData.append("status","TMP");
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
+			var changeReasonArr = new Array();
+			$('tr[id^=changeReason_tr]').toArray().forEach(function(contRow){
+				var rowId = $(contRow).attr('id');
+				var changeReason = $('#'+ rowId + ' input[name=changeReason]').val();
+				if( changeReason != "" ) {
+					changeReasonArr.push(changeReason);	
+				}
+			});	
+			if( changeReasonArr.length == 0 ) {
+				alert("변경사유를 입력해주세요.");
+				return;
+			}
+			formData.append("changeReasonArr", JSON.stringify(changeReasonArr));
+			
+			var changeTimeArr = new Array();
+			$('tr[id^=changeTime_tr]').toArray().forEach(function(contRow){
+				var rowId = $(contRow).attr('id');
+				var changeTime = $('#'+ rowId + ' input[name=changeTime]').val();
+				if( changeTime != "" ) {
+					changeTimeArr.push(changeTime);	
+				}
+			});			
+			if( changeTimeArr.length == 0 ) {
+				alert("변경적용시점 입력해주세요.");
+				return;
+			}
+			formData.append("changeTimeArr", JSON.stringify(changeTimeArr));
+			
+			var rowIdArr = new Array();
+			var itemDivArr = new Array();
+			var itemCurrentArr = new Array();
+			var itemChangeArr = new Array();
+			var itemNoteArr = new Array();
+			
+			$('tr[id^=changeRow]').toArray().forEach(function(contRow){
+				var rowId = $(contRow).attr('id');
+				var itemDiv = $('#'+ rowId + ' input[name=itemDiv]').val();
+				var itemCurrent = $('#'+ rowId + ' textarea[name=itemCurrent]').val();
+				var itemChange = $('#'+ rowId + ' textarea[name=itemChange]').val();
+				var itemNote = $('#'+ rowId + ' input[name=itemNote]').val();
+				
+				rowIdArr.push(rowId);
+				itemDivArr.push(itemDiv);
+				itemCurrentArr.push(itemCurrent);
+				itemChangeArr.push(itemChange);
+				itemNoteArr.push(itemNote);
+			});
+			
+			formData.append("rowIdArr", JSON.stringify(rowIdArr));
+			formData.append("itemDivArr", JSON.stringify(itemDivArr));
+			formData.append("itemCurrentArr", JSON.stringify(itemCurrentArr));
+			formData.append("itemChangeArr", JSON.stringify(itemChangeArr));
+			formData.append("itemNoteArr", JSON.stringify(itemNoteArr));
+			
+			$('#lab_loading').show();
+			URL = "../designReport/updateTmpDesignAjax";
+			$.ajax({
+				type:"POST",
+				url:URL,
+				data: formData,
+				processData: false,
+		        contentType: false,
+		        cache: false,
+				dataType:"json",
+				success:function(result) {
+					console.log(result);
+					if( result.RESULT == 'S' ) {
+						alert($("#title").val()+" 문서가 임시저장 되었습니다.");
+						$('#lab_loading').hide();
+						fn_goList();
+					} else if( result.RESULT == 'F' ) {
+						alert(result.MESSAGE);
+						$('#lab_loading').hide();						
+					} else {
+						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+						$('#lab_loading').hide();
+					}
+				},
+				error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+					$('#lab_loading').hide();
+				}			
+			});
+		}
+	}
+	
 	//입력확인
 	function fn_update(){
 		var contents = editor.getData();
@@ -353,6 +471,7 @@
 			//formData.append("changeComment",$("#changeComment").val());
 			//formData.append("changeTime",$("#changeTime").val());
 			formData.append("contents",contents);
+			formData.append("status","REG");
 			
 			for (var i = 0; i < attatchFileArr.length; i++) {
 				formData.append('file', attatchFileArr[i])
@@ -835,6 +954,19 @@
 								<input type="text"  style="width:350px; float: left" class="req" name="productName" id="productName" value="${designData.data.PRODUCT_NAME}"/>
 							</td>
 						</tr>
+						<tr>
+							<th style="border-left: none;">결재라인</th>
+							<td colspan="3">
+								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">참조자</th>
+							<td colspan="3">
+								<div id="refTxtFull" name="refTxtFull"></div>								
+							</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
@@ -1035,10 +1167,9 @@
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
 				<div class="btn_box_con4">
-					<!-- 
-					<button class="btn_admin_red">임시/템플릿저장</button>
-					<button class="btn_admin_navi">임시저장</button>
-					 -->
+					<c:if test="${designData.data.STATUS == 'TMP'}">
+					<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+					</c:if>
 					<button class="btn_admin_sky" onclick="fn_update()">수정</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>

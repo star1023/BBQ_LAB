@@ -97,17 +97,14 @@
 			FROM	lab_user	
 			WHERE 1=1
 				<!--  AND EMSTAT = 1  -->
-			<if test="searchValue != null and searchValue != '' ">
-				AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
+			<if test="searchName != null and searchName != '' ">
+				AND (USER_NAME like  concat('%',#{searchName},'%') OR USER_ID like  concat('%',#{searchName},'%')  OR EMAIL like  concat('%',#{searchName},'%') )
 			</if>
-			<if test="deptCode != null and deptCode != '' ">
-				AND DEPT_CODE = #{deptCode}
+			<if test="searchTeam != null and searchTeam != '' ">
+				AND ORGAID = #{searchTeam}
 			</if>
-			<if test="teamCode != null and teamCode != '' ">
-				AND TEAM_CODE = #{teamCode}
-			</if>
-			<if test="userGrade != null and userGrade != '' ">
-				AND USER_GRAD = #{userGrade}
+			<if test="searchRole != null and searchRole != '' ">
+				AND ROLE_CODE = #{searchRole}
 			</if>
 	</select>
 	
@@ -150,17 +147,14 @@
 						FROM	lab_user	
 						WHERE 1=1
 							<!--  AND EMSTAT = 1  -->
-						<if test="searchValue != null and searchValue != '' ">
-							AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
+						<if test="searchName != null and searchName != '' ">
+							AND (USER_NAME like  concat('%',#{searchName},'%') OR USER_ID like  concat('%',#{searchName},'%')  OR EMAIL like  concat('%',#{searchName},'%') )
 						</if>
-						<if test="deptCode != null and deptCode != '' ">
-							AND DEPT_CODE = #{deptCode}
+						<if test="searchTeam != null and searchTeam != '' ">
+							AND ORGAID = #{searchTeam}
 						</if>
-						<if test="teamCode != null and teamCode != '' ">
-							AND TEAM_CODE = #{teamCode}
-						</if>
-						<if test="userGrade != null and userGrade != '' ">
-							AND USER_GRAD = #{userGrade}
+						<if test="searchRole != null and searchRole != '' ">
+							AND ROLE_CODE = #{searchRole}
 						</if>
 					) t WHERE rnum between #{startRow} and #{endRow}
 		<![CDATA[
@@ -605,6 +599,7 @@
     	UPDATE lab_user 
 		SET 
 	      	ROLE_CODE =  #{userRole}
+	      	, USER_TYPE =  #{userType}
 		WHERE	1 = 1
 			AND USER_ID = #{userId}
     </update>

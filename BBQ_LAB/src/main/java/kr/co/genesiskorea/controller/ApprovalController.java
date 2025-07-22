@@ -297,6 +297,13 @@ public class ApprovalController {
 		Map<String, Object> menuData = menuService.selectMenuData(param);
 		List<Map<String, String>> addInfoList = menuService.selectAddInfo(param);		
 		List<Map<String, String>> newDataList = menuService.selectNewDataList(param);
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);

@@ -1306,7 +1306,7 @@ var selectedArr = new Array();
 											apprFormData.append("apprLine", $("#apprLine").selectedValues());
 											apprFormData.append("refLine", $("#refLine").selectedValues());
 											apprFormData.append("title", $("#title").val());
-											apprFormData.append("docType", "PROD");
+											apprFormData.append("docType", "MENU");
 											apprFormData.append("status", "N");
 											var URL = "../approval/insertApprAjax";
 											$.ajax({
@@ -3014,7 +3014,7 @@ var selectedArr = new Array();
 
 <!-- 결재 상신 레이어  start-->
 <div class="white_content" id="approval_dialog">
-	<input type="hidden" id="docType" value="TRIP"/>
+	<input type="hidden" id="docType" value="MENU"/>
  	<input type="hidden" id="deptName" />
 	<input type="hidden" id="teamName" />
 	<input type="hidden" id="userId" />
