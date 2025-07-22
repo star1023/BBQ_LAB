@@ -181,13 +181,17 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 			, @RequestParam(required=false) Map<String, Object> param
 			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(value = "markFile", required = false) MultipartFile markFile
+			, @RequestParam(value = "deletedFileList", required = false) List<String> deletedFileList
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			packageInfoService.updatePackageInfoTmp(param, imageFile, markFile, file);
+			// 삭제할 파일 리스트도 파라미터에 함께 전달
+			param.put("deletedFileList", deletedFileList);
+			
+			packageInfoService.updatePackageInfoTmp(param, imageFile, markFile, file, deletedFileList);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
@@ -203,13 +207,17 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 			, @RequestParam(required=false) Map<String, Object> param
 			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(value = "markFile", required = false) MultipartFile markFile
+			, @RequestParam(value = "deletedFileList", required = false) List<String> deletedFileList
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			packageInfoService.updatePackageInfo(param, imageFile, markFile, file);
+			// 삭제할 파일 리스트도 파라미터에 함께 전달
+			param.put("deletedFileList", deletedFileList);
+			
+			packageInfoService.updatePackageInfo(param, imageFile, markFile, file, deletedFileList);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));

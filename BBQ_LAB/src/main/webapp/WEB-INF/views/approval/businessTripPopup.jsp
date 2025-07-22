@@ -479,13 +479,23 @@ function downloadFile(idx){
 						</td>
 					</tr>
 					<tr>
-					<th >첨부파일</th>
-					<td colspan="3">
-						<c:forEach items="${businessTripData.fileList}" var="fileList" varStatus="status">
-							&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a><br>
-						</c:forEach>
-					</td>
-				</tr>
+						<th>첨부파일</th>
+						<td colspan="3">
+						<div class="con_file" style="">
+							<ul>
+								<li style="background-color:#fff; border:none;">
+									<dd>
+										<ul>
+											<c:forEach items="${planData.fileList}" var="fileList" varStatus="status">
+												<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+											</c:forEach>
+										</ul>
+									</dd>
+								</li>
+							</ul>
+						</div>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

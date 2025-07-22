@@ -173,7 +173,6 @@
 					    </td>
 					  </tr>
 					</c:forEach>
-					
 					<tr>
 					    <th  >검사 요청 방법</th>
 					    <td colspan="5">

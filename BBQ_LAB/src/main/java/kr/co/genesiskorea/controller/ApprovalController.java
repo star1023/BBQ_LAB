@@ -24,6 +24,7 @@ import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.BusinessTripPlanService;
 import kr.co.genesiskorea.service.BusinessTripService;
 import kr.co.genesiskorea.service.ChemicalTestService;
+import kr.co.genesiskorea.service.CodeManagementService;
 import kr.co.genesiskorea.service.DesignReportService;
 import kr.co.genesiskorea.service.MarketResearchService;
 import kr.co.genesiskorea.service.MenuService;
@@ -67,6 +68,9 @@ public class ApprovalController {
 	
 	@Autowired
 	NewProductResultService newProductResultService;
+
+	@Autowired
+	CodeManagementService codeManagementService;
 	
 	@Autowired
 	PackageInfoService packageInfoService;
@@ -519,6 +523,10 @@ public class ApprovalController {
 				
 			}
 		}
+		Map<String, String> codeParam = new HashMap<>();
+		codeParam.put("groupCode", "COLUMN");
+		List<HashMap<String, Object>> columnCodeList = codeManagementService.getItemList(codeParam);
+		model.addAttribute("codeList", columnCodeList);
 		model.addAttribute("apprHeader", apprHeader);
 		model.addAttribute("apprItem", apprItem);
 		model.addAttribute("refList", refList);

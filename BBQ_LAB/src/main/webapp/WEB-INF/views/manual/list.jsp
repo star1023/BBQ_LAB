@@ -6,8 +6,155 @@
 <title>메뉴완료보고서</title>
 <script type="text/javascript">
 	$(document).ready(function(){
+		fn_loadTeam();
 		fn_loadList(1);
+		fn_loadSearchCategory(2,1);
+		//1.임원인(roleCode가 4, 5) 경우에만 탭 설정 상관없이 팀, 담당자 필드를 표시한다.
+		if( '${userUtil:getRoleCode(pageContext.request)}' == '4' || '${userUtil:getRoleCode(pageContext.request)}' == '5' ) {
+			$("#searchTeam_li").show();
+			$("#searchUser_li").show();
+		}
 	});
+	
+	function fn_loadSearchCategory(pIdx, level) {
+		
+		if( level == 2 ) {
+			$("#searchCategory"+(level+1)).removeOption(/./);
+			$("#searchCategory"+(level+1)+"_div").hide();
+		}
+		
+		if( pIdx == '' ) {
+			$("#searchCategory"+level).removeOption(/./);
+			$("#searchCategory"+level+"_div").hide();
+			return;
+		}
+		
+		var URL = "../common/selectCategoryByPIdAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				pIdx : pIdx
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				var list = data;
+				$("#searchCategory"+level).removeOption(/./);
+				$("#searchCategory"+level).addOption("", "전체", false);
+				$("#searchCategory"+level+"_label").html("전체");
+				if( list.length > 0 ) {
+					$("#searchCategory"+level+"_div").show();
+					$.each(list, function( index, value ){ //배열-> index, value
+						$("#searchCategory"+level).addOption(value.CATEGORY_IDX, value.CATEGORY_NAME, false);
+					});
+				}
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}			
+		});
+	}
+	
+	function fn_changeCategory(obj,level){
+		fn_loadSearchCategory($(obj).selectedValues()[0], level);
+	}
+	
+	function changeListType(listType){
+		$('input[name=listType]').val(listType);
+		
+		$(".tab >a").each(function(){
+			if( $(this).attr('id') == listType) {
+				$(this).children().prop("class","select")
+			} else {
+				$(this).children().prop("class","change")			
+			}
+		});
+		
+		//1.팀장인 경우
+		if( '${userUtil:getRoleCode(pageContext.request)}' == '2' || '${userUtil:getRoleCode(pageContext.request)}' == '7' ) {
+			//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
+			//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
+			//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
+			if( listType == 'my' ) {
+				$("#searchTeam_li").hide();
+				$("#searchUser_li").hide();
+				$("#searchTeam").selectOptions("");
+				$("#searchUser").selectOptions("");
+			} else if( listType == 'team' ) {
+				$("#searchTeam_li").hide();
+				$("#searchTeam").selectOptions('${SESS_AUTH.ORGAID}');
+				fn_loadUser();
+				$("#searchUser_li").show();
+			} else if( listType == 'share' ) {
+				$("#searchTeam_li").hide();
+				$("#searchUser_li").hide();
+				$("#searchTeam").selectOptions("");
+				$("#searchUser").selectOptions("");
+			}
+		}
+		fn_search();
+	}
+	
+	function fn_loadUser() {
+		if( $("#searchTeam").selectedValues()[0] != "" ) {
+			var URL = "../common/userListAjax";
+			$.ajax({
+				type:"POST",
+				url:URL,
+				data:{
+					"teamId" : $("#searchTeam").selectedValues()[0]
+				},
+				dataType:"json",
+				async:false,
+				success:function(data) {
+					var list = data;
+					$("#searchUser").removeOption(/./);
+					$("#searchUser").addOption("", "전체", false);
+					$("#searchUser_label").html("전체");
+					$.each(list, function( index, value ){ //배열-> index, value
+						$("#searchUser").addOption(value.USER_ID, value.USER_NAME+"("+value.RESP_TXT+")", false);
+					});
+				},
+				error:function(request, status, errorThrown){
+						alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+				}			
+			});
+		} else {
+			$("#searchUser").removeOption(/./);
+			$("#searchUser").addOption("", "전체", false);
+			$("#searchUser_label").html("전체");
+		}
+	}
+	
+	function fn_loadTeam() {
+		var URL = "../common/teamListAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				"pTeamId" : "10000752"
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				var list = data;
+				$("#searchTeam").removeOption(/./);
+				$("#searchTeam").addOption("", "전체", false);
+				$("#searchTeam_label").html("전체");
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#searchTeam").addOption(value.TEAM_ID, value.TEAM_NAME, false);
+				});
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}			
+		});
+	}
+	
+	function fn_search() {
+		fn_loadList(1);
+	}
 	
 	function fn_loadList(pageNo) {
 		var URL = "../manual/selectManualListAjax";
@@ -28,7 +175,12 @@
 				, "searchCategory2" : $("#searchCategory2").selectedValues()[0]
 				, "searchCategory3" : $("#searchCategory3").selectedValues()[0]
 				, "searchFileTxt" : $("#searchFileTxt").val()
+				, "listType":$('#listType').val()
+				, "docType" : "MANUAL"
+				, "searchTeam" : $("#searchTeam").selectedValues()[0]
+				, "searchUser" : $("#searchUser").selectedValues()[0]
 				, "viewCount":viewCount
+				, "uploadStatus" : $("#uploadStatus").selectedValues()[0]
 				, "pageNo":pageNo
 			},
 			dataType:"json",
@@ -420,12 +572,61 @@
 			</div>
 		</h2>
 		<div class="group01" >
-			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
+			<div class="title"></div>
 			<div class="tab02">
-				<!--  ul>
-					<a href="/material/list"><li class="select">자재관리</li></a>
-					<a href="/material/changeList"><li class="">변경관리</li></a>
-				</ul-->
+				<c:set var="listType" value="my"/>
+				<c:choose>
+					<c:when test='${userUtil:getRoleCode(pageContext.request) == "1"}'>
+						<c:set var="listType" value="my" />
+					</c:when>
+					<c:when test='${userUtil:getRoleCode(pageContext.request) == "2"}'>
+						<c:set var="listType" value="my" />
+					</c:when>
+					<c:when test='${userUtil:getRoleCode(pageContext.request) == "3"}'>
+						<c:set var="listType" value="my" />
+					</c:when>
+					<c:when test='${userUtil:getRoleCode(pageContext.request) == "4"}'>
+						<c:set var="listType" value="all" />
+					</c:when>
+					<c:when test='${userUtil:getRoleCode(pageContext.request) == "5"}'>
+						<c:set var="listType" value="all" />
+					</c:when>
+					<c:when test='${userUtil:getRoleCode(pageContext.request) == "6"}'>
+						<c:set var="listType" value="my" />
+					</c:when>
+					<c:when test='${userUtil:getRoleCode(pageContext.request) == "7"}'>
+						<c:set var="listType" value="my" />
+					</c:when>
+				</c:choose>
+				<input type="hidden" name="listType" id="listType" value="${listType}">
+				<ul class="tab">
+					<c:choose>
+						<c:when test='${userUtil:getRoleCode(pageContext.request) == "1"}'>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>						
+						</c:when>
+						<c:when test='${userUtil:getRoleCode(pageContext.request) == "2"}'>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
+							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 매뉴얼</li></a>
+						</c:when>
+						<c:when test='${userUtil:getRoleCode(pageContext.request) == "3"}'>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
+						</c:when>
+						<c:when test='${userUtil:getRoleCode(pageContext.request) == "4"}'>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>
+						</c:when>
+						<c:when test='${userUtil:getRoleCode(pageContext.request) == "5"}'>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>
+						</c:when>
+						<c:when test='${userUtil:getRoleCode(pageContext.request) == "6"}'>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
+						</c:when>
+						<c:when test='${userUtil:getRoleCode(pageContext.request) == "7"}'>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
+							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 매뉴얼</li></a>
+						</c:when>
+					</c:choose>	
+				</ul>
 			</div>
 			<div class="search_box" >
 				<ul style="border-top:none">
@@ -437,15 +638,15 @@
 								<label for="searchType" id="searchType_label">선택</label> 
 								<select name="searchType" id="searchType">
 									<option value="">선택</option>
-									<option value="searchName">제품명</option>
-									<option value="searchProductCode">제품코드</option>
+									<option value="searchName">메뉴명</option>
+									<option value="searchMenuCode">메뉴코드</option>
 								</select>
 							</div>
 							<input type="text" name="searchValue" id="searchValue" value="" style="width:180px; margin-left:5px;">
 						</dd>
 					</li>
 					<li>
-						<dt>제품구분</dt>
+						<dt>메뉴구분</dt>
 						<dd >
 							<div class="selectbox" style="width:100px;" id="searchCategory1_div">  
 								<label for="searchCategory1" id="searchCategory1_label">선택</label> 
@@ -460,6 +661,28 @@
 							<div class="selectbox lm5" style="width:100px; margin-left:5px; display:none;" id="searchCategory3_div">  
 								<label for="searchCategory3" id="searchCategory3_label">선택</label> 
 								<select name="searchCategory3" id="searchCategory3">
+								</select>
+							</div>
+						</dd>
+					</li>
+					<li id="searchTeam_li" style="display:none">
+						<dt>팀</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchTeam" id="searchTeam_label">선택</label> 
+								<select name="searchTeam" id="searchTeam" onChange="fn_loadUser()">
+								</select>
+							</div>
+						</dd>
+					</li>
+					<li id="searchUser_li" style="display:none">
+						<dt>담당자</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchUser" id="searchUser_label">선택</label> 
+								<select name="searchUser" id="searchUser">
 								</select>
 							</div>
 						</dd>
@@ -481,6 +704,19 @@
 									<option value="20">20</option>
 									<option value="50">50</option>
 									<option value="100">100</option>
+								</select>
+							</div>
+						</dd>
+					</li>
+					<li>
+						<dt>등록 상태</dt>
+						<dd >
+							<div class="selectbox" style="width:100px;">  
+								<label for="uploadStatus" id="uploadStatus_label">전체</label> 
+								<select name="uploadStatus" id="uploadStatus">		
+									<option value="">전체</option>													
+									<option value="Y">등록</option>
+									<option value="N">미등록</option>
 								</select>
 							</div>
 						</dd>

@@ -16,9 +16,9 @@ int insertPackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, Mul
 
 	List<Map<String, Object>> selectAddInfoList(Map<String, Object> param);
 
-	void updatePackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception;
+	void updatePackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file, List<String> deletedFileList) throws Exception;
 
-	void updatePackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception;
+	void updatePackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file, List<String> deletedFileList) throws Exception;
 
 	int insertVersionUpTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception;
 

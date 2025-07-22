@@ -2021,7 +2021,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 						              <c:forEach var="file" items="${chemicalTestData.fileList}">
 						              <li data-file-idx="${file.FILE_IDX}">
 						                <a href="${file.FILE_PATH}" onclick="removeTempFile('${file.FILE_IDX}', this); return false;">
-						                  <img src="/resources/images/icon_del_file.png" style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
+						                  <img src="/resources/images/icon_del_file.png">
 						                </a>&nbsp;${file.ORG_FILE_NAME}
 						              </li>
 						            </c:forEach>

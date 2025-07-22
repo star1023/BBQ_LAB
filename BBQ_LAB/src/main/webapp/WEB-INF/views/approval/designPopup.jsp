@@ -45,7 +45,6 @@
 .imgDescriptbox{width: 90%;}
 
 </style>
-<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
 <script type="text/javascript">
 $(document).ready(function() {
 	  document.oncontextmenu = function (e) {
@@ -241,6 +240,7 @@ function downloadFile(idx){
 	location.href = '/test/fileDownload?idx='+idx;
 }
 </script>
+<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
 <h2 style=" position:fixed;" class="print_hidden">
 	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;결재</span>
 </h2>
@@ -421,11 +421,31 @@ function downloadFile(idx){
 							</c:forEach>
 						</td>
 					</tr>
+					<tr>
+					<th>첨부파일</th>
+					<td colspan="3">
+					<div class="con_file" style="">
+						<ul>
+							<li style="background-color:#fff; border:none;">
+								<dd>
+									<ul>
+										<c:forEach items="${designData.fileList}" var="fileList" varStatus="status">
+											<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+										</c:forEach>
+									</ul>
+								</dd>
+							</li>
+						</ul>
+					</div>
+					</td>
+				</tr>
 				</tbody>
 			</table>
 		</div>
-			
 		<div>
+			<span style="font-size: 14px;">※ 비고</span>
+		</div>	
+		<div class="mainTable">
 			<table>
 				<tr>
 					<td><pre>${designData.data.CONTENTS}</pre></td>

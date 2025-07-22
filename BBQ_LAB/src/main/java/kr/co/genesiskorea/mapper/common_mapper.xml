@@ -327,7 +327,7 @@
 		)
 	</delete>
 	
-	<delete id="deleteFileData" parameterType="int">
+	<delete id="deleteFileData" parameterType="String">
 	    DELETE FROM lab_file
 	    WHERE FILE_IDX = #{fileIdx}
 	</delete>

@@ -79,10 +79,12 @@ public class ProductServiceImpl implements ProductService {
 		
 		int viewCount = 10;
 		int pageNo = 1;
-		try {
+		try {			
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
 			System.err.println(e.getMessage());
+			viewCount = 10;
 			pageNo = 1;
 		}
 		
@@ -690,9 +692,11 @@ public class ProductServiceImpl implements ProductService {
 		int viewCount = 10;
 		int pageNo = 1;
 		try {
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
 			System.err.println(e.getMessage());
+			viewCount = 10;
 			pageNo = 1;
 		}
 		

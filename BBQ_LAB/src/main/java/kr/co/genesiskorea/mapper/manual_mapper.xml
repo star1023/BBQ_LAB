@@ -1,6 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="manual">
+	<sql id="whereManualList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('searchName')">
+			AND NAME LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+      		<when test="searchType.equals('searchMenuCode')">
+      		AND MENU_CODE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      	</choose>
+		</if>
+		<if test="searchCategory1 != null and searchCategory1 != '' ">
+			AND MENU_TYPE1 = #{searchCategory1}
+		</if>
+		<if test="searchCategory2 != null and searchCategory2 != '' ">
+			AND MENU_TYPE2 = #{searchCategory2}
+		</if>
+		<if test="searchCategory3 != null and searchCategory3 != '' ">
+			AND MENU_TYPE3 = #{searchCategory3}
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND lcm.MENU_IDX IN (
+				SELECT 
+					distinct DOC_IDX 
+				FROM 
+					lab_file 
+				WHERE 1 = 1 
+					AND DOC_TYPE = 'MENU' 
+					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
+			)											
+		</if>
+		<if test="searchTeam != null and searchTeam != '' ">
+			<choose>
+				<when test="searchUser != null and searchUser != '' ">
+					AND DOC_OWNER = #{searchUser}
+				</when>
+				<otherwise>
+					AND DOC_OWNER IN (SELECT USER_ID FROM lab_user WHERE 1 = 1 AND EMSTAT = '1' AND ORGAID = #{searchTeam})
+				</otherwise>
+			</choose>	
+		</if>
+		<if test="uploadStatus != null and uploadStatus != '' ">
+			AND REG_YN = #{uploadStatus}
+		</if>
+	</sql>
+
 	<select id="selectManualCount" parameterType="map" resultType="int">
 		WITH MANUAL AS 
 		(
@@ -13,7 +59,25 @@
 		    	, lab_menu lm 
 		    WHERE 1 = 1
 		    	AND lcm.MENU_IDX = lm.MENU_IDX
-		    	AND lm.DOC_OWNER = #{userId} 
+		    	<choose>
+					<when test="listType != null and listType == 'my' "> 
+					AND DOC_OWNER = #{userId} 
+					</when>
+				    <when test="listType != null and listType == 'team'">
+				    AND DOC_OWNER IN (
+				    	SELECT USER_ID from lab_team_manager_view ltmv
+						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+				    ) 
+				    </when>
+				    <when test="listType != null and listType == 'share'">
+				    	AND MENU_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+				    </when>
+				    <when test="listType != null and listType == 'all'">
+				    
+				    </when>
+					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+				</choose>
+				<include refid="manual.whereManualList" />
 		)
 		SELECT 
 			count(man.MANUAL_IDX) AS cnt
@@ -36,7 +100,25 @@
 		    	, lab_menu lm 
 		    WHERE 1 = 1
 		    	AND lcm.MENU_IDX = lm.MENU_IDX 
-		    	AND lm.DOC_OWNER = #{userId}
+		    	<choose>
+					<when test="listType != null and listType == 'my' "> 
+					AND DOC_OWNER = #{userId} 
+					</when>
+				    <when test="listType != null and listType == 'team'">
+				    AND DOC_OWNER IN (
+				    	SELECT USER_ID from lab_team_manager_view ltmv
+						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+				    ) 
+				    </when>
+				    <when test="listType != null and listType == 'share'">
+				    	AND MENU_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+				    </when>
+				    <when test="listType != null and listType == 'all'">
+				    
+				    </when>
+					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+				</choose>
+				<include refid="manual.whereManualList" />
 		)
 		SELECT 
 			*

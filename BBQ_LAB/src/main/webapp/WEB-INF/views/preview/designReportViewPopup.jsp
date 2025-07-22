@@ -152,8 +152,10 @@
 				</tbody>
 			</table>
 		</div>
-			
 		<div>
+			<span style="font-size: 14px;">※ 비고</span>
+		</div>	
+		<div class="mainTable">
 			<table>
 				<tr>
 					<td><pre>${designData.data.CONTENTS}</pre></td>

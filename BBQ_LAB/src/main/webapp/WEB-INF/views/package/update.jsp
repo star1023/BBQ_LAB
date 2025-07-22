@@ -293,27 +293,24 @@
 		$('#attatch_common').val('')
 	}
 	
-	function fn_removeTempFile(element, tempId){
-		//서버의 파일을 삭제한다.
-		var URL = '/file/deleteFile2Ajax';
-		$.ajax({
-			type:"POST",
-			url:URL,
-			data: {
-				"fileIdx": tempId
-			},
-			dataType:"json",
-			success:function(result) {
-				if( result.RESULT == 'S' ) {
-					$(element).parent().remove();
-				} else {
-					alert("오류가 발생하였습니다.\n"+result.MESSAGE);
-				}
-			},
-			error:function(request, status, errorThrown){
-				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-			}			
-		});
+	function removeTempFile(fileIdx, element) {
+	    // li 삭제
+	    $(element).closest('li').remove();
+
+	    // select에 삭제 파일 IDX 추가
+	    $('#deletedFileList').append(
+	        $('<option>', {
+	            value: fileIdx,
+	            selected: true
+	        })
+	    );
+	    
+	    // tempFileList에서 해당 옵션도 제거
+	    $('#tempFileList option').each(function () {
+	        if ($(this).val() == fileIdx) {
+	            $(this).remove();
+	        }
+	    });
 	}
 	
 	function CreateEditor(editorId) {
@@ -397,6 +394,23 @@
 			if (markFile) {
 			  formData.append("markFile", markFile); // name="imageFile"
 			}
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
+			$('#deletedFileList option:selected').each(function() {
+			    formData.append('deletedFileList', $(this).val());
+				console.log($(this).val());
+			});
 			
 			var URL = "../package/updatePackageInfoTmpAjax";
 			$.ajax({
@@ -494,6 +508,22 @@
 			if (markFile) {
 			  formData.append("markFile", markFile); // name="imageFile"
 			}
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
+			$('#deletedFileList option:selected').each(function() {
+			    formData.append('deletedFileList', $(this).val());
+			});
 			
 			$('#lab_loading').show();
 			var URL = "../package/updatePackageInfoTmpAjax";
@@ -1065,26 +1095,47 @@
 			</div>
 			
 			<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
-			<div class="title2 mt20" style="width:10%; display: inline-block;">
-				<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
-					<img src="/resources/images/icon_s_file.png" />파일첨부 
-				</button>
-			</div>
-			<div class="con_file" style="">
-				<ul>
-					<li class="point_img">
-						<dt>첨부파일</dt><dd>
-							<ul id="temp_attatch_file">
-								<c:forEach items="${packageInfoData.fileList}" var="fileList" varStatus="status">
-									<li><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-								</c:forEach>
-							</ul>
-							<ul id="attatch_file">								
-							</ul>
-						</dd>
-					</li>
-				</ul>
-			</div>
+				<div class="title2 mt20" style="width:10%; display: inline-block;">
+					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
+						<img src="/resources/images/icon_s_file.png" />파일첨부 
+					</button>
+				</div>
+				<div class="con_file" style="">
+					<ul>
+						<li class="point_img">
+							<dt>첨부파일</dt><dd>
+								<ul id="attatch_file">
+								</ul>
+							</dd>
+						</li>
+					</ul>
+				</div>
+				<c:if test="${not empty packageInfoData.fileList}">
+				<select id="tempFileList" name="tempFileList" multiple style="display:none">
+				  <c:forEach var="file" items="${packageInfoData.fileList}">
+				    <option value="${file.FILE_IDX}">${file.ORG_FILE_NAME}</option>
+				  </c:forEach>
+				</select>
+				<div class="con_file" style="">
+					<ul>
+						<li class="point_img">
+							<dt>기존파일</dt><dd>
+								<ul id="attatch_file">
+						              <c:forEach var="file" items="${packageInfoData.fileList}">
+						              <li data-file-idx="${file.FILE_IDX}">
+						                <a href="${file.FILE_PATH}" onclick="removeTempFile('${file.FILE_IDX}', this); return false;">
+						                  <img src="/resources/images/icon_del_file.png">
+						                </a>&nbsp;${file.ORG_FILE_NAME}
+						              </li>
+						            </c:forEach>
+								</ul>
+							</dd>
+						</li>
+					</ul>
+				</div>
+			    <!-- 숨겨진 select 박스 -->
+				<select name="deletedFileList" id="deletedFileList" multiple style="display: none;"></select>
+				</c:if>
 							
 			<div class="main_tbl">
 				<div class="btn_box_con5">

@@ -387,6 +387,18 @@
 			  formData.append("imageFile", imageFile); // name="imageFile"
 			}
 			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
 			var URL = "../package/insertPackageInfoTmpAjax";
 			$.ajax({
 				type:"POST",
@@ -474,6 +486,19 @@
 			if (imageFile) {
 			  formData.append("imageFile", imageFile); // name="imageFile"
 			}
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
 			
 			$('#lab_loading').show();
 			var URL = "../package/insertPackageInfoAjax";

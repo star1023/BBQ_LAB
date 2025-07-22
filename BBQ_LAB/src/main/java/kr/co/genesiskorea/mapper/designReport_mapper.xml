@@ -7,13 +7,34 @@
 			<when test="searchType.equals('searchName')">
 			AND PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%')
 			</when>
+			<when test="searchType.equals('searchCode')">
+			AND PRODUCT_CODE LIKE CONCAT('%',#{searchValue},'%')
+			</when>
       		<when test="searchType.equals('searchTitle')">
       		AND TITLE LIKE CONCAT('%',#{searchValue},'%')
       		</when>
       	</choose>
 		</if>
 		<if test="searchFileTxt != null and searchFileTxt != '' ">
-			AND DESIGN_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'DESIGN' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+			AND DESIGN_IDX IN (
+				SELECT 
+					distinct DOC_IDX 
+				FROM 
+					lab_file 
+				WHERE 1 = 1 
+					AND DOC_TYPE = 'DESIGN' 
+					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
+			)											
+		</if>
+		<if test="searchTeam != null and searchTeam != '' ">
+			<choose>
+				<when test="searchUser != null and searchUser != '' ">
+					AND DOC_OWNER = #{searchUser}
+				</when>
+				<otherwise>
+					AND DOC_OWNER IN (SELECT USER_ID FROM lab_user WHERE 1 = 1 AND EMSTAT = '1' AND ORGAID = #{searchTeam})
+				</otherwise>
+			</choose>	
 		</if>
 	</sql>
 	
@@ -24,7 +45,24 @@
 		FROM 	
 			lab_design
 		WHERE 1 = 1
-			AND DOC_OWNER = #{userId}
+			<choose>
+				<when test="listType != null and listType == 'my' "> 
+				AND DOC_OWNER = #{userId} 
+				</when>
+			    <when test="listType != null and listType == 'team'">
+			    AND DOC_OWNER IN (
+			    	SELECT USER_ID from lab_team_manager_view ltmv
+					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+			    ) 
+			    </when>
+			    <when test="listType != null and listType == 'share'">
+			    	AND DESIGN_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+			    </when>
+			    <when test="listType != null and listType == 'all'">
+			    
+			    </when>
+				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+			</choose>
 			AND IS_DELETE = 'N'
 			AND IS_LAST = 'Y'
 			<include refid="designReport.whereDesignList" />
@@ -60,7 +98,24 @@
 			FROM 	
 				lab_design
 			WHERE 1 = 1
-				AND DOC_OWNER = #{userId}
+				<choose>
+					<when test="listType != null and listType == 'my' "> 
+					AND DOC_OWNER = #{userId} 
+					</when>
+				    <when test="listType != null and listType == 'team'">
+				    AND DOC_OWNER IN (
+				    	SELECT USER_ID from lab_team_manager_view ltmv
+						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+				    ) 
+				    </when>
+				    <when test="listType != null and listType == 'share'">
+				    	AND DESIGN_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
+				    </when>
+				    <when test="listType != null and listType == 'all'">
+				    
+				    </when>
+					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+				</choose>
 				AND IS_DELETE = 'N'
 				AND IS_LAST = 'Y'
 				<include refid="designReport.whereDesignList" />

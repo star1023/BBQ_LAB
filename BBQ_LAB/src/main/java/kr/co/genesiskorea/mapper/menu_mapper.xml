@@ -264,7 +264,25 @@
 			AND MENU_TYPE3 = #{searchCategory3}
 		</if>
 		<if test="searchFileTxt != null and searchFileTxt != '' ">
-			AND MENU_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'MENU' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+			AND MENU_IDX IN (
+				SELECT 
+					distinct DOC_IDX 
+				FROM 
+					lab_file 
+				WHERE 1 = 1 
+					AND DOC_TYPE = 'MENU' 
+					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
+			)											
+		</if>
+		<if test="searchTeam != null and searchTeam != '' ">
+			<choose>
+				<when test="searchUser != null and searchUser != '' ">
+					AND DOC_OWNER = #{searchUser}
+				</when>
+				<otherwise>
+					AND DOC_OWNER IN (SELECT USER_ID FROM lab_user WHERE 1 = 1 AND EMSTAT = '1' AND ORGAID = #{searchTeam})
+				</otherwise>
+			</choose>	
 		</if>
 	</sql>
 	

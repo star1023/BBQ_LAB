@@ -10,10 +10,6 @@
 <title>결재함</title>
 <style>
 /*추가*/
-table.insert_proc01 {
-  table-layout: fixed;
-  width: 100%;
-}
 .outside{ border:0; font-family:'맑은고딕',Malgun Gothic; font-size:12px;}
 .outside td{border:2px solid #666;}
 .intable_title{ border:0;}
@@ -49,7 +45,6 @@ table.insert_proc01 {
 .imgDescriptbox{width: 90%;}
 
 </style>
-<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
 <script type="text/javascript">
 $(document).ready(function() {
 	  document.oncontextmenu = function (e) {
@@ -242,10 +237,11 @@ function getTextareaHTML(note) {
 }
 
 function downloadFile(idx){
-	location.href = '/common/fileDownload?idx='+idx;
+	location.href = '/test/fileDownload?idx='+idx;
 }
 </script>
-<h2 style=" position:fixed; background-color: #38b6e6 !important;" class="print_hidden">
+<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
+<h2 style=" position:fixed;" class="print_hidden">
 	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;결재</span>
 </h2>
 <div  class="top_btn_box" style=" position:fixed;">
@@ -258,8 +254,6 @@ function downloadFile(idx){
 		<div class="mainTable">
 			<form name="form" id="form" method="post" action="">
 			<input type="hidden" name="apprIdx" id="apprIdx" value="${paramVO.apprIdx }">
-			
-					
 				<table class="insert_proc01 tbl_app">
 					<colgroup>
 						<col width="13%"/>
@@ -325,17 +319,17 @@ function downloadFile(idx){
 					</tbody>
 				</table>
 				<div class="fr pt20 pb10" style="margin-bottom:10px;"  id="buttonArea2">
-					<c:if test="${paramVO.viewType eq 'myApprList' }">
-						<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
-							<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
-								<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
-								<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
-									<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
-								</c:if>
-								<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
-							</c:if>	
+				<c:if test="${paramVO.viewType eq 'myApprList' }">
+				<c:if test="${apprHeader.LAST_STATUS eq 'N' || apprHeader.LAST_STATUS eq 'A' }">
+					<c:if test = "${apprHeader.CURRENT_USER_ID eq paramVO.userId}">
+						<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 승인</button>
+						<c:if test="${apprHeader.CURRENT_STEP < apprHeader.TOTAL_STEP}">
+						<button class="btn_con_search" style="border-color:#09F; color:#09F"  onclick="fn_approvalCondSubmit(); return false;" id="btn_submit"><img src="/resources/images/icon_s_approval.png"> 부분승인</button>
 						</c:if>
-					</c:if>
+						<button class="btn_con_search" onclick="fn_approvalReject(); return false;" id="btn_reject"><img src="/resources/images/icon_doc06.png"> 반려</button>					
+					</c:if>	
+				</c:if>
+				</c:if>
 				</div>
 			</form>
 		</div>
@@ -343,202 +337,207 @@ function downloadFile(idx){
 	<div class="group01 mt5">
 		<div id="wrapper">
 		<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
-			<span>이화학 검사 의뢰서</span>
+			<span>표시사항기재양식</span>
 		</div>
 		<div class="mainTable">
 			<table  >
 				<colgroup>
-					<col width="16.66%">
-					<col width="16.66%">
-					<col width="16.66%">
-					<col width="16.66%">
-					<col width="16.66%">
-					<col width="16.66%">
+					<col width="16%">
+					<col width="16%">
+					<col width="34%">
+					<col width="34%">
 				</colgroup>
 				<tbody>
 					<tr>
-						<th  >의뢰일</th>
-						<td >${chemicalTestData.data.REQUEST_DATE}</td>
-						<th  >희망 완료일</th>
-						<td >${chemicalTestData.data.COMPLETION_DATE}</td>
-						<th  >의뢰자</th>
-						<td >${chemicalTestData.data.REQUEST_USER}</td>
+						<th rowSpan="2">해당면</th>
+						<td colSpan="3">포장지 인쇄 표기사항</td>
+					</tr>
+					<tr>						
+						<td >표기사항</td>
+						<td >세부사항</td>
+						<td >&nbsp;</td>
 					</tr>
 					<tr>
-						<th  >시료명</th>
-						<td colspan="5">
-							${chemicalTestData.data.PRODUCT_NAME}
-						</td>
+						<th  rowSpan="5">정면(주표시면)</th>
+						<td >제품명</td>
+						<td >${packageInfoData.data.PRODUCT_NAME}</td>
+						<td >주표시면(14P이상)</td>
 					</tr>
 					<tr>
-						<th  >시료 수량</th>
-						<td colspan="5">
-							${chemicalTestData.data.PRODUCT_COUNT}
-						</td>
+						<td >&nbsp;</td>
+						<td class="value">${packageInfoData.data.ETC_INFO}</td>
+						<td rowSpan="3">주표시면 주원료 함량 표시시 원재료와 함량 표기 기재 요망</td>
 					</tr>
 					<tr>
-						<th  >보관방법</th>
-						<td colspan="5">
-							${chemicalTestData.data.PRESERVATION}
-						</td>
-					</tr>
-					<c:forEach var="start" begin="0" end="${fn:length(chemicalTestItemList)-1}" step="4">
-					  <!-- 검사 요청 항목 -->
-					  <tr>
-					    <th style="width: 10%; text-align: center; font-weight: bold;">검사요청 항목</th>
-					    <td colspan="5" style="padding: 0;">
-					      <table style="border:none; width: 100%; table-layout: fixed; border-collapse: collapse;">
-					        <tr>
-					          <c:forEach var="i" begin="${start}" end="${start + 3}">
-					            <c:choose>
-					              <c:when test="${i lt fn:length(chemicalTestItemList)}">
-					                <th style="width: 25%; text-align: center;">
-					                  ${chemicalTestItemList[i].TYPE_CODE_TEXT}
-					                </th>
-					              </c:when>
-					              <c:otherwise>
-					                <th style="width: 25%;"></th>
-					              </c:otherwise>
-					            </c:choose>
-					          </c:forEach>
-					        </tr>
-					      </table>
-					    </td>
-					  </tr>
-					
-					  <!-- 범위 -->
-					  <tr>
-					    <th style="width: 10%; text-align: center; font-weight: bold;">범위</th>
-					    <td colspan="5" style="padding: 0;">
-					      <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-					        <tr>
-					          <c:forEach var="i" begin="${start}" end="${start + 3}">
-					            <c:choose>
-					              <c:when test="${i lt fn:length(chemicalTestItemList)}">
-					                <td style="width: 25%; text-align: center;">
-					                  ${chemicalTestItemList[i].ITEM_CONTENT}
-					                </td>
-					              </c:when>
-					              <c:otherwise>
-					                <td style="width: 25%;"></td>
-					              </c:otherwise>
-					            </c:choose>
-					          </c:forEach>
-					        </tr>
-					      </table>
-					    </td>
-					  </tr>
-					  
-					  <!-- 검사 결과 -->
-					  <tr>
-					  	<th style="width: 10%; text-align: center; font-weight: bold;">검사 결과</th>
-					    <td colspan="5" style="padding: 0;">
-					      <table style="border:none; width: 100%; table-layout: fixed; border-collapse: collapse;">
-					        <tr>
-					          <c:forEach var="i" begin="${start}" end="${start + 3}">
-					            <c:choose>
-					              <c:when test="${i lt fn:length(chemicalTestItemList)}">
-					                <td style="width: 25%; text-align: center;">
-					                  ${empty chemicalTestItemList[i].ITEM_RESULT ? '&nbsp;' : chemicalTestItemList[i].ITEM_RESULT}
-					                </td>
-					              </c:when>
-					              <c:otherwise>
-					                <td style="width: 25%;">&nbsp;</td>
-					              </c:otherwise>
-					            </c:choose>
-					          </c:forEach>
-					        </tr>
-					      </table>
-					    </td>
-					  </tr>
-					</c:forEach>
-					<tr>
-					    <th  >검사 요청 방법</th>
-					    <td colspan="5">
-					        <c:forEach var="item" items="${chemicalTestStandardList}">
-					            <c:if test="${item.TYPE_CODE eq 'MET'}">
-					                ${item.STANDARD_CONTENT}<br/>
-					            </c:if>
-					        </c:forEach>
-					    </td>
+						<td >중량</td>
+						<td class="value">${packageInfoData.data.WEIGHT}</td>
 					</tr>
 					<tr>
-					    <th  >검사 진행 일정</th>
-					    <td colspan="5">
-					        <c:forEach var="item" items="${chemicalTestStandardList}">
-					            <c:if test="${item.TYPE_CODE eq 'SCH'}">
-					                ${item.STANDARD_CONTENT}<br/>
-					            </c:if>
-					        </c:forEach>
-					    </td>
-					</tr>
-					<tr>
-						<th>첨부파일</th>
-						<td colspan="5">
-						<div class="con_file" style="">
-							<ul>
-								<li style="background-color:#fff; border:none;">
-									<dd>
-										<ul>
-											<c:forEach items="${chemicalTestData.fileList}" var="fileList" varStatus="status">
-												<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-											</c:forEach>
-										</ul>
-									</dd>
-								</li>
-							</ul>
-						</div>
-						</td>
-					</tr>
-					<tr>
-						<th colspan="3">요청사항</th>
-						<th colspan="3">시료 사진</th>
-					</tr>
-					<tr>
-						<td colspan="3">
-							<pre>${chemicalTestData.data.REQUEST_CONTENT}</pre>
-						</td>
-						<td colspan="3" style="text-align: center;">
+						<td >보관방법</td>
+						<td class="value">
 							<c:choose>
-								<c:when test="${not empty chemicalTestData.data.FILE_NAME}">
-									<img id="preview"
-										src="/images${chemicalTestData.data.FILE_PATH}/${chemicalTestData.data.FILE_NAME}"
-										style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
+								<c:when test="${packageInfoData.data.KEEP_CONDITION == '999'}">
+									${packageInfoData.data.KEEP_CONDITION_TXT}
 								</c:when>
 								<c:otherwise>
-									<img id="preview"
-										src="/resources/images/img_noimg3.png"
-										alt="이미지 없음"
-										style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
+									${packageInfoData.data.KEEP_CONDITION_NAME}
+								</c:otherwise>
+							</c:choose>	
+						</td>
+					</tr>
+					<tr>
+						<td >마크</td>
+						<td class="value" style="padding:0px; text-align:center;">
+							<c:set var="hasMarkImage" value="${not empty packageInfoData.data.MARK_FILE_PATH and not empty packageInfoData.data.MARK_FILE_NAME}" />
+							<p>
+							    <a href="<c:if test='${hasMarkImage}'><c:out value='/images${packageInfoData.data.MARK_FILE_PATH}/${packageInfoData.data.MARK_FILE_NAME}'/></c:if>" 
+							       target="_blank">
+							        <img id="markPreview"
+							             src="<c:choose>
+							                      <c:when test='${hasMarkImage}'>
+							                          /images${packageInfoData.data.MARK_FILE_PATH}/${packageInfoData.data.MARK_FILE_NAME}
+							                      </c:when>
+							                      <c:otherwise>
+							                          /resources/images/img_noimg3.png
+							                      </c:otherwise>
+							                  </c:choose>"
+							             style="width: 100%; height: auto; max-height: 200px; object-fit: contain; border:1px solid #e1e1e1;">
+							    </a>
+							</p>
+						</td>
+						<td>&nbsp;</td>
+					</tr>
+					<tr>
+						<th rowSpan="16">후면 또는 측면<br>(정보표시면)</th>
+						<td colspan="3">
+							(정보표시면)	후면 10p 이상(원산지는 12p 이상)<br>
+							장평 90%이상, 자간 -5이상 표시 의문<br>
+							(단, 정보표시면 면적이 100cm² 미만시 장평 50%이상, 자간 -5%이상 표시 가능)
+						</td>
+					</tr>
+					<tr>
+						<td>제품명</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.PRODUCT_NAME_BACK}
+						</td>
+					</tr>					
+					<tr>
+						<td>식품의 유형</td>
+						<td class="value" colSpan="2">
+							<c:choose>
+								<c:when test="${packageInfoData.data.FOOD_TYPE == '999'}">
+									${packageInfoData.data.FOOD_TYPE_TXT}
+								</c:when>
+								<c:otherwise>
+									${packageInfoData.data.FOOD_TYPE_NAME}
 								</c:otherwise>
 							</c:choose>
 						</td>
-					</tr>
+					</tr>					
+					<tr>
+						<td>원재료명 및 함량</td>
+						<td class="value" ><p style="white-space: pre-line; text-align:left;">${packageInfoData.data.CONTAIN_QUANTITY}</p></td>
+						<td class="value" style="padding:0px; text-align:center;">
+							<c:set var="hasImage" value="${not empty packageInfoData.data.CONTAIN_QUANTITY_FILE_PATH and not empty packageInfoData.data.CONTAIN_QUANTITY_FILE_NAME}" />
+							<p>
+							    <a href="<c:if test='${hasImage}'><c:out value='/images${packageInfoData.data.CONTAIN_QUANTITY_FILE_PATH}/${packageInfoData.data.CONTAIN_QUANTITY_FILE_NAME}'/></c:if>" 
+							       target="_blank">
+							        <img id="preview"
+							             src="<c:choose>
+							                      <c:when test='${hasImage}'>
+							                          /images${packageInfoData.data.CONTAIN_QUANTITY_FILE_PATH}/${packageInfoData.data.CONTAIN_QUANTITY_FILE_NAME}
+							                      </c:when>
+							                      <c:otherwise>
+							                          /resources/images/img_noimg3.png
+							                      </c:otherwise>
+							                  </c:choose>"
+							             style="width: 100%; height: auto; max-height: 200px; object-fit: contain; border:1px solid #e1e1e1;">
+							    </a>
+							</p>
+						</td>
+					</tr>					
+					<tr>
+						<td>알러지 유발물질</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.ALLERGY_OBJECT}
+						</td>
+					</tr>					
+					<tr>
+						<td>품목보고번호</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.MANUFACTURING_NO}
+						</td>
+					</tr>					
+					<tr>
+						<td>소비기한</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.EXPIRED_DATE}
+						</td>
+					</tr>					
+					<tr>
+						<td>포장재질</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.PACKAGE_OBJECT}
+						</td>
+					</tr>					
+					<tr>
+						<td>제조원</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.MAKER}
+						</td>
+					</tr>					
+					<tr>
+						<td>유통전문판매원</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.DISTRIBUTION}
+						</td>
+					</tr>					
+					<tr>
+						<td>반품 및 교환장소</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.RETURNED}
+						</td>
+					</tr>					
+					<tr>
+						<td>소비자상담실</td>
+						<td class="value" colSpan="2">
+							${packageInfoData.data.CUSTOMER_COUNSEL}
+						</td>
+					</tr>										
+					<tr>
+						<td>기타사항</td>
+						<td class="value" colSpan="2">
+							<c:forEach items="${addInfoList}" var="infoList" varStatus="status">
+								${infoList.INFO_TEXT}<br>								
+							</c:forEach>
+						</td>
+					</tr>										
+					<tr>
+						<td>분리배출 표시</td>
+						<td class="value" colSpan="2">
+							<c:choose>
+								<c:when test="${packageInfoData.data.SEPARATE_DISCHARGE == '999'}">
+									${packageInfoData.data.SEPARATE_DISCHARGE_TXT}
+								</c:when>
+								<c:otherwise>
+									${packageInfoData.data.SEPARATE_DISCHARGE_NAME}
+								</c:otherwise>
+							</c:choose>
+						</td>
+					</tr>							
+					<tr>
+						<td>주의사항</td>
+						<td class="value" colSpan="2">
+							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.SUGGESTIONS}</p>
+						</td>
+					</tr>					
+					<tr>
+						<td>조리방법</td>
+						<td class="value" colSpan="2">
+							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.COOK_METHOD}</p>
+						</td>
+					</tr>					
 				</tbody>
 			</table>
 		</div>
-		<div>
-			<span style="font-size: 14px;">※ 검사 결과 내용</span>
-		</div>
-		<div class="mainTable">
-			<c:choose>
-				<c:when test="
-					    ${not empty chemicalTestData.data.TEST_RESULT}
-					">
-					<table >
-						<tr>
-							<td><pre>${chemicalTestData.data.TEST_RESULT}</pre></td>
-						</tr>
-					</table>
-				</c:when>
-				<c:otherwise>
-					<table style="min-height:250px;">
-						<tr >
-							<td><pre></pre></td>
-						</tr>
-					</table>
-				</c:otherwise>
-			</c:choose>
-		</div>
-	</div>
 	</div>

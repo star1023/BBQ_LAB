@@ -272,12 +272,34 @@
 			formData.append("orgFileName", $("#orgFileName").val());
 			formData.append("fileName", $("#fileName").val());
 			formData.append("filePath", $("#filePath").val());
+			formData.append("markorgFileName", $("#markorgFileName").val());
+			formData.append("markfileName", $("#markfileName").val());
+			formData.append("markfilePath", $("#markfilePath").val());
 			
 			// 이미지 파일
 			var imageFile = document.getElementById('fileImageInput').files[0];
 			if (imageFile) {
 			  formData.append("imageFile", imageFile); // name="imageFile"
 			}
+			
+			// 이미지 파일
+			var markFile = document.getElementById('markImageInput').files[0];
+			if (markFile) {
+			  formData.append("markFile", markFile); // name="imageFile"
+			}
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
 			
 			var URL = "../package/insertVersionUpTmpAjax";
 			$.ajax({
@@ -364,12 +386,35 @@
 			formData.append("orgFileName", $("#orgFileName").val());
 			formData.append("fileName", $("#fileName").val());
 			formData.append("filePath", $("#filePath").val());
+			formData.append("markDeleteFlag", $("#markDeleteFlag").val());
+			formData.append("markorgFileName", $("#markorgFileName").val());
+			formData.append("markfileName", $("#markfileName").val());
+			formData.append("markfilePath", $("#markfilePath").val());
 			
 			// 이미지 파일
 			var imageFile = document.getElementById('fileImageInput').files[0];
 			if (imageFile) {
 			  formData.append("imageFile", imageFile); // name="imageFile"
 			}
+			
+			// 이미지 파일
+			var markFile = document.getElementById('markImageInput').files[0];
+			if (markFile) {
+			  formData.append("markFile", markFile); // name="imageFile"
+			}
+			
+			for (var i = 0; i < attatchFileArr.length; i++) {
+				formData.append('file', attatchFileArr[i])
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileTypeText', attatchFileTypeArr[i].fileTypeText)			
+			}
+			
+			for (var i = 0; i < attatchFileTypeArr.length; i++) {
+				formData.append('fileType', attatchFileTypeArr[i].fileType)			
+			}
+			
 			
 			$('#lab_loading').show();
 			var URL = "../package/insertVersionUpAjax";
@@ -509,6 +554,22 @@
 			}
 		}
 	}
+	
+	function fn_changeImageFile2(input, e) {
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				document.getElementById('markPreview').src = e.target.result;
+			};
+			reader.readAsDataURL(input.files[0]);
+			
+			// 삭제 플래그 설정
+			if( $("#markorgFileName").val() != "" ) {
+				$("#makrDeleteFlag").val("Y");	
+			}
+		}
+	}
+	
 	function fn_deleteImageFile(element, e) {
 		const preview = document.getElementById('preview');
 		const fileInput = document.getElementById('fileImageInput');
@@ -519,6 +580,19 @@
 		// 삭제 플래그 설정
 		if( $("#orgFileName").val() != "" ) {
 			$("#imageDeleteFlag").val("Y");	
+		}
+	}
+	
+	function fn_deleteImageFile2(element, e) {
+		const markPreview = document.getElementById('markPreview');
+		const markImageInput = document.getElementById('markImageInput');
+
+		if (markPreview) markPreview.src = "/resources/images/img_noimg3.png";
+		if (markImageInput) markImageInput.value = "";
+		
+		// 삭제 플래그 설정
+		if( $("#markorgFileName").val() != "" ) {
+			$("#markDeleteFlag").val("Y");	
 		}
 	}
 	
@@ -712,7 +786,28 @@
 								마크
 							</td>
 							<td>
-								HACCP
+								<input type="hidden" name="markDeleteFlag" id="markDeleteFlag" value="N">
+								<input type="hidden" name="markorgFileName" id="markorgFileName" value="${packageInfoData.data.MARK_ORG_FILE_NAME}">
+								<input type="hidden" name="markfileName" id="markfileName" value="${packageInfoData.data.MARK_FILE_NAME}">
+								<input type="hidden" name="markfilePath" id="markfilePath" value="${packageInfoData.data.MARK_FILE_PATH}">
+								<c:set var="hasImage" value="${not empty packageInfoData.data.MARK_FILE_PATH and not empty packageInfoData.data.MARK_FILE_NAME}" />
+								<p><img id="markPreview" src="<c:choose>
+								                      <c:when test='${hasImage}'>
+								                          /images${packageInfoData.data.MARK_FILE_PATH}/${packageInfoData.data.MARK_FILE_NAME}
+								                      </c:when>
+								                      <c:otherwise>
+								                          /resources/images/img_noimg3.png
+								                      </c:otherwise>
+								                  </c:choose>" style="border:1px solid #e1e1e1; border-radius:5px; width:310px; height:250px;"></p>
+								<p class="pt10">
+									<div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+										<input type="file" name="file" id="markImageInput" accept="image/*" style="display:none;" onchange="fn_changeImageFile2(this, event)">
+										<label for="markImageInput" style="cursor: pointer;">이미지파일 등록 <img src="/resources/images/icon_add_file.png"></label>
+									</div>	
+								</p>
+								<div style=" z-index:3; position:relative;right:-300px; top:-300px; width: 25px; height: 25px;">
+									<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
+								</div>
 							</td>
 							<td>
 								&nbsp;
@@ -882,7 +977,8 @@
 							<td colspan="2">
 								<textarea name="cookMethod" id="cookMethod" style="width: 95%; height: 40px; ">${packageInfoData.data.COOK_METHOD}</textarea>
 							</td>
-						</tr>																	
+						</tr>
+						<!-- 																	
 						<tr>
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
@@ -896,6 +992,7 @@
 								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
+						 -->
 					</tbody>
 				</table>
 			</div>
@@ -910,12 +1007,7 @@
 				<ul>
 					<li class="point_img">
 						<dt>첨부파일</dt><dd>
-							<ul id="temp_attatch_file">
-								<c:forEach items="${packageInfoData.fileList}" var="fileList" varStatus="status">
-									<li><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-								</c:forEach>
-							</ul>
-							<ul id="attatch_file">								
+							<ul id="attatch_file">
 							</ul>
 						</dd>
 					</li>

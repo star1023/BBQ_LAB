@@ -346,7 +346,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public void updatePackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
+	public void updatePackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file, List<String> deletedFileList) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -489,6 +489,42 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			// 기존 파일 삭제
+			Object deletedFileListObj = param.get("deletedFileList");
+			if (deletedFileListObj instanceof List<?>) {
+			    List<?> deletedList = (List<?>) deletedFileListObj;
+	
+			    for (Object item : deletedList) {
+			        if (item == null) continue;
+	
+			        try {
+			        	String fileIdx = String.valueOf(item);
+	
+			        	Map<String, Object> paramMap = new HashMap<String, Object>();
+			        	paramMap.put("idx", fileIdx);
+			        	Map<String, String> fileData = commonDao.selectFileData(paramMap);
+	
+			        	if (fileData != null && fileData.get("FILE_PATH") != null && fileData.get("FILE_NAME") != null) {
+			        		String filePath = fileData.get("FILE_PATH"); // ex. C:/develop/upload/chemical/202505
+			        		String fileName = fileData.get("FILE_NAME"); // ex. xxx.pdf
+	
+			        		// OS에 맞게 경로 조합
+			        		File deleteFile = new File(filePath + File.separator + fileName);
+			        	    if (deleteFile.exists()) {
+			        	        boolean deleted = deleteFile.delete();
+			        	        if (!deleted) {
+			        	            System.err.println("파일 삭제 실패: " + filePath + File.separator + fileName);
+			        	        }
+			        	    }
+			        	}
+			        	commonDao.deleteFileData(fileIdx);
+	
+			        } catch (NumberFormatException e) {
+			            System.err.println("FILE_IDX 파싱 실패: " + item);
+			        }
+			    }
+			}
+			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
 				path = config.getProperty("upload.file.path.package");
@@ -535,7 +571,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public void updatePackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
+	public void updatePackageInfo(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file, List<String> deletedFileList) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -674,6 +710,42 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			// 기존 파일 삭제
+			Object deletedFileListObj = param.get("deletedFileList");
+			if (deletedFileListObj instanceof List<?>) {
+			    List<?> deletedList = (List<?>) deletedFileListObj;
+	
+			    for (Object item : deletedList) {
+			        if (item == null) continue;
+	
+			        try {
+			        	String fileIdx = String.valueOf(item);
+	
+			        	Map<String, Object> paramMap = new HashMap<String, Object>();
+			        	paramMap.put("idx", fileIdx);
+			        	Map<String, String> fileData = commonDao.selectFileData(paramMap);
+	
+			        	if (fileData != null && fileData.get("FILE_PATH") != null && fileData.get("FILE_NAME") != null) {
+			        		String filePath = fileData.get("FILE_PATH"); // ex. C:/develop/upload/chemical/202505
+			        		String fileName = fileData.get("FILE_NAME"); // ex. xxx.pdf
+	
+			        		// OS에 맞게 경로 조합
+			        		File deleteFile = new File(filePath + File.separator + fileName);
+			        	    if (deleteFile.exists()) {
+			        	        boolean deleted = deleteFile.delete();
+			        	        if (!deleted) {
+			        	            System.err.println("파일 삭제 실패: " + filePath + File.separator + fileName);
+			        	        }
+			        	    }
+			        	}
+			        	commonDao.deleteFileData(fileIdx);
+	
+			        } catch (NumberFormatException e) {
+			            System.err.println("FILE_IDX 파싱 실패: " + item);
+			        }
+			    }
+			}
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
