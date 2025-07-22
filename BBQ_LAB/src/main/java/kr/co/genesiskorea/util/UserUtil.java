@@ -249,4 +249,15 @@ public class UserUtil {
 		return roleCode;
 	}
 	
+	public static String getUserType( HttpServletRequest request ) {
+		String userType = "";
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			userType = auth.getUserType();
+		} catch( Exception e ) {
+			
+		}
+		return userType;
+	}
+	
 }

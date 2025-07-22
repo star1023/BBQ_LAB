@@ -22,6 +22,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import kr.co.genesiskorea.service.UserService;
 import kr.co.genesiskorea.util.MessageUtil;
+import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
 
 public class AuthInterceptor extends HandlerInterceptorAdapter {
@@ -48,6 +49,16 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		boolean isExcept = false;
 		boolean hasAuth = AuthUtil.hasAuth(request);
 		logger.info("hasAuth : "+hasAuth);
+		
+		Auth auth = AuthUtil.getAuth(request);
+		
+		logger.info("auth : "+auth);
+		
+		if( auth != null && auth.getUserId() != null && !"".equals(auth.getUserId()) ) {
+			
+		} else {
+			hasAuth = false;
+		}
 		
 		List<String> exceptUriList = new ArrayList<String>();
 		exceptUriList.add("Ajax");

@@ -108,4 +108,11 @@
 			<function-signature>java.lang.String getTitleName(javax.servlet.http.HttpServletRequest)</function-signature>
 			<example>${userUtil:getTitleName(request)}</example>
 		</function>
+		<function>
+			<description>권한구분코드조회</description>
+			<name>getUserType</name>
+			<function-class>kr.co.genesiskorea.util.UserUtil</function-class>
+			<function-signature>java.lang.String getUserType(javax.servlet.http.HttpServletRequest)</function-signature>
+			<example>${userUtil:getUserType(request)}</example>
+		</function>
 </taglib>
