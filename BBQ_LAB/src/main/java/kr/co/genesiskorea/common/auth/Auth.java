@@ -28,6 +28,7 @@ public class Auth implements Serializable {
 	private String mailCheck3;
 	
 	private String roleCode;	//권한코드
+	private String userType;	//권한코드
 	private String OBJTTX;		//OBJTTX
 	private String TITL_TXT;	//직급명
 	private String RESP_TXT;	//RESP_TXT
@@ -136,6 +137,14 @@ public class Auth implements Serializable {
 
 	public void setRoleCode(String roleCode) {
 		this.roleCode = roleCode;
+	}
+	
+	public String getUserType() {
+		return userType;
+	}
+
+	public void setUserType(String userType) {
+		this.userType = userType;
 	}
 	
 	public String getOBJTTX() {

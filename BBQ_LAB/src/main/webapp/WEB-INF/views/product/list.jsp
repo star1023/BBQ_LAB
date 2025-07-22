@@ -10,7 +10,7 @@
 		fn_loadList(1);
 		fn_loadSearchCategory(2,1);
 		//1.임원인(roleCode가 4, 5) 경우에만 탭 설정 상관없이 팀, 담당자 필드를 표시한다.
-		if( '${userUtil:getRoleCode(pageContext.request)}' == '4' || '${userUtil:getRoleCode(pageContext.request)}' == '5' ) {
+		if( '${userUtil:getUserType(pageContext.request)}' == 'EXECUTIVE' ) {
 			$("#searchTeam_li").show();
 			$("#searchUser_li").show();
 		}
@@ -72,7 +72,7 @@
 		});
 		
 		//1.팀장인 경우
-		if( '${userUtil:getRoleCode(pageContext.request)}' == '2' || '${userUtil:getRoleCode(pageContext.request)}' == '7' ) {
+		if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) {
 			//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
 			//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
 			//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
@@ -384,58 +384,30 @@
 			<div class="tab02">
 				<c:set var="listType" value="my"/>
 				<c:choose>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "1"}'>
+					<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 						<c:set var="listType" value="my" />
 					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "2"}'>
+					<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
 						<c:set var="listType" value="my" />
 					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "3"}'>
-						<c:set var="listType" value="my" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "4"}'>
+					<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
 						<c:set var="listType" value="all" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "5"}'>
-						<c:set var="listType" value="all" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "6"}'>
-						<c:set var="listType" value="my" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "7"}'>
-						<c:set var="listType" value="my" />
 					</c:when>
 				</c:choose>
 				<input type="hidden" name="listType" id="listType" value="${listType}">
 				<ul class="tab">
 					<c:choose>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "1"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 제품완료보고서</li></a>						
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "2"}'>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
 							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 제품완료보고서</li></a>
 							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 제품완료보고서</li></a>
 						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "3"}'>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
 							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 제품완료보고서</li></a>
 						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "4"}'>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
 							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 제품완료보고서</li></a>
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "5"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 제품완료보고서</li></a>
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "6"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
-							<a href="javascript:changeListType('share')" id="share"><li class="select">공동참여 제품완료보고서</li></a>
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "7"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
-							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 제품완료보고서</li></a>
-							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 제품완료보고서</li></a>
 						</c:when>
 					</c:choose>	
 				</ul>

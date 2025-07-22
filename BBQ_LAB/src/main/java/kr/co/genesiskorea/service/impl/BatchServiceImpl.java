@@ -113,12 +113,15 @@ public class BatchServiceImpl implements BatchService {
 				String titleCode = (String)userData.get("TITLCD");
 				String respCode = (String)userData.get("RESPCD");
 				String roleCode = "";
+				String userType = "RESEARCHER";		//RESEARCHER:연구원, LEADER:팀장, EXECUTIVE: 임원
 				//소속이 세과원인 경우
 				if( orgId != null && "10000752".equals(orgId) ) {		//나중에 10000752 로 변경		
 					if( titleCode != null && "e10".equals(titleCode) ) {	//e10 은 사장
 						roleCode = "5";
+						userType = "EXECUTIVE";
 					} else if( titleCode != null && "m10".equals(titleCode) ) {	//m10 상무
 						roleCode = "4";
+						userType = "EXECUTIVE";
 					} 
 				}
 				
@@ -126,20 +129,25 @@ public class BatchServiceImpl implements BatchService {
 				if( "".equals(roleCode) && orgId != null && "10001220".equals(orgId) ) {	//나중에 10001220 로 변경	
 					if( respCode != null && "906".equals(respCode) ) {
 						roleCode = "7";
+						userType = "LEADER";
 					} else {
 						roleCode = "6";
+						userType = "RESEARCHER";
 					}
 				}
 				//팀장
 				if( "".equals(roleCode) && respCode != null && "906".equals(respCode) ) {
+					userType = "LEADER";
 					roleCode = "2";
 				}
 				
 				//권한코드가 지정이 안된 경우 일반사용자 권한을 추가한다.
 				if( roleCode != null && "".equals(roleCode) ) {
+					userType = "RESEARCHER";
 					roleCode = "3";
 				}
 				userData.put("ROLE_CODE", roleCode);
+				userData.put("USER_TYPE", userType);
 				String encPwd = SecurityUtil.getEncrypt((String)userData.get("EMPNUM"), (String)userData.get("EMPNUM"));
 				userData.put("ENCPWD", encPwd);
 				//userList.add(i, userData);

@@ -421,6 +421,7 @@
 			, THEME
 			, IS_LOCK
 			, ROLE_CODE
+			, USER_TYPE
 			, ORGAID
 			, TITLCD
 			, LEVLCD
@@ -439,6 +440,7 @@
 	        , #{item.THEME}
 	        , #{item.IS_LOCK}
 	        , #{item.ROLE_CODE}
+	        , #{item.USER_TYPE}
 	        , #{item.ORGAID}
 	        , #{item.TITLCD}
 	        , #{item.LEVLCD}
@@ -456,6 +458,7 @@
 			, THEME = VALUES(THEME)
 			, IS_LOCK = VALUES(IS_LOCK)
 			, ROLE_CODE = VALUES(ROLE_CODE)
+			, USER_TYPE = VALUES(USER_TYPE)
 			, ORGAID = VALUES(ORGAID)
 			, TITLCD = VALUES(TITLCD)
 			, LEVLCD = VALUES(LEVLCD)
