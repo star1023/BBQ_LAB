@@ -10,7 +10,7 @@
 		fn_loadList(1);
 		fn_loadSearchCategory(2,1);
 		//1.임원인(roleCode가 4, 5) 경우에만 탭 설정 상관없이 팀, 담당자 필드를 표시한다.
-		if( '${userUtil:getRoleCode(pageContext.request)}' == '4' || '${userUtil:getRoleCode(pageContext.request)}' == '5' ) {
+		if( '${userUtil:getUserType(pageContext.request)}' == 'EXECUTIVE' ) {
 			$("#searchTeam_li").show();
 			$("#searchUser_li").show();
 		}
@@ -72,7 +72,7 @@
 		});
 		
 		//1.팀장인 경우
-		if( '${userUtil:getRoleCode(pageContext.request)}' == '2' || '${userUtil:getRoleCode(pageContext.request)}' == '7' ) {
+		if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) {
 			//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
 			//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
 			//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
@@ -176,7 +176,7 @@
 				, "searchCategory3" : $("#searchCategory3").selectedValues()[0]
 				, "searchFileTxt" : $("#searchFileTxt").val()
 				, "listType":$('#listType').val()
-				, "docType" : "MANUAL"
+				, "docType" : "MENU"
 				, "searchTeam" : $("#searchTeam").selectedValues()[0]
 				, "searchUser" : $("#searchUser").selectedValues()[0]
 				, "viewCount":viewCount
@@ -294,7 +294,7 @@
 				    $("#list").html(html);
 				} else {
 					$("#list").html(html);
-					html += "<tr><td align='center' colspan='7'>데이터가 없습니다.</td></tr>";
+					html += "<tr><td align='center' colspan='8'>데이터가 없습니다.</td></tr>";
 				}			
 				$("#list").html(html);
 				$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
@@ -312,22 +312,27 @@
 	}
 	
 	function showChildVersion(imgElement){
-		var docNo = $(imgElement).parent().parent().attr('id').split('_')[1];
-		var elementImg = $(imgElement).attr('src').split('/')[$(imgElement).attr('src').split('/').length-1];
-		
-		var addImg = 'img_add_doc.png';
-		
-		if(elementImg == addImg){
-			$(imgElement).attr('src', $(imgElement).attr('src').replace('_add_', '_m_')); 
-			$('tr[id*=manual_'+docNo+']').show();
-		} else {
-			$(imgElement).attr('src', $(imgElement).attr('src').replace('_m_', '_add_'));
-			$('tr[id*=manual_'+docNo+']').toArray().forEach(function(v, i){
-				if(i != 0){
-					$(v).hide();
-				}
-			})
-		}
+	    var parentIdParts = $(imgElement).closest('tr').attr('id').split('_');
+	    var parentNo = parentIdParts[1]; // 정확한 부모 번호 추출
+
+	    var imgSrc = $(imgElement).attr('src');
+	    var isAddIcon = imgSrc.includes('_add_');
+
+	    if (isAddIcon) {
+	        $(imgElement).attr('src', imgSrc.replace('_add_', '_m_')); 
+
+	        // 정확히 product_1_ 또는 product_12_ 같은 prefix만 포함하는 자식만 열기
+	        $('tr[id^="product_' + parentNo + '_"]').show();
+	    } else {
+	        $(imgElement).attr('src', imgSrc.replace('_m_', '_add_'));
+
+	        // 자식 중에서 첫 번째 tr (부모)는 제외하고 나머지 숨기기
+	        $('tr[id^="product_' + parentNo + '_"]').toArray().forEach(function(v, i){
+	            if (i !== 0) {
+	                $(v).hide();
+	            }
+	        });
+	    }
 	}
 	
 	function fn_attachFileOpen(idx) {
@@ -576,54 +581,30 @@
 			<div class="tab02">
 				<c:set var="listType" value="my"/>
 				<c:choose>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "1"}'>
+					<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 						<c:set var="listType" value="my" />
 					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "2"}'>
+					<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
 						<c:set var="listType" value="my" />
 					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "3"}'>
-						<c:set var="listType" value="my" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "4"}'>
+					<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
 						<c:set var="listType" value="all" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "5"}'>
-						<c:set var="listType" value="all" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "6"}'>
-						<c:set var="listType" value="my" />
-					</c:when>
-					<c:when test='${userUtil:getRoleCode(pageContext.request) == "7"}'>
-						<c:set var="listType" value="my" />
 					</c:when>
 				</c:choose>
 				<input type="hidden" name="listType" id="listType" value="${listType}">
 				<ul class="tab">
 					<c:choose>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "1"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>						
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "2"}'>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
 							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 매뉴얼</li></a>
+							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴 매뉴얼</li></a>
 						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "3"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "4"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "5"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>
-						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "6"}'>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
+							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴 매뉴얼</li></a>
 						</c:when>
-						<c:when test='${userUtil:getRoleCode(pageContext.request) == "7"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
-							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 매뉴얼</li></a>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>
 						</c:when>
 					</c:choose>	
 				</ul>

@@ -330,7 +330,7 @@
 		        contentType: false,
 		        cache: false,
 				dataType:"json",
-				success:function(result) {
+				success:function(data) {
 					if(data.RESULT == 'S') {
 						alert("임시저장되었습니다.");
 						$('#lab_loading').hide();

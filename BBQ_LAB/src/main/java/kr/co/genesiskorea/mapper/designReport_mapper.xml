@@ -10,10 +10,10 @@
 			<when test="searchType.equals('searchCode')">
 			AND PRODUCT_CODE LIKE CONCAT('%',#{searchValue},'%')
 			</when>
-      		<when test="searchType.equals('searchTitle')">
-      		AND TITLE LIKE CONCAT('%',#{searchValue},'%')
-      		</when>
       	</choose>
+		</if>
+		<if test="searchTitle != null and searchTitle != '' ">
+			AND TITLE LIKE CONCAT('%',#{searchTitle},'%')								
 		</if>
 		<if test="searchFileTxt != null and searchFileTxt != '' ">
 			AND DESIGN_IDX IN (
@@ -54,9 +54,6 @@
 			    	SELECT USER_ID from lab_team_manager_view ltmv
 					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
 			    ) 
-			    </when>
-			    <when test="listType != null and listType == 'share'">
-			    	AND DESIGN_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
 			    </when>
 			    <when test="listType != null and listType == 'all'">
 			    
@@ -107,9 +104,6 @@
 				    	SELECT USER_ID from lab_team_manager_view ltmv
 						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
 				    ) 
-				    </when>
-				    <when test="listType != null and listType == 'share'">
-				    	AND DESIGN_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
 				    </when>
 				    <when test="listType != null and listType == 'all'">
 				    

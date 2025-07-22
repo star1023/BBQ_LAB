@@ -114,6 +114,7 @@ public class CommonController {
 		try{
 			Map<String, String> fileInfo =commonService.selectFileData(param);
 			if( fileInfo != null && ( fileInfo.get("FILE_IDX") != null || !"".equals(fileInfo.get("FILE_IDX"))) ) {
+				// 파일 다운로드 이력관리 (테이블 만들기 파일인덱스, 유저명, 날짜시간 컬럼만 갖고)
 				FileUtil.fileDownload3(fileInfo, response);	
 			}
 		} catch( Exception e ) {

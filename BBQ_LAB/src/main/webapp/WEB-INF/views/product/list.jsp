@@ -318,22 +318,27 @@
 	}
 	
 	function showChildVersion(imgElement){
-		var docNo = $(imgElement).parent().parent().attr('id').split('_')[1];
-		var elementImg = $(imgElement).attr('src').split('/')[$(imgElement).attr('src').split('/').length-1];
-		
-		var addImg = 'img_add_doc.png';
-		
-		if(elementImg == addImg){
-			$(imgElement).attr('src', $(imgElement).attr('src').replace('_add_', '_m_')); 
-			$('tr[id*=product_'+docNo+']').show();
-		} else {
-			$(imgElement).attr('src', $(imgElement).attr('src').replace('_m_', '_add_'));
-			$('tr[id*=product_'+docNo+']').toArray().forEach(function(v, i){
-				if(i != 0){
-					$(v).hide();
-				}
-			})
-		}
+	    var parentIdParts = $(imgElement).closest('tr').attr('id').split('_');
+	    var parentNo = parentIdParts[1]; // 정확한 부모 번호 추출
+
+	    var imgSrc = $(imgElement).attr('src');
+	    var isAddIcon = imgSrc.includes('_add_');
+
+	    if (isAddIcon) {
+	        $(imgElement).attr('src', imgSrc.replace('_add_', '_m_')); 
+
+	        // 정확히 product_1_ 또는 product_12_ 같은 prefix만 포함하는 자식만 열기
+	        $('tr[id^="product_' + parentNo + '_"]').show();
+	    } else {
+	        $(imgElement).attr('src', imgSrc.replace('_m_', '_add_'));
+
+	        // 자식 중에서 첫 번째 tr (부모)는 제외하고 나머지 숨기기
+	        $('tr[id^="product_' + parentNo + '_"]').toArray().forEach(function(v, i){
+	            if (i !== 0) {
+	                $(v).hide();
+	            }
+	        });
+	    }
 	}
 	
 	function fn_search() {

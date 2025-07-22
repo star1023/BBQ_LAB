@@ -502,7 +502,7 @@
 				, "docType" : docType
 				, "docIdx" : docIdx
 				, "status" : 'CA'
-				, "docStatus" : 'TMP'
+				, "docStatus" : 'APPR_CANCEL'
 			},
 			dataType:"json",
 			async:false,

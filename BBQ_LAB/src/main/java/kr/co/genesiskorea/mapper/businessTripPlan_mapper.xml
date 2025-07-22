@@ -2,18 +2,35 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="businessTripPlan">
 	<sql id="whereBusinessTripPlan">
-		<if test="searchType != null and searchType != '' ">
-		<choose>
-			<when test="searchType.equals('searchName')">
-			AND PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%')
-			</when>
-      		<when test="searchType.equals('searchTitle')">
-      		AND TITLE LIKE CONCAT('%',#{searchValue},'%')
-      		</when>
-      	</choose>
+		<if test="searchType1 != null and searchType1 != '' ">
+			AND TRIP_TYPE = #{searchType1}
+		</if>
+		<if test="searchType2 != null and searchType2 != '' ">
+			AND TRIP_DIV = #{searchType2}
+		</if>
+		<if test="searchTitle != null and searchTitle != '' ">
+			AND TITLE LIKE CONCAT('%',#{searchTitle},'%')								
 		</if>
 		<if test="searchFileTxt != null and searchFileTxt != '' ">
-			AND DESIGN_IDX IN (SELECT distinct DOC_IDX FROM lab_file WHERE 1 = 1 AND DOC_TYPE = 'DESIGN' AND FILE_CONTENT LIKE CONCAT('%',#{searchFileTxt},'%'))
+			AND PLAN_IDX IN (
+				SELECT 
+					distinct DOC_IDX 
+				FROM 
+					lab_file 
+				WHERE 1 = 1 
+					AND DOC_TYPE = 'PLAN' 
+					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
+			)											
+		</if>
+		<if test="searchTeam != null and searchTeam != '' ">
+			<choose>
+				<when test="searchUser != null and searchUser != '' ">
+					AND DOC_OWNER = #{searchUser}
+				</when>
+				<otherwise>
+					AND DOC_OWNER IN (SELECT USER_ID FROM lab_user WHERE 1 = 1 AND EMSTAT = '1' AND ORGAID = #{searchTeam})
+				</otherwise>
+			</choose>	
 		</if>
 	</sql>
 	
@@ -24,7 +41,21 @@
 		FROM
 			lab_business_trip_plan
 		WHERE 1 = 1
-			AND DOC_OWNER = #{userId}
+			<choose>
+				<when test="listType != null and listType == 'my' "> 
+				AND DOC_OWNER = #{userId} 
+				</when>
+			    <when test="listType != null and listType == 'team'">
+			    AND DOC_OWNER IN (
+			    	SELECT USER_ID from lab_team_manager_view ltmv
+					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+			    ) 
+			    </when>
+			    <when test="listType != null and listType == 'all'">
+			    
+			    </when>
+				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+			</choose>
 			<include refid="businessTripPlan.whereBusinessTripPlan" />			
 	</select>
 	
@@ -71,7 +102,21 @@
 			FROM 	
 				lab_business_trip_plan
 			WHERE 1 = 1
-				AND DOC_OWNER = #{userId}
+				<choose>
+					<when test="listType != null and listType == 'my' "> 
+					AND DOC_OWNER = #{userId} 
+					</when>
+				    <when test="listType != null and listType == 'team'">
+				    AND DOC_OWNER IN (
+				    	SELECT USER_ID from lab_team_manager_view ltmv
+						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+				    ) 
+				    </when>
+				    <when test="listType != null and listType == 'all'">
+				    
+				    </when>
+					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+				</choose>
 				AND IS_DELETE = 'N'
 				AND IS_LAST = 'Y'
 				<include refid="businessTripPlan.whereBusinessTripPlan" />
