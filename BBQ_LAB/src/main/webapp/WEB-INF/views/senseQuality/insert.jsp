@@ -134,10 +134,10 @@ table{font-size: 12px}
 				}
 			});
 			
-			if( resultCheckCnt > 0 || $('tr[id^=result_tr]').toArray().length < 1 ) {
+			/* if( resultCheckCnt > 0 || $('tr[id^=result_tr]').toArray().length < 1 ) {
 				alert("결론을 입력해주세요.");
 				return;
-			}
+			} */
 			
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
@@ -149,11 +149,11 @@ table{font-size: 12px}
 				}
 			});
 			
-			if( inputCheckCnt > 0 ) {
+			/* if( inputCheckCnt > 0 ) {
 				alert("세부내용은 구분, 사진, 결과를 입력하여야 합니다.");
 				$('#lab_loading').hide();
 				return;
-			}
+			} */
 			
 			for( var i = nullIdxArr.length-1 ; i >= 0 ; i-- ) {
 				contentsDivArr.splice(nullIdxArr[i],1);

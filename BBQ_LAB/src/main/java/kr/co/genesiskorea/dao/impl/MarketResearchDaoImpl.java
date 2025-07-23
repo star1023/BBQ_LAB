@@ -99,4 +99,10 @@ public class MarketResearchDaoImpl implements MarketResearchDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("marketResearch.selectMyDataCheck",param);
 	}
+
+	@Override
+	public void deleteResearch(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("marketResearch.deleteResearch", param);
+	}
 }

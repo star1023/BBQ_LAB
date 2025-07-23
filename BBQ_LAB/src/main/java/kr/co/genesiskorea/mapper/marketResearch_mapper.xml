@@ -216,7 +216,7 @@
 	</delete>
 	
 	<select id="selectHistory" parameterType="map" resultType="hashmap">
-		/* businessTrip.selectHistory */
+		/* marketResearch.selectHistory */
 		SELECT 
 			lh.DOC_IDX
 			, lh.HISTORY_TYPE
@@ -288,4 +288,14 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'	
 	</select>
+	
+	<update id="deleteResearch" parameterType="map">
+		/* marketResearch.deleteResearch */
+		UPDATE 
+			lab_market_research
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND RESEARCH_IDX = #{idx}
+	</update>
 </mapper>

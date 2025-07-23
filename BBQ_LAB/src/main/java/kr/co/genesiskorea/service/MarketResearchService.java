@@ -27,4 +27,6 @@ public interface MarketResearchService {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void deleteResearch(Map<String, Object> param) throws Exception;
+
 }

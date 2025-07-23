@@ -911,4 +911,14 @@
 			su.DOC_IDX = #{idx}
 			AND su.DOC_TYPE = #{docType}
 	</select>
+	
+	<update id="deleteMenu" parameterType="map">
+		/* menu.deleteMenu */
+		UPDATE 
+			lab_menu
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND MENU_IDX = #{idx}
+	</update>
 </mapper>

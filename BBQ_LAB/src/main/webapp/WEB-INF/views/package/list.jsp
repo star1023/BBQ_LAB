@@ -204,12 +204,17 @@ function fn_search() {
 						html += "	<td>";
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";
-							if( item.STATUS == 'COMP' ) {
-								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
-							}
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-							if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR') {
-								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+							if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+								if( item.STATUS == 'COMP' ) {
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
+								}
+								if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR') {
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+								}
+								if( item.STATUS == 'TMP' ) {
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+								}
 							}
 							html += "		</li>";
 						}
@@ -293,6 +298,33 @@ function fn_search() {
 	
 	function fn_update(idx, docNo) {
 		location.href = '/package/update?idx='+idx;
+	}
+	
+	function fn_delete(idx) {
+		$('#lab_loading').show();
+		var URL = "../package/deletePackageAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				"idx" : idx
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				if( data.RESULT == 'S' ) {
+					alert("보고서가 삭제 되었습니다.");
+					$('#lab_loading').hide();
+					fn_loadList(1);
+				} else {
+					alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+					$('#lab_loading').hide();
+				}
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}
+		});
 	}
 	
 	function showChildVersion(imgElement){

@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
@@ -246,5 +247,20 @@ public class DesignReportController {
 	@ResponseBody
 	public List<Map<String, Object>> selectHistoryAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return reportService.selectHistory(param);
+	}
+	
+	@RequestMapping(value = "/deleteDesignReportAjax", method = RequestMethod.POST)
+	@ResponseBody
+	public Map<String, Object> deleteDesignReportAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			reportService.deleteDesignReport(param);
+			map.put("RESULT", "S");
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			map.put("RESULT", "E");
+			map.put("MESSAGE", e.getMessage());
+		}
+		return map;
 	}
 }

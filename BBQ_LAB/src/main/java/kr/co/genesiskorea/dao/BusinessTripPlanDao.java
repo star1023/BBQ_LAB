@@ -43,4 +43,6 @@ public interface BusinessTripPlanDao {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void deletePlan(Map<String, Object> param) throws Exception;
+
 }

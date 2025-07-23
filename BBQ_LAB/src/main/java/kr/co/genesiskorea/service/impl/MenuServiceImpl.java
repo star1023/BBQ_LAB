@@ -2213,4 +2213,11 @@ public class MenuServiceImpl implements MenuService {
 		return menuDao.selectSharedUser(param);
 	}
 
+
+	@Override
+	public void deleteMenu(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		menuDao.deleteMenu(param);
+	}
+
 }

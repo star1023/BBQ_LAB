@@ -229,4 +229,19 @@ public class NewProductResultController {
 		
 		return returnMap;
 	}
+	
+	@RequestMapping(value = "/deleteNewProductAjax")
+	@ResponseBody
+	public Map<String, Object> deleteNewProductAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			newProductResult.deleteNewProduct(param);
+			map.put("RESULT", "S");
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			map.put("RESULT", "E");
+			map.put("MESSAGE", e.getMessage());
+		}
+		return map;
+	}
 }

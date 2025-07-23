@@ -881,4 +881,10 @@ public class BusinessTripPlanServiceImpl implements BusinessTripPlanService {
 		// TODO Auto-generated method stub
 		return reportDao.selectMyDataCheck(param);
 	}
+
+	@Override
+	public void deletePlan(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		reportDao.deletePlan(param);
+	}
 }

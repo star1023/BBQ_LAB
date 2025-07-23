@@ -1005,8 +1005,8 @@ var selectedArr = new Array();
 
 			if (
 				$.trim(val1) !== '' &&
-				$.trim(val2) !== '' &&
-				$.trim(val3) !== ''
+				$.trim(val2) !== '' /* &&
+				$.trim(val3) !== '' */
 			) {
 				validImprovePurposeRowCount++;
 			}

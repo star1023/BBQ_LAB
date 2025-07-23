@@ -271,5 +271,19 @@ public class ChemicalTestController {
 	    return returnMap;
     }
 	
+	@RequestMapping(value = "/deleteChemicalTestAjax")
+	@ResponseBody
+	public Map<String, Object> deleteChemicalTestAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			reportService.deleteChemicalTest(param);
+			map.put("RESULT", "S");
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			map.put("RESULT", "E");
+			map.put("MESSAGE", e.getMessage());
+		}
+		return map;
+	}
 }
 

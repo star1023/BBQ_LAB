@@ -258,4 +258,10 @@ public class ProductDaoImpl implements ProductDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectList("product.selectSharedUser", param);
 	}
+
+	@Override
+	public void deleteProduct(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("product.deleteProduct", param);
+	}
 }

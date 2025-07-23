@@ -168,7 +168,8 @@
 			, FN_GET_USER_NAME(tmp.TEST_MANAGER) as TEST_MANAGER_NAME
 			, tmp.TEST_COMPLETION_DATE
 			, tmp.TEST_RESULT
-			, FN_GET_USER_NAME(tmp.REG_USER) as DOC_OWNER_NAME
+			, tmp.DOC_OWNER
+			, FN_GET_USER_NAME(tmp.DOC_OWNER) as DOC_OWNER_NAME
 			, FN_GET_CODE_NAME('DOC_STATUS', tmp.STATUS) AS STATUS_TXT
 			, CASE 
 				WHEN tmp.TEST_STATUS = 'C' THEN '완료'
@@ -195,6 +196,7 @@
 				, TEST_MANAGER
 				, TEST_COMPLETION_DATE
 				, TEST_RESULT
+				, DOC_OWNER
 			FROM 	
 				lab_chemical_test
 			WHERE 1 = 1
@@ -460,5 +462,15 @@
 	  SET ITEM_RESULT = #{itemResult}
 	  WHERE CHEMICAL_IDX = #{idx}
 	    AND ITEM_IDX = #{itemIdx}
+	</update>
+	
+	<update id="deleteChemicalTest" parameterType="map">
+		/* chemicalTest.deleteChemicalTest */
+		UPDATE 
+			lab_chemical_test
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND CHEMICAL_IDX = #{idx}
 	</update>
 </mapper>

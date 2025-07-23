@@ -40,4 +40,6 @@ public interface ChemicalTestDao {
     int updateBySafeTeam(Map<String, Object> param);
 
     int updateBySafeTeamItem(Map<String, Object> item);
+
+	void deleteChemicalTest(Map<String, Object> param) throws Exception;
 }

@@ -28,4 +28,6 @@ public interface SenseQualityService {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void deleteSenseQuality(Map<String, Object> param) throws Exception;
+
 }

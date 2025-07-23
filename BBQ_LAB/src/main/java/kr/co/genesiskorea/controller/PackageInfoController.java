@@ -313,4 +313,19 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return packageInfoService.selectHistory(param);
 	}
+	
+	@RequestMapping(value = "/deletePackageAjax")
+	@ResponseBody
+	public Map<String, Object> deletePackageAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			packageInfoService.deletePackage(param);
+			map.put("RESULT", "S");
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			map.put("RESULT", "E");
+			map.put("MESSAGE", e.getMessage());
+		}
+		return map;
+	}
 }

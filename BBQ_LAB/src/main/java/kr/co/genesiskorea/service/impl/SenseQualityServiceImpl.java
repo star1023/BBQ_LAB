@@ -166,8 +166,11 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 				}
 				
 				contentsList.add(contentsMap);
-			}			
-			reportDao.insertSenseQualityContents(contentsList);
+			}
+			
+			if( contentsList != null && contentsList.size() > 0 ) {
+				reportDao.insertSenseQualityContents(contentsList);
+			}
 			
 			
 			//4. lab_sense_quality_add_info 등록
@@ -291,8 +294,11 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 				}
 				
 				contentsList.add(contentsMap);
-			}			
-			reportDao.insertSenseQualityContents(contentsList);
+			}
+			
+			if( contentsList != null && contentsList.size() > 0 ) {
+				reportDao.insertSenseQualityContents(contentsList);
+			}
 			
 			
 			//4. lab_sense_quality_add_info 등록
@@ -348,11 +354,18 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 		//2. lab_sense_quality_contents 조회
 		List<Map<String, Object>> contentsList = reportDao.selectSenseQualityContensts(param);
 		
-		int totalCount = contentsList.size();
-		int modCount = totalCount/3;
-		if( totalCount % 3 > 0  ) {
-			modCount++;
+		int totalCount = 0;
+		int modCount = 0;
+		try {
+			totalCount = contentsList.size();
+			modCount = totalCount/3;
+			if( totalCount % 3 > 0  ) {
+				modCount++;
+			}
+		} catch( Exception e ) {
+			
 		}
+		
 		
 		//3. lab_sense_quality_add_info 조회
 		param.put("infoType", "NOTE");
@@ -659,6 +672,12 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 	public int selectMyDataCheck(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		return reportDao.selectMyDataCheck(param);
+	}
+
+	@Override
+	public void deleteSenseQuality(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		reportDao.deleteSenseQuality(param);
 	}
 
 }

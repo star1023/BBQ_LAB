@@ -120,7 +120,9 @@
 		/*	businessTrip.insertBusinessTrip */
 		INSERT INTO lab_business_trip(
 			TRIP_IDX
+			<if test="planIdx != null and planIdx != '' ">
 			, PLAN_IDX
+			</if>
 			, TRIP_TYPE
 			, TITLE
 			, TRIP_START_DATE
@@ -138,7 +140,9 @@
 			, VERSION_NO	
 		)VALUES(
 			#{idx}
+			<if test="planIdx != null and planIdx != '' ">
 			, #{planIdx}
+			</if>
 			, #{tripType}
 			, #{title}
 			, #{tripStartDate}
@@ -396,4 +400,14 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'		
 	</select>
+	
+	<update id="deleteTrip" parameterType="map">
+		/* businessTrip.deleteTrip */
+		UPDATE 
+			lab_business_trip
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND TRIP_IDX = #{idx}
+	</update>
 </mapper>

@@ -99,4 +99,10 @@ public class PackageInfoDaoImpl implements PackageInfoDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("package.selectPackageInfoDataByProductCode", param);
 	}
+
+	@Override
+	public void deletePackage(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("package.deletePackage", param);
+	}
 }

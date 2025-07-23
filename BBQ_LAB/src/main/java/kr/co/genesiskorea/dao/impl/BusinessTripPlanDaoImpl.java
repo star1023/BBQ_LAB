@@ -124,4 +124,10 @@ public class BusinessTripPlanDaoImpl implements BusinessTripPlanDao {
 		return sqlSessionTemplate.selectOne("businessTripPlan.selectMyDataCheck", param);
 	}
 
+	@Override
+	public void deletePlan(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("businessTripPlan.deletePlan", param);
+	}
+
 }

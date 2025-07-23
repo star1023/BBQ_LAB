@@ -964,12 +964,12 @@ var selectedArr = new Array();
 		$('tr[id^=improve_pur_tr]').each(function () {
 			const val1 = $(this).find('input[name=itemImprove]').val();
 			const val2 = $(this).find('input[name=itemExist]').val();
-			const val3 = $(this).find('input[name=itemNote]').val();
+			//const val3 = $(this).find('input[name=itemNote]').val();
 
 			if (
 				$.trim(val1) !== '' &&
-				$.trim(val2) !== '' &&
-				$.trim(val3) !== ''
+				$.trim(val2) !== '' /* &&
+				$.trim(val3) !== '' */
 			) {
 				validImprovePurposeRowCount++;
 			}

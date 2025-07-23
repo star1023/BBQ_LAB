@@ -249,4 +249,10 @@ public class MenuDaoImpl implements MenuDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectList("menu.selectSharedUser", param);
 	}
+
+	@Override
+	public void deleteMenu(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("menu.deleteMenu", param);
+	}
 }

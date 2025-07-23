@@ -933,4 +933,14 @@
 			su.DOC_IDX = #{idx}
 			AND su.DOC_TYPE = #{docType}
 	</select>
+	
+	<update id="deleteProduct" parameterType="map">
+		/* product.deleteProduct */
+		UPDATE 
+			lab_product
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND PRODUCT_IDX = #{idx}
+	</update>
 </mapper>

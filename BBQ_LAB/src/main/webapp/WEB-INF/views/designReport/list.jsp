@@ -198,6 +198,9 @@ function fn_loadList(pageNo) {
 						if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' ) {
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 						}
+						if( item.STATUS == 'TMP' ) {
+							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+						}
 						html += "		</li>";
 					}
 					html += "	</td>";
@@ -236,6 +239,33 @@ function fn_view(idx) {
 
 function fn_update(idx) {
 	location.href = '/designReport/update?idx='+idx;
+}
+
+function fn_delete(idx) {
+	$('#lab_loading').show();
+	var URL = "../designReport/deleteDesignReportAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{
+			"idx" : idx
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			if( data.RESULT == 'S' ) {
+				alert("보고서가 삭제 되었습니다.");
+				$('#lab_loading').hide();
+				fn_loadList(1);
+			} else {
+				alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+				$('#lab_loading').hide();
+			}
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}
+	});
 }
 
 function fn_viewHistory(idx) {

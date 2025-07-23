@@ -329,4 +329,14 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'	
 	</select>
+	
+	<update id="deleteNewProduct" parameterType="map">
+		/* newProductResult.deleteNewProduct */
+		UPDATE 
+			lab_new_product_result
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND RESULT_IDX = #{idx}
+	</update>
 </mapper>

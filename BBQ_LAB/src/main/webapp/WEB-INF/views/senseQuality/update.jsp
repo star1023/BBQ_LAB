@@ -142,10 +142,10 @@ table{font-size: 12px}
 				}
 			});
 			
-			if( resultCheckCnt > 0 || $('tr[id^=result_tr]').toArray().length < 1 ) {
+			/* if( resultCheckCnt > 0 || $('tr[id^=result_tr]').toArray().length < 1 ) {
 				alert("결론을 입력해주세요.");
 				return;
-			}
+			} */
 			
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
@@ -1100,7 +1100,7 @@ table{font-size: 12px}
 			        </tr>
 			      </table> <!-- 첨부파일 고정 -->
 			</div>
-
+			<c:if test="${senseQualityData.modCount> 0 }">
 			<c:forEach var="no" begin="1" end="${senseQualityData.modCount-1}">
 			<c:set var="startNo" value="${no*3}"/>
 			<c:set var="endNo" value="${no*3+2}"/>
@@ -1203,6 +1203,7 @@ table{font-size: 12px}
 			      </table> 
 			</div>
 			</c:forEach>
+			</c:if>
 			
 			<c:set var="rowLimit" value="4"/>
 			<c:forEach var="no" begin="0" end="${rowLimit - senseQualityData.modCount}">

@@ -1152,4 +1152,10 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		// TODO Auto-generated method stub
 		return packageInfoDao.selectPackageInfoDataByProductCode(param);
 	}
+
+	@Override
+	public void deletePackage(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		packageInfoDao.deletePackage(param);
+	}
 }

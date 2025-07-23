@@ -747,4 +747,10 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 		// TODO Auto-generated method stub
 		return reportDao.selectMyDataCheck(param);
 	}
+
+	@Override
+	public void deleteResearch(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		reportDao.deleteResearch(param);
+	}
 }

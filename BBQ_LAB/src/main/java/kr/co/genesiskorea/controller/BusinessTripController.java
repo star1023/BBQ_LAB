@@ -194,4 +194,19 @@ public class BusinessTripController {
 	public List<Map<String, Object>> selectHistoryAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return reportService.selectHistory(param);
 	}
+	
+	@RequestMapping(value = "/deleteTripAjax")
+	@ResponseBody
+	public Map<String, Object> deleteTripAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
+		Map<String, Object> map = new HashMap<String, Object>();
+		try {
+			reportService.deleteTrip(param);
+			map.put("RESULT", "S");
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			map.put("RESULT", "E");
+			map.put("MESSAGE", e.getMessage());
+		}
+		return map;
+	}
 }

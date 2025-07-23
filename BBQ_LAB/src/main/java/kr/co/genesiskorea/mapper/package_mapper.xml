@@ -456,4 +456,14 @@
 		WHERE 1 = 1
 			AND PRODUCT_CODE = #{productCode}	
 	</select>
+	
+	<update id="deletePackage" parameterType="map">
+		/* package.deletePackage */
+		UPDATE 
+			lab_package_info
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND PACKAGE_IDX = #{idx}
+	</update>
 </mapper>

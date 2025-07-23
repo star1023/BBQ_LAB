@@ -118,4 +118,10 @@ public class SenseQualityDaoImpl implements SenseQualityDao {
 		return sqlSessionTemplate.selectOne("senseQuality.selectMyDataCheck",param);
 	}
 
+	@Override
+	public void deleteSenseQuality(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("senseQuality.deleteSenseQuality", param);
+	}
+
 }

@@ -117,4 +117,10 @@ public class BusinessTripDaoImpl implements BusinessTripDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("businessTrip.selectMyDataCheck",param);
 	}
+
+	@Override
+	public void deleteTrip(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("businessTrip.deleteTrip", param);
+	}
 }

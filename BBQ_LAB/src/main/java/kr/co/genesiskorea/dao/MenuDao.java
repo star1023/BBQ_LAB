@@ -84,4 +84,6 @@ public interface MenuDao {
 	void deleteSharedUser(HashMap<String, Object> map) throws Exception;
 	
 	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
+
+	void deleteMenu(Map<String, Object> param) throws Exception;
 }
