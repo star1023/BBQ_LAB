@@ -61,4 +61,6 @@ public interface ProductService {
 	int selectMyDataCount(Map<String, Object> param);
 	
 	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
+
+	void deleteProduct(Map<String, Object> param) throws Exception;
 }

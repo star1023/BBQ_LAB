@@ -69,6 +69,7 @@ table{font-size: 12px}
 			formData.append("title",$("#title").val());
 			formData.append("companyName",$("#companyName").val());
 			formData.append("productName",$("#productName").val());
+			formData.append("sapCode",$("#sapCode").val());
 			formData.append("testPurpose",$("#testPurpose").val());
 			formData.append("contentsHeader",$("#contentsHeader").val());
 			formData.append("status", "TMP");
@@ -142,10 +143,10 @@ table{font-size: 12px}
 				}
 			});
 			
-			if( resultCheckCnt > 0 || $('tr[id^=result_tr]').toArray().length < 1 ) {
+			/* if( resultCheckCnt > 0 || $('tr[id^=result_tr]').toArray().length < 1 ) {
 				alert("결론을 입력해주세요.");
 				return;
-			}
+			} */
 			
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
@@ -1100,7 +1101,7 @@ table{font-size: 12px}
 			        </tr>
 			      </table> <!-- 첨부파일 고정 -->
 			</div>
-
+			<c:if test="${senseQualityData.modCount> 0 }">
 			<c:forEach var="no" begin="1" end="${senseQualityData.modCount-1}">
 			<c:set var="startNo" value="${no*3}"/>
 			<c:set var="endNo" value="${no*3+2}"/>
@@ -1203,6 +1204,7 @@ table{font-size: 12px}
 			      </table> 
 			</div>
 			</c:forEach>
+			</c:if>
 			
 			<c:set var="rowLimit" value="4"/>
 			<c:forEach var="no" begin="0" end="${rowLimit - senseQualityData.modCount}">
@@ -1356,14 +1358,12 @@ table{font-size: 12px}
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
 				<div class="btn_box_con4">
-					<!-- 
-					<button class="btn_admin_red">임시/템플릿저장</button>
-					<button class="btn_admin_navi">임시저장</button>
-					 -->
-					<c:if test="${senseQualityData.reportMap.STATUS == 'TMP'}">
-					<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == senseQualityData.data.DOC_OWNER}">
+						<c:if test="${senseQualityData.reportMap.STATUS == 'TMP'}">
+						<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+						</c:if>
+						<button class="btn_admin_sky" onclick="fn_update()">저장</button>
 					</c:if>
-					<button class="btn_admin_sky" onclick="fn_update()">저장</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

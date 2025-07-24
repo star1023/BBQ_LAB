@@ -658,7 +658,7 @@
 							    </td>
 							</tr>
 							<tr>
-								<th style="border-left: none;">버젼 No.</th>
+								<th style="border-left: none;">버전 No.</th>
 								<td colspan="3">
 									${menuData.data.VERSION_NO}
 								</td>
@@ -847,9 +847,11 @@
 				<div class="btn_box_con5">					
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${menuData.data.STATUS == 'TMP' and menuData.data.IS_LAST == 'Y'}">
-						<button class="btn_admin_sky" onclick="fn_update('${menuData.data.MENU_IDX}')">수정</button>
-					</c:if>	
+					<c:if test="${userUtil:getUserId(pageContext.request) == menuData.data.DOC_OWNER }">
+						<c:if test="${(menuData.data.STATUS == 'TMP' or menuData.data.STATUS == 'COND_APPR') and menuData.data.IS_LAST == 'Y'}">
+							<button class="btn_admin_sky" onclick="fn_update('${menuData.data.MENU_IDX}')">수정</button>
+						</c:if>	
+					</c:if>
 					<button class="btn_admin_gray" onClick="fn_list();" style="width: 120px;">목록</button>
 				</div>
 				<hr class="con_mode" />

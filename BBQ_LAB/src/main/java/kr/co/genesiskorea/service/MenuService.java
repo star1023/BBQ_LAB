@@ -61,4 +61,6 @@ public interface MenuService {
 	int selectMyDataCount(Map<String, Object> param);
 	
 	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
+
+	void deleteMenu(Map<String, Object> param) throws Exception;
 }

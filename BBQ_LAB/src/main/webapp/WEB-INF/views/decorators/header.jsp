@@ -166,7 +166,8 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 				</section>
 			</aside>
 			
-			<!-- 원료 선택 레이어 start-->
+			<!-- 알림 레이어 start-->
+			<!--
 			<div class="white_content" id="dialog_noti">
 				<div class="modal" style="	width: 400px;margin-left:-210px;height: 350px;margin-top:-200px;">
 					<h5 style="position:relative">
@@ -188,7 +189,28 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 					</div>
 				</div>
 			</div>
-			<!-- 원료 선택 레이어 close-->
+			-->
+			<div id="alramLayerPopup" class="popup-overlay" style="display: none;">
+				<div class="popup-wrapper">
+					<!-- 헤더 -->
+					<div class="popup-header">
+						<img src="/resources/images/bbq_logo.png" alt="BBQ Logo">
+					</div>
+			
+					<!-- 팝업 본체 -->
+					<div class="popup-container">
+						<div class="popup-meta" id="popupAlramMeta"></div>
+						<div class="popup-content" id="popupAlramContent"></div>
+					</div>
+			
+					<!-- 푸터 고정 -->
+					<div class="popup-footer-fixed">
+						<label>&nbsp;</label>
+						<button class="btn-close" onclick="closeAlramLayerPopup()">확인</button>
+					</div>
+				</div>
+			</div>
+			<!-- 알림 레이어 close-->
 
 			<script src="../../resources/js/classie.js"></script>
 			<script>
@@ -252,13 +274,37 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 								console.log(data);
 								if( data.length > 0 ) {
 									var html = "";
+									html += "<ul>";
 									data.forEach(function (item) {
 										html += "<li>";
-										html += item.NOTI_IDX+" / "+item.TYPE+item.TYPE_TXT+item.MESSAGE;
+										if( item.TYPE == 'A' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_COMP' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_REF' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'COND_APPR' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_COMP' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_CANCEL' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else {
+											html += item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										}
+										//html += item.NOTI_IDX+" / "+item.TYPE+item.TYPE_TXT+item.MESSAGE;
 										html += "</li>";
-									});									
-									$("#popNoti").html(html);
-									openDialog('dialog_noti');	
+									});
+									html += "</ul>";
+									 $("#popupAlramContent").empty().html(html);
+									//$("#popNoti").html(html);
+									//openDialog('dialog_noti');
+									// 팝업 열기 + fadeIn 후 바로 스크롤 0
+									 $("#alramLayerPopup").fadeIn(function () {
+									     $(".popup-container").scrollTop(0); // ✅ 정확한 스크롤 타겟
+									 });
 								}
 							},
 							error:function(request, status, errorThrown){
@@ -267,6 +313,11 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 			    	}
 			    });
 			});	
+			
+			function closeAlramLayerPopup(){
+				 $("#alramLayerPopup").fadeOut(() => {
+				 });
+			}
 			
 			function setPersonalization(type,value) {
 				var URL = "../user/setPersonalizationAjax";

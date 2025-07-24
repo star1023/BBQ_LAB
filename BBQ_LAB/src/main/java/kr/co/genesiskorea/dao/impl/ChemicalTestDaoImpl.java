@@ -117,4 +117,10 @@ public class ChemicalTestDaoImpl implements ChemicalTestDao {
 		return sqlSessionTemplate.update("chemicalTest.updateBySafeTeamItem", item);
 	}
 
+	@Override
+	public void deleteChemicalTest(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("chemicalTest.deleteChemicalTest", param);
+	}
+
 }

@@ -338,4 +338,14 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'
 	</select>
+	
+	<update id="deleteDesignReport" parameterType="map">
+		/* designReport.deleteDesignReport */
+		UPDATE 
+			lab_design
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{idx}
+	</update>
 </mapper>

@@ -30,4 +30,6 @@ public interface ChemicalTestService {
 
     int updateBySafeTeam(Map<String, Object> param);
 
+	void deleteChemicalTest(Map<String, Object> param) throws Exception;
+
 }

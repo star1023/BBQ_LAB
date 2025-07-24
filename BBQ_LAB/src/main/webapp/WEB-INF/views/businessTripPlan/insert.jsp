@@ -30,6 +30,9 @@
 			showAnim: "",
 			onClose: function(selectedDate){
 				$("#tripEndDate").datepicker("option", "minDate", selectedDate);
+			},
+			onSelect: function () {
+				fn_changeDate();
 			}
 		});	//당일 선택 가능 0, 당일 선택 불가능 1
 		
@@ -44,6 +47,9 @@
 			showAnim: "",
 			onClose: function(selectedDate){
 				$("#tripStartDate").datepicker("option", "maxdate", selectedDate)
+			},
+			onSelect: function () {
+				fn_changeDate();
 			}
 		});
 		/*
@@ -71,6 +77,26 @@
 		autoComplete2($("#keyword2"));
 	});
 	
+	function fn_changeDate() {
+		var startDate = $("#tripStartDate").val();
+		var endDate = $("#tripEndDate").val();
+		if( startDate != '' && endDate != '' ) {
+			var startDateArr = startDate.split('-');
+		    var endDateArr = endDate.split('-');
+		    var startDateObj = new Date(startDateArr[0], startDateArr[1], startDateArr[2]);
+		    var endDateObj = new Date(endDateArr[0], endDateArr[1], endDateArr[2]);
+		    var dif = endDateObj - startDateObj;
+		    var cDay = 24 * 60 * 60 * 1000;// 시 * 분 * 초 * 밀리세컨
+		    var difDay = parseInt(dif/cDay);
+		    if( difDay > 0 ) {
+		    	var start = difDay;
+		    	var end = difDay+1;
+		    	$("#txtTripDuration").html("출장기간("+start+"박 "+end+"일)");
+		    } else {
+		    	$("#txtTripDuration").html("출장기간(1일)");
+		    }
+		}
+	}
 	/*
 	function CreateEditor(editorId) {
 	    ClassicEditor
@@ -932,7 +958,8 @@
 							<td colspan="3">
 								<input type="text" name="tripStartDate" id="tripStartDate" style="width: 120px;" class="req" />
 								&nbsp;~&nbsp;
-								<input type="text" name="tripEndDate" id="tripEndDate" style="width: 120px;" class="req" />
+								<input type="text" name="tripEndDate" id="tripEndDate" style="width: 120px;" class="req" />								
+								<span id="txtTripDuration" name="txtTripDuration" style='margin-left:20px;'></span>
 							</td>
 						</tr>
 						<tr>
@@ -1068,7 +1095,7 @@
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
 					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button> 
-					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">결재</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

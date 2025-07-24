@@ -35,4 +35,6 @@ public interface DesignReportDao {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void deleteDesignReport(Map<String, Object> param) throws Exception;
+
 }

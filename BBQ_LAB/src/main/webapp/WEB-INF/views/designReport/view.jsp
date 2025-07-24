@@ -27,6 +27,10 @@ function fn_list() {
 	location.href = '/designReport/list';
 }
 
+function fn_update(idx) {
+	location.href = '/designReport/update?idx='+idx;
+}
+
 function fn_apprSubmit(){
 	if( $("#apprLine option").length == 0 ) {
 		alert("등록된 결재라인이 없습니다. 결재 라인 추가 후 결재상신 해 주세요.");
@@ -292,6 +296,11 @@ function fn_pdfDownload(idx) {
 				<div class="btn_box_con5">					
 				</div>
 				<div class="btn_box_con4">
+					<c:if test="${userUtil:getUserId(pageContext.request) == designData.data.DOC_OWNER }">
+						<c:if test="${(designData.data.STATUS == 'TMP' or designData.data.STATUS == 'COND_APPR') and designData.data.IS_LAST == 'Y'}">
+							<button class="btn_admin_sky" onclick="fn_update('${designData.data.DESIGN_IDX}')">수정</button>
+						</c:if>	
+					</c:if>
 					<button class="btn_admin_gray" onClick="fn_list();" style="width: 120px;">목록</button>
 				</div>
 				<hr class="con_mode" />

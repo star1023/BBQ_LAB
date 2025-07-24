@@ -238,7 +238,7 @@ function getTextareaHTML(note) {
 }
 
 function downloadFile(idx){
-	location.href = '/test/fileDownload?idx='+idx;
+	location.href = '/common/fileDownload?idx='+idx;
 }
 </script>
 <h2 style=" position:fixed;" class="print_hidden">

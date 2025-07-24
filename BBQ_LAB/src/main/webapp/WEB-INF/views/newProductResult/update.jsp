@@ -1539,8 +1539,12 @@ function toggleInputMode(mode) {
                 <button class="btn_admin_gray" onclick="fn_goList();" style="width: 120px;">목록</button>
             </div>
             <div class="btn_box_con4">
-                <button class="btn_admin_gray" onclick="fn_tmp_update()">임시 저장</button>
-                <button class="btn_admin_sky" onclick="fn_update()">저장</button>
+            	<c:if test="${userUtil:getUserId(pageContext.request) == newProductResultData.data.DOC_OWNER}">
+	                <c:if test="${newProductResultData.reportMap.STATUS == 'TMP'}">
+	                <button class="btn_admin_gray" onclick="fn_tmp_update()">임시 저장</button>
+	                </c:if>
+	                <button class="btn_admin_sky" onclick="fn_update()">결재</button>
+                </c:if>
                 <button class="btn_admin_gray" onclick="fn_goList()">취소</button>
             </div>
             <hr class="con_mode" />

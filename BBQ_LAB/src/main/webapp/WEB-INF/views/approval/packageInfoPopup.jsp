@@ -237,7 +237,7 @@ function getTextareaHTML(note) {
 }
 
 function downloadFile(idx){
-	location.href = '/test/fileDownload?idx='+idx;
+	location.href = '/common/fileDownload?idx='+idx;
 }
 </script>
 <link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>

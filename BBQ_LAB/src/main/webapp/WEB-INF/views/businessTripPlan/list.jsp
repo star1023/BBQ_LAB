@@ -185,7 +185,11 @@ function fn_loadList(pageNo) {
 			if( data.totalCount > 0 ) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
-					html += "<tr>";
+					if( item.STATUS == 'APPR_RET' ) {
+						html += "<tr class=\"m_visible\">";
+					} else {
+						html += "<tr>";
+					}
 					html += "	<td>"+nvl(item.TRIP_TYPE_TXT,'&nbsp;')+"</td>";
 					html += "	<td><div class=\"ellipsis_txt tgnl\">&nbsp;&nbsp;<a href=\"#\" onClick=\"fn_view('"+item.PLAN_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";					
 					html += "	<td>"+nvl(item.TRIP_DESTINATION,'&nbsp;')+"</td>";
@@ -196,8 +200,13 @@ function fn_loadList(pageNo) {
 					if( item.IS_LAST == 'Y' ) {						
 						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PLAN_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
 					}
-					if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' ) {
-						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PLAN_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+					if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+						if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' ) {
+							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PLAN_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+						}
+						if( item.STATUS == 'TMP' ) {
+							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.PLAN_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+						}
 					}
 					html += "		</li>";
 					html += "	</td>";
@@ -232,6 +241,33 @@ function fn_view(idx) {
 
 function fn_update(idx) {
 	location.href = '/businessTripPlan/update?idx='+idx;
+}
+
+function fn_delete(idx) {
+	$('#lab_loading').show();
+	var URL = "../businessTripPlan/deletePlanAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{
+			"idx" : idx
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			if( data.RESULT == 'S' ) {
+				alert("보고서가 삭제 되었습니다.");
+				$('#lab_loading').hide();
+				fn_loadList(1);
+			} else {
+				alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+				$('#lab_loading').hide();
+			}
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}
+	});
 }
 
 function fn_viewHistory(idx) {

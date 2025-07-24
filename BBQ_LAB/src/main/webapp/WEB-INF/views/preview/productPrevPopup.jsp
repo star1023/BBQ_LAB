@@ -142,7 +142,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th  >버젼 No.</th>
+						<th  >버전 No.</th>
 						<td colspan="3" id="prev_version">
 						</td>
 					</tr>

@@ -564,6 +564,8 @@ table{font-size: 12px}
 			        </tr>
 			      </table> 
 			</div>
+			
+			<c:if test="${senseQualityData.modCount> 0 }">
 			<c:forEach var="no" begin="1" end="${senseQualityData.modCount-1}">
 			<c:set var="startNo" value="${no*3}"/>
 			<c:set var="endNo" value="${no*3+2}"/>
@@ -635,6 +637,7 @@ table{font-size: 12px}
 			      </table> 
 			</div>
 			</c:forEach>
+			</c:if>
 
 			<div class="title2"><span class="txt">결론</span></div>
 			<div class="main_tbl">

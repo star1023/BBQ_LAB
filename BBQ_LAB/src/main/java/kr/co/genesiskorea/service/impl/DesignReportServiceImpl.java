@@ -568,4 +568,10 @@ public class DesignReportServiceImpl implements DesignReportService {
 		return reportDao.selectMyDataCheck(param);
 	}
 
+	@Override
+	public void deleteDesignReport(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		reportDao.deleteDesignReport(param);
+	}
+
 }

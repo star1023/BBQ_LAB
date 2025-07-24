@@ -424,9 +424,9 @@
 			, MENU_IDX
 			, MATERIAL_IDX
 			, MATERIAL_CODE			
-			, CASE WHEN SAP_CODE = '' or SAP_CODE IS NULL 
-				THEN (SELECT lm.SAP_CODE FROM lab_material lm WHERE 1 = 1 AND lm.IS_LAST = 'Y' AND lm.MATERIAL_CODE = lmm.MATERIAL_CODE)
-				ELSE ''
+			, CASE WHEN SAP_CODE != '' or SAP_CODE IS not NULL
+				THEN SAP_CODE
+				ELSE (SELECT lm.SAP_CODE FROM lab_material lm WHERE 1 = 1 AND lm.IS_LAST = 'Y' AND lm.MATERIAL_CODE = lmm.MATERIAL_CODE)
 				END	AS SAP_CODE
 			, NAME
 			, SAP_PRICE
@@ -911,4 +911,14 @@
 			su.DOC_IDX = #{idx}
 			AND su.DOC_TYPE = #{docType}
 	</select>
+	
+	<update id="deleteMenu" parameterType="map">
+		/* menu.deleteMenu */
+		UPDATE 
+			lab_menu
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND MENU_IDX = #{idx}
+	</update>
 </mapper>

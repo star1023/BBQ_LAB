@@ -110,4 +110,10 @@ public class NewProductResultDaoImpl implements NewProductResultDao {
 		return sqlSessionTemplate.selectOne("newProductResult.selectMyDataCheck",param);
 	}
 
+	@Override
+	public void deleteNewProduct(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("newProductResult.deleteNewProduct", param);
+	}
+
 }

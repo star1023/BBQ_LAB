@@ -187,7 +187,11 @@
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						if( item.IS_LAST == 'Y' ) {
-							html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";	
+							if( item.STATUS == 'APPR_RET' ) {
+								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_visible\">";
+							} else {
+								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";
+							}	
 						} else {
 							html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
 						}
@@ -227,7 +231,10 @@
 								}
 								if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' || item.STATUS == 'APPR_CANCEL' ) {
 									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PRODUCT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
-								}	
+								}
+								if( item.STATUS == 'TMP' ) {
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.PRODUCT_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+								}
 							}
 							html += "		</li>";
 						}
@@ -289,9 +296,9 @@
 					}
 					
 					if( item.HISTORY_TYPE == 'I' ) {
-						html += " 생성되었습니다.(버젼 : "+item.VERSION_NO+")";
+						html += " 생성되었습니다.(버전 : "+item.VERSION_NO+")";
 					} else if( item.HISTORY_TYPE == 'V' ) {
-						html += " 개정되었습니다.(버젼 : "+item.VERSION_NO+")";
+						html += " 개정되었습니다.(버전 : "+item.VERSION_NO+")";
 					} else if( item.HISTORY_TYPE == 'D' ) {
 						html += " 삭제되었습니다.";
 					} else if( item.HISTORY_TYPE == 'U' ) {
@@ -315,6 +322,33 @@
 	
 	function fn_update(idx, docNo) {
 		location.href = '/product/update?idx='+idx;
+	}
+	
+	function fn_delete(idx) {
+		$('#lab_loading').show();
+		var URL = "../product/deleteProductAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				"idx" : idx
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				if( data.RESULT == 'S' ) {
+					alert("보고서가 삭제 되었습니다.");
+					$('#lab_loading').hide();
+					fn_loadList(1);
+				} else {
+					alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+					$('#lab_loading').hide();
+				}
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}
+		});
 	}
 	
 	function showChildVersion(imgElement){
@@ -521,7 +555,7 @@
 							<th>&nbsp;</th>
 							<th>제품코드</th>
 							<th>제품명</th>
-							<th>버젼</th>
+							<th>버전</th>
 							<th>제목</th>
 							<th>제품구분</th>
 							<th>문서상태</th>

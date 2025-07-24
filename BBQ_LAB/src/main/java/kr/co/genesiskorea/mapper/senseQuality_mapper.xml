@@ -320,7 +320,7 @@
 	</delete>
 	
 	<select id="selectHistory" parameterType="map" resultType="hashmap">
-	/* report2.selectHistory */
+	/* senseQuality.selectHistory */
 	SELECT 
 		lh.DOC_IDX
 		, lh.HISTORY_TYPE
@@ -401,4 +401,14 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N' 
 	</select>
+	
+	<update id="deleteSenseQuality" parameterType="map">
+		/* senseQuality.deleteSenseQuality */
+		UPDATE 
+			lab_sense_quality_report
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND REPORT_IDX = #{idx}
+	</update>
 </mapper>

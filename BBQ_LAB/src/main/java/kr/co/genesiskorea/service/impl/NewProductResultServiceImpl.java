@@ -464,4 +464,10 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 		// TODO Auto-generated method stub
 		return newProductResultDao.selectMyDataCheck(param);
 	}
+
+	@Override
+	public void deleteNewProduct(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		newProductResultDao.deleteNewProduct(param);
+	}
 }

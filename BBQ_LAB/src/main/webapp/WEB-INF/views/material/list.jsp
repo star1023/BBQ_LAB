@@ -210,9 +210,9 @@ function fn_goViewHistory(idx, docNo) {
 				html += "<li>";
 				html += item.NAME+"("+item.SAP_CODE+")이(가)";
 				if( item.HISTORY_TYPE == 'I' ) {
-					html += " 생성되었습니다.(버젼 : "+item.VERSION_NO+")";
+					html += " 생성되었습니다.(버전 : "+item.VERSION_NO+")";
 				} else if( item.HISTORY_TYPE == 'V' ) {
-					html += " 개정되었습니다.(버젼 : "+item.VERSION_NO+")";
+					html += " 개정되었습니다.(버전 : "+item.VERSION_NO+")";
 				} else if( item.HISTORY_TYPE == 'D' ) {
 					html += " 삭제되었습니다.";
 				} 

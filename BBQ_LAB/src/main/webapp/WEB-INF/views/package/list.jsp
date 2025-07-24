@@ -185,9 +185,13 @@ function fn_search() {
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						if( item.IS_LAST == 'Y' ) {
-							html += "<tr id=\"package_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";	
+							if( item.STATUS == 'APPR_RET' ) {
+								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_visible\">";
+							} else {
+								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";
+							}
 						} else {
-							html += "<tr id=\"package_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
+							html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
 						}
 						html += "	<td>";
 						if( item.CHILD_CNT > 0 && item.IS_LAST == 'Y' ) {
@@ -204,12 +208,17 @@ function fn_search() {
 						html += "	<td>";
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";
-							if( item.STATUS == 'COMP' ) {
-								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
-							}
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-							if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR') {
-								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+							if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+								if( item.STATUS == 'COMP' ) {
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
+								}
+								if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR') {
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+								}
+								if( item.STATUS == 'TMP' ) {
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+								}
 							}
 							html += "		</li>";
 						}
@@ -267,9 +276,9 @@ function fn_search() {
 						html += "("+item.PRODUCT_NAME+") 표시사항 기재양식이";
 					}					
 					if( item.HISTORY_TYPE == 'I' ) {
-						html += " 생성되었습니다.(버젼 : "+item.VERSION_NO+")";
+						html += " 생성되었습니다.(버전 : "+item.VERSION_NO+")";
 					} else if( item.HISTORY_TYPE == 'V' ) {
-						html += " 개정되었습니다.(버젼 : "+item.VERSION_NO+")";
+						html += " 개정되었습니다.(버전 : "+item.VERSION_NO+")";
 					} else if( item.HISTORY_TYPE == 'D' ) {
 						html += " 삭제되었습니다.";
 					} else if( item.HISTORY_TYPE == 'U' ) {
@@ -295,6 +304,33 @@ function fn_search() {
 		location.href = '/package/update?idx='+idx;
 	}
 	
+	function fn_delete(idx) {
+		$('#lab_loading').show();
+		var URL = "../package/deletePackageAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				"idx" : idx
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				if( data.RESULT == 'S' ) {
+					alert("보고서가 삭제 되었습니다.");
+					$('#lab_loading').hide();
+					fn_loadList(1);
+				} else {
+					alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+					$('#lab_loading').hide();
+				}
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}
+		});
+	}
+	
 	function showChildVersion(imgElement){
 	    var parentIdParts = $(imgElement).closest('tr').attr('id').split('_');
 	    var parentNo = parentIdParts[1]; // 정확한 부모 번호 추출
@@ -306,12 +342,12 @@ function fn_search() {
 	        $(imgElement).attr('src', imgSrc.replace('_add_', '_m_')); 
 
 	        // 정확히 product_1_ 또는 product_12_ 같은 prefix만 포함하는 자식만 열기
-	        $('tr[id^="package_' + parentNo + '_"]').show();
+	        $('tr[id^="product_' + parentNo + '_"]').show();
 	    } else {
 	        $(imgElement).attr('src', imgSrc.replace('_m_', '_add_'));
 
 	        // 자식 중에서 첫 번째 tr (부모)는 제외하고 나머지 숨기기
-	        $('tr[id^="package_' + parentNo + '_"]').toArray().forEach(function(v, i){
+	        $('tr[id^="product_' + parentNo + '_"]').toArray().forEach(function(v, i){
 	            if (i !== 0) {
 	                $(v).hide();
 	            }

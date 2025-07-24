@@ -41,4 +41,6 @@ public interface SenseQualityDao {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void deleteSenseQuality(Map<String, Object> param) throws Exception;
+
 }

@@ -383,7 +383,7 @@
 				
 				<c:if test="${productData.data.VERSION_NO != 1 && fn:length(imporvePurposeList) > 0 }">
 					<div class="title2" style="float: left; margin-top: 30px;">
-						<span class="txt">개선 목적</span>
+						<span class="txt">개선목적</span>
 					</div>
 					<table id="improve_pur_Table" class="tbl01">
 						<colgroup>
@@ -419,7 +419,7 @@
 				</c:if>
 				
 				<c:if test="${productData.data.VERSION_NO != 1 && addInfoCount.IMP_CNT > 0 }">
-				<div class="title2"  style="width: 80%;"><span class="txt">개선 사항</span></div>
+				<div class="title2"  style="width: 80%;"><span class="txt">개선사항</span></div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
@@ -443,7 +443,6 @@
 					</table>
 				</div>
 				</c:if>
-				
 				
 				<c:if test="${addInfoCount.USB_CNT > 0}">
 					<div class="title2" style="margin-top:20px;"><span class="txt">브랜드</span></div>
@@ -618,7 +617,7 @@
 							    </td>
 							</tr>
 							<tr>
-								<th style="border-left: none;">버젼 No.</th>
+								<th style="border-left: none;">버전 No.</th>
 								<td colspan="3">
 									${productData.data.VERSION_NO}
 								</td>
@@ -805,9 +804,12 @@
 				<div class="btn_box_con5">					
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${productData.data.STATUS == 'TMP' and productData.data.IS_LAST == 'Y'}">
-						<button class="btn_admin_sky" onclick="fn_update('${productData.data.PRODUCT_IDX}')">수정</button>
-					</c:if>	
+				
+					<c:if test="${userUtil:getUserId(pageContext.request) == productData.data.DOC_OWNER }">
+						<c:if test="${(productData.data.STATUS == 'TMP' or productData.data.STATUS == 'COND_APPR') and productData.data.IS_LAST == 'Y'}">
+							<button class="btn_admin_sky" onclick="fn_update('${productData.data.PRODUCT_IDX}')">수정</button>
+						</c:if>	
+					</c:if>
 					<button class="btn_admin_gray" onClick="fn_list();" style="width: 120px;">목록</button>
 				</div>
 				<hr class="con_mode" />

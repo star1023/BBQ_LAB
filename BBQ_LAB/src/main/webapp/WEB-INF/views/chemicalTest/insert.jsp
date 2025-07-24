@@ -316,7 +316,7 @@ input:disabled {
 				preservationValues.push($(this).val());
 			});
 			formData.append("preservation", preservationValues.join(","));
-			formData.append("status", "REG");
+			formData.append("status", "TMP");
 			
 			for (var i = 0; i < attatchFileArr.length; i++) {
 				formData.append('file', attatchFileArr[i])

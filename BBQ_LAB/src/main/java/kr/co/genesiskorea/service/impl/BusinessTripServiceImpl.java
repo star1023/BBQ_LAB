@@ -863,4 +863,10 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 		// TODO Auto-generated method stub
 		return reportDao.selectMyDataCheck(param);
 	}
+
+	@Override
+	public void deleteTrip(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		reportDao.deleteTrip(param);
+	}
 }

@@ -37,4 +37,6 @@ public interface NewProductResultDao {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void deleteNewProduct(Map<String, Object> param) throws Exception;
+
 }

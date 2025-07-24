@@ -100,4 +100,10 @@ public class DesignReportDaoImpl implements DesignReportDao {
 		return sqlSessionTemplate.selectOne("designReport.selectMyDataCheck", param);
 	}
 
+	@Override
+	public void deleteDesignReport(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("designReport.deleteDesignReport", param);
+	}
+
 }

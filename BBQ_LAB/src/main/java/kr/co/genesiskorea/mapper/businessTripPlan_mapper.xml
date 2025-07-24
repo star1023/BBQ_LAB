@@ -441,4 +441,14 @@
 			AND DOC_OWNER =	#{userId}
 			AND IS_DELETE = 'N'	 
 	</select>
+	
+	<update id="deletePlan" parameterType="map">
+		/* businessTripPlan.deletePlan */
+		UPDATE 
+			lab_business_trip_plan
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND PLAN_IDX = #{idx}
+	</update>
 </mapper>

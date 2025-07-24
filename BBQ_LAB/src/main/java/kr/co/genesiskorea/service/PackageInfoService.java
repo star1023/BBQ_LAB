@@ -29,4 +29,6 @@ int insertPackageInfoTmp(Map<String, Object> param, MultipartFile imageFile, Mul
 	int selectMyDataCheck(Map<String, Object> param);
 
 	Map<String, Object> selectPackageInfoDataByProductCode(Map<String, Object> param);
+
+	void deletePackage(Map<String, Object> param) throws Exception;
 }

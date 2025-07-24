@@ -1080,10 +1080,12 @@
 					<!-- 
 					<button class="btn_admin_red">임시/템플릿저장</button>
 					 -->
-					<c:if test="${researchData.data.STATUS == 'TMP'}">
-					<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
-					</c:if> 
-					<button class="btn_admin_sky" onclick="fn_update()">저장</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == researchData.data.DOC_OWNER}">
+						<c:if test="${researchData.data.STATUS == 'TMP'}">
+						<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+						</c:if> 
+						<button class="btn_admin_sky" onclick="fn_update()">결재</button>
+					</c:if>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

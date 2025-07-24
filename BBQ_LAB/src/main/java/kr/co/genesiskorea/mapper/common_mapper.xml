@@ -300,18 +300,24 @@
 	<select id="selectNotification" parameterType="map" resultType="hashmap">
 		/* common.selectNotification */
 		SELECT
-			NOTI_IDX
-			,TARGET_USER
-			,TYPE
-			,TYPE_TXT
-			,MESSAGE
-			,IS_READ
-			,REG_USER
-			, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
-			, DOC_IDX
-			, DOC_TYPE  
+			noti.NOTI_IDX
+			, noti.TARGET_USER
+			, noti.TYPE
+			, noti.TYPE_TXT
+			, noti.MESSAGE
+			, noti.IS_READ
+			, noti.REG_USER
+			, FN_GET_USER_NAME(noti.REG_USER) as REG_USER_NAME
+			, DATE_FORMAT(noti.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+			, noti.DOC_IDX
+			, noti.DOC_TYPE
+			, doc_view.TITLE
+			, FN_GET_CODE_NAME('DOC_TYPE', noti.DOC_TYPE) as DOC_NAME
 		FROM
-			lab_notification
+			lab_notification noti
+			left outer join lab_doc_total_view doc_view
+			on noti.DOC_IDX = doc_view.IDX
+			and noti.DOC_TYPE = doc_view.DOC_TYPE
 		WHERE 1 = 1
 			AND TARGET_USER = #{userId}
 	</select>

@@ -549,4 +549,10 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 	    return result;
 	}
 
+	@Override
+	public void deleteChemicalTest(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		reportDao.deleteChemicalTest(param);
+	}
+
 }

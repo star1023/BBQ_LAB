@@ -29,4 +29,6 @@ public interface BusinessTripService {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void deleteTrip(Map<String, Object> param) throws Exception;
+
 }

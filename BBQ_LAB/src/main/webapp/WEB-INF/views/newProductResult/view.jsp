@@ -408,8 +408,10 @@ function renderDynamicColGroup() {
 					
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${newProductResultData.data.STATUS == 'COND_APPR' or newProductResultData.data.STATUS == 'TMP'}">
-						<button class="btn_admin_sky" onclick="fn_update('${newProductResultData.data.RESULT_IDX}')">수정</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == newProductResultData.data.DOC_OWNER }">
+						<c:if test="${newProductResultData.data.STATUS == 'COND_APPR' or newProductResultData.data.STATUS == 'TMP'}">
+							<button class="btn_admin_sky" onclick="fn_update('${newProductResultData.data.RESULT_IDX}')">수정</button>
+						</c:if>
 					</c:if>
 					<button class="btn_admin_gray" onClick="fn_list();" style="width: 120px; margin-right: 20px;">목록</button>
 				</div>

@@ -2175,4 +2175,10 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return productDao.selectSharedUser(param);
 	}
+
+	@Override
+	public void deleteProduct(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		productDao.deleteProduct(param);
+	}
 }

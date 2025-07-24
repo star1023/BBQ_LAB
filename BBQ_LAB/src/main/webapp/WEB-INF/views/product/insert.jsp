@@ -877,16 +877,18 @@ li {
 					var itemKeepExp = $('#'+ rowId + ' input[name=itemKeepExp]').val();
 					var itemUnitPrice = $('#'+ rowId + ' input[name=itemUnitPrice]').val();
 					var itemDesc = $('#'+ rowId + ' input[name=itemDesc]').val();
-					rowIdArr.push(rowId);
-					itemTypeArr.push(itemType);
-					itemMatIdxArr.push(itemMatIdx);
-					itemMatCodeArr.push(itemMatCode);
-					itemSapCodeArr.push(itemSapCode);
-					itemNameArr.push(itemName);
-					itemStandardArr.push(itemStandard);
-					itemKeepExpArr.push(itemKeepExp);
-					itemUnitPriceArr.push(itemUnitPrice);
-					itemDescArr.push(itemDesc);
+					if( itemSapCode != '' ) {
+						rowIdArr.push(rowId);
+						itemTypeArr.push(itemType);
+						itemMatIdxArr.push(itemMatIdx);
+						itemMatCodeArr.push(itemMatCode);
+						itemSapCodeArr.push(itemSapCode);
+						itemNameArr.push(itemName);
+						itemStandardArr.push(itemStandard);
+						itemKeepExpArr.push(itemKeepExp);
+						itemUnitPriceArr.push(itemUnitPrice);
+						itemDescArr.push(itemDesc);
+					}
 				});
 			}
 
@@ -2742,7 +2744,7 @@ li {
 						<button class="btn_admin_navi">임시저장</button>
 						 -->
 					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
-					<button class="btn_admin_sky" onclick="fn_insert()">등록 및 결재</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">결재</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />
@@ -3146,7 +3148,7 @@ li {
 						<th></th>
 						<th>제품코드</th>
 						<th>제품명</th>
-						<th>버젼</th>
+						<th>버전</th>
 						<th>제품구분</th>
 					<tr>
 				</thead>

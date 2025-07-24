@@ -86,4 +86,6 @@ public interface ProductDao {
 	void deleteSharedUser(HashMap<String, Object> map) throws Exception;
 	
 	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
+
+	void deleteProduct(Map<String, Object> param) throws Exception;
 }
