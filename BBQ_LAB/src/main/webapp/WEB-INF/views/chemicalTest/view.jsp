@@ -510,8 +510,10 @@ th.contentBlock {
 					
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${chemicalTestData.data.STATUS == 'REG' and not isSafeTeam}">
-						<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">수정</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == chemicalTestData.data.DOC_OWNER }">
+						<c:if test="${chemicalTestData.data.STATUS == 'TMP'}">
+							<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">수정</button>
+						</c:if>
 					</c:if>
 					<c:if test="${chemicalTestData.data.STATUS == 'COMP' and isSafeTeam}">
 						<button class="btn_admin_sky" onclick="fn_update('${chemicalTestData.data.CHEMICAL_IDX}')">결과 입력</button>

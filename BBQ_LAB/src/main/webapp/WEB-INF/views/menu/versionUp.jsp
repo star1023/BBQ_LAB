@@ -956,7 +956,7 @@ var selectedArr = new Array();
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT > 0 ) {
-						alert($("#menuName").val()+"(버젼 : "+$("#versionNo").val()+")"+"는 존재하는 문서입니다.");
+						alert($("#menuName").val()+"(버전 : "+$("#versionNo").val()+")"+"는 존재하는 문서입니다.");
 						$('#lab_loading').hide();
 						return;
 					} else {
@@ -996,7 +996,7 @@ var selectedArr = new Array();
 	}
 	
 	function validatePurposeAndFeature() {
-		// ✅ 개선 목적 유효성 체크 (3개 항목 모두 빈값이 아닌 행이 하나 이상 있어야 함)
+		// ✅ 개선사항 유효성 체크 (3개 항목 모두 빈값이 아닌 행이 하나 이상 있어야 함)
 		let validImprovePurposeRowCount = 0;
 		$('tr[id^=improve_pur_tr]').each(function () {
 			const val1 = $(this).find('input[name=itemImprove]').val();
@@ -1012,18 +1012,18 @@ var selectedArr = new Array();
 			}
 		});
 		if (validImprovePurposeRowCount === 0) {
-			alert("개선 목적을 하나 이상, 빈 항목 없이 입력해 주세요.");
+			alert("개선사항을 하나 이상, 빈 항목 없이 입력해 주세요.");
 			return false;
 		}
 
-		// ✅ 개선 사항 유효성 체크
+		// ✅ 개선목적 유효성 체크
 		var isValidFeature = false;
 		$('tr[id^=improve_tr]').each(function () {
 			var val = $(this).find('input[name=improve]').val();
 			if ($.trim(val) !== '') isValidFeature = true;
 		});
 		if (!isValidFeature) {
-			alert("개선 사항을 하나 이상 입력해 주세요.");
+			alert("개선목적을 하나 이상 입력해 주세요.");
 			return false;
 		}
 		
@@ -1283,7 +1283,7 @@ var selectedArr = new Array();
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT > 0 ) {
-						alert($("#menuName").val()+"(버젼 : "+$("#versionNo").val()+")"+"는 존재하는 문서입니다.");
+						alert($("#menuName").val()+"(버전 : "+$("#versionNo").val()+")"+"는 존재하는 문서입니다.");
 						$('#lab_loading').hide();
 						return;
 					} else {
@@ -1957,9 +1957,63 @@ var selectedArr = new Array();
 					</table>
 				</div>
 				
+				<div class="title2"  style="width: 80%; "><span class="txt">개선목적 <span class="mandatory">*</span></span></div>
+				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
+					<button class="btn_con_search" onClick="fn_addCol('improve')">
+						<img src="/resources/images/icon_s_write.png" />추가 
+					</button>
+					<button class="btn_con_search" onClick="fn_delCol('improve')">
+						<img src="/resources/images/icon_s_del.png" />삭제 
+					</button>
+				</div>
+				<div class="main_tbl">
+					<table class="insert_proc01">
+						<colgroup>
+							<col width="20" />
+							<col  />							
+						</colgroup>
+						<tbody id="improve_tbody" name="improve_tbody">
+						<c:set var="count" value="0" />
+						<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
+							<c:if test="${addInfoList.INFO_TYPE == 'IMP' }">
+							<c:set var="count" value="${count + 1}" />
+							<tr id="improve_tr_${status.count}">
+								<td>
+									<input type="checkbox" id="improve_${status.count}"><label for="improve_${status.count}"><span></span></label>
+								</td>
+								<td>
+									<input type="text"  style="width:99%; float: left" name="improve" value="${addInfoList.INFO_TEXT}"/>
+								</td>
+							</tr>
+							</c:if>
+						</c:forEach>
+						<c:if test="${count == 0 }">
+							<tr id="improve_tr_1">
+								<td>
+									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
+								</td>
+								<td>
+									<input type="text"  style="width:99%; float: left" placeholder="가." name="improve"/>
+								</td>
+							</tr>
+						</c:if>	
+						</tbody>
+						<tbody id="improve_tbody_temp" name="improve_tbody_temp" style="display:none">
+							<tr id="improve_tmp_tr_1"> 
+								<td>
+									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
+								</td>
+								<td>
+									<input type="text"  style="width:99%; float: left" name="improve"/>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				
 				<div id="">
 					<div class="title2" style="float: left; margin-top: 20px;">
-						<span class="txt">개선목적 <span class="mandatory">*</span></span>
+						<span class="txt">개선사항 <span class="mandatory">*</span></span>
 					</div>
 					<div id="matHeaderDiv" class="table_header07">
 						<span class="table_order_btn"><button class="btn_up" onclick="moveUp(this)"></button><button class="btn_down" onclick="moveDown(this)"></button></span>
@@ -2031,59 +2085,7 @@ var selectedArr = new Array();
 					</table>
 				</div>
 				
-				<div class="title2"  style="width: 80%; "><span class="txt">개선 사항 <span class="mandatory">*</span></span></div>
-				<div class="title2" style="width: 20%; display: inline-block; text-align: center;">
-					<button class="btn_con_search" onClick="fn_addCol('improve')">
-						<img src="/resources/images/icon_s_write.png" />추가 
-					</button>
-					<button class="btn_con_search" onClick="fn_delCol('improve')">
-						<img src="/resources/images/icon_s_del.png" />삭제 
-					</button>
-				</div>
-				<div class="main_tbl">
-					<table class="insert_proc01">
-						<colgroup>
-							<col width="20" />
-							<col  />							
-						</colgroup>
-						<tbody id="improve_tbody" name="improve_tbody">
-						<c:set var="count" value="0" />
-						<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
-							<c:if test="${addInfoList.INFO_TYPE == 'IMP' }">
-							<c:set var="count" value="${count + 1}" />
-							<tr id="improve_tr_${status.count}">
-								<td>
-									<input type="checkbox" id="improve_${status.count}"><label for="improve_${status.count}"><span></span></label>
-								</td>
-								<td>
-									<input type="text"  style="width:99%; float: left" name="improve" value="${addInfoList.INFO_TEXT}"/>
-								</td>
-							</tr>
-							</c:if>
-						</c:forEach>
-						<c:if test="${count == 0 }">
-							<tr id="improve_tr_1">
-								<td>
-									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text"  style="width:99%; float: left" placeholder="가." name="improve"/>
-								</td>
-							</tr>
-						</c:if>	
-						</tbody>
-						<tbody id="improve_tbody_temp" name="improve_tbody_temp" style="display:none">
-							<tr id="improve_tmp_tr_1"> 
-								<td>
-									<input type="checkbox" id="improve_1"><label for="improve_1"><span></span></label>
-								</td>
-								<td>
-									<input type="text"  style="width:99%; float: left" name="improve"/>
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
+				
 				
 				<!-- ✅ 브랜드 영역 -->
 				<div>
@@ -2437,7 +2439,7 @@ var selectedArr = new Array();
 								</td>
 							</tr>
 							<tr>
-								<th style="border-left: none;">버젼 NO.</th>
+								<th style="border-left: none;">버전 NO.</th>
 								<td colspan="3">
 									<input type="text" style="width:50px; float: left" name="versionNo" id="versionNo" value="${menuData.data.VERSION_NO+1}" onkeyup="chkNum(this)"/>
 								</td>
@@ -2704,8 +2706,10 @@ var selectedArr = new Array();
 					<button class="btn_admin_red">임시/템플릿저장</button>
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
+					<c:if test="${userUtil:getUserId(pageContext.request) == menuData.data.DOC_OWNER}">
 					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
 					<button class="btn_admin_sky" onclick="fn_insert()">개정 및 결재</button>
+					</c:if>
 					<button class="btn_admin_gray" onclick="fn_goList();">취소</button>
 				</div>
 				<hr class="con_mode" />

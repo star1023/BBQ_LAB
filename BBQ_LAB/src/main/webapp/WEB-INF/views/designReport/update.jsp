@@ -320,10 +320,10 @@
 					changeReasonArr.push(changeReason);	
 				}
 			});	
-			if( changeReasonArr.length == 0 ) {
+			/* if( changeReasonArr.length == 0 ) {
 				alert("변경사유를 입력해주세요.");
 				return;
-			}
+			} */
 			formData.append("changeReasonArr", JSON.stringify(changeReasonArr));
 			
 			var changeTimeArr = new Array();
@@ -334,10 +334,10 @@
 					changeTimeArr.push(changeTime);	
 				}
 			});			
-			if( changeTimeArr.length == 0 ) {
+			/* if( changeTimeArr.length == 0 ) {
 				alert("변경적용시점 입력해주세요.");
 				return;
-			}
+			} */
 			formData.append("changeTimeArr", JSON.stringify(changeTimeArr));
 			
 			var rowIdArr = new Array();
@@ -1167,10 +1167,12 @@
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${designData.data.STATUS == 'TMP'}">
-					<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == designData.data.DOC_OWNER}">
+						<c:if test="${designData.data.STATUS == 'TMP'}">
+						<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+						</c:if>
+						<button class="btn_admin_sky" onclick="fn_update()">결재</button>
 					</c:if>
-					<button class="btn_admin_sky" onclick="fn_update()">수정</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

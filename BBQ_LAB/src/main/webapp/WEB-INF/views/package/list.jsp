@@ -185,7 +185,11 @@ function fn_search() {
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						if( item.IS_LAST == 'Y' ) {
-							html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";	
+							if( item.STATUS == 'APPR_RET' ) {
+								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_visible\">";
+							} else {
+								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";
+							}
 						} else {
 							html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
 						}
@@ -272,9 +276,9 @@ function fn_search() {
 						html += "("+item.PRODUCT_NAME+") 표시사항 기재양식이";
 					}					
 					if( item.HISTORY_TYPE == 'I' ) {
-						html += " 생성되었습니다.(버젼 : "+item.VERSION_NO+")";
+						html += " 생성되었습니다.(버전 : "+item.VERSION_NO+")";
 					} else if( item.HISTORY_TYPE == 'V' ) {
-						html += " 개정되었습니다.(버젼 : "+item.VERSION_NO+")";
+						html += " 개정되었습니다.(버전 : "+item.VERSION_NO+")";
 					} else if( item.HISTORY_TYPE == 'D' ) {
 						html += " 삭제되었습니다.";
 					} else if( item.HISTORY_TYPE == 'U' ) {
@@ -501,7 +505,7 @@ function fn_search() {
 						<tr>
 							<th>&nbsp;</th>
 							<th>제품명</th>
-							<th>버젼</th>
+							<th>버전</th>
 							<th>문서상태</th>
 							<th>담당자</th>
 							<th>등록일자</th>

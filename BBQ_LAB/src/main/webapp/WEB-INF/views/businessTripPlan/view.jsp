@@ -19,6 +19,7 @@
 <script type="text/javascript">
 	$(document).ready(function(){
 		fn.autoComplete($("#keyword"));
+		fn_changeDate();
 	});
 	
 	function fn_goList() {
@@ -26,7 +27,7 @@
 	}
 	
 	function fn_update(idx) {
-		location.href = '/businessTripPlan/businessTripPlanUpdate?idx='+idx;
+		location.href = '/businessTripPlan/update?idx='+idx;
 	}
 	
 	function downloadFile(idx){
@@ -136,6 +137,26 @@
 	            });
 	        });
 	}
+	function fn_changeDate() {
+		var startDate = $("#tripStartDate").val();
+		var endDate = $("#tripEndDate").val();
+		if( startDate != '' && endDate != '' ) {
+			var startDateArr = startDate.split('-');
+		    var endDateArr = endDate.split('-');
+		    var startDateObj = new Date(startDateArr[0], startDateArr[1], startDateArr[2]);
+		    var endDateObj = new Date(endDateArr[0], endDateArr[1], endDateArr[2]);
+		    var dif = endDateObj - startDateObj;
+		    var cDay = 24 * 60 * 60 * 1000;// 시 * 분 * 초 * 밀리세컨
+		    var difDay = parseInt(dif/cDay);
+		    if( difDay > 0 ) {
+		    	var start = difDay;
+		    	var end = difDay+1;
+		    	$("#txtTripDuration").html("출장기간("+start+"박 "+end+"일)");
+		    } else {
+		    	$("#txtTripDuration").html("출장기간(1일)");
+		    }
+		}
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -229,6 +250,9 @@
 								${planData.data.TRIP_START_DATE}
 								&nbsp;~&nbsp;
 								${planData.data.TRIP_END_DATE}
+								<input type="hidden" name="tripStartDate" id="tripStartDate" value="${planData.data.TRIP_START_DATE}"/>
+								<input type="hidden" name="tripEndDate" id="tripEndDate" value="${planData.data.TRIP_END_DATE}"/>	
+								<span id="txtTripDuration" name="txtTripDuration" style='margin-left:20px;'></span>
 							</td>
 						</tr>
 						<tr>
@@ -318,12 +342,14 @@
 					
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${planData.data.STATUS == 'TMP'}">
-						<button class="btn_admin_sky" onclick="fn_update('${planData.data.PLAN_IDX}')">수정</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == planData.data.DOC_OWNER }">
+						<c:if test="${planData.data.STATUS == 'TMP' || planData.data.STATUS == 'COND_APPR'}">
+							<button class="btn_admin_sky" onclick="fn_update('${planData.data.PLAN_IDX}')">수정</button>
+						</c:if>
 					</c:if>
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
-				<hr class="con_mode" />
+				<hr class="con_mode" />     
 			</div>
 		</div>
 	</section>

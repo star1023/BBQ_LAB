@@ -34,7 +34,11 @@ function fn_loadList(pageNo) {
 			if( data.totalCount > 0 ) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
-					html += "<tr>";
+					if( item.STATUS == 'APPR_RET' ) {
+						html += "<tr class=\"m_visible\">";
+					} else {
+						html += "<tr>";
+					}
 					html += "	<td><div class=\"ellipsis_txt tgnl\">&nbsp;&nbsp;<a href=\"#\" onClick=\"fn_view('"+item.RESEARCH_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";					
 					html += "	<td>"+nvl(item.RESEARCH_DATE,'&nbsp;')+"</td>";
 					html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";

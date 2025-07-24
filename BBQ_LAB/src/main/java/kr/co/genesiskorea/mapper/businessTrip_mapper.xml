@@ -286,8 +286,11 @@
 		UPDATE 
 			lab_business_trip
 		SET 
-			PLAN_IDX = #{planIdx}
-			, TRIP_TYPE = #{tripType}
+			
+			TRIP_TYPE = #{tripType}
+			<if test="planIdx != null and planIdx != '' ">
+			, PLAN_IDX = #{planIdx}
+			</if>
 			, TITLE = #{title}
 			, TRIP_START_DATE = #{tripStartDate}
 			, TRIP_END_DATE = #{tripEndDate}

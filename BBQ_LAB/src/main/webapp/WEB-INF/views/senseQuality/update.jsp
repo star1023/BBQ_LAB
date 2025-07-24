@@ -69,6 +69,7 @@ table{font-size: 12px}
 			formData.append("title",$("#title").val());
 			formData.append("companyName",$("#companyName").val());
 			formData.append("productName",$("#productName").val());
+			formData.append("sapCode",$("#sapCode").val());
 			formData.append("testPurpose",$("#testPurpose").val());
 			formData.append("contentsHeader",$("#contentsHeader").val());
 			formData.append("status", "TMP");
@@ -1357,14 +1358,12 @@ table{font-size: 12px}
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
 				<div class="btn_box_con4">
-					<!-- 
-					<button class="btn_admin_red">임시/템플릿저장</button>
-					<button class="btn_admin_navi">임시저장</button>
-					 -->
-					<c:if test="${senseQualityData.reportMap.STATUS == 'TMP'}">
-					<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == senseQualityData.data.DOC_OWNER}">
+						<c:if test="${senseQualityData.reportMap.STATUS == 'TMP'}">
+						<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
+						</c:if>
+						<button class="btn_admin_sky" onclick="fn_update()">저장</button>
 					</c:if>
-					<button class="btn_admin_sky" onclick="fn_update()">저장</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

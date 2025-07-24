@@ -97,7 +97,11 @@
 						<td colspan="3" id="prev_feature"></td>
 					</tr>
 					<tr class="tr_prev_version2" style="display:none;">
-						<th  >개선 목적</th>
+						<th  >개선목적</th>
+						<td colspan="3" id="prev_improve"></td>
+					</tr>
+					<tr class="tr_prev_version2" style="display:none;">
+						<th  >개선사항</th>
 						<td colspan="3" class="inner-table-cell">
 							<div id="wrapper_prev_improve_pur" style="display:none;">
 								<table >
@@ -118,10 +122,7 @@
 							</div>
 						</td>
 					</tr>
-					<tr class="tr_prev_version2" style="display:none;">
-						<th  >개선 사항</th>
-						<td colspan="3" id="prev_improve"></td>
-					</tr>
+					
 					<tr class="tr_prev_version2" style="display:none;">
 						<th  >브랜드</th>
 						<td colspan="3" id="prev_brand">
@@ -166,7 +167,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th  >버젼 No.</th>
+						<th  >버전 No.</th>
 						<td colspan="3" id="prev_version">
 						</td>
 					</tr>

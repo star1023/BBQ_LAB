@@ -469,15 +469,16 @@
 							
 			<div class="main_tbl">
 				<div class="btn_box_con5">
-					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
+					
 				</div>
 				<div class="btn_box_con4">
 				<c:if test="${userUtil:getUserId(pageContext.request) == packageInfoData.data.DOC_OWNER}">
-				<c:if test="${packageInfoData.data.STATUS == 'TMP' || packageInfoData.data.STATUS == 'COND_APPR'}">
-					<button class="btn_admin_sky" onclick="fn_update('${packageInfoData.data.PACKAGE_IDX}')">수정</button>
-					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
-				</c:if>	
+					<c:if test="${packageInfoData.data.STATUS == 'TMP' || packageInfoData.data.STATUS == 'COND_APPR'}">
+						<button class="btn_admin_sky" onclick="fn_update('${packageInfoData.data.PACKAGE_IDX}')">수정</button>
+						<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
+					</c:if>	
 				</c:if>
+					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
 				<hr class="con_mode" />
 			</div>

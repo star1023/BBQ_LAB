@@ -277,8 +277,10 @@
 					<!-- 
 					<button class="btn_admin_red">임시/템플릿저장</button>
 					 -->
-					<c:if test="${researchData.data.STATUS == 'TMP'}">
-						<button class="btn_admin_sky" onclick="fn_update('${researchData.data.RESEARCH_IDX}')">수정</button>
+					<c:if test="${userUtil:getUserId(pageContext.request) == researchData.data.DOC_OWNER }">
+						<c:if test="${researchData.data.STATUS == 'TMP' || researchData.data.STATUS == 'COND_APPR'}">
+							<button class="btn_admin_sky" onclick="fn_update('${researchData.data.RESEARCH_IDX}')">수정</button>
+						</c:if>
 					</c:if>
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>

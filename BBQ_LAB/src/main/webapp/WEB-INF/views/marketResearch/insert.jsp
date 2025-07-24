@@ -1021,7 +1021,7 @@
 					<button class="btn_admin_red">임시/템플릿저장</button>
 					 -->
 					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
-					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">결재</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

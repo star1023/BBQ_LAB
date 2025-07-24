@@ -69,6 +69,7 @@ table{font-size: 12px}
 			formData.append("title",$("#title").val());
 			formData.append("companyName",$("#companyName").val());
 			formData.append("productName",$("#productName").val());
+			formData.append("sapCode",$("#sapCode").val());
 			formData.append("testPurpose",$("#testPurpose").val());
 			formData.append("contentsHeader",$("#contentsHeader").val());
 			formData.append("status", "TMP");
@@ -288,6 +289,7 @@ table{font-size: 12px}
 			
 			if( resultCheckCnt > 0 || $('tr[id^=result_tr]').toArray().length < 1 ) {
 				alert("결론을 입력해주세요.");
+				$('#lab_loading').hide();
 				return;
 			}
 			
@@ -303,6 +305,7 @@ table{font-size: 12px}
 			
 			if( inputCheckCnt > 0 ) {
 				alert("세부내용은 구분, 사진, 결과를 입력하여야 합니다.");
+				$('#lab_loading').hide();
 				return;
 			}
 			

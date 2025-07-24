@@ -200,6 +200,61 @@
 			AND PRODUCT_IDX = #{docIdx}
 	</update>
 	
+	<sql id="whereApprovalList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('U')">
+			</when>
+      		<when test="searchType.equals('K')">
+      		</when>
+      	</choose>
+		</if>
+		<if test="status != null and status != '' ">
+			<choose>
+				<when test="status.equals('A') ">
+					AND LAST_STATUS IN ('N','A','C','CA')
+				</when>
+	      		<when test="status.equals('C') ">
+	      			AND LAST_STATUS = 'Y'
+	      		</when>
+	      		<when test="status.equals('R')">
+	      			AND LAST_STATUS = 'R'
+	      		</when>
+	      		<otherwise>
+
+	      		</otherwise>
+	      	</choose>
+		</if>
+	</sql>
+	
+	<sql id="whereApprovalList2">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType.equals('U')">
+			</when>
+      		<when test="searchType.equals('K')">
+      			AND TITLE LIKE CONCAT('%',#{searchValue},'%')
+      		</when>
+      	</choose>
+		</if>
+		<if test="status != null and status != '' ">
+			<choose>
+				<when test="status.equals('A') ">
+					AND LAST_STATUS IN ('N','A','C','CA')
+				</when>
+	      		<when test="status.equals('C') ">
+	      			AND LAST_STATUS = 'Y'
+	      		</when>
+	      		<when test="status.equals('R')">
+	      			AND LAST_STATUS = 'R'
+	      		</when>
+	      		<otherwise>
+
+	      		</otherwise>
+	      	</choose>
+		</if>
+	</sql>
+	
 	<select id="selectTotalCount" parameterType="map" resultType="int">
 		/*	approval.selectTotalCount */
 		SELECT 

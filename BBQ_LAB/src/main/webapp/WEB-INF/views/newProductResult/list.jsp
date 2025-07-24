@@ -76,7 +76,11 @@ function fn_loadList(pageNo) {
 			if( data.totalCount > 0 ) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
-					html += "<tr>";
+					if( item.STATUS == 'APPR_RET' ) {
+						html += "<tr class=\"m_visible\">";
+					} else {
+						html += "<tr>";
+					}
 					html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.RESULT_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";
 					html += "	<td style='text-align:center;'>"+nvl(item.EXCUTE_DATE,'&nbsp;')+"</td>";
 					html += "	<td>";

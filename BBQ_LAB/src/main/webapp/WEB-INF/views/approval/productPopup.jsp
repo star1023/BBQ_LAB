@@ -382,9 +382,21 @@ function downloadFile(idx){
 								</td>
 							</tr>
 						</c:if>
+						<c:if test="${productData.data.VERSION_NO != 1 && fn:length(addInfoCount) > 0 }">
+							<tr class="tr_prev_version2">
+								<th >개선목적</th>
+								<td colspan="3" id="prev_improve">
+									<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
+									<c:if test="${addInfoList.INFO_TYPE == 'IMP' }">
+											${addInfoList.INFO_TEXT}<br>
+									</c:if>
+								</c:forEach>
+								</td>
+							</tr>
+						</c:if>
 						<c:if test="${productData.data.VERSION_NO != 1 && fn:length(imporvePurposeList) > 0 }">
 							<tr>
-								<th >개선 목적</th>
+								<th >개선사항</th>
 								<td colspan="3" class="inner-table-cell">
 									<div id="wrapper_prev_improve_pur" >
 										<table class="inner-table">
@@ -420,18 +432,7 @@ function downloadFile(idx){
 								</td>
 							</tr>
 						</c:if>
-						<c:if test="${productData.data.VERSION_NO != 1 && fn:length(addInfoCount) > 0 }">
-							<tr class="tr_prev_version2">
-								<th >개선 사항</th>
-								<td colspan="3" id="prev_improve">
-									<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
-									<c:if test="${addInfoList.INFO_TYPE == 'IMP' }">
-											${addInfoList.INFO_TEXT}<br>
-									</c:if>
-								</c:forEach>
-								</td>
-							</tr>
-						</c:if>
+						
 						<c:set var="brandText" value="" />
 						<c:set var="usageText" value="" />
 						
@@ -521,7 +522,7 @@ function downloadFile(idx){
 							</td>
 						</tr>
 						<tr>
-							<th >버젼 No.</th>
+							<th >버전 No.</th>
 							<td colspan="3">
 								${productData.data.VERSION_NO}
 							</td>

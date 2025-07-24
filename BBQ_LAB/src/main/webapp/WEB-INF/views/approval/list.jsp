@@ -184,7 +184,7 @@
 			url:URL,
 			data:{
 				"pageNo":pageNo,
-				"type":$(":input:radio[name=type]:checked").val(),
+				"searchStatus":$(":input:radio[name=searchStatus]:checked").val(),
 				"searchType":$("#searchType").selectedValues()[0],
 				"searchValue":$("#searchValue").val(),
 				"viewCount":viewCount
@@ -280,7 +280,7 @@
 			url:URL,
 			data:{
 				"pageNo":pageNo,
-				"type":$(":input:radio[name=type]:checked").val(),
+				"searchStatus":$(":input:radio[name=searchStatus]:checked").val(),
 				"searchType":$("#searchType").selectedValues()[0],
 				"searchValue":$("#searchValue").val(),
 				"viewCount":viewCount
@@ -361,7 +361,7 @@
 			url:URL,
 			data:{
 				"pageNo":pageNo,
-				"type":$(":input:radio[name=type]:checked").val(),
+				"searchStatus":$(":input:radio[name=searchStatus]:checked").val(),
 				"searchType":$("#searchType").selectedValues()[0],
 				"searchValue":$("#searchValue").val(),
 				"viewCount":viewCount
@@ -403,7 +403,7 @@
 	function loadMyCompList( pageNo ) {
 		var colgroup = "";
 		colgroup += "<col width=\"10%\">";
-		colgroup += "<col width=\"10%\">";
+		colgroup += "<col width=\"13%\">";
 		colgroup += "<col width=\"13%\">";
 		colgroup += "<col />";
 		colgroup += "<col width=\"10%\">";
@@ -431,7 +431,7 @@
 			url:URL,
 			data:{
 				"pageNo":pageNo,
-				"type":$(":input:radio[name=type]:checked").val(),
+				"searchStatus":$(":input:radio[name=searchStatus]:checked").val(),
 				"searchType":$("#searchType").selectedValues()[0],
 				"searchValue":$("#searchValue").val(),
 				"viewCount":viewCount
@@ -620,10 +620,10 @@
 						<dt>문서상태</dt>
 						<dd style="width:400px">
 						<!-- 초기값은 보통으로 -->
-							<input type="radio" id="r1" name="type" value="" checked/ ><label for="r1"><span></span>전체</label>
-							<input type="radio" id="r2" name="type" value="0"/><label for="r2"><span></span>결재중</label>
-							<input type="radio" id="r3" name="type" value="1"><label for="r3"><span></span>결재완료</label>
-							<input type="radio" id="r4" name="type" value="2"><label for="r4"><span></span>결재반려</label>
+							<input type="radio" id="r1" name="searchStatus" value="" checked/ ><label for="r1"><span></span>전체</label>
+							<input type="radio" id="r2" name="searchStatus" value="A"/><label for="r2"><span></span>결재중</label>
+							<input type="radio" id="r3" name="searchStatus" value="C"><label for="r3"><span></span>결재완료</label>
+							<input type="radio" id="r4" name="searchStatus" value="R"><label for="r4"><span></span>결재반려</label>
 						</dd>
 					</li>
 					<li>

@@ -79,7 +79,11 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
 			var html = "";
 			if (data.totalCount > 0) {
 				data.list.forEach(function (item) {
-					html += "<tr>";
+					if( item.STATUS == 'APPR_RET' ) {
+						html += "<tr class=\"m_visible\">";
+					} else {
+						html += "<tr>";
+					}
 					html += "	<td><a href=\"#\" onClick=\"fn_view('" + item.CHEMICAL_IDX + "')\">" + nvl(item.PRODUCT_NAME, '&nbsp;') + "</a></td>";
 					html += "	<td>" + nvl(item.REQUEST_DATE, '&nbsp;') + "</td>";
 					html += "	<td>" + nvl(item.COMPLETION_DATE, '&nbsp;') + "</td>";

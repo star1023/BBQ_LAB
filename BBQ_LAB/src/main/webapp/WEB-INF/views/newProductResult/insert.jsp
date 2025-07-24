@@ -1758,7 +1758,7 @@ function fn_openPreview() {
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
 					<button class="btn_admin_gray" onclick="fn_tmp_insert()">임시 저장</button>
-					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">결재</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />
