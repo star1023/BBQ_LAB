@@ -185,9 +185,9 @@ function fn_search() {
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						if( item.IS_LAST == 'Y' ) {
-							html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";	
+							html += "<tr id=\"package_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";	
 						} else {
-							html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
+							html += "<tr id=\"package_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
 						}
 						html += "	<td>";
 						if( item.CHILD_CNT > 0 && item.IS_LAST == 'Y' ) {
@@ -306,12 +306,12 @@ function fn_search() {
 	        $(imgElement).attr('src', imgSrc.replace('_add_', '_m_')); 
 
 	        // 정확히 product_1_ 또는 product_12_ 같은 prefix만 포함하는 자식만 열기
-	        $('tr[id^="product_' + parentNo + '_"]').show();
+	        $('tr[id^="package_' + parentNo + '_"]').show();
 	    } else {
 	        $(imgElement).attr('src', imgSrc.replace('_m_', '_add_'));
 
 	        // 자식 중에서 첫 번째 tr (부모)는 제외하고 나머지 숨기기
-	        $('tr[id^="product_' + parentNo + '_"]').toArray().forEach(function(v, i){
+	        $('tr[id^="package_' + parentNo + '_"]').toArray().forEach(function(v, i){
 	            if (i !== 0) {
 	                $(v).hide();
 	            }
@@ -378,14 +378,14 @@ function fn_search() {
 				<ul class="tab">
 					<c:choose>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 관능&품질평가 테스트 결과보고서</li></a>
-							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 관능&품질평가 테스트 결과보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 표시사항 기재양식</li></a>
+							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 표시사항 기재양식</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 관능&품질평가 테스트 결과보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 표시사항 기재양식</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 관능&품질평가 테스트 결과보고서</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 표시사항 기재양식</li></a>
 						</c:when>
 					</c:choose>	
 				</ul>

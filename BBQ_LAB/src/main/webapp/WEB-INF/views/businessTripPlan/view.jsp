@@ -26,7 +26,7 @@
 	}
 	
 	function fn_update(idx) {
-		location.href = '/businessTripPlan/businessTripPlanUpdate?idx='+idx;
+		location.href = '/businessTripPlan/update?idx='+idx;
 	}
 	
 	function downloadFile(idx){

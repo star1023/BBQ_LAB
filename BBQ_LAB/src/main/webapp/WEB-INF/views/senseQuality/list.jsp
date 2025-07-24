@@ -336,14 +336,14 @@ function fn_searchClear() {
 				<ul class="tab">
 					<c:choose>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 상품설계변경보고서</li></a>
-							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 상품설계변경보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 관능&품질평가 테스트 결과보고서</li></a>
+							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 관능&품질평가 테스트 결과보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 상품설계변경보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 관능&품질평가 테스트 결과보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 상품설계변경보고서</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 관능&품질평가 테스트 결과보고서</li></a>
 						</c:when>
 					</c:choose>	
 				</ul>

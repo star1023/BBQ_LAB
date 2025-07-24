@@ -326,12 +326,12 @@
 	        $(imgElement).attr('src', imgSrc.replace('_add_', '_m_')); 
 
 	        // 정확히 product_1_ 또는 product_12_ 같은 prefix만 포함하는 자식만 열기
-	        $('tr[id^="product_' + parentNo + '_"]').show();
+	        $('tr[id^="menu_' + parentNo + '_"]').show();
 	    } else {
 	        $(imgElement).attr('src', imgSrc.replace('_m_', '_add_'));
 
 	        // 자식 중에서 첫 번째 tr (부모)는 제외하고 나머지 숨기기
-	        $('tr[id^="product_' + parentNo + '_"]').toArray().forEach(function(v, i){
+	        $('tr[id^="menu_' + parentNo + '_"]').toArray().forEach(function(v, i){
 	            if (i !== 0) {
 	                $(v).hide();
 	            }
@@ -401,16 +401,16 @@
 				<ul class="tab">
 					<c:choose>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
-							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 제품완료보고서</li></a>
-							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 제품완료보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 메뉴완료보고서</li></a>
+							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 메뉴완료보고서</li></a>
+							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴완료보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
-							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 제품완료보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 메뉴완료보고서</li></a>
+							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴완료보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 제품완료보고서</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 메뉴완료보고서</li></a>
 						</c:when>
 					</c:choose>	
 				</ul>

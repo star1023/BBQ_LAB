@@ -160,6 +160,7 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 						contentsMap.put("changeFileName", "");
 					}
 				} catch( Exception e ) {
+					System.err.println("관능 이미지 에러 : " + e);
 					contentsMap.put("orgFileName", "");
 					contentsMap.put("filePath", "");
 					contentsMap.put("changeFileName", "");
