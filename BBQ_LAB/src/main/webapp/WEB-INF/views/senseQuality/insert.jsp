@@ -91,7 +91,7 @@ table{font-size: 12px}
 			count = 1;
 			for (var fileElement of fileElements) {
 				if( contentsDiv*3 >= count) {
-					fileArr.push(fileElement.value);
+					/* fileArr.push(fileElement.value); */
 					formData.append('file', fileElement.files[0]);
 				} else {
 					break;
@@ -168,6 +168,10 @@ table{font-size: 12px}
 			formData.append("contentsNoteArr",JSON.stringify(contentsNoteArr));
 			formData.append("resultArr",JSON.stringify(resultArr));
 			
+		    for (const [key, value] of formData.entries()) {
+		        console.log(key+ " : " + value);
+		      }
+			
 			var URL = "../senseQuality/insertSenseQualityTmpAjax";
 			$.ajax({
 				type:"POST",
@@ -243,7 +247,7 @@ table{font-size: 12px}
 			count = 1;
 			for (var fileElement of fileElements) {
 				if( contentsDiv*3 >= count) {
-					fileArr.push(fileElement.value);
+					/* fileArr.push(fileElement.value); */
 					formData.append('file', fileElement.files[0]);
 				} else {
 					break;

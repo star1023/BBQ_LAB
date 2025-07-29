@@ -1035,27 +1035,45 @@ table{font-size: 12px}
 			        	<c:if test="${status.index >= startNo && status.index <= endNo}">
 			        	<c:set var="count" value="${count + 1}" />
 			        	<td style="height: 250px">
-			        		<div>
-			        		<p><img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
-			        		<div style=" z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
-								<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
-							</div>
-							<input type="hidden" name="displayOrder" id="displayOrder" value="${contentsList.DISPLAY_ORDER}">
-							<input type="hidden" name="contentsIdx" id="contentsIdx" value="${contentsList.CONTENTS_IDX}">
-							<input type="hidden" name="dataStatus" id="dataStatus" value="U">
-							</div>
-							<div style="display:none">
-								<p><img id="preview" src="/resources/images/img_noimg3.png" style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;"></p>
-								<p class="pt10">
-									<div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
-										<input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*" style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
-										<label for="fileImageInput${status.index+1}" style="cursor: pointer;">이미지파일 등록 <img src="/resources/images/icon_add_file.png"></label>
-									</div>	
-								</p>
-								<div style=" z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
-									<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
-								</div>
-							</div>
+			        		  <c:choose>
+    <c:when test="${not empty contentsList.FILE_PATH}">
+      <!-- 실제 이미지가 있는 경우 -->
+      <div>
+        <p>
+          <img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}"
+               style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;">
+        </p>
+        <div style="z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
+          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
+        </div>
+        <input type="hidden" name="displayOrder" id="displayOrder" value="${contentsList.DISPLAY_ORDER}">
+        <input type="hidden" name="contentsIdx" id="contentsIdx" value="${contentsList.CONTENTS_IDX}">
+        <input type="hidden" name="dataStatus" id="dataStatus" value="U">
+      </div>
+    </c:when>
+
+    <c:otherwise>
+      <!-- 이미지 없음: 노이미지 + 등록 버튼 표시 -->
+      <div>
+        <p>
+          <img id="preview" src="/resources/images/img_noimg3.png"
+               style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;">
+        </p>
+        <p class="pt10">
+          <div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+            <input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*"
+                   style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
+            <label for="fileImageInput${status.index+1}" style="cursor: pointer;">
+              이미지파일 등록 <img src="/resources/images/icon_add_file.png">
+            </label>
+          </div>
+        </p>
+        <div style="z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
+          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
+        </div>
+      </div>
+    </c:otherwise>
+  </c:choose>
 			            </td>
 			            </c:if>
 			        	</c:forEach>

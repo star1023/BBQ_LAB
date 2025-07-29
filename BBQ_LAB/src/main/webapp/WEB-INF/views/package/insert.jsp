@@ -806,8 +806,8 @@
 								제품명
 							</td>
 							<td>
-								<input type="text" name="productName" id="productName" style="width:250px;float: left" class="req" placeholder=""/>
-								<input type="hidden" name="productCode" id="productCode"/>
+								<input type="text" name="productName" id="productName" style="width:250px;float: left" class="req" placeholder="" readonly/>
+								<input type="hidden" name="productCode" id="productCode" readonly/>
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_clearProductName();" style="float: left">초기화</button>
 							</td>

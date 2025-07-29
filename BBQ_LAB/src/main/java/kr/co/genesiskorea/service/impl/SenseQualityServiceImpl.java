@@ -142,6 +142,7 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 				
 				try {
 					MultipartFile multipartFile = file[i];
+					logger.error("파일 객체 : " + file.toString());
 					if( file != null && file.length > 0 ) {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -160,7 +161,7 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 						contentsMap.put("changeFileName", "");
 					}
 				} catch( Exception e ) {
-					System.err.println("관능 이미지 에러 : " + e);
+					logger.error("관능 이미지 에러 : " + e);
 					contentsMap.put("orgFileName", "");
 					contentsMap.put("filePath", "");
 					contentsMap.put("changeFileName", "");
@@ -647,7 +648,7 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 				
 				//history 저장
 				Map<String, Object> historyParam = new HashMap<String, Object>();
-				historyParam.put("docIdx", param.get("idx"));
+				historyParam.put("docIdx", param.get("contentsIdx"));
 				historyParam.put("docType", "SENSE_QUALITY");
 				historyParam.put("historyType", "D");
 				historyParam.put("historyData", param.toString());
