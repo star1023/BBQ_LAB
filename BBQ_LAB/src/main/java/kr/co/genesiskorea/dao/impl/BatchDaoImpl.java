@@ -34,6 +34,7 @@ public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
 		try {
 			JCoDestination dest = RfcManager.getDestination();
 			JCoFunction function = getFunction(dest, "ZASMM_WMS_MATERIAL_SEND");
+			System.err.println("function  :  "+function);
 			execute(function,importParams);
 			
 			returnList = RfcDataHandler.getTableData(function,"T_MATERIAL",new HashMap<String, String>() {

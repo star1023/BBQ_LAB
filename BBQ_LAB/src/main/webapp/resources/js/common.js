@@ -97,6 +97,13 @@ function nvl(str, defaultStr){
     return str ;
 }
 
+function nvl2(str, defaultStr){
+    if(typeof str == "undefined" || str == "undefined" || str == null || str == "" || str == "null")
+        str = defaultStr ;
+     
+    return str ;
+}
+
 function openDialog(elementID){
 	$('#'+elementID).fadeIn(200);
 }

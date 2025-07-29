@@ -138,6 +138,42 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 결재 임시 저장.
+	 * @param session
+	 * @param request
+	 * @param response
+	 * @param param
+	 * @param apprLine
+	 * @param refLine
+	 * @param model
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping("/insertApprTmpAjax")
+	@ResponseBody
+	public Map<String, String> insertApprTmpAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response
+			, @RequestParam Map<String, Object> param
+			, @RequestParam(value = "apprLine", required = false) List<String> apprLine
+			, @RequestParam(value = "refLine", required = false) List<String> refLine
+			, ModelMap model) throws Exception{
+		Map<String, String> returnMap = new HashMap<String, String>();
+		try {
+			//Map<String, Object> paramMap = new HashMap<String, Object>();
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			param.put("apprLine", apprLine);
+			param.put("refLine", refLine);
+			approvalService.insertApprTmp(param);
+			returnMap.put("RESULT", "S");			
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			returnMap.put("RESULT", "E");
+			returnMap.put("MESSAGE",e.getMessage());
+		}
+		return returnMap;
+	}
+	
 	@RequestMapping("/insertApprAjax")
 	@ResponseBody
 	public Map<String, String> insertApprAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response

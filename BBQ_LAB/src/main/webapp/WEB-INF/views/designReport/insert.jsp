@@ -397,13 +397,57 @@
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {
-						alert($("#productName").val()+" 상품설계 보고서가 임시저장 되었습니다.");
-						$('#lab_loading').hide();
-						fn_goList();
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", result.IDX );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#title").val());
+								apprFormData.append("docType", $("#docType").val());
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprTmpAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										if(data.RESULT == 'S') {
+											alert("임시저장 되었습니다.");
+											$('#lab_loading').hide();
+											fn_goList();
+										} else {
+											alert("결재선 상신 오류가 발생하였습니다."+data.MESSAGE);
+											$('#lab_loading').hide();
+											fn_goList();
+											return;
+										}
+									},
+									error:function(request, status, errorThrown){
+										alert("결재 등록 오류가 발생하였습니다.");
+										$('#lab_loading').hide();
+										fn_goList();
+									}			
+								});
+							} else {
+								alert($("#productName").val()+" 상품설계 보고서가 임시저장 되었습니다.");
+								$('#lab_loading').hide();
+								fn_goList();
+							}
+						} else {
+							alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+							$('#lab_loading').hide();
+							fn_goList();
+						}
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
+						$('#lab_loading').hide();
 					}
 				},
 				error:function(request, status, errorThrown){
@@ -936,43 +980,6 @@
 							<td colspan="5"><input type="text" name="title" id="title" style="width: 90%;" class="req" /></td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">ERP코드</th>
-							<td>
-								<input type="text"  style="width:200px; float: left" class="req" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
-								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
-								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
-							</td>
-							<th style="border-left: none;">제품명</th>
-							<td>
-								<input type="text"  style="width:350px; float: left" class="req" name="productName" id="productName"/>
-							</td>
-						</tr>
-						<!-- tr>
-							<th style="border-left: none;">상품코드</th>
-							<td>
-								<input type="text"  style="width:200px; float: left" class="req" name="productCode" id="productCode" placeholder="코드를 생성 하세요." readonly/>
-								<button class="btn_small_search ml5" onclick="selectNewCode()" style="float: left">조회</button>
-							</td>
-							<th style="border-left: none;">ERP코드</th>
-							<td>
-								<input type="text"  style="width:200px; float: left" class="req" name="productSapCode" id="productSapCode" placeholder="코드를 조회 하세요." readonly/>
-								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
-								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
-							</td>
-						</tr
-						<tr>
-							<th style="border-left: none;">변경사유</th>
-							<td colspan="3">
-								<textarea style="width:100%; height:50px" placeholder="변경사유를 입력하세요" name="changeComment" id="changeComment"></textarea>
-							</td>
-						</tr
-						<tr>
-							<th style="border-left: none;">변경시점</th>
-							<td colspan="3">
-								<input type="text"  style="width:350px; float: left" class="req" name="changeTime" id="changeTime"/>
-							</td>
-						</tr-->
-						<tr>
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
 								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
@@ -983,6 +990,18 @@
 							<th style="border-left: none;">참조자</th>
 							<td colspan="3">
 								<div id="refTxtFull" name="refTxtFull"></div>								
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">ERP코드</th>
+							<td>
+								<input type="text"  style="width:200px; float: left" class="req" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
+								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
+								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
+							</td>
+							<th style="border-left: none;">제품명</th>
+							<td>
+								<input type="text"  style="width:350px; float: left" class="req" name="productName" id="productName"/>
 							</td>
 						</tr>
 					</tbody>
@@ -1359,7 +1378,7 @@
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">

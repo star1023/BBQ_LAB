@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="kr.co.genesiskorea.util.*" %>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
@@ -56,6 +57,10 @@ table{font-size: 12px}
 <script type="text/javascript">
 	$(document).ready(function(){
 		fn.autoComplete($("#keyword"));
+		
+		<c:if test="${fn:length(apprItemList) > 0}">
+	    fn_loadAppr();
+		</c:if>
 	});
 	
 	function fn_updateTmp(){
@@ -221,9 +226,48 @@ table{font-size: 12px}
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT == 'S' ) {
-						alert("임시저장 되었습니다.");
-						$('#lab_loading').hide();
-						fn_goList();
+						if( $("#apprLine option").length > 0 ) {
+							var apprFormData = new FormData();
+							apprFormData.append("docIdx", '${senseQualityData.reportMap.REPORT_IDX}' );
+							apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
+							apprFormData.append("apprComment", $("#apprComment").val());
+							apprFormData.append("apprLine", $("#apprLine").selectedValues());
+							apprFormData.append("refLine", $("#refLine").selectedValues());
+							apprFormData.append("title", $("#title").val());
+							apprFormData.append("docType", $("#docType").val());
+							apprFormData.append("status", "N");
+							var URL = "../approval/insertApprTmpAjax";
+							$.ajax({
+								type:"POST",
+								url:URL,
+								dataType:"json",
+								data: apprFormData,
+								processData: false,
+						        contentType: false,
+						        cache: false,
+								success:function(data) {
+									if(data.RESULT == 'S') {
+										alert("임시저장 되었습니다.");
+										$('#lab_loading').hide();
+										fn_goList();	
+									} else {
+										alert("결재선 등록 중 오류가 발생하였습니다."+data.MESSAGE);
+										$('#lab_loading').hide();
+										fn_goList();	
+										return;
+									}
+								},
+								error:function(request, status, errorThrown){
+									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+									$('#lab_loading').hide();
+									fn_goList();	
+								}			
+							});
+						} else {
+							alert("임시저장 되었습니다.");
+							$('#lab_loading').hide();
+							fn_goList();	
+						}
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -419,9 +463,12 @@ table{font-size: 12px}
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT == 'S' ) {
+						<c:choose>
+					      <c:when test="${senseQualityData.reportMap.STATUS != null && senseQualityData.reportMap.STATUS != 'COND_APPR' }">
 						if( $("#apprLine option").length > 0 ) {
 							var apprFormData = new FormData();
 							apprFormData.append("docIdx", '${senseQualityData.reportMap.REPORT_IDX}');
+							apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
 							apprFormData.append("apprComment", $("#apprComment").val());
 							apprFormData.append("apprLine", $("#apprLine").selectedValues());
 							apprFormData.append("refLine", $("#refLine").selectedValues());
@@ -460,6 +507,13 @@ table{font-size: 12px}
 							$('#lab_loading').hide();
 							fn_goList();
 						}
+						</c:when>
+					      <c:otherwise>
+							alert("결재상신이 완료되었습니다.");
+							$('#lab_loading').hide();
+							fn_goList();
+					      </c:otherwise>
+					    </c:choose>
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -483,29 +537,29 @@ table{font-size: 12px}
 			alert("등록된 결재라인이 없습니다. 결재 라인 추가 후 결재상신 해 주세요.");
 			return;
 		} else {
-			//$("#apprLine").removeOption(/./); 
-			//$("#refLine").removeOption(/./); 
-			var apprTxtFull = "";
-			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
-				if( apprTxtFull != "" ) {
-					apprTxtFull += " > ";
-				}
-				apprTxtFull += item;
-			});
-			$("#apprTxtFull").val(apprTxtFull);
-			//apprTxtFull
-			//refTxtFull
-			var refTxtFull = "";
-			$("#refLine").selectedTexts().forEach(function( item, index ){
-				if( refTxtFull != "" ) {
-					refTxtFull += ", ";
-				}
-				refTxtFull += item;
-			});
-			$("#refTxtFull").html("&nbsp;"+refTxtFull);
+			fn_loadAppr();
 		}
 		closeDialog('approval_dialog');
+	}
+	
+	function fn_loadAppr(){
+		var apprTxtFull = "";
+		$("#apprLine").selectedTexts().forEach(function( item, index ){
+			console.log(item);
+			if( apprTxtFull != "" ) {
+				apprTxtFull += " > ";
+			}
+			apprTxtFull += item;
+		});
+		$("#apprTxtFull").val(apprTxtFull);
+		var refTxtFull = "";
+		$("#refLine").selectedTexts().forEach(function( item, index ){
+			if( refTxtFull != "" ) {
+				refTxtFull += ", ";
+			}
+			refTxtFull += item;
+		});
+		$("#refTxtFull").html("&nbsp;"+refTxtFull);
 	}
 	
 	function fn_fileDivClick(e){
@@ -943,6 +997,21 @@ table{font-size: 12px}
 								<input type="text" name="title" id="title" style="width: 90%;" class="req" value="${senseQualityData.reportMap.TITLE}"/>
 							</td>
 						</tr>
+						<c:if test="${senseQualityData.reportMap.STATUS != null && senseQualityData.reportMap.STATUS != 'COND_APPR' }">
+						<tr>
+							<th style="border-left: none;">결재라인</th>
+							<td colspan="3">
+								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">참조자</th>
+							<td colspan="3">
+								<div id="refTxtFull" name="refTxtFull"></div>								
+							</td>
+						</tr>
+						</c:if>
 						<tr>
 							<th style="border-left: none;">업체명</th>
 							<td colspan="3">
@@ -967,21 +1036,7 @@ table{font-size: 12px}
 								<input type="text"  style="width:100%; float: left" class="req" name="testPurpose" id="testPurpose" value="${senseQualityData.reportMap.TEST_PURPOSE}"/>
 							</td>
 						</tr>
-						<c:if test="${senseQualityData.reportMap.STATUS == 'TMP' || senseQualityData.reportMap.STATUS == 'REG'}">
-						<tr>
-							<th style="border-left: none;">결재라인</th>
-							<td colspan="3">
-								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-							</td>
-						</tr>
-						<tr>
-							<th style="border-left: none;">참조자</th>
-							<td colspan="3">
-								<div id="refTxtFull" name="refTxtFull"></div>								
-							</td>
-						</tr>
-						</c:if>
+						
 					</tbody>
 				</table>
 			</div>
@@ -1376,7 +1431,7 @@ table{font-size: 12px}
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${userUtil:getUserId(pageContext.request) == senseQualityData.data.DOC_OWNER}">
+					<c:if test="${userUtil:getUserId(pageContext.request) == senseQualityData.reportMap.DOC_OWNER}">
 						<c:if test="${senseQualityData.reportMap.STATUS == 'TMP'}">
 						<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
 						</c:if>
@@ -1448,14 +1503,20 @@ table{font-size: 12px}
 	<input type="hidden" id="userId" />
 	<input type="hidden" id="userName"/>
  	<select style="display:none" id=apprLine name="apprLine" multiple>
+ 	<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+ 		<option value="${apprItemList.TARGET_USER_ID}" selected>${apprItemList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
  	<select style="display:none" id=refLine name="refLine" multiple>
+ 	<c:forEach items="${refList}" var="refList" varStatus="status">
+ 		<option value="${refList.TARGET_USER_ID}" selected>${refList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
 			<span class="title">관능&품질평가 테스트 결과보고서 결재 상신</span>
 			<div  class="top_btn_box">
-				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+				<ul><li><button class="btn_madal_close" onClick="closeDialog('approval_dialog');"></button></li></ul>
 			</div>
 		</h5>
 		<div class="list_detail">
@@ -1467,7 +1528,7 @@ table{font-size: 12px}
 							<table style=" width:756px">
 								<tr>
 									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
+										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment">${apprHeader.COMMENT}</textarea>
 									</td>
 									<td width="98px"></td>
 								</tr>
@@ -1495,10 +1556,25 @@ table{font-size: 12px}
 					<dd style="width:80%;">
 						<div class="file_box_pop2" style="height:190px;">
 							<ul id="apprLineList">
+								<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='A' onclick='apprClass.approvalRemoveLine(this);' >
+										<span id="lineLength">${status.count}차 결재</span>${apprItemList.TARGET_USER_NAME}<strong>/ ${apprItemList.TARGET_USER_ID} / ${apprItemList.OBJTTX} / ${apprItemList.RESP_TXT}</strong>
+								 		<input type='hidden' name='userIds' data-apprtype='A' value='${apprItemList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>
 							</ul>
 						</div>
 						<div class="file_box_pop3" style="height:190px;">
 							<ul id="refLineList">
+								<c:forEach items="${refList}" var="refList" varStatus="status">	
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >
+									<span>참조</span> ${refList.TARGET_USER_NAME}
+									<strong>/ ${refList.TARGET_USER_ID} / ${refList.OBJTTX} / ${refList.RESP_TXT}</strong>
+									<input type='hidden' name='userIds' data-apprtype='R' value='${refList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>
 							</ul>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->
@@ -1566,7 +1642,7 @@ table{font-size: 12px}
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">

@@ -895,7 +895,9 @@
 		FROM 
 			lab_product
 		WHERE 1 = 1
+		<if test="idx != null and idx != '' ">
 			AND PRODUCT_IDX = #{idx}
+		</if>	
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'
 	</select>

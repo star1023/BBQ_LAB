@@ -42,5 +42,7 @@ public interface ApprovalService {
 
 	Map<String, Object> selectApprItem(Map<String, Object> param);
 
-	void updateRefIsRead(Map<String, Object> param) throws Exception;	
+	void updateRefIsRead(Map<String, Object> param) throws Exception;
+
+	void insertApprTmp(Map<String, Object> param) throws Exception;	
 }

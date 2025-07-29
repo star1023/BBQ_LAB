@@ -63,11 +63,19 @@ var selectedArr = new Array();
 		
 		const sharedUsers = [
 	        <c:forEach var="user" items="${sharedUserList}" varStatus="status">
+	        <c:if test="${user.USER_ID != null && user.USER_ID != '' }">
 	            { userId: "${user.USER_ID}", userName: "${user.USER_NAME}" }<c:if test="${!status.last}">,</c:if>
+	        </c:if>    
 	        </c:forEach>
 	    ];
 
-	    userSearchClass.renderTokenList(sharedUsers);
+		if( sharedUsers.length > 0 ) {
+			userSearchClass.renderTokenList(sharedUsers);	
+		}
+	    
+	    <c:if test="${fn:length(apprItemList) > 0}">
+	    fn_loadAppr();
+		</c:if>
 	});
 	
 	let _brandFullList = []; // 전체 브랜드 저장용 전역변수
@@ -973,9 +981,47 @@ var selectedArr = new Array();
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT == 'S' ) {
-						alert("임시저장 되었습니다.");
-						$('#lab_loading').hide();
-						fn_list();
+						if( $("#apprLine option").length > 0 ) {
+							var apprFormData = new FormData();
+							apprFormData.append("docIdx", '${productData.data.PRODUCT_IDX}' );
+							apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
+							apprFormData.append("apprComment", $("#apprComment").val());
+							apprFormData.append("apprLine", $("#apprLine").selectedValues());
+							apprFormData.append("refLine", $("#refLine").selectedValues());
+							apprFormData.append("title", $("#title").val());
+							apprFormData.append("docType", $("#docType").val());
+							apprFormData.append("status", "N");
+							var URL = "../approval/insertApprTmpAjax";
+							$.ajax({
+								type:"POST",
+								url:URL,
+								dataType:"json",
+								data: apprFormData,
+								processData: false,
+						        contentType: false,
+						        cache: false,
+								success:function(data) {
+									if(data.RESULT == 'S') {
+										alert("임시저장 되었습니다.");
+										$('#lab_loading').hide();
+										fn_list();
+									} else {
+										alert("결재선 등록 중 오류가 발생하였습니다."+data.MESSAGE);
+										$('#lab_loading').hide();
+										return;
+									}
+								},
+								error:function(request, status, errorThrown){
+									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+									$('#lab_loading').hide();
+									fn_list();
+								}			
+							});
+						} else {
+							alert("임시저장 되었습니다.");
+							$('#lab_loading').hide();
+							fn_list();
+						}
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -1320,47 +1366,58 @@ var selectedArr = new Array();
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT == 'S' ) {
-						if( $("#apprLine option").length > 0 ) {
-							var apprFormData = new FormData();
-							apprFormData.append("docIdx", '${productData.data.PRODUCT_IDX}' );
-							apprFormData.append("apprComment", $("#apprComment").val());
-							apprFormData.append("apprLine", $("#apprLine").selectedValues());
-							apprFormData.append("refLine", $("#refLine").selectedValues());
-							apprFormData.append("title", $("#title").val());
-							apprFormData.append("docType", $("#docType").val());
-							apprFormData.append("status", "N");
-							var URL = "../approval/insertApprAjax";
-							$.ajax({
-								type:"POST",
-								url:URL,
-								dataType:"json",
-								data: apprFormData,
-								processData: false,
-						        contentType: false,
-						        cache: false,
-								success:function(data) {
-									if(data.RESULT == 'S') {
-										alert("결재상신이 완료되었습니다.");
+						<c:choose>
+					      <c:when test="${productData.data.STATUS != null && productData.data.STATUS != 'COND_APPR' }">
+					      if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", '${productData.data.PRODUCT_IDX}' );
+								apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#title").val());
+								apprFormData.append("docType", $("#docType").val());
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										if(data.RESULT == 'S') {
+											alert("결재상신이 완료되었습니다.");
+											$('#lab_loading').hide();
+											fn_list();
+										} else {
+											alert("결재선 상신 오류가 발생하였습니다."+data.MESSAGE);
+											$('#lab_loading').hide();
+											fn_list();
+											return;
+										}
+									},
+									error:function(request, status, errorThrown){
+										alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
 										$('#lab_loading').hide();
 										fn_list();
-									} else {
-										alert("결재선 상신 오류가 발생하였습니다."+data.MESSAGE);
-										$('#lab_loading').hide();
-										fn_list();
-										return;
-									}
-								},
-								error:function(request, status, errorThrown){
-									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-									$('#lab_loading').hide();
-									fn_list();
-								}			
-							});
-						} else {
-							alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 생성되었습니다.");
+									}			
+								});
+							} else {
+								alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 생성되었습니다.");
+								$('#lab_loading').hide();
+								fn_list();
+							}
+					      </c:when>
+					      <c:otherwise>
+							alert("결재상신이 완료되었습니다.");
 							$('#lab_loading').hide();
 							fn_list();
-						}
+					      </c:otherwise>
+					    </c:choose>
+						
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -1675,6 +1732,7 @@ var selectedArr = new Array();
 		} else {
 			//$("#apprLine").removeOption(/./); 
 			//$("#refLine").removeOption(/./); 
+			/*
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
 				console.log(item);
@@ -1694,8 +1752,31 @@ var selectedArr = new Array();
 				refTxtFull += item;
 			});
 			$("#refTxtFull").html("&nbsp;"+refTxtFull);
+			*/
+			fn_loadAppr();
 		}
 		closeDialog('approval_dialog');
+	}
+	
+	function fn_loadAppr() {
+		var apprTxtFull = "";
+		$("#apprLine").selectedTexts().forEach(function( item, index ){
+			if( apprTxtFull != "" ) {
+				apprTxtFull += " > ";
+			}
+			apprTxtFull += item;
+		});
+		$("#apprTxtFull").val(apprTxtFull);
+		//apprTxtFull
+		//refTxtFull
+		var refTxtFull = "";
+		$("#refLine").selectedTexts().forEach(function( item, index ){
+			if( refTxtFull != "" ) {
+				refTxtFull += ", ";
+			}
+			refTxtFull += item;
+		});
+		$("#refTxtFull").html("&nbsp;"+refTxtFull);
 	}
 	
 	function fn_previewDataBinding(popup) {
@@ -2479,6 +2560,22 @@ var selectedArr = new Array();
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								</td>
 							</tr>
+							<c:if test="${productData.data.STATUS != null && productData.data.STATUS != 'COND_APPR' }">
+							<tr>
+								<th style="border-left: none;">결재라인</th>
+								<td colspan="3">
+									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+									<button class="btn_small_search ml5"
+										onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								</td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">참조자</th>
+								<td colspan="3">
+									<div id="refTxtFull" name="refTxtFull"></div>
+								</td>
+							</tr>
+							</c:if>
 							<tr>
 							    <th style="border-left: none;">공동 참여자</th>
 							    <td colspan="3">
@@ -2586,7 +2683,7 @@ var selectedArr = new Array();
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -2678,7 +2775,7 @@ var selectedArr = new Array();
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -2896,7 +2993,7 @@ var selectedArr = new Array();
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">
@@ -3058,7 +3155,7 @@ var selectedArr = new Array();
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="matLayerBody">
@@ -3140,14 +3237,20 @@ var selectedArr = new Array();
 	<input type="hidden" id="userId" />
 	<input type="hidden" id="userName"/>
  	<select style="display:none" id=apprLine name="apprLine" multiple>
+ 	<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+ 		<option value="${apprItemList.TARGET_USER_ID}" selected>${apprItemList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
  	<select style="display:none" id=refLine name="refLine" multiple>
+ 	<c:forEach items="${refList}" var="refList" varStatus="status">
+ 		<option value="${refList.TARGET_USER_ID}" selected>${refList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
 			<span class="title">개발완료보고서 결재 상신</span>
 			<div  class="top_btn_box">
-				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+				<ul><li><button class="btn_madal_close" onClick="closeDialog('approval_dialog');"></button></li></ul>
 			</div>
 		</h5>
 		<div class="list_detail">
@@ -3159,7 +3262,7 @@ var selectedArr = new Array();
 							<table style=" width:756px">
 								<tr>
 									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
+										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment">${apprHeader.COMMENT}</textarea>
 									</td>
 									<td width="98px"></td>
 								</tr>
@@ -3187,10 +3290,25 @@ var selectedArr = new Array();
 					<dd style="width:80%;">
 						<div class="file_box_pop2" style="height:190px;">
 							<ul id="apprLineList">
+								<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='A' onclick='apprClass.approvalRemoveLine(this);' >
+										<span id="lineLength">${status.count}차 결재</span>${apprItemList.TARGET_USER_NAME}<strong>/ ${apprItemList.TARGET_USER_ID} / ${apprItemList.OBJTTX} / ${apprItemList.RESP_TXT}</strong>
+								 		<input type='hidden' name='userIds' data-apprtype='A' value='${apprItemList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>
 							</ul>
 						</div>
 						<div class="file_box_pop3" style="height:190px;">
 							<ul id="refLineList">
+							<c:forEach items="${refList}" var="refList" varStatus="status">	
+								<li>
+								<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >
+								<span>참조</span> ${refList.TARGET_USER_NAME}
+								<strong>/ ${refList.TARGET_USER_ID} / ${refList.OBJTTX} / ${refList.RESP_TXT}</strong>
+								<input type='hidden' name='userIds' data-apprtype='R' value='${refList.TARGET_USER_ID}'/>
+								</li>
+							</c:forEach>	
 							</ul>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->

@@ -129,7 +129,7 @@ function fn_renderList(list) {
         }
 
         // 작성자 / 조회수
-        row += "<td>" + item.REG_USER + "</td>";
+        row += "<td>" + item.REG_USER_NAME + "</td>";
         row += "<td>" + item.REG_DATE + "</td>";
         row += "<td>" + item.HITS + "</td>";
 

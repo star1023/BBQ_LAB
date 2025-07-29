@@ -348,7 +348,7 @@
 
 	                    $.ajax({
 	                        type: "POST",
-	                        url: "../approval/insertApprAjax",
+	                        url: "../approval/insertApprTmpAjax",
 	                        dataType: "json",
 	                        data: apprFormData,
 	                        processData: false,
@@ -1650,7 +1650,20 @@ function fn_openPreview() {
 						<tr>
 							<th style="border-left: none;">제목</th>
 							<td colspan="3"><input type="text" name="title" id="title" style="width: 90%;" class="req" /></td>
-						</tr>					
+						</tr>
+						<tr>
+							<th style="border-left: none;">결재라인</th>
+							<td colspan="3">
+								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">참조자</th>
+							<td colspan="3">
+								<div id="refTxtFull" name="refTxtFull"></div>								
+							</td>
+						</tr>
 						<tr>
 							<th style="border-left: none;">시행월</th>
 							<td colspan="3"><input type="text" id="excuteDate" readonly class="req" placeholder="시행월 선택 (예: 2024-05)" style="width: 170px;"></td>
@@ -1679,19 +1692,6 @@ function fn_openPreview() {
 							</td>
 						</tr>	
 						 -->					
-						<tr>
-							<th style="border-left: none;">결재라인</th>
-							<td colspan="3">
-								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-							</td>
-						</tr>
-						<tr>
-							<th style="border-left: none;">참조자</th>
-							<td colspan="3">
-								<div id="refTxtFull" name="refTxtFull"></div>								
-							</td>
-						</tr>
 						<tr>
 						  <th style="border-left: none;">입력 방식</th>
 						  <td colspan="3">

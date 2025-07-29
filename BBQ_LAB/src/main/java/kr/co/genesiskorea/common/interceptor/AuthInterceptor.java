@@ -50,19 +50,9 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 		boolean hasAuth = AuthUtil.hasAuth(request);
 		logger.info("hasAuth : "+hasAuth);
 		
-		Auth auth = AuthUtil.getAuth(request);
-		
-		logger.info("auth : "+auth);
-		
-		if( auth != null && auth.getUserId() != null && !"".equals(auth.getUserId()) ) {
-			
-		} else {
-			hasAuth = false;
-		}
-		
 		List<String> exceptUriList = new ArrayList<String>();
 		exceptUriList.add("Ajax");
-		exceptUriList.add("/");
+		//exceptUriList.add("/");
 		exceptUriList.add("/user/login");
 		exceptUriList.add("/login");
 		exceptUriList.add("/user/logout");
@@ -81,6 +71,27 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
 				isExcept = true;
 			}
 		}
+		
+		if( !hasAuth ) {
+			logger.info("hasAuth : "+hasAuth+"    isExcept  : "+isExcept);
+			if( !isExcept ) {
+				logger.debug("비정상접근 ");
+				MessageUtil.showAlert(request, response, msa.getMessage("login.ing.use"), "/user/logout");
+				return false;
+			}
+		}
+		
+		Auth auth = AuthUtil.getAuth(request);
+		
+		logger.info("auth : "+auth);
+		
+		if( auth != null && auth.getUserId() != null && !"".equals(auth.getUserId()) ) {
+			
+		} else {
+			hasAuth = false;
+		}
+		
+		
 		//hasAuth = true;
 		 // 예외로 지정된 URL을 호출한 경우 사용자 로그인 Check를 하지 않음
 		if(!isExcept) {

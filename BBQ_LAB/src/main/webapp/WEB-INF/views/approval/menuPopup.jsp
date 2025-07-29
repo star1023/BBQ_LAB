@@ -643,7 +643,7 @@ function downloadFile(idx){
 						<th>ERP코드</th>
 						<th>원료명</th>
 						<th>규격</th>
-						<th>보관방법 및<br>유통기한</th>
+						<th>보관방법 및<br>소비기한</th>
 						<th>공급가</th>
 						<th>비고</th>
 					</tr>
@@ -710,7 +710,7 @@ function downloadFile(idx){
 							<th>ERP코드</th>
 							<th>원료명</th>
 							<th>규격</th>
-							<th>보관방법 및<br>유통기한</th>
+							<th>보관방법 및<br>소비기한</th>
 							<th>공급가</th>
 							<th>비고</th>
 						</tr>

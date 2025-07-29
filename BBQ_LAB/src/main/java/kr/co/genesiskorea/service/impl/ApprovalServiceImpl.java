@@ -138,6 +138,103 @@ public class ApprovalServiceImpl implements ApprovalService {
 		// TODO Auto-generated method stub
 		approvalDao.deleteApprLine(param);
 	}
+	
+	@Override
+	public void insertApprTmp(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		
+		try {
+			//1.동일한 문서 idx, doc type의 반려 이외 데이터가 있는 경우 삭제처리 한다.
+			String apprIdx = (String)param.get("apprIdx");
+			ArrayList<String> apprLine = (ArrayList<String>)param.get("apprLine");
+			ArrayList<String> refLine = (ArrayList<String>)param.get("refLine");
+			
+			//기존에 등록한 결재 데이터가 있는 경우.
+			if( apprIdx != null && !"".equals(apprIdx) ) {
+				Map<String, Object> headerData = new HashMap<String, Object>();
+				headerData.put("apprIdx", apprIdx);
+				headerData.put("APPR_IDX", apprIdx);
+				//1.결재 아이템을 삭제한다.
+				approvalDao.deleteApprItem(headerData);
+				//2.참조 데이터를 삭제한다.
+				approvalDao.deleteApprReference(headerData);
+				//3.결재 헤더 업데이트.
+				param.put("totalStep", apprLine.size());
+				param.put("currentStep", 1);
+				param.put("currentUser", apprLine.get(0));
+				approvalDao.updateApprHeader(param);
+				
+				approvalDao.insertApprItem(param);
+				//8. arrp ref를 저장한다.
+				if( refLine != null && refLine.size() > 0 ) {
+					approvalDao.insertReference(param);
+				}
+				
+			} else {
+				Map<String, Object> paramMap = new HashMap<String, Object>();
+				paramMap.put("docIdx", param.get("docIdx"));
+				paramMap.put("docType", param.get("docType"));
+				//paramMap.put("lastStatus", "R");
+				Map<String, Object> headerData = approvalDao.selectApprHeaderData(paramMap);
+				if( headerData != null && !"".equals(headerData.get("APPR_IDX")) ) {
+					if( headerData.get("LAST_STATUS") != null && !"R".equals(headerData.get("LAST_STATUS")) ) {
+						//반려 외 결재 정보를 삭제한다.
+						//2.결재 아이템을 삭제한다.
+						approvalDao.deleteApprItem(headerData);
+						//3.결재 헤더를 삭제한다.
+						approvalDao.deleteApprHeader(headerData);
+						//4.참조 데이터를 삭제한다.
+						approvalDao.deleteApprReference(headerData);
+					}				
+				}
+				//5. appr idx를 조회한다.
+				int APPR_IDX = approvalDao.selectApprSeq();
+				param.put("apprIdx", APPR_IDX);
+				param.put("totalStep", apprLine.size());
+				param.put("currentStep", 1);
+				param.put("currentUser", apprLine.get(0));
+				
+				System.err.println(param);
+				//6. appr header를 저장한다.
+				approvalDao.insertApprHeader(param);
+				//7. appr item을 저장한다.
+				approvalDao.insertApprItem(param);
+				//8. arrp ref를 저장한다.
+				if( refLine != null && refLine.size() > 0 ) {
+					approvalDao.insertReference(param);
+				}
+			}
+			
+			/*
+			//9. 문서 상태를 REG에서 APPR로 변경한다.
+			param.put("docStatus", "APPR");
+			approvalDao.updateDocStatus(param);
+			//10. 메일발송 및 알람등을 처리한다.
+			//첫번째 담당자(apprLine.get(0)) 에게 알림을 발송한다.
+			//param.get("docType"), param.get("docIdx"),param.get("title")
+			HashMap<String, Object> notiMap = new HashMap<String, Object>();
+			notiMap.put("targetUser", apprLine.get(0));
+			notiMap.put("type", "A");
+			notiMap.put("typeTxt", "결재알림");
+			notiMap.put("message", "결재 요청이 도착했습니다.");
+			notiMap.put("userId", param.get("userId"));
+			notiMap.put("docIdx", param.get("docIdx"));
+			notiMap.put("docType", param.get("docType"));
+			commonService.notification(notiMap);
+			*/
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+	}
 
 	@Override
 	public void insertAppr(Map<String, Object> param) throws Exception {
@@ -148,39 +245,63 @@ public class ApprovalServiceImpl implements ApprovalService {
 		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		status = txManager.getTransaction(def);
 		try {
-			//1.기존에 결재중인 결재데이터가 있는 경우 삭제처리 한다.
-			Map<String, Object> paramMap = new HashMap<String, Object>();
-			paramMap.put("docIdx", param.get("docIdx"));
-			paramMap.put("docType", param.get("docType"));
-			//paramMap.put("lastStatus", "C");
-			Map<String, Object> headerData = approvalDao.selectApprHeaderData(paramMap);
-			if( headerData != null && !"".equals(headerData.get("APPR_IDX")) ) {
-				//기존 결재 정보를 삭제한다.
-				//2.결재 아이템을 삭제한다.
-				approvalDao.deleteApprItem(headerData);
-				//3.결재 헤더를 삭제한다.
-				approvalDao.deleteApprHeader(headerData);
-				//4.참조 데이터를 삭제한다.
-				approvalDao.deleteApprReference(headerData);
-			}
-			//5. appr idx를 조회한다.
-			int APPR_IDX = approvalDao.selectApprSeq();
-			param.put("apprIdx", APPR_IDX);		
+			String apprIdx = (String)param.get("apprIdx");
 			ArrayList<String> apprLine = (ArrayList<String>)param.get("apprLine");
 			ArrayList<String> refLine = (ArrayList<String>)param.get("refLine");
-			param.put("totalStep", apprLine.size());
-			param.put("currentStep", 1);
-			param.put("currentUser", apprLine.get(0));
-			
-			System.err.println(param);
-			//6. appr header를 저장한다.
-			approvalDao.insertApprHeader(param);
-			//7. appr item을 저장한다.
-			approvalDao.insertApprItem(param);
-			//8. arrp ref를 저장한다.
-			if( refLine != null && refLine.size() > 0 ) {
-				approvalDao.insertReference(param);
+			//기존에 등록한 결재 데이터가 있는 경우.
+			if( apprIdx != null && !"".equals(apprIdx) ) {
+				Map<String, Object> headerData = new HashMap<String, Object>();
+				headerData.put("apprIdx", apprIdx);
+				headerData.put("APPR_IDX", apprIdx);
+				//1.결재 아이템을 삭제한다.
+				approvalDao.deleteApprItem(headerData);
+				//2.참조 데이터를 삭제한다.
+				approvalDao.deleteApprReference(headerData);
+				//3.결재 헤더 업데이트.
+				param.put("totalStep", apprLine.size());
+				param.put("currentStep", 1);
+				param.put("currentUser", apprLine.get(0));
+				approvalDao.updateApprHeader(param);
+				
+				approvalDao.insertApprItem(param);
+				//8. arrp ref를 저장한다.
+				if( refLine != null && refLine.size() > 0 ) {
+					approvalDao.insertReference(param);
+				}
+			} else {
+				//1.기존에 결재중인 결재데이터가 있는 경우 삭제처리 한다.
+				Map<String, Object> paramMap = new HashMap<String, Object>();
+				paramMap.put("docIdx", param.get("docIdx"));
+				paramMap.put("docType", param.get("docType"));
+				//paramMap.put("lastStatus", "C");
+				Map<String, Object> headerData = approvalDao.selectApprHeaderData(paramMap);
+				if( headerData != null && !"".equals(headerData.get("APPR_IDX")) ) {
+					//기존 결재 정보를 삭제한다.
+					//2.결재 아이템을 삭제한다.
+					approvalDao.deleteApprItem(headerData);
+					//3.결재 헤더를 삭제한다.
+					approvalDao.deleteApprHeader(headerData);
+					//4.참조 데이터를 삭제한다.
+					approvalDao.deleteApprReference(headerData);
+				}
+				//5. appr idx를 조회한다.
+				int APPR_IDX = approvalDao.selectApprSeq();
+				param.put("apprIdx", APPR_IDX);		
+				param.put("totalStep", apprLine.size());
+				param.put("currentStep", 1);
+				param.put("currentUser", apprLine.get(0));
+				
+				System.err.println(param);
+				//6. appr header를 저장한다.
+				approvalDao.insertApprHeader(param);
+				//7. appr item을 저장한다.
+				approvalDao.insertApprItem(param);
+				//8. arrp ref를 저장한다.
+				if( refLine != null && refLine.size() > 0 ) {
+					approvalDao.insertReference(param);
+				}				
 			}
+			
 			//9. 문서 상태를 REG에서 APPR로 변경한다.
 			param.put("docStatus", "APPR");
 			approvalDao.updateDocStatus(param);
@@ -780,5 +901,5 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public void updateRefIsRead(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		approvalDao.updateRefIsRead(param);
-	}	
+	}		
 }

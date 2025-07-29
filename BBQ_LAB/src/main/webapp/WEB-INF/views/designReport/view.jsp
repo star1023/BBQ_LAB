@@ -176,6 +176,30 @@ function fn_pdfDownload(idx) {
 							<th style="border-left: none;">제목</th>
 							<td colspan="3">${designData.data.TITLE}</td>
 						</tr>
+						<c:if test="${userUtil:getUserId(pageContext.request) == designData.data.DOC_OWNER }">
+							<tr>
+								<th style="border-left: none;">결재라인</th>
+								<td colspan="3">
+									<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+										<c:if test="${status.count > 1}">
+											&nbsp; > &nbsp; 
+										</c:if>
+										${apprItemList.TARGET_USER_NAME}										
+									</c:forEach>
+								</td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">참조자</th>
+								<td colspan="3">
+									<c:forEach items="${refList}" var="refList" varStatus="status">
+										<c:if test="${status.count > 1}">
+											&nbsp; , &nbsp; 
+										</c:if>
+										${refList.TARGET_USER_NAME}										
+									</c:forEach>
+								</td>
+							</tr>
+							</c:if>
 						<tr>
 							<th style="border-left: none;">ERP코드</th>
 							<td>

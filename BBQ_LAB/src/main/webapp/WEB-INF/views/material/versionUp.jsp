@@ -642,7 +642,7 @@ function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, 
 						</dd>
 					</li>
 					<li>
-						<dt>유통기한</dt>
+						<dt>소비기한</dt>
 						<dd>
 							<input type="text" class="req" style="width:149px;" name="expireDate" id="expireDate" value="${materialData.data.EXPIRATION_DATE}">
 						</dd>
@@ -845,7 +845,7 @@ function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, 
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="matLayerBody">

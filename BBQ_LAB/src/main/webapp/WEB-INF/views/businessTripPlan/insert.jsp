@@ -358,6 +358,45 @@
 				dataType:"json",
 				success:function(data) {
 					if(data.RESULT == 'S') {
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", result.IDX );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#title").val());
+								apprFormData.append("docType", $("#docType").val());
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprTmpAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										alert("임시저장 되었습니다.");
+										$('#lab_loading').hide();
+										fn_goList();
+									},
+									error:function(request, status, errorThrown){
+										alert("결재 등록 오류가 발생하였습니다.");
+										$('#lab_loading').hide();
+									}			
+								});
+							} else {
+								alert("임시저장 되었습니다.");
+								$('#lab_loading').hide();
+								fn_goList();
+							}
+						} else {
+							alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+							$('#lab_loading').hide();
+							fn_goList();
+						}
 						alert("임시저장되었습니다.");
 						$('#lab_loading').hide();
 						fn_goList();
@@ -854,6 +893,19 @@
 							<td colspan="3"><input type="text" name="title" id="title" style="width: 90%;" class="req" /></td>
 						</tr>
 						<tr>
+							<th style="border-left: none;">결재라인</th>
+							<td colspan="3">
+								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">참조자</th>
+							<td colspan="3">
+								<div id="refTxtFull" name="refTxtFull"></div>								
+							</td>
+						</tr>
+						<tr>
 							<th style="border-left: none;">출장구분</th>
 							<td colspan="3">
 								<div class="selectbox" style="width:150px;">  
@@ -1049,19 +1101,6 @@
 							<th style="border-left: none;">기대효과</th>
 							<td colspan="3">
 								<textarea rows='2' cols="130" name="tripEffect" id="tripEffect"></textarea>
-							</td>
-						</tr>						
-						<tr>
-							<th style="border-left: none;">결재라인</th>
-							<td colspan="3">
-								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-							</td>
-						</tr>
-						<tr>
-							<th style="border-left: none;">참조자</th>
-							<td colspan="3">
-								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
 					</tbody>

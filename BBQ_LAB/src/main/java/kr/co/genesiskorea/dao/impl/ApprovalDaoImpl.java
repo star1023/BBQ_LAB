@@ -221,5 +221,11 @@ public class ApprovalDaoImpl implements ApprovalDao {
 	public void updateRefIsRead(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("approval.updateRefIsRead", param);
+	}
+
+	@Override
+	public void updateApprHeader(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("approval.updateApprHeader", param);
 	}	
 }

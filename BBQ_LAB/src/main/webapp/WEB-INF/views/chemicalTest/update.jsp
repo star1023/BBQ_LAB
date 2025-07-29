@@ -2310,7 +2310,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">

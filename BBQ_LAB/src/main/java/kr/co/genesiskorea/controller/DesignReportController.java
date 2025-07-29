@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.DesignReportService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -35,6 +36,9 @@ public class DesignReportController {
 	
 	@Autowired
 	DesignReportService reportService;
+	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@RequestMapping(value = "/list")
 	public String productList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
@@ -142,6 +146,21 @@ public class DesignReportController {
 		//lab_design_add_info 테이블 조회
 		model.addAttribute("addInfoList", reportService.selectAddInfoList(param));
 		
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "DESIGN");
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+			model.addAttribute("apprHeader", apprHeader);
+			//lab_approval_item 테이블 조회
+			param.put("apprIdx", apprHeader.get("APPR_IDX"));
+			List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+			model.addAttribute("apprItemList", apprItemList);
+			
+			//lab_approval_reference 테이블 조회
+			List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+			model.addAttribute("refList", refList);
+		}
+		
 		return "/designReport/view";
 	}
 	
@@ -159,6 +178,22 @@ public class DesignReportController {
 				model.addAttribute("designChangeList", reportService.selectDesignChangeList(param));
 				//lab_design_add_info 테이블 조회
 				model.addAttribute("addInfoList", reportService.selectAddInfoList(param));
+				
+				param.put("docIdx", param.get("idx"));
+				param.put("docType", "DESIGN");
+				Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+				if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+					model.addAttribute("apprHeader", apprHeader);
+					//lab_approval_item 테이블 조회
+					param.put("apprIdx", apprHeader.get("APPR_IDX"));
+					List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+					model.addAttribute("apprItemList", apprItemList);
+					
+					//lab_approval_reference 테이블 조회
+					List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+					model.addAttribute("refList", refList);
+				}
+				
 				return "/designReport/update";
 			} else {
 				model.addAttribute("returnPage", "/designReport/list");

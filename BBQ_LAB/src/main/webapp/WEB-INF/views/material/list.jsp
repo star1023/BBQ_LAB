@@ -1008,7 +1008,7 @@ function paging(pageNo) {
 					</dd>
 				</li>
 				<li>
-					<dt>유통기한</dt>
+					<dt>소비기한</dt>
 					<dd>
 						<div id="expireDateTxt"></div>
 					</dd>

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="kr.co.genesiskorea.util.*" %>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
@@ -76,6 +77,10 @@
 		fn.autoComplete($("#keyword"));
 		autoComplete2($("#keyword2"));
 		fn_changeDate();
+		
+		<c:if test="${fn:length(apprItemList) > 0}">
+	    fn_loadAppr();
+		</c:if>
 	});
 	
 	function CreateEditor(editorId) {
@@ -364,10 +369,47 @@
 				dataType:"json",
 				success:function(result) {
 					if(result.RESULT == 'S') {
-						alert("임시저장되었습니다.");
-						$('#lab_loading').hide();
-						fn_goList();
-						return;
+						if( $("#apprLine option").length > 0 ) {
+							var apprFormData = new FormData();
+							apprFormData.append("docIdx", '${businessTripData.data.TRIP_IDX}' );
+							apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
+							apprFormData.append("apprComment", $("#apprComment").val());
+							apprFormData.append("apprLine", $("#apprLine").selectedValues());
+							apprFormData.append("refLine", $("#refLine").selectedValues());
+							apprFormData.append("title", $("#title").val());
+							apprFormData.append("docType", $("#docType").val());
+							apprFormData.append("status", "N");
+							var URL = "../approval/insertApprTmpAjax";
+							$.ajax({
+								type:"POST",
+								url:URL,
+								dataType:"json",
+								data: apprFormData,
+								processData: false,
+						        contentType: false,
+						        cache: false,
+								success:function(data) {
+									if(data.RESULT == 'S') {
+										alert("임시저장 되었습니다.");
+										$('#lab_loading').hide();
+										fn_goList();
+									} else {
+										alert("결재선 등록 중 오류가 발생하였습니다."+data.MESSAGE);
+										$('#lab_loading').hide();
+										fn_goList();										
+									}
+								},
+								error:function(request, status, errorThrown){
+									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+									$('#lab_loading').hide();
+									fn_goList();
+								}			
+							});
+						} else {
+							alert("임시저장되었습니다.");
+							$('#lab_loading').hide();
+							fn_goList();	
+						}
 					} else {
 						alert("오류가 발생하였습니다."+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -521,6 +563,7 @@
 						if( $("#apprLine option").length > 0 ) {
 							var apprFormData = new FormData();
 							apprFormData.append("docIdx", '${businessTripData.data.TRIP_IDX}' );
+							apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
 							apprFormData.append("apprComment", $("#apprComment").val());
 							apprFormData.append("apprLine", $("#apprLine").selectedValues());
 							apprFormData.append("refLine", $("#refLine").selectedValues());
@@ -635,25 +678,29 @@
 			alert("등록된 결재라인이 없습니다. 결재 라인 추가 후 결재상신 해 주세요.");
 			return;
 		} else {
-			var apprTxtFull = "";
-			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
-				if( apprTxtFull != "" ) {
-					apprTxtFull += " > ";
-				}
-				apprTxtFull += item;
-			});
-			$("#apprTxtFull").val(apprTxtFull);
-			var refTxtFull = "";
-			$("#refLine").selectedTexts().forEach(function( item, index ){
-				if( refTxtFull != "" ) {
-					refTxtFull += ", ";
-				}
-				refTxtFull += item;
-			});
-			$("#refTxtFull").html("&nbsp;"+refTxtFull);
+			fn_loadAppr();
 		}
 		closeDialog('approval_dialog');
+	}
+	
+	function fn_loadAppr() {
+		var apprTxtFull = "";
+		$("#apprLine").selectedTexts().forEach(function( item, index ){
+			console.log(item);
+			if( apprTxtFull != "" ) {
+				apprTxtFull += " > ";
+			}
+			apprTxtFull += item;
+		});
+		$("#apprTxtFull").val(apprTxtFull);
+		var refTxtFull = "";
+		$("#refLine").selectedTexts().forEach(function( item, index ){
+			if( refTxtFull != "" ) {
+				refTxtFull += ", ";
+			}
+			refTxtFull += item;
+		});
+		$("#refTxtFull").html("&nbsp;"+refTxtFull);
 	}
 	
 	autoComplete2 = function(objKeyWord){
@@ -768,6 +815,22 @@
 								<input type="text" name="title" id="title" style="width: 90%;" class="req" value="${businessTripData.data.TITLE}"/>
 							</td>
 						</tr>
+						<c:if test="${businessTripData.data.STATUS != null && businessTripData.data.STATUS != 'COND_APPR' }">
+						<tr>
+							<th style="border-left: none;">결재라인</th>
+							<td colspan="3">
+								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+								<button class="btn_small_search ml5"
+									onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">참조자</th>
+							<td colspan="3">
+								<div id="refTxtFull" name="refTxtFull"></div>
+							</td>
+						</tr>
+						</c:if>
 						<tr>
 							<th style="border-left: none;">출장구분</th>
 							<td colspan="3">
@@ -1016,21 +1079,6 @@
 								<textarea rows='2' cols="130" name="tripEffect" id="tripEffect">${businessTripData.data.TRIP_EFFECT}</textarea>
 							</td>
 						</tr>
-						<c:if test="${businessTripData.data.STATUS == 'TMP' || businessTripData.data.STATUS == 'REG'}">
-						<tr>
-							<th style="border-left: none;">결재라인</th>
-							<td colspan="3">
-								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-							</td>
-						</tr>
-						<tr>
-							<th style="border-left: none;">참조자</th>
-							<td colspan="3">
-								<div id="refTxtFull" name="refTxtFull"></div>								
-							</td>
-						</tr>
-						</c:if>			
 					</tbody>
 				</table>
 			</div>
@@ -1159,14 +1207,20 @@
 	<input type="hidden" id="userId" />
 	<input type="hidden" id="userName"/>
  	<select style="display:none" id=apprLine name="apprLine" multiple>
+ 	<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+ 		<option value="${apprItemList.TARGET_USER_ID}" selected>${apprItemList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
  	<select style="display:none" id=refLine name="refLine" multiple>
+ 	<c:forEach items="${refList}" var="refList" varStatus="status">
+ 		<option value="${refList.TARGET_USER_ID}" selected>${refList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
 			<span class="title">출장결과보고서 결재 상신</span>
 			<div  class="top_btn_box">
-				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+				<ul><li><button class="btn_madal_close" onClick="closeDialog('approval_dialog');"></button></li></ul>
 			</div>
 		</h5>
 		<div class="list_detail">
@@ -1178,7 +1232,7 @@
 							<table style=" width:756px">
 								<tr>
 									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
+										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment">${apprHeader.COMMENT}</textarea>
 									</td>
 									<td width="98px"></td>
 								</tr>
@@ -1206,10 +1260,25 @@
 					<dd style="width:80%;">
 						<div class="file_box_pop2" style="height:190px;">
 							<ul id="apprLineList">
+								<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='A' onclick='apprClass.approvalRemoveLine(this);' >
+										<span id="lineLength">${status.count}차 결재</span>${apprItemList.TARGET_USER_NAME}<strong>/ ${apprItemList.TARGET_USER_ID} / ${apprItemList.OBJTTX} / ${apprItemList.RESP_TXT}</strong>
+								 		<input type='hidden' name='userIds' data-apprtype='A' value='${apprItemList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>
 							</ul>
 						</div>
 						<div class="file_box_pop3" style="height:190px;">
 							<ul id="refLineList">
+								<c:forEach items="${refList}" var="refList" varStatus="status">	
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >
+									<span>참조</span> ${refList.TARGET_USER_NAME}
+									<strong>/ ${refList.TARGET_USER_ID} / ${refList.OBJTTX} / ${refList.RESP_TXT}</strong>
+									<input type='hidden' name='userIds' data-apprtype='R' value='${refList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>	
 							</ul>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->

@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.MarketResearchService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -35,6 +36,9 @@ private Logger logger = LogManager.getLogger(MarketResearchController.class);
 	
 	@Autowired
 	MarketResearchService reportService;
+	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@RequestMapping(value = "/list")
 	public String list( HttpSession session, HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) {
@@ -111,6 +115,22 @@ private Logger logger = LogManager.getLogger(MarketResearchController.class);
 		model.addAttribute("researchData", researchData);
 		model.addAttribute("userList", userList);
 		model.addAttribute("infoList", infoList);
+		
+		//lab_approval_header 테이블 조회
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "RESEARCH");
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+			model.addAttribute("apprHeader", apprHeader);
+			//lab_approval_item 테이블 조회
+			param.put("apprIdx", apprHeader.get("APPR_IDX"));
+			List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+			model.addAttribute("apprItemList", apprItemList);
+			
+			//lab_approval_reference 테이블 조회
+			List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+			model.addAttribute("refList", refList);
+		}
 		return "/marketResearch/view";
 	}
 	
@@ -131,6 +151,22 @@ private Logger logger = LogManager.getLogger(MarketResearchController.class);
 				model.addAttribute("researchData", researchData);
 				model.addAttribute("userList", userList);
 				model.addAttribute("infoList", infoList);
+				
+				//lab_approval_header 테이블 조회
+				param.put("docIdx", param.get("idx"));
+				param.put("docType", "RESEARCH");
+				Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+				if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+					model.addAttribute("apprHeader", apprHeader);
+					//lab_approval_item 테이블 조회
+					param.put("apprIdx", apprHeader.get("APPR_IDX"));
+					List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+					model.addAttribute("apprItemList", apprItemList);
+					
+					//lab_approval_reference 테이블 조회
+					List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+					model.addAttribute("refList", refList);
+				}
 				return "/marketResearch/update";
 			} else {
 				model.addAttribute("returnPage", "/marketResearch/list");

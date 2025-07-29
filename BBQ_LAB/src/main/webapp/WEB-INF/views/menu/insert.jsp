@@ -932,9 +932,45 @@ li {
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT == 'S' ) {
-						alert("임시저장 되었습니다.");
-						$('#lab_loading').hide();
-						fn_goList();
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", result.IDX );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#title").val());
+								apprFormData.append("docType", "MENU");
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprTmpAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										alert("임시저장 되었습니다.");
+										$('#lab_loading').hide();
+										fn_goList();
+									},
+									error:function(request, status, errorThrown){
+										alert("결재 등록 오류가 발생하였습니다.");
+										$('#lab_loading').hide();
+									}			
+								});
+							} else {
+								alert("임시저장 되었습니다.");
+								$('#lab_loading').hide();
+								fn_goList();
+							}
+						} else {
+							alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+							$('#lab_loading').hide();
+							fn_goList();
+						}
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -2497,6 +2533,19 @@ li {
 								</td>
 							</tr>
 							<tr>
+								<th style="border-left: none;">결재라인</th>
+								<td colspan="3">
+									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								</td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">참조자</th>
+								<td colspan="3">
+									<div id="refTxtFull" name="refTxtFull"></div>								
+								</td>
+							</tr>
+							<tr>
 							    <th style="border-left: none;">공동 참여자</th>
 							    <td colspan="3">
 							        <!-- 사용자 토큰이 표시될 영역 -->
@@ -2513,20 +2562,6 @@ li {
 							        <button class="btn_small_search ml5" onclick="userSearchClass.clearTokens();">초기화</button>
 							    </td>
 							</tr>
-							<tr>
-								<th style="border-left: none;">결재라인</th>
-								<td colspan="3">
-									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-								</td>
-							</tr>
-							<tr>
-								<th style="border-left: none;">참조자</th>
-								<td colspan="3">
-									<div id="refTxtFull" name="refTxtFull"></div>								
-								</td>
-							</tr>
-							
 						<!-- 							
 							<tr>
 								<th style="border-left: none;">중량</th>
@@ -2607,7 +2642,7 @@ li {
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -2668,7 +2703,7 @@ li {
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -2848,7 +2883,7 @@ li {
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">
@@ -3010,7 +3045,7 @@ li {
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="matLayerBody">

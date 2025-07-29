@@ -34,6 +34,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.ProductService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -44,6 +45,9 @@ public class ProductController {
 	
 	@Autowired
 	ProductService productService;
+	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@RequestMapping(value = "/list")
 	public String productList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
@@ -88,15 +92,35 @@ public class ProductController {
 		model.addAttribute("productData", productData);
 		Map<String, Object> addInfoCount = productService.selectAddInfoCount(param);
 		model.addAttribute("addInfoCount", addInfoCount);
+		//lab_product_add_info 테이블 조회
 		List<Map<String, Object>> addInfoList = productService.selectAddInfo(param);
 		model.addAttribute("addInfoList", addInfoList);
+		//lab_product_imporve_purpose 테이블 조회
 		List<Map<String, Object>> imporvePurposeList = productService.selectImporvePurposeList(param);
 		model.addAttribute("imporvePurposeList", imporvePurposeList);
+		//lab_product_new 테이블 조회
 		List<Map<String, Object>> newDataList = productService.selectNewDataList(param);
 		model.addAttribute("newDataList", newDataList);
 		model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
+		//lab_doc_shared_user 테이블 조회
 		List<Map<String, String>> sharedUserList = productService.selectSharedUser(param);
 		model.addAttribute("sharedUserList", sharedUserList);
+		
+		//lab_approval_header 테이블 조회
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "PROD");
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+			model.addAttribute("apprHeader", apprHeader);
+			//lab_approval_item 테이블 조회
+			param.put("apprIdx", apprHeader.get("APPR_IDX"));
+			List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+			model.addAttribute("apprItemList", apprItemList);
+			
+			//lab_approval_reference 테이블 조회
+			List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+			model.addAttribute("refList", refList);
+		}
 		
 		return "/product/view";
 	}
@@ -594,6 +618,22 @@ public class ProductController {
 				model.addAttribute("productMaterialData", productService.selectProductMaterial(param));
 				List<Map<String, String>> sharedUserList = productService.selectSharedUser(param);
 				model.addAttribute("sharedUserList", sharedUserList);
+				
+				//lab_approval_header 테이블 조회
+				param.put("docIdx", param.get("idx"));
+				param.put("docType", "PROD");
+				Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+				if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+					model.addAttribute("apprHeader", apprHeader);
+					//lab_approval_item 테이블 조회
+					param.put("apprIdx", apprHeader.get("APPR_IDX"));
+					List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+					model.addAttribute("apprItemList", apprItemList);
+					
+					//lab_approval_reference 테이블 조회
+					List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+					model.addAttribute("refList", refList);
+				}
 				
 				return "/product/update";
 			} else {
