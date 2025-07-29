@@ -179,9 +179,42 @@ table{font-size: 12px}
 				dataType:"json",
 				success:function(result) {
 					if( result.RESULT == 'S' ) {
-						alert("임시저장 되었습니다.");
-						$('#lab_loading').hide();
-						fn_goList();
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", result.IDX );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#title").val());
+								apprFormData.append("docType", $("#docType").val());
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprTmpAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										alert("임시저장 되었습니다.");
+										$('#lab_loading').hide();
+										fn_goList();
+									},
+									error:function(request, status, errorThrown){
+										alert("결재 등록 오류가 발생하였습니다.");
+										$('#lab_loading').hide();
+										fn_goList();
+									}			
+								});
+							} else {
+								alert("임시저장 되었습니다.");
+								$('#lab_loading').hide();
+								fn_goList();
+							}
+						}
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -797,6 +830,19 @@ table{font-size: 12px}
 							<td colspan="3"><input type="text" name="title" id="title" style="width: 90%;" class="req" /></td>
 						</tr>
 						<tr>
+							<th style="border-left: none;">결재라인</th>
+							<td colspan="3">
+								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">참조자</th>
+							<td colspan="3">
+								<div id="refTxtFull" name="refTxtFull"></div>								
+							</td>
+						</tr>
+						<tr>
 							<th style="border-left: none;">업체명</th>
 							<td colspan="3">
 								<input type="text"  style="width:200px; float: left" class="req" name="companyName" id="companyName" placeholder="업체명을 입력하세요."/>
@@ -819,20 +865,7 @@ table{font-size: 12px}
 							<td colspan="3">
 								<input type="text"  style="width:100%; float: left" class="req" name="testPurpose" id="testPurpose"/>
 							</td>
-						</tr>
-						<tr>
-							<th style="border-left: none;">결재라인</th>
-							<td colspan="3">
-								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-							</td>
-						</tr>
-						<tr>
-							<th style="border-left: none;">참조자</th>
-							<td colspan="3">
-								<div id="refTxtFull" name="refTxtFull"></div>								
-							</td>
-						</tr>						
+						</tr>					
 					</tbody>
 				</table>
 			</div>
@@ -1141,7 +1174,7 @@ table{font-size: 12px}
 					<button class="btn_admin_navi">임시저장</button>
 					 -->
 					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
-					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">결재</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />
@@ -1326,7 +1359,7 @@ table{font-size: 12px}
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">

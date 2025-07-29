@@ -185,7 +185,7 @@ function fn_search() {
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						if( item.IS_LAST == 'Y' ) {
-							if( item.STATUS == 'APPR_RET' ) {
+							if( item.STATUS == 'APPR_RET' || item.STATUS == 'RET' ) {
 								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_visible\">";
 							} else {
 								html += "<tr id=\"product_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";

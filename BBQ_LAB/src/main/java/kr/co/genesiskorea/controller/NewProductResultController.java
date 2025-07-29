@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.NewProductResultService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -37,6 +38,9 @@ public class NewProductResultController {
 	
 	@Autowired
 	NewProductResultService newProductResult;
+	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@RequestMapping("/selectHistoryAjax")
 	@ResponseBody
@@ -138,6 +142,22 @@ public class NewProductResultController {
 		model.put("itemList", itemList);
 		model.put("itemImageList", itemImageList);
 		
+		//lab_approval_header 테이블 조회
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "RESULT");
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+			model.addAttribute("apprHeader", apprHeader);
+			//lab_approval_item 테이블 조회
+			param.put("apprIdx", apprHeader.get("APPR_IDX"));
+			List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+			model.addAttribute("apprItemList", apprItemList);
+			
+			//lab_approval_reference 테이블 조회
+			List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+			model.addAttribute("refList", refList);
+		}
+		
 		return "/newProductResult/view";
 	}
 
@@ -159,6 +179,22 @@ public class NewProductResultController {
 		    model.addAttribute("newProductResultData", newProductResultData);
 		    model.addAttribute("itemList", itemList);
 		    model.addAttribute("itemImageList", itemImageList);
+		    
+		    //lab_approval_header 테이블 조회
+			param.put("docIdx", param.get("idx"));
+			param.put("docType", "RESULT");
+			Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+			if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+				model.addAttribute("apprHeader", apprHeader);
+				//lab_approval_item 테이블 조회
+				param.put("apprIdx", apprHeader.get("APPR_IDX"));
+				List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+				model.addAttribute("apprItemList", apprItemList);
+				
+				//lab_approval_reference 테이블 조회
+				List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+				model.addAttribute("refList", refList);
+			}
 
 		    // 6. update 화면 JSP로 이동
 		    return "/newProductResult/update";

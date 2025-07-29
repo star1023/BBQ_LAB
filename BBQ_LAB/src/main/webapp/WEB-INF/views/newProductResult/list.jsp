@@ -76,7 +76,7 @@ function fn_loadList(pageNo) {
 			if( data.totalCount > 0 ) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
-					if( item.STATUS == 'APPR_RET' ) {
+					if( item.STATUS == 'APPR_RET' || item.STATUS == 'RET' ) {
 						html += "<tr class=\"m_visible\">";
 					} else {
 						html += "<tr>";
@@ -101,7 +101,7 @@ function fn_loadList(pageNo) {
 					html += "		<li style=\"float:none; display:inline\">";
 					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
 					if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
-						if( item.STATUS == 'COND_APPR' ) {
+						if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' ) {
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 						}
 						if( item.STATUS == 'TMP' ) {

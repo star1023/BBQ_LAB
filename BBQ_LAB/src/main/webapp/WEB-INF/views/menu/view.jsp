@@ -593,7 +593,14 @@
 							<tr>
 								<td>
 									<div class="ellipsis_txt tgnl">
-									${menuData.data.SCHEDULE_DATE}
+									<c:choose>
+										<c:when test="${menuData.data.SCHEDULE_DATE != null && menuData.data.SCHEDULE_DATE != '' }">
+										${menuData.data.SCHEDULE_DATE}	
+										</c:when>
+										<c:otherwise>
+										&nbsp;결재 후 즉시도입
+										</c:otherwise>
+									</c:choose>
 									</div>
 								</td>
 							</tr>
@@ -631,14 +638,6 @@
 							<col width="35%" />
 						</colgroup>
 						<tbody>
-							<c:if test="${menuData.data.IS_LAST == 'Y' and menuData.data.STATUS == 'REG' }">
-							<tr>
-								<th style="border-left: none;">결재라인</th>
-								<td colspan="3">
-									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-								</td>
-							</tr>
-							</c:if>
 							<tr>
 								<th style="border-left: none;">메뉴코드</th>
 								<td>
@@ -649,6 +648,30 @@
 									${menuData.data.SAP_CODE}
 								</td>
 							</tr>
+							<c:if test="${userUtil:getUserId(pageContext.request) == menuData.data.DOC_OWNER }">
+							<tr>
+								<th style="border-left: none;">결재라인</th>
+								<td colspan="3">
+									<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+										<c:if test="${status.count > 1}">
+											&nbsp; > &nbsp; 
+										</c:if>
+										${apprItemList.TARGET_USER_NAME}										
+									</c:forEach>
+								</td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">참조자</th>
+								<td colspan="3">
+									<c:forEach items="${refList}" var="refList" varStatus="status">
+										<c:if test="${status.count > 1}">
+											&nbsp; , &nbsp; 
+										</c:if>
+										${refList.TARGET_USER_NAME}										
+									</c:forEach>
+								</td>
+							</tr>
+							</c:if>
 							<tr>
 							    <th style="border-left: none;">공동 참여자</th>
 							    <td colspan="3">
@@ -735,7 +758,7 @@
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -795,7 +818,7 @@
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -931,7 +954,7 @@
 					</dd>
 				</li>
 				<li>
-					<dt>유통기한</dt>
+					<dt>소비기한</dt>
 					<dd>
 						<div id="expireDateTxt"></div>
 					</dd>
@@ -1032,7 +1055,7 @@
 					</dd>
 				</li>
 				<li>
-					<dt>유통기한</dt>
+					<dt>소비기한</dt>
 					<dd>
 						<div id="expireDateTxtErp"></div>
 					</dd>

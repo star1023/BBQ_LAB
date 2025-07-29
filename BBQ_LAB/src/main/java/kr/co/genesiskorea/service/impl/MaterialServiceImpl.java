@@ -428,7 +428,10 @@ public class MaterialServiceImpl implements MaterialService {
 		System.err.println("erpMaterialList : "+erpMaterialList);
 		System.err.println("totalCount : "+totalCount);
 		//2.조회한 데이터를 INSERT/UPDATE 한다.
-		int resultCount = batchDao.insertMaterial(erpMaterialList);
+		int resultCount = 0;
+		if( totalCount > 0 ) {
+			resultCount = batchDao.insertMaterial(erpMaterialList);
+		}
 		//3.처리 결과를 반환한다.
 		System.err.println("resultCount : "+resultCount);
 		

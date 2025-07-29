@@ -79,7 +79,7 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
 			var html = "";
 			if (data.totalCount > 0) {
 				data.list.forEach(function (item) {
-					if( item.STATUS == 'APPR_RET' ) {
+					if( item.STATUS == 'APPR_RET' || item.STATUS == 'RET' ) {
 						html += "<tr class=\"m_visible\">";
 					} else {
 						html += "<tr>";

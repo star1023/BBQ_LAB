@@ -27,6 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.MenuService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -37,6 +38,9 @@ public class MenuController {
 	
 	@Autowired
 	MenuService menuService;
+	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@RequestMapping(value = "/list")
 	public String menuList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
@@ -90,6 +94,22 @@ public class MenuController {
 		model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
 		List<Map<String, String>> sharedUserList = menuService.selectSharedUser(param);
 		model.addAttribute("sharedUserList", sharedUserList);
+		
+		//lab_approval_header 테이블 조회
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "MENU");
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+			model.addAttribute("apprHeader", apprHeader);
+			//lab_approval_item 테이블 조회
+			param.put("apprIdx", apprHeader.get("APPR_IDX"));
+			List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+			model.addAttribute("apprItemList", apprItemList);
+			
+			//lab_approval_reference 테이블 조회
+			List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+			model.addAttribute("refList", refList);
+		}
 		
 		return "/menu/view";
 	}
@@ -546,6 +566,22 @@ public class MenuController {
 				model.addAttribute("menuMaterialData", menuService.selectMenuMaterial(param));
 				List<Map<String, String>> sharedUserList = menuService.selectSharedUser(param);
 				model.addAttribute("sharedUserList", sharedUserList);
+				
+				//lab_approval_header 테이블 조회
+				param.put("docIdx", param.get("idx"));
+				param.put("docType", "MENU");
+				Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+				if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+					model.addAttribute("apprHeader", apprHeader);
+					//lab_approval_item 테이블 조회
+					param.put("apprIdx", apprHeader.get("APPR_IDX"));
+					List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+					model.addAttribute("apprItemList", apprItemList);
+					
+					//lab_approval_reference 테이블 조회
+					List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+					model.addAttribute("refList", refList);
+				}
 				return "/menu//update";
 			} else {
 				model.addAttribute("returnPage", "/menu/list");

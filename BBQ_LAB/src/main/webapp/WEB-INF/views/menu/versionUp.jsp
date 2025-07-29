@@ -63,7 +63,9 @@ var selectedArr = new Array();
 		
 		const sharedUsers = [
 	        <c:forEach var="user" items="${sharedUserList}" varStatus="status">
+	        <c:if test="${user.USER_ID != null && user.USER_ID != '' }">
 	            { userId: "${user.USER_ID}", userName: "${user.USER_NAME}" }<c:if test="${!status.last}">,</c:if>
+	        </c:if>	            
 	        </c:forEach>
 	    ];
 
@@ -971,9 +973,44 @@ var selectedArr = new Array();
 							dataType:"json",
 							success:function(result) {
 								if( result.RESULT == 'S' ) {
-									alert($("#menuName").val()+"("+$("#menuCode").val()+")"+"가 임시저장상태로 개정되었습니다.");
-									$('#lab_loading').hide();
-									fn_list();									
+									if( result.IDX > 0 ) {
+										if( $("#apprLine option").length > 0 ) {
+											var apprFormData = new FormData();
+											apprFormData.append("docIdx", result.IDX );
+											apprFormData.append("apprComment", $("#apprComment").val());
+											apprFormData.append("apprLine", $("#apprLine").selectedValues());
+											apprFormData.append("refLine", $("#refLine").selectedValues());
+											apprFormData.append("title", $("#title").val());
+											apprFormData.append("docType", "MENU");
+											apprFormData.append("status", "N");
+											var URL = "../approval/insertApprTmpAjax";
+											$.ajax({
+												type:"POST",
+												url:URL,
+												dataType:"json",
+												data: apprFormData,
+												processData: false,
+										        contentType: false,
+										        cache: false,
+												success:function(data) {
+													alert($("#title").val()+"가 정상적으로 개정되었습니다.");
+													$('#lab_loading').hide();
+													fn_goList();
+												},
+												error:function(request, status, errorThrown){
+													alert("결재 등록 오류가 발생하였습니다.");		
+													$('#lab_loading').hide();
+												}			
+											});
+										} else {
+											alert($("#menuName").val()+"("+$("#menuCode").val()+")"+"가 개정되었습니다.");
+											$('#lab_loading').hide();
+											fn_list();
+										}
+									} else {
+										alert("오류가 발생하였습니다.");
+										$('#lab_loading').hide();
+									}					
 								} else {
 									alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 									$('#lab_loading').hide();
@@ -1392,29 +1429,29 @@ var selectedArr = new Array();
 			alert("등록된 결재라인이 없습니다. 결재 라인 추가 후 결재상신 해 주세요.");
 			return;
 		} else {
-			//$("#apprLine").removeOption(/./); 
-			//$("#refLine").removeOption(/./); 
-			var apprTxtFull = "";
-			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
-				if( apprTxtFull != "" ) {
-					apprTxtFull += " > ";
-				}
-				apprTxtFull += item;
-			});
-			$("#apprTxtFull").val(apprTxtFull);
-			//apprTxtFull
-			//refTxtFull
-			var refTxtFull = "";
-			$("#refLine").selectedTexts().forEach(function( item, index ){
-				if( refTxtFull != "" ) {
-					refTxtFull += ", ";
-				}
-				refTxtFull += item;
-			});
-			$("#refTxtFull").html("&nbsp;"+refTxtFull);
+			fn_loadAppr();
 		}
 		closeDialog('approval_dialog');
+	}
+	
+	function fn_loadAppr() {
+		var apprTxtFull = "";
+		$("#apprLine").selectedTexts().forEach(function( item, index ){
+			console.log(item);
+			if( apprTxtFull != "" ) {
+				apprTxtFull += " > ";
+			}
+			apprTxtFull += item;
+		});
+		$("#apprTxtFull").val(apprTxtFull);
+		var refTxtFull = "";
+		$("#refLine").selectedTexts().forEach(function( item, index ){
+			if( refTxtFull != "" ) {
+				refTxtFull += ", ";
+			}
+			refTxtFull += item;
+		});
+		$("#refTxtFull").html("&nbsp;"+refTxtFull);
 	}
 	
 	function tabChange(tabId) {
@@ -2410,6 +2447,19 @@ var selectedArr = new Array();
 								</td>
 							</tr>
 							<tr>
+								<th style="border-left: none;">결재라인</th>
+								<td colspan="3">
+									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								</td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">참조자</th>
+								<td colspan="3">
+									<div id="refTxtFull" name="refTxtFull"></div>								
+								</td>
+							</tr>
+							<tr>
 							    <th style="border-left: none;">공동 참여자</th>
 							    <td colspan="3">
 							        <div id="sharedUserTokens" style="width: 450px; float: left; min-height: 24px; border: 1px solid #ccc; padding: 5px;"></div>
@@ -2424,19 +2474,6 @@ var selectedArr = new Array();
 							        <button class="btn_small_search ml5" style="float:left" onclick="userSearchClass.openSharedUserPopup(); return false;">조회</button>
 							        <button class="btn_small_search ml5" onclick="userSearchClass.clearTokens(); return false;">초기화</button>
 							    </td>
-							</tr>
-							<tr>
-								<th style="border-left: none;">결재라인</th>
-								<td colspan="3">
-									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-								</td>
-							</tr>
-							<tr>
-								<th style="border-left: none;">참조자</th>
-								<td colspan="3">
-									<div id="refTxtFull" name="refTxtFull"></div>								
-								</td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">버전 NO.</th>
@@ -2531,7 +2568,7 @@ var selectedArr = new Array();
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -2621,7 +2658,7 @@ var selectedArr = new Array();
 								<th>ERP코드</th>
 								<th>원료명</th>
 								<th>규격</th>
-								<th>보관방법 및 유통기한</th>
+								<th>보관방법 및 소비기한</th>
 								<th>공급가</th>
 								<th>비고</th>
 							</tr>
@@ -2833,7 +2870,7 @@ var selectedArr = new Array();
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="erpMatLayerBody">
@@ -2995,7 +3032,7 @@ var selectedArr = new Array();
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="matLayerBody">

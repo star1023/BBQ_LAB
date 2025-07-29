@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.BusinessTripPlanService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -34,6 +35,9 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 	
 	@Autowired
 	BusinessTripPlanService reportService;
+	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@RequestMapping(value = "/list")
 	public String businessTripPlanList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) {
@@ -115,6 +119,21 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		model.addAttribute("userList", userList);
 		model.addAttribute("infoList", infoList);
 		model.addAttribute("contentsList", contentsList);
+		
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "PLAN");
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+			model.addAttribute("apprHeader", apprHeader);
+			//lab_approval_item 테이블 조회
+			param.put("apprIdx", apprHeader.get("APPR_IDX"));
+			List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+			model.addAttribute("apprItemList", apprItemList);
+			
+			//lab_approval_reference 테이블 조회
+			List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+			model.addAttribute("refList", refList);
+		}
 		return "/businessTripPlan/view";
 	}
 	
@@ -138,6 +157,21 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 				model.addAttribute("userList", userList);
 				model.addAttribute("infoList", infoList);
 				model.addAttribute("contentsList", contentsList);
+				
+				param.put("docIdx", param.get("idx"));
+				param.put("docType", "PLAN");
+				Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+				if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+					model.addAttribute("apprHeader", apprHeader);
+					//lab_approval_item 테이블 조회
+					param.put("apprIdx", apprHeader.get("APPR_IDX"));
+					List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+					model.addAttribute("apprItemList", apprItemList);
+					
+					//lab_approval_reference 테이블 조회
+					List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+					model.addAttribute("refList", refList);
+				}
 				return "/businessTripPlan/update";
 			} else {
 				model.addAttribute("returnPage", "/businessTripPlan/list");

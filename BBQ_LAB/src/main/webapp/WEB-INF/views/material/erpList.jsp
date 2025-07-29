@@ -242,7 +242,7 @@ function fn_update() {
 							<th>보관조건</th>
 							<th>중량</th>
 							<th>규격</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="list">						

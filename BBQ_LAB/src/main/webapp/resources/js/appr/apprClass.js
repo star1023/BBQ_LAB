@@ -26,8 +26,8 @@ fn.autoComplete = function(objKeyWord){
 		fn.ajax("/approval/searchUserAjax",{keyword:objKeyWord.val()},function(data){
 			response($.map(data, function(item){
 				return {
-					label : item.USER_NAME + ' / '+item.USER_ID + ' / '+ item.OBJTTX + ' / '+ nvl(item.RESP_TXT, ''),
-					value : item.USER_NAME + ' / '+item.USER_ID + ' / '+ item.OBJTTX + ' / '+ nvl(item.RESP_TXT, ''),
+					label : item.USER_NAME + ' / '+item.USER_ID + ' / '+ nvl2(item.OBJTTX, '') + ' / '+ nvl2(item.RESP_TXT, ''),
+					value : item.USER_NAME + ' / '+item.USER_ID + ' / '+ nvl2(item.OBJTTX, '') + ' / '+ nvl2(item.RESP_TXT, ''),
 					userId : item.USER_ID,
 					deptName : item.OBJTTX,
 					teamName : nvl(item.RESP_TXT, ''),
@@ -147,6 +147,7 @@ apprClass.approvalRemoveLine = function(obj){
 	var apprtype = $(obj).data("apprtype");
 	console.log(apprtype);
 	if( apprtype == 'A' ) {
+		console.log("ID : "+$(obj).parent().children("input").val());
 		$("#apprLine").removeOption($(obj).parent().children("input").val());
 		$(obj).parent().remove();
 		$("#apprLineList").children("li").toArray().forEach(function(item,index) { 
@@ -252,6 +253,8 @@ apprClass.apprLineSaveCancel = function(obj){
 apprClass.apprCancel = function(){
 	$("#apprLine").removeOption(/./);
 	$("#refLine").removeOption(/./);
+	$("#apprTxtFull").val("");
+	$("#refTxtFull").html("");
 	$("#apprLineSelect_label").html("---- 결재라인 불러오기 ----");	
 	$("#apprLineList").html("");
 	$("#refLineList").html("");

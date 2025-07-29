@@ -185,7 +185,7 @@ function fn_loadList(pageNo) {
 			if( data.totalCount > 0 ) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
-					if( item.STATUS == 'APPR_RET' ) {
+					if( item.STATUS == 'APPR_RET' || item.STATUS == 'RET' ) {
 						html += "<tr class=\"m_visible\">";
 					} else {
 						html += "<tr>";

@@ -94,6 +94,10 @@ $(document).ready(function(){
 	});
 	
 	$("#dynamicTableSection").hide();
+	
+	<c:if test="${fn:length(apprItemList) > 0}">
+    fn_loadAppr();
+	</c:if>
 });
 var resultItemList = [];
 <c:forEach var="item" items="${itemList}">	
@@ -117,29 +121,31 @@ function fn_apprSubmit(){
 		alert("등록된 결재라인이 없습니다. 결재 라인 추가 후 결재상신 해 주세요.");
 		return;
 	} else {
-		//$("#apprLine").removeOption(/./); 
-		//$("#refLine").removeOption(/./); 
-		var apprTxtFull = "";
-		$("#apprLine").selectedTexts().forEach(function( item, index ){
-			console.log(item);
-			if( apprTxtFull != "" ) {
-				apprTxtFull += " > ";
-			}
-			apprTxtFull += item;
-		});
-		$("#apprTxtFull").val(apprTxtFull);
-		//apprTxtFull
-		//refTxtFull
-		var refTxtFull = "";
-		$("#refLine").selectedTexts().forEach(function( item, index ){
-			if( refTxtFull != "" ) {
-				refTxtFull += ", ";
-			}
-			refTxtFull += item;
-		});
-		$("#refTxtFull").html("&nbsp;"+refTxtFull);
+		fn_loadAppr();
 	}
 	closeDialog('approval_dialog');
+}
+
+function fn_loadAppr() {
+	var apprTxtFull = "";
+	$("#apprLine").selectedTexts().forEach(function( item, index ){
+		console.log(item);
+		if( apprTxtFull != "" ) {
+			apprTxtFull += " > ";
+		}
+		apprTxtFull += item;
+	});
+	$("#apprTxtFull").val(apprTxtFull);
+	//apprTxtFull
+	//refTxtFull
+	var refTxtFull = "";
+	$("#refLine").selectedTexts().forEach(function( item, index ){
+		if( refTxtFull != "" ) {
+			refTxtFull += ", ";
+		}
+		refTxtFull += item;
+	});
+	$("#refTxtFull").html("&nbsp;"+refTxtFull);
 }
 function fn_tmp_update() {
     const resultItemArr = [];
@@ -276,6 +282,7 @@ function fn_tmp_update() {
                 if (document.getElementById("apprLine").options.length > 0) {
                     var apprFormData = new FormData();
                     apprFormData.append("docIdx", result.IDX);
+                    apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
                     apprFormData.append("apprComment", document.getElementById("apprComment").value);
                     apprFormData.append("apprLine", $("#apprLine").selectedValues());
                     apprFormData.append("refLine", $("#refLine").selectedValues());
@@ -285,7 +292,7 @@ function fn_tmp_update() {
 
                     $.ajax({
                         type: "POST",
-                        url: "../approval/insertApprAjax",
+                        url: "../approval/insertApprTmpAjax",
                         dataType: "json",
                         data: apprFormData,
                         processData: false,
@@ -463,7 +470,9 @@ function fn_update() {
         dataType: "json",
         success: function (result) {
             if (result.RESULT === 'S' && result.IDX > 0) {
-                if (document.getElementById("apprLine").options.length > 0) {
+            	<c:choose>
+			      <c:when test="${productData.data.STATUS != null && productData.data.STATUS != 'COND_APPR' }">
+            	if (document.getElementById("apprLine").options.length > 0) {
                     var apprFormData = new FormData();
                     apprFormData.append("docIdx", result.IDX);
                     apprFormData.append("apprComment", document.getElementById("apprComment").value);
@@ -503,6 +512,13 @@ function fn_update() {
                     $('#lab_loading').hide();
                     fn_goList();
                 }
+            	</c:when>
+			      <c:otherwise>
+				      alert("[" + title + "] 문서가 정상적으로 수정되었습니다.");
+	                  $('#lab_loading').hide();
+	                  fn_goList();
+			      </c:otherwise>
+			    </c:choose>
             } else {
                 alert("저장 중 오류가 발생하였습니다.\n" + result.MESSAGE);
                 $('#lab_loading').hide();
@@ -1434,10 +1450,6 @@ function toggleInputMode(mode) {
                             <td><input type="text" id="title" name="title" style="width: 90%;" value="${newProductResultData.data.TITLE}"></td>
                         </tr>
                         <tr>
-                            <th style="border-left: none;">시행월</th>
-                            <td><input type="text" id="excuteDate" name="excuteDate" value="${newProductResultData.data.EXCUTE_DATE}" style="width: 170px;" readonly></td>
-                        </tr>
-   						<tr>
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
 								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
@@ -1450,6 +1462,10 @@ function toggleInputMode(mode) {
 								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
+                        <tr>
+                            <th style="border-left: none;">시행월</th>
+                            <td><input type="text" id="excuteDate" name="excuteDate" value="${newProductResultData.data.EXCUTE_DATE}" style="width: 170px;" readonly></td>
+                        </tr>
                         <tr>
 						  <th style="border-left: none;">입력 방식</th>
 						  <td colspan="3">
@@ -1561,14 +1577,20 @@ function toggleInputMode(mode) {
 	<input type="hidden" id="userId" />
 	<input type="hidden" id="userName"/>
  	<select style="display:none" id=apprLine name="apprLine" multiple>
+ 	<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+ 		<option value="${apprItemList.TARGET_USER_ID}" selected>${apprItemList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
  	<select style="display:none" id=refLine name="refLine" multiple>
+ 	<c:forEach items="${refList}" var="refList" varStatus="status">
+ 		<option value="${refList.TARGET_USER_ID}" selected>${refList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
 			<span class="title">메뉴 품질 점검 결과 보고서 결재 상신</span>
 			<div  class="top_btn_box">
-				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+				<ul><li><button class="btn_madal_close" onClick="closeDialog('approval_dialog');"></button></li></ul>
 			</div>
 		</h5>
 		<div class="list_detail">
@@ -1580,7 +1602,7 @@ function toggleInputMode(mode) {
 							<table style=" width:756px">
 								<tr>
 									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
+										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment">${apprHeader.COMMENT}</textarea>
 									</td>
 									<td width="98px"></td>
 								</tr>
@@ -1608,10 +1630,25 @@ function toggleInputMode(mode) {
 					<dd style="width:80%;">
 						<div class="file_box_pop2" style="height:190px;">
 							<ul id="apprLineList">
+								<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='A' onclick='apprClass.approvalRemoveLine(this);' >
+										<span id="lineLength">${status.count}차 결재</span>${apprItemList.TARGET_USER_NAME}<strong>/ ${apprItemList.TARGET_USER_ID} / ${apprItemList.OBJTTX} / ${apprItemList.RESP_TXT}</strong>
+								 		<input type='hidden' name='userIds' data-apprtype='A' value='${apprItemList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>
 							</ul>
 						</div>
 						<div class="file_box_pop3" style="height:190px;">
 							<ul id="refLineList">
+								<c:forEach items="${refList}" var="refList" varStatus="status">	
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >
+									<span>참조</span> ${refList.TARGET_USER_NAME}
+									<strong>/ ${refList.TARGET_USER_ID} / ${refList.OBJTTX} / ${refList.RESP_TXT}</strong>
+									<input type='hidden' name='userIds' data-apprtype='R' value='${refList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>	
 							</ul>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->

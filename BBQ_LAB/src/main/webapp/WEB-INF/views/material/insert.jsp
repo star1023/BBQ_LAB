@@ -702,7 +702,7 @@ function selectNewCode() {
 						</dd>
 					</li>
 					<li>
-						<dt>유통기한</dt>
+						<dt>소비기한</dt>
 						<dd>
 							<input type="text" class="req" style="width:149px;" name="expireDate" id="expireDate">
 						</dd>
@@ -806,7 +806,7 @@ function selectNewCode() {
 							<th>중량</th>
 							<th>규격</th>
 							<th>원산지</th>
-							<th>유통기한</th>
+							<th>소비기한</th>
 						<tr>
 					</thead>
 					<tbody id="matLayerBody">

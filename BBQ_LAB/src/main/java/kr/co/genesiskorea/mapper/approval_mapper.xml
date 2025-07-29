@@ -162,6 +162,22 @@
 			, #{status}
 		)	
 	</insert>
+	
+	<update id="updateApprHeader" parameterType="map">
+		/*	approval.updateApprHeader */
+		UPDATE 
+			lab_approval_header
+		SET
+			TOTAL_STEP = #{totalStep}
+			, CURRENT_STEP = #{currentStep}
+			, CURRENT_USER_ID = #{currentUser}
+			, COMMENT = #{apprComment}
+			, REG_DATE = sysdate()
+			, LAST_STATUS = #{status}
+		WHERE 1 = 1
+			AND APPR_IDX = #{apprIdx}
+	</update>
+	
 	<insert id="insertApprItem" parameterType="map">
 		/*	approval.insertApprItem */
 		INSERT 
@@ -730,22 +746,28 @@
 	<select id="selectApprItemList" parameterType="map" resultType="hashmap">
 	/*	approval.selectApprItemList */
 		SELECT
-			ITEM_IDX
-			, APPR_IDX
-			, APPR_NO
-			, TARGET_USER_ID
-			, FN_GET_USER_NAME(TARGET_USER_ID) as TARGET_USER_NAME
-			, STATUS
-			, CASE WHEN STATUS = 'N' OR STATUS = '' OR STATUS IS NULL THEN '미결'
-				   WHEN STATUS = 'Y' THEN '결재완료'
-				   WHEN STATUS = 'R' THEN '반려'
-				   WHEN STATUS = 'C' THEN '부분승인' 
+			lai.ITEM_IDX
+			, lai.APPR_IDX
+			, lai.APPR_NO
+			, lai.TARGET_USER_ID
+			, FN_GET_USER_NAME(lai.TARGET_USER_ID) as TARGET_USER_NAME
+			, lai.STATUS
+			, CASE WHEN lai.STATUS = 'N' OR STATUS = '' OR STATUS IS NULL THEN '미결'
+				   WHEN lai.STATUS = 'Y' THEN '결재완료'
+				   WHEN lai.STATUS = 'R' THEN '반려'
+				   WHEN lai.STATUS = 'C' THEN '부분승인' 
 				  END STATUS_TXT
-			, COMMENT
-			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE
-			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
+			, lai.COMMENT
+			, DATE_FORMAT(lai.REG_DATE,'%Y-%m-%d') AS REG_DATE
+			, DATE_FORMAT(lai.REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
 		FROM 
-			lab_approval_item
+			lab_approval_item lai
+			left outer join lab_user lu
+			on lai.TARGET_USER_ID = lu.USER_ID 
 		WHERE 1 = 1
 			AND APPR_IDX = #{apprIdx}
 		ORDER BY APPR_NO ASC	
@@ -759,8 +781,14 @@
 			, APPR_IDX
 			, TARGET_USER_ID
 			, FN_GET_USER_NAME(TARGET_USER_ID) as TARGET_USER_NAME
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
 		FROM
-			lab_approval_reference
+			lab_approval_reference lar
+			left outer join lab_user lu
+			on lar.TARGET_USER_ID = lu.USER_ID 
 		WHERE 1 = 1
 			AND APPR_IDX = #{apprIdx}		
 	</select>
