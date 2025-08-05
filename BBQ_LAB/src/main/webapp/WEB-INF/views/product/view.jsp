@@ -21,6 +21,10 @@
 		//history.replaceState({}, null, location.pathname);
 		
 		fn.autoComplete($("#keyword"));
+		
+		<c:forEach var="fileType" items="${productData.fileType}" varStatus="status">
+		$('input[type="checkbox"][value="${fileType.FILE_TYPE}"]').prop('checked', true);
+		</c:forEach>
 	});
 	
 	function downloadFile(idx){
@@ -94,20 +98,35 @@
 			dataType:"json",
 			async:false,
 			success:function(data) {
-				$("#nameTxtErp").html(data.NAME);
-				$("#sapCodeTxtErp").html(data.SAP_CODE);
-				$("#keepConditionTxtErp").html(data.KEEP_CONDITION);
-				$("#categoryErp").html(data.CATEGORY_DIV1+" > "+data.CATEGORY_DIV2);
-				$("#sizeTxtErp").html(nvl(data.WIDTH,"0")+" / "+nvl(data.LENGTH,"0")+" / "+nvl(data.HEIGHT,"0"));
-				$("#weightTxtErp").html(data.TOTAL_WEIGHT+""+data.TOTAL_WEIGHT_UNIT);
-				$("#standardTxtErp").html(data.STANDARD);
-				$("#originTxtErp").html(data.ORIGIN);
-				$("#expireDateTxtErp").html(data.EXPIRATION_DATE);
+				if( data.SAP_CODE != null && data.SAP_CODE != '' ) {
+					$("#sapCodeTxt2").html(data.SAP_CODE);
+					$("#nameTxt2").html(data.NAME);
+					$("#unitTxt2").html(data.UNIT);
+					$("#keepTxt2").html(data.KEEP_CONDITION_TXT);
+					$("#matTypeTxt2").html(data.MAT_TYPE_TXT);
+					$("#weightTxt2").html(data.TOTAL_WEIGHT);
+					$("#changeUnitTxt2").html(data.CHANGE_UNIT);
+					$("#changeCountTxt2").html(data.CHANGE_COUNT);
+					$("#totalWeightTxt2").html(data.TOTAL_WEIGHT);
+					$("#totalWeightUnitTxt2").html(data.TOTAL_WEIGHT_UNIT);
+					$("#standardTxt2").html(data.STANDARD);
+					$("#sizeTxt2").html(data.WIDTH+"("+data.WIDTH_UNIT+")"+" / "+data.LENGTH+"("+data.LENGTH_UNIT+")"+" / "+data.HEIGHT+"("+data.HEIGHT_UNIT+")");
+					$("#originTxt2").html(data.ORIGIN);
+					$("#expDateTxt2").html(data.EXPIRATION_DATE);			
+					$("#leadTimeTxt2").html(data.LEAD_TIME);
+					$("#safetyDayTxt2").html(data.SAFETY_STOCK_DAY);
+					$("#boxAmountTxt2").html(data.BOX_AMOUNT);
+					$("#palletAmountTxt2").html(data.PALLET_AMOUNT);
+					$("#cdTxt2").html(data.CD_ACCT);
+					$("#minOrderTxt2").html(data.MIN_ORDER_AMOUNT);			
+					openDialog('open4');
+				} else {
+					alert("삭제된 상품정보입니다.");
+				}
 				
-				openDialog('open4');
 			},
 			error:function(request, status, errorThrown){
-					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+				alert("삭제된 상품정보입니다.");
 			}			
 		});
 	}
@@ -569,7 +588,37 @@
 				</div>
 				
 				<div class="title2 mt20"  style="width:90%;"><span class="txt">첨부파일</span></div>
-				<div class="con_file" style="">
+				<div class="list_detail">
+					<ul style="">
+						<li>
+							<dt style="width: 20%">파일유형</dt>
+							<dd style="width: 80%;">
+								<input id="checkbox_item1" name="docType" type="checkbox" value="10" disabled/><label for="checkbox_item1" style="vertical-align: middle;"><span></span>컨셉서-개발목적</label> 
+								<input id="checkbox_item2" name="docType" type="checkbox" value="20" disabled/><label for="checkbox_item2" style="vertical-align: middle;"><span></span>추정원단위표</label> 
+								<input id="checkbox_item3" name="docType" type="checkbox" value="30" disabled/><label for="checkbox_item3" style="vertical-align: middle;"><span></span>배합비&제조신고용 배합비</label>
+								<input id="checkbox_item4" name="docType" type="checkbox" value="40" disabled/> <label for="checkbox_item4" style="vertical-align: middle;"><span></span>제조공정도</label> 
+								<input id="checkbox_item5" name="docType" type="checkbox" value="50" disabled/> <label for="checkbox_item5" style="vertical-align: middle;"><span></span>제조작업표준서</label>
+								<input id="checkbox_item6" name="docType" type="checkbox" value="60" disabled/> <label for="checkbox_item6" style="vertical-align: middle;"><span></span>제품규격서</label>
+							</dd>
+						</li>
+						<li>
+							<dt style="width: 20%">첨부파일</dt>
+							<dd style="width: 80%;">
+								<div class="add_file" id="add_file2" style="width:100%">
+									
+								</div>
+								<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;">
+									<ul id="attatch_file">
+										<c:forEach items="${productData.fileList}" var="fileList" varStatus="status">
+											<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+										</c:forEach>
+									</ul>	
+								</div>
+							</dd>
+						</li>
+					</ul>
+				</div>
+				<%-- <div class="con_file" style="">
 					<ul>
 						<li class="point_img" style="display:flex;">
 							<dt>첨부파일</dt><dd>
@@ -581,7 +630,7 @@
 							</dd>
 						</li>
 					</ul>
-				</div>
+				</div> --%>
 				
 			</div>
 			<div id="tab2_div" style="display:none">
@@ -690,18 +739,7 @@
 									&gt; ${productData.data.PRODUCT_TYPE_NAME3}
 									</c:if>
 								</td>
-							</tr>
-							<tr>
-								<th style="border-left: none;">첨부파일 유형</th>
-								<td colspan="3">
-									<c:forEach items="${productData.fileType}" var="fileType" varStatus="status">
-										<c:if test="${status.index != 0 }">
-										,
-										</c:if>
-										${fileType.FILE_TEXT}
-									</c:forEach>
-								</td>
-							</tr>
+							</tr>							
 						</tbody>
 					</table>
 				</div>
@@ -739,7 +777,7 @@
 									<div class=""><a href="#" onClick="fn_view('${productMaterialData.MATERIAL_IDX}')">${productMaterialData.MATERIAL_CODE}</a></div>
 								</td>
 								<td>
-									${productMaterialData.SAP_CODE}
+									<a href="#" onClick="fn_erpview('${productMaterialData.SAP_CODE}')">${productMaterialData.SAP_CODE}</a>
 								</td>
 								<td>
 									${productMaterialData.NAME}
@@ -855,9 +893,9 @@
 
 <!-- 자재조회 레이어 start-->
 <div class="white_content" id="open3">
-	<div class="modal" style="	width: 700px;margin-left:-350px;height: 780px;margin-top:-400px;">
+	<div class="modal" style="	width: 800px;margin-left:-400px;height: 600px;margin-top:-250px;">
 		<h5 style="position:relative">
-			<span class="title">원료 상세 정보</span>
+			<span class="title">상품 상세 정보</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -867,79 +905,89 @@
 			</div>
 		</h5>
 		<div class="list_detail">
+			<div class="main_tbl">
+				<table class="insert_proc01">
+					<colgroup>
+						<col width="15%" />
+						<col width="35%" />
+						<col width="15%" />
+						<col width="35%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<th style="border-left: none;">원료명</th>
+							<td id="nameTxt">
+
+							</td>
+							<th style="border-left: none;">SAP 코드</th>
+							<td id="sapCodeTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">단가</th>
+							<td id="priceTxt">
+
+							</td>
+							<th style="border-left: none;">단위</th>
+							<td id="unitTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">보관기준</th>
+							<td id="keepConditionTxt">
+
+							</td>
+							<th style="border-left: none;">사이즈</th>
+							<td id="sizeTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">중량</th>
+							<td id="weightTxt">
+
+							</td>
+							<th style="border-left: none;">규격</th>
+							<td id="standardTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">원산지</th>
+							<td id="originTxt">
+
+							</td>
+							<th style="border-left: none;">소비기한</th>
+							<td id="expireDateTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">원료구분상세</th>
+							<td colspan="3" id="typeTxt">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">첨부파일 유형</th>
+							<td colspan="3" id="fileTypeTxt">
+							</td>
+						</tr>
+<!-- 						<tr>
+							<th style="border-left: none;">첨부파일</th>
+							<td colspan="3">
+								<div class="file_box_pop" style=" height:120px; width:97.5%; border-top-left-radius:0px;border-top-right-radius:0px; border-top:1px solid #ddd;box-sizing:border-box;">
+									<ul id="fileDataList">									
+									</ul>
+								</div>
+							</td>
+						</tr> -->
+					</tbody>
+				</table>
+			</div>
+			<div class="list_detail">
 			<ul>
-				<li class="pt10">
-					<dt>원료명</dt>
-					<dd>
-						 <div id="nameTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>SAP 코드</dt>
-					<dd>
-						<div id="sapCodeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>단가</dt>
-					<dd>
-						<div id="priceTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>단위</dt>
-					<dd>
-						<div id="unitTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>보관기준</dt>
-					<dd>
-						<div id="keepConditionTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>사이즈</dt>
-					<dd>
-						<div id="sizeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>중량</dt>
-					<dd>
-						<div id="weightTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>규격</dt>
-					<dd>
-						<div id="standardTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>원산지</dt>
-					<dd>
-						<div id="originTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>소비기한</dt>
-					<dd>
-						<div id="expireDateTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>원료구분상세</dt>
-					<dd>
-						<div id="typeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>첨부파일 유형</dt>
-					<dd>
-						<div id="fileTypeTxt"></div>
-					</dd>
-				</li>
 				<li>
 					<div class="add_file2" style="width:97.5%">
 						<span class="" >
@@ -952,7 +1000,8 @@
 					</div>
 				</li>
 			</ul>
-		</div>
+			</div>
+		</div>			
 		<div class="btn_box_con">
 			<button class="btn_admin_gray" onclick="closeDialog('open3')"> 닫기</button>
 		</div>
@@ -960,11 +1009,11 @@
 </div>
 <!-- 자재조회 레이어 close-->
 
-<!-- 자재조회 레이어 start-->
+<!-- 자재 조회레이어 start-->
 <div class="white_content" id="open4">
-	<div class="modal" style="	width: 700px;margin-left:-350px;height: 520px;margin-top:-400px;">
+	<div class="modal" style="	width: 800px;margin-left:-400px;height: 550px;margin-top:-250px;">
 		<h5 style="position:relative">
-			<span class="title">원료 상세 정보</span>
+			<span class="title">상품 상세 정보</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -974,69 +1023,120 @@
 			</div>
 		</h5>
 		<div class="list_detail">
-			<ul>
-				<li class="pt10">
-					<dt>원료명</dt>
-					<dd>
-						 <div id="nameTxtErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>SAP 코드</dt>
-					<dd>
-						<div id="sapCodeTxtErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>보관기준</dt>
-					<dd>
-						<div id="keepConditionTxtErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>원료유형</dt>
-					<dd>
-						<div id="categoryErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>사이즈(W/L/H)</dt>
-					<dd>
-						<div id="sizeTxtErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>중량</dt>
-					<dd>
-						<div id="weightTxtErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>규격</dt>
-					<dd>
-						<div id="standardTxtErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>원산지</dt>
-					<dd>
-						<div id="originTxtErp"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>소비기한</dt>
-					<dd>
-						<div id="expireDateTxtErp"></div>
-					</dd>
-				</li>
-			</ul>
-		</div>
+			<div class="main_tbl">
+				<table class="insert_proc01">
+					<colgroup>
+						<col width="15%" />
+						<col width="35%" />
+						<col width="15%" />
+						<col width="35%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<th style="border-left: none;">상품코드</th>
+							<td id="sapCodeTxt2">
+
+							</td>
+							<th style="border-left: none;">상품명</th>
+							<td id="nameTxt2">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">보관조건</th>
+							<td id="keepTxt2">
+
+							</td>
+							<th style="border-left: none;">유형</th>
+							<td id="matTypeTxt2">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">품목단위</th>
+							<td id="unitTxt2">
+
+							</td>
+							<th style="border-left: none;">중량</th>
+							<td id="weightTxt2">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">환산단위</th>
+							<td id="changeUnitTxt2">
+
+							</td>
+							<th style="border-left: none;">환산수량</th>
+							<td id="changeCountTxt2">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">총중량</th>
+							<td id="totalWeightTxt2">
+
+							</td>
+							<th style="border-left: none;">총중량단위</th>
+							<td id="totalWeightUnitTxt2">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">규격</th>
+							<td colspan="3" id="standardTxt2">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">사이즈(W/L/H)</th>
+							<td colspan="3" id="sizeTxt2">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">원산지</th>
+							<td id="originTxt2">
+
+							</td>
+							<th style="border-left: none;">소비기한</th>
+							<td id="expDateTxt2">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">리드타임</th>
+							<td id="leadTimeTxt2">
+							</td>
+							<th style="border-left: none;">안전재고일수</th>
+							<td id="safetyDayTxt2">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">박스당입수량</th>
+							<td id="boxAmountTxt2">
+							</td>
+							<th style="border-left: none;">파레트입수량</th>
+							<td id="palletAmountTxt2">
+							</td>
+						</tr>						
+						<tr>
+							<th style="border-left: none;">부가세 코드</th>
+							<td id="cdTxt2">
+
+							</td>
+							<th style="border-left: none;">최소발주량</th>
+							<td id="minOrderTxt2">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>			
 		<div class="btn_box_con">
 			<button class="btn_admin_gray" onclick="closeDialog('open4')"> 닫기</button>
 		</div>
 	</div>
 </div>
-<!-- 자재조회 레이어 close-->
+<!-- 자재 상세레이어 close-->
 
 <!-- 결재 상신 레이어  start-->
 <div class="white_content" id="approval_dialog">

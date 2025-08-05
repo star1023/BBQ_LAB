@@ -640,4 +640,16 @@ public class ApprovalController {
 	public Map<String, Object> selectApprItemAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		return approvalService.selectApprItem(param);
 	}
+	
+	@RequestMapping("/addReferenceAjax")
+	@ResponseBody
+	public Map<String, Object> addReferenceAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+		return approvalService.addReference(param);
+	}
+	
+	@RequestMapping("/selectRefInfoListAjax")
+	@ResponseBody
+	public List<Map<String, Object>> selectRefInfoListAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+		return approvalService.selectRefInfoList(param);
+	}
 }

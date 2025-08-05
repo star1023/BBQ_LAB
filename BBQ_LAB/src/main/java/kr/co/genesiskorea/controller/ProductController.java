@@ -168,37 +168,12 @@ public class ProductController {
 	@ResponseBody
 	public Map<String, Object> insertTmpProductAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
-			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
-			, @RequestParam(value = "featureArr", required = false) List<String> featureArr
-			, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
-			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
-			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
-			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
-			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr
-			, @RequestParam(value = "productType", required = false) List<String> productType
-			, @RequestParam(value = "fileType", required = false) List<String> fileType
-			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			, @RequestParam(value = "docType", required = false) List<String> docType
-			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
-			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
-			, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemTypeArr", required = false) List<String> itemTypeArr
-			, @RequestParam(value = "itemMatIdxArr", required = false) List<String> itemMatIdxArr
-			, @RequestParam(value = "itemMatCodeArr", required = false) List<String> itemMatCodeArr
-			, @RequestParam(value = "itemSapCodeArr", required = false) List<String> itemSapCodeArr
-			, @RequestParam(value = "itemNameArr", required = false) List<String> itemNameArr
-			, @RequestParam(value = "itemStandardArr", required = false) List<String> itemStandardArr
-			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
-			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
-			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
 			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			, @RequestParam(value = "docType", required = false) List<String> docType
-			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
 			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
@@ -208,32 +183,13 @@ public class ProductController {
 			Collections.reverse(productType);
 			
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
-			//listMap.put("purposeArr", purposeArr);
-			//listMap.put("featureArr", featureArr);
-			//listMap.put("newItemNameArr", newItemNameArr);
-			//listMap.put("newItemStandardArr", newItemStandardArr);
-			//listMap.put("newItemSupplierArr", newItemSupplierArr);
-			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
-			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
 			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
-			listMap.put("docType", docType);
-			listMap.put("docTypeText", docTypeText);
 			listMap.put("tempFile", tempFile);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemTypeArr", itemTypeArr);
-			//listMap.put("itemMatIdxArr", itemMatIdxArr);
-			//listMap.put("itemMatCodeArr", itemMatCodeArr);
-			//listMap.put("itemSapCodeArr", itemSapCodeArr);
-			//listMap.put("itemNameArr", itemNameArr);
-			//listMap.put("itemStandardArr", itemStandardArr);
-			//listMap.put("itemKeepExpArr", itemKeepExpArr);
-			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
-			//listMap.put("itemDescArr", itemDescArr);
 			
 			int productIdx = productService.insertTmpProduct(param, listMap, file);
 			returnMap.put("IDX", productIdx);
@@ -251,32 +207,13 @@ public class ProductController {
 	@ResponseBody
 	public Map<String, Object> insertProductAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
-			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
-			, @RequestParam(value = "featureArr", required = false) List<String> featureArr
-			, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
-			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
-			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
-			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
-			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
 			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			, @RequestParam(value = "docType", required = false) List<String> docType
-			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
 			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
-			/*, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemTypeArr", required = false) List<String> itemTypeArr
-			, @RequestParam(value = "itemMatIdxArr", required = false) List<String> itemMatIdxArr
-			, @RequestParam(value = "itemMatCodeArr", required = false) List<String> itemMatCodeArr
-			, @RequestParam(value = "itemSapCodeArr", required = false) List<String> itemSapCodeArr
-			, @RequestParam(value = "itemNameArr", required = false) List<String> itemNameArr
-			, @RequestParam(value = "itemStandardArr", required = false) List<String> itemStandardArr
-			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
-			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
-			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -285,32 +222,13 @@ public class ProductController {
 			Collections.reverse(productType);
 			
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
-			//listMap.put("purposeArr", purposeArr);
-			//listMap.put("featureArr", featureArr);
-			//listMap.put("newItemNameArr", newItemNameArr);
-			//listMap.put("newItemStandardArr", newItemStandardArr);
-			//listMap.put("newItemSupplierArr", newItemSupplierArr);
-			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
-			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
 			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
-			listMap.put("docType", docType);
-			listMap.put("docTypeText", docTypeText);
 			listMap.put("tempFile", tempFile);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemTypeArr", itemTypeArr);
-			//listMap.put("itemMatIdxArr", itemMatIdxArr);
-			//listMap.put("itemMatCodeArr", itemMatCodeArr);
-			//listMap.put("itemSapCodeArr", itemSapCodeArr);
-			//listMap.put("itemNameArr", itemNameArr);
-			//listMap.put("itemStandardArr", itemStandardArr);
-			//listMap.put("itemKeepExpArr", itemKeepExpArr);
-			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
-			//listMap.put("itemDescArr", itemDescArr);
 			int productIdx = productService.insertProduct(param, listMap, file);
 			returnMap.put("IDX", productIdx);
 			returnMap.put("RESULT", "S");			
@@ -377,15 +295,6 @@ public class ProductController {
 	@ResponseBody
 	public Map<String, Object> insertNewVersionProductTmpAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
-			/*, @RequestParam(value = "itemImproveArr", required = false) List<String> itemImproveArr
-			, @RequestParam(value = "itemExistArr", required = false) List<String> itemExistArr
-			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr
-			, @RequestParam(value = "improveArr", required = false) List<String> improveArr
-			, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
-			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
-			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
-			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
-			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
 			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
@@ -394,16 +303,7 @@ public class ProductController {
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
 			, @RequestParam(value = "docType", required = false) List<String> docType
 			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
-			/*, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemTypeArr", required = false) List<String> itemTypeArr
-			, @RequestParam(value = "itemMatIdxArr", required = false) List<String> itemMatIdxArr
-			, @RequestParam(value = "itemMatCodeArr", required = false) List<String> itemMatCodeArr
-			, @RequestParam(value = "itemSapCodeArr", required = false) List<String> itemSapCodeArr
-			, @RequestParam(value = "itemNameArr", required = false) List<String> itemNameArr
-			, @RequestParam(value = "itemStandardArr", required = false) List<String> itemStandardArr
-			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
-			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
-			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -412,15 +312,6 @@ public class ProductController {
 			Collections.reverse(productType);
 			
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
-			//listMap.put("itemImproveArr", itemImproveArr);
-			//listMap.put("itemExistArr", itemExistArr);
-			//listMap.put("itemNoteArr", itemNoteArr);
-			//listMap.put("improveArr", improveArr);
-			//listMap.put("newItemNameArr", newItemNameArr);
-			//listMap.put("newItemStandardArr", newItemStandardArr);
-			//listMap.put("newItemSupplierArr", newItemSupplierArr);
-			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
-			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
 			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
@@ -429,16 +320,7 @@ public class ProductController {
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("docType", docType);
 			listMap.put("docTypeText", docTypeText);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemTypeArr", itemTypeArr);
-			//listMap.put("itemMatIdxArr", itemMatIdxArr);
-			//listMap.put("itemMatCodeArr", itemMatCodeArr);
-			//listMap.put("itemSapCodeArr", itemSapCodeArr);
-			//listMap.put("itemNameArr", itemNameArr);
-			//listMap.put("itemStandardArr", itemStandardArr);
-			//listMap.put("itemKeepExpArr", itemKeepExpArr);
-			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
-			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("tempFile", tempFile);
 			int productIdx = productService.insertNewVersionProductTmp(param, listMap, file);
 			returnMap.put("IDX", productIdx);
 			returnMap.put("RESULT", "S");			
@@ -454,15 +336,6 @@ public class ProductController {
 	@ResponseBody
 	public Map<String, Object> insertNewVersionProductAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
-			/*, @RequestParam(value = "itemImproveArr", required = false) List<String> itemImproveArr
-			, @RequestParam(value = "itemExistArr", required = false) List<String> itemExistArr
-			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr
-			, @RequestParam(value = "improveArr", required = false) List<String> improveArr
-			, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
-			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
-			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
-			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
-			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
 			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
@@ -471,16 +344,7 @@ public class ProductController {
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
 			, @RequestParam(value = "docType", required = false) List<String> docType
 			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
-			/*, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemTypeArr", required = false) List<String> itemTypeArr
-			, @RequestParam(value = "itemMatIdxArr", required = false) List<String> itemMatIdxArr
-			, @RequestParam(value = "itemMatCodeArr", required = false) List<String> itemMatCodeArr
-			, @RequestParam(value = "itemSapCodeArr", required = false) List<String> itemSapCodeArr
-			, @RequestParam(value = "itemNameArr", required = false) List<String> itemNameArr
-			, @RequestParam(value = "itemStandardArr", required = false) List<String> itemStandardArr
-			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
-			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
-			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -489,15 +353,6 @@ public class ProductController {
 			Collections.reverse(productType);
 
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
-			//listMap.put("itemImproveArr", itemImproveArr);
-			//listMap.put("itemExistArr", itemExistArr);
-			//listMap.put("itemNoteArr", itemNoteArr);
-			//listMap.put("improveArr", improveArr);
-			//listMap.put("newItemNameArr", newItemNameArr);
-			//listMap.put("newItemStandardArr", newItemStandardArr);
-			//listMap.put("newItemSupplierArr", newItemSupplierArr);
-			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
-			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
 			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
@@ -506,16 +361,7 @@ public class ProductController {
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("docType", docType);
 			listMap.put("docTypeText", docTypeText);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemTypeArr", itemTypeArr);
-			//listMap.put("itemMatIdxArr", itemMatIdxArr);
-			//listMap.put("itemMatCodeArr", itemMatCodeArr);
-			//listMap.put("itemSapCodeArr", itemSapCodeArr);
-			//listMap.put("itemNameArr", itemNameArr);
-			//listMap.put("itemStandardArr", itemStandardArr);
-			//listMap.put("itemKeepExpArr", itemKeepExpArr);
-			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
-			//listMap.put("itemDescArr", itemDescArr);
+			listMap.put("tempFile", tempFile);
 			int productIdx = productService.insertNewVersionProduct(param, listMap, file);
 			returnMap.put("IDX", productIdx);
 			returnMap.put("RESULT", "S");			
@@ -676,39 +522,12 @@ public class ProductController {
 	@ResponseBody
 	public Map<String, String> updateTmpProductAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
-			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
-			, @RequestParam(value = "featureArr", required = false) List<String> featureArr
-			
-			, @RequestParam(value = "itemImproveArr", required = false) List<String> itemImproveArr
-			, @RequestParam(value = "itemExistArr", required = false) List<String> itemExistArr
-			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr
-			, @RequestParam(value = "improveArr", required = false) List<String> improveArr
-			
-			, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
-			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
-			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
-			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
-			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
 			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			, @RequestParam(value = "docType", required = false) List<String> docType
-			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
-			/*, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemTypeArr", required = false) List<String> itemTypeArr
-			, @RequestParam(value = "itemMatIdxArr", required = false) List<String> itemMatIdxArr
-			, @RequestParam(value = "itemMatCodeArr", required = false) List<String> itemMatCodeArr
-			, @RequestParam(value = "itemSapCodeArr", required = false) List<String> itemSapCodeArr
-			, @RequestParam(value = "itemNameArr", required = false) List<String> itemNameArr
-			, @RequestParam(value = "itemStandardArr", required = false) List<String> itemStandardArr
-			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
-			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
-			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
-			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
-			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -717,41 +536,15 @@ public class ProductController {
 			Collections.reverse(productType);
 
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
-			//listMap.put("purposeArr", purposeArr);
-			//listMap.put("featureArr", featureArr);
-			
-			//listMap.put("itemImproveArr", itemImproveArr);
-			//listMap.put("itemExistArr", itemExistArr);
-			//listMap.put("itemNoteArr", itemNoteArr);
-			//listMap.put("improveArr", improveArr);
-			
-			
-			//listMap.put("newItemNameArr", newItemNameArr);
-			//listMap.put("newItemStandardArr", newItemStandardArr);
-			//listMap.put("newItemSupplierArr", newItemSupplierArr);
-			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
-			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
 			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
-			listMap.put("docType", docType);
-			listMap.put("docTypeText", docTypeText);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemTypeArr", itemTypeArr);
-			//listMap.put("itemMatIdxArr", itemMatIdxArr);
-			//listMap.put("itemMatCodeArr", itemMatCodeArr);
-			//listMap.put("itemSapCodeArr", itemSapCodeArr);
-			//listMap.put("itemNameArr", itemNameArr);
-			//listMap.put("itemStandardArr", itemStandardArr);
-			//listMap.put("itemKeepExpArr", itemKeepExpArr);
-			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
-			//listMap.put("itemDescArr", itemDescArr);
-			listMap.put("deleteFileArr", deleteFileArr);
-			listMap.put("deleteFilePathArr", deleteFilePathArr);
-			productService.updateProductTmp(param, listMap, file);
+			
+			System.err.println(param);
+			//productService.updateProductTmp(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
@@ -765,40 +558,12 @@ public class ProductController {
 	@ResponseBody
 	public Map<String, String> updateProductAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param
-			/*, @RequestParam(value = "purposeArr", required = false) List<String> purposeArr
-			, @RequestParam(value = "featureArr", required = false) List<String> featureArr
-			
-			, @RequestParam(value = "itemImproveArr", required = false) List<String> itemImproveArr
-			, @RequestParam(value = "itemExistArr", required = false) List<String> itemExistArr
-			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr
-			, @RequestParam(value = "improveArr", required = false) List<String> improveArr
-			
-			
-			, @RequestParam(value = "newItemNameArr", required = false) List<String> newItemNameArr
-			, @RequestParam(value = "newItemStandardArr", required = false) List<String> newItemStandardArr
-			, @RequestParam(value = "newItemSupplierArr", required = false) List<String> newItemSupplierArr
-			, @RequestParam(value = "newItemKeepExpArr", required = false) List<String> newItemKeepExpArr
-			, @RequestParam(value = "newItemNoteArr", required = false) List<String> newItemNoteArr*/
 			, @RequestParam(value = "usageArr", required = false) List<String> usageArr
 			, @RequestParam(value = "customUsage", required = false) String customUsage
 			, @RequestParam(value = "usageType", required = false) String usageType
 			, @RequestParam(value = "productType", required = false) List<String> productType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			, @RequestParam(value = "docType", required = false) List<String> docType
-			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
-			/*, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemTypeArr", required = false) List<String> itemTypeArr
-			, @RequestParam(value = "itemMatIdxArr", required = false) List<String> itemMatIdxArr
-			, @RequestParam(value = "itemMatCodeArr", required = false) List<String> itemMatCodeArr
-			, @RequestParam(value = "itemSapCodeArr", required = false) List<String> itemSapCodeArr
-			, @RequestParam(value = "itemNameArr", required = false) List<String> itemNameArr
-			, @RequestParam(value = "itemStandardArr", required = false) List<String> itemStandardArr
-			, @RequestParam(value = "itemKeepExpArr", required = false) List<String> itemKeepExpArr
-			, @RequestParam(value = "itemUnitPriceArr", required = false) List<String> itemUnitPriceArr
-			, @RequestParam(value = "itemDescArr", required = false) List<String> itemDescArr*/
-			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
-			, @RequestParam(value = "deleteFilePathArr", required = false) List<String> deleteFilePathArr
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -807,39 +572,12 @@ public class ProductController {
 			Collections.reverse(productType);
 
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
-			//listMap.put("purposeArr", purposeArr);
-			//listMap.put("featureArr", featureArr);
-			
-			//listMap.put("itemImproveArr", itemImproveArr);
-			//listMap.put("itemExistArr", itemExistArr);
-			//listMap.put("itemNoteArr", itemNoteArr);
-			//listMap.put("improveArr", improveArr);
-			
-			//listMap.put("newItemNameArr", newItemNameArr);
-			//listMap.put("newItemStandardArr", newItemStandardArr);
-			//listMap.put("newItemSupplierArr", newItemSupplierArr);
-			//listMap.put("newItemKeepExpArr", newItemKeepExpArr);
-			//listMap.put("newItemNoteArr", newItemNoteArr);
 			listMap.put("usageArr", usageArr);
 			listMap.put("customUsage", customUsage);
 			listMap.put("usageType", usageType);
 			listMap.put("productType", productType);
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
-			listMap.put("docType", docType);
-			listMap.put("docTypeText", docTypeText);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemTypeArr", itemTypeArr);
-			//listMap.put("itemMatIdxArr", itemMatIdxArr);
-			//listMap.put("itemMatCodeArr", itemMatCodeArr);
-			//listMap.put("itemSapCodeArr", itemSapCodeArr);
-			//listMap.put("itemNameArr", itemNameArr);
-			//listMap.put("itemStandardArr", itemStandardArr);
-			//listMap.put("itemKeepExpArr", itemKeepExpArr);
-			//listMap.put("itemUnitPriceArr", itemUnitPriceArr);
-			//listMap.put("itemDescArr", itemDescArr);
-			listMap.put("deleteFileArr", deleteFileArr);
-			listMap.put("deleteFilePathArr", deleteFilePathArr);
 			productService.updateProduct(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

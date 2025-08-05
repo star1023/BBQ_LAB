@@ -112,28 +112,19 @@ li {
 			 $(this).jstree("open_all");
 		}).on("select_node.jstree",function(e,data){
 			selectedArr = new Array();
-			console.log(e);
-			console.log("data : "+data);
 			var selectTxtFull = "";
 			var parents = data.node.parents;
 			var selectTxt = data.node.text;
 			var selectId = data.node.id;
-			console.log("parents : "+parents);
-			console.log("selectTxt : "+selectTxt);
 			selectedArr.push(selectId);
 			selectTxtFull += selectTxt;
 			
 			$.each(parents, function( index, value ){ //배열-> index, value
 				if( value != '#' ) { 
-					console.log($.jstree.reference('#jsTree').get_node(value).text);
-					//console.log($(this).jstree(true).get_node(value).text);					
 					selectedArr.push(value);
-					//selectTxtFull = $(this).jstree(true).get_node(value).text + ">" +selectTxtFull
 					selectTxtFull = $.jstree.reference('#jsTree').get_node(value).text + ">" +selectTxtFull
 				}
 			});
-			console.log(selectedArr);
-			//$("#selectTxtFull").html(selectTxtFull);
 			$("#selectTxtFull").val(selectTxtFull);
 			closeDialog('dialog_product');
 		});
@@ -152,7 +143,6 @@ li {
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -225,7 +215,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('상품검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -245,18 +234,13 @@ li {
 		$("#productSapCode").val(SAP_CODE);
 		$("#isSample").val("N");
 		$("#keepCondition").val(KEEP_CONDITION);
-		//$("#width").val(WIDTH);
-		//$("#length").val(LENGTH);
-		//$("#height").val(HEIGHT);
 		$("#weight").val(TOTAL_WEIGHT);
 		$("#standard").val(STANDARD);
-		//$("#origin").val(ORIGIN);
 		$("#expireDate").val(EXPIRATION_DATE);
 		fn_closeErpMatRayer();
 	}
 	
 	function selectNewCode() {
-		console.log("새 코드를 조회한다.");
 		var URL = "../product/selectNewCodeAjax";
 		$.ajax({
 			type:"POST",
@@ -280,7 +264,9 @@ li {
 	var attatchTempFileArr = [];
 	var attatchTempFileTypeArr = [];
 	function callAddFileEvent(){
-		$('#attatch_common').click();
+		//$('#attatch_common').click();
+		$('#file3').click();
+		//$('#file2').click();
 	}
 	function setFileName(element){
 		if(element.files.length > 0)
@@ -288,18 +274,21 @@ li {
 		else 
 			$(element).parent().children('input[type=text]').val('');
 	}
+	
 	function addFile(element, fileType){
 		var randomId = Math.random().toString(36).substr(2, 9);
 		
-		if($('#attatch_common').val() == null || $('#attatch_common').val() == ''){
+		if($(element).val() == null || $(element).val() == ''){
 			return alert('파일을 선택해주세요');
 		}
 		
-		fileElement = document.getElementById('attatch_common');
+		fileElement = document.getElementById($(element).prop("id"));
 		
 		var file = fileElement.files;
 		var fileName = file[0].name
 		var fileTypeText = $(element).text();
+
+		
 		var isDuple = false;
 		attatchTempFileArr.forEach(function(file){
 			if(file.name == fileName)
@@ -321,20 +310,59 @@ li {
 			return;
 		}
 		
+		attatchFileArr.push(file[0]);
+		attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+		attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
 		
+		$(element).val("");
 		
-		attatchTempFileArr.push(file[0]);
-		attatchTempFileArr[attatchTempFileArr.length-1].tempId = randomId;
-		attatchTempFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+		$("#attatch_file").append(childTag);
+	}
+	
+	function addDropFile(file, fileType){
+		var randomId = Math.random().toString(36).substr(2, 9);
 		
-		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+randomId+'\')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;'+fileName+'</li>'
-		$('ul[name=popFileList]').append(childTag);
-		$('#attatch_common').val('');
-		$('#attatch_common').change();
+		var fileName = file.name;
+		var fileTypeText = file.text();
+		var isDuple = false;
+		
+		attatchFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		attatchTempFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		attatchFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		if(isDuple){
+			if(!confirm('같은 이름의 파일이 존재합니다. 계속 진행하시겠습니까?')){
+				return;
+			};
+		}
+		
+		if( !checkFileName(fileName) ) {			
+			return;
+		}
+		
+		attatchFileArr.push(file);
+		attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+		attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+		
+		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+		$("#attatch_file").append(childTag);
 	}
 	
 	function removeFile(element, tempId){
 		$(element).parent().remove();
+		
 		attatchFileArr = attatchFileArr.filter(function(file){
 			if(file.tempId != tempId) {
 				return file;
@@ -352,58 +380,42 @@ li {
 		//console.log($("#attatch_file").children().length);
 	}
 	
-	
-	function uploadFiles(){
-		if( attatchTempFileArr.length == 0 ) {
-			alert("파일을 등록해주세요.");
-			return;
+	function allowDrop(e) {
+		e.preventDefault();
+		
+		e.target.style.backgroundColor = "black";
+		e.target.style.opacity  = "0.2";
+	}
+
+	function drag(ev) {
+		ev.dataTransfer.setData("text", ev.target.id);
+	}
+
+	function drop(e) {
+		e.preventDefault();
+		
+		var files = e.target.files || e.dataTransfer.files;
+		for(var i=0; i<files.length; i++){
+			addDropFile(files[i], '00')
 		}
-		
-		if( $('input:checkbox[name=docType]:checked').length == 0 ) {
-			alert("첨부파일 유형을 선택해주세요.");
-			return;
-		}
-		
-		attatchTempFileArr.forEach(function(tempFile, idx1){
-			attatchFileArr.push(tempFile);
-			attatchFileTypeArr.push(attatchTempFileTypeArr[idx1]);		
-		});
-		
-		$("#attatch_file").html("");
-		attatchFileTypeArr.forEach(function(object,idx){
-			var tempId = object.tempId;
-			var childTag = '<li><a href="#none" onclick="removeFile(this, \''+tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[idx].name+'</li>'
-			$("#attatch_file").append(childTag);
-		});
-		
-		$("#docTypeTemp").removeOption(/./);
-		var docTypeTxt = "";
-		$('input:checkbox[name=docType]').each(function (index) {
-			if($(this).is(":checked")==true){
-		    	$("#docTypeTemp").addOption($(this).val(), $(this).next("label").text(), true);
-		    	//if( index != 0 ) {
-	    		if( docTypeTxt != "" ){
-	    			docTypeTxt += ", ";
-	    		}
-	    		docTypeTxt += $(this).next("label").text();
-		    	//} else {
-		    	//	docTypeTxt += $(this).next("label").text();
-		    	//}
-		    }
-		});
-		$("#docTypeTxt").html(docTypeTxt);
-		closeDialogWithClean('dialog_attatch');
+		e.target.style.backgroundColor = "#fff";
+		e.target.style.opacity  = "1";
+	}
+
+	function drogEnd(e){
+		e.target.style.backgroundColor = "#fff";
+		e.target.style.opacity  = "1";
 	}
 	
 	function checkFileName(str){
 		var result = true;
 	    //1. 확장자 체크
 	    var ext =  str.split('.').pop().toLowerCase();
-	    if($.inArray(ext, ['pdf']) == -1) {
+	    if($.inArray(ext, ['pdf','png','jpg','jpeg']) == -1) {
 	    	var message = "";
 	    	message += ext+'파일은 업로드 할 수 없습니다.';
 	    	//message += "\n";
-	    	message += "(pdf 만 가능합니다.)";
+	    	message += "(pdf와 이미지(png,jpg,jpeg)만 가능합니다.)";
 	        alert(message);
 	        result = false;
 	    }
@@ -553,7 +565,6 @@ li {
 		
 		//var userSapCode = e.target.value;
 		var userMatCode = e.target.value;
-		console.log(userMatCode);
 		var rowId = $(element).parent().parent().attr('id');
 		var URL = '/product/checkMaterialAjax';
 		if( type == 'mat' ) {
@@ -599,7 +610,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c)
 				alert('갱신 실패[2] - 시스템 담당자에게 문의하세요.');
 			}
 		})
@@ -611,7 +621,6 @@ li {
 		openDialog('dialog_material');
 		
 		var matCode = $(element).prev().val();
-		console.log("matCode : "+matCode);
 		$('#searchMatValue').val(matCode);
 		$('#itemType').val(itemType);
 		$('#searchType').val(type);
@@ -645,7 +654,6 @@ li {
 		}
 			
 		$('#lab_loading').show();
-		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
 		var URL = '/product/selectMaterialAjax';
 		if( searchType == 'mat' ) {
@@ -703,7 +711,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('자재검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -756,9 +763,7 @@ li {
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
-	    		console.error( error );
 	    	});
 	}
 	function fn_insertTmp(){
@@ -845,10 +850,24 @@ li {
 				formData.append('fileType', attatchFileTypeArr[i].fileType)			
 			}
 			
-			$('select[name=docTypeTemp] option:selected').each(function(index){
+			var docTypeArr = new Array();
+			var docTypeTextArr = new Array();
+			$('input:checkbox[name=docType]').each(function (index) {
+				if($(this).is(":checked")==true){
+					docTypeArr.push($(this).val());
+					docTypeTextArr.push($(this).next("label").text());
+					/* formData.append('docType', $(this).val());
+					formData.append('docTypeText', $(this).next("label").text()); */
+			    }
+			});
+			
+			formData.append('docTypeArr', JSON.stringify(docTypeArr));
+			formData.append('docTypeTextArr', JSON.stringify(docTypeTextArr));
+			
+			/* $('select[name=docTypeTemp] option:selected').each(function(index){
 				formData.append('docType', $(this).attr('value'));
 				formData.append('docTypeText', $(this).text());
-			});
+			}); */
 			
 			$('select[name=tempFileList] option:selected').each(function(index){
 				formData.append('tempFile', $(this).attr('value'));							
@@ -1170,10 +1189,17 @@ li {
 							formData.append('fileType', attatchFileTypeArr[i].fileType)			
 						}
 						
-						$('select[name=docTypeTemp] option:selected').each(function(index){
-							formData.append('docType', $(this).attr('value'));
-							formData.append('docTypeText', $(this).text());
+						var docTypeArr = new Array();
+						var docTypeTextArr = new Array();
+						$('input:checkbox[name=docType]').each(function (index) {
+							if($(this).is(":checked")==true){
+								docTypeArr.push($(this).val());
+								docTypeTextArr.push($(this).next("label").text());
+						    }
 						});
+						
+						formData.append('docTypeArr', JSON.stringify(docTypeArr));
+						formData.append('docTypeTextArr', JSON.stringify(docTypeTextArr));
 						
 						$('select[name=tempFileList] option:selected').each(function(index){
 							formData.append('tempFile', $(this).attr('value'));							
@@ -1408,12 +1434,10 @@ li {
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				//productLayerBody
 				var jsonData = {};
 				jsonData = result;
 				$('#productLayerBody').empty();
-				console.log(jsonData.list.length);
 				if( jsonData.list.length == 0 ) {
 					var html = "";
 					$("#productLayerBody").html(html);
@@ -1423,6 +1447,7 @@ li {
 					jsonData.list.forEach(function(item){
 						var row = '<tr onClick="fn_copy(\''+item.PRODUCT_IDX+'\')">';
 						row += '<td></td>';
+						row += '<td>'+item.TITLE+'</td>';
 						row += '<td>'+item.PRODUCT_CODE+'</td>';
 						row += '<td  class="tgnl">'+item.NAME+'</td>';
 						row += '<td>'+item.VERSION_NO+'</td>';
@@ -1452,7 +1477,6 @@ li {
 	}
 	
 	function fn_copy(idx) {
-		console.log(idx);
 		var URL = "../product/selectProductDataAjax";
 		$.ajax({
 			type:"POST",
@@ -1462,7 +1486,6 @@ li {
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				var data = result.productData.data;
 				var addInfoCount = result.addInfoCount;
 				var addInfoList = result.addInfoList;
@@ -1471,10 +1494,6 @@ li {
 				var fileType = result.productData.fileType;
 				var materialList = result.productMaterialData;
 				
-				console.log(data);
-				console.log(addInfoCount);
-				console.log(addInfoList);
-				console.log(newDataList);
 				$("#productName").val(data.NAME);
 				
 				if( addInfoCount.PUR_CNT > 0 ) {
@@ -1521,33 +1540,25 @@ li {
 				$("#keepCondition").val(data.KEEP_CONDITION);
 				$("#expireDate").val(data.EXPIRATION_DATE);
 				var selectTxtFull = "";
-				console.log(data.PRODUCT_TYPE1);
-				console.log(nvl2(data.PRODUCT_TYPE1,""));
-				console.log(!chkNull(nvl2(data.PRODUCT_TYPE1,"")));
-				//if( !chkNull(data.PRODUCT_TYPE1) ) {
 				if( nvl2(data.PRODUCT_TYPE1,"") != "" ) {	
 					selectTxtFull += data.PRODUCT_TYPE_NAME1;
 				}
-				//if( !chkNull(data.PRODUCT_TYPE2) ) {
 				if( nvl2(data.PRODUCT_TYPE2,"") != "" ) {		
 					selectTxtFull += " > "+data.PRODUCT_TYPE_NAME2;
 				}
-				//if( !chkNull(data.PRODUCT_TYPE3) ) {
 				if( nvl2(data.PRODUCT_TYPE3,"") != "" ) {	
 					selectTxtFull += " > "+data.PRODUCT_TYPE_NAME3;
 				}
 				
 				$("#selectTxtFull").val(selectTxtFull);
 				
-				//if( !chkNull(data.PRODUCT_TYPE3) ) {
 				if( nvl2(data.PRODUCT_TYPE3,"") != "" ) {	
 					selectedArr.push(data.PRODUCT_TYPE3);
 				}
-				//if( !chkNull(data.PRODUCT_TYPE2) ) {
 				if( nvl2(data.PRODUCT_TYPE2,"") != "" ) {	
 					selectedArr.push(data.PRODUCT_TYPE2);
 				}
-				//if( !chkNull(data.PRODUCT_TYPE1) ) {
+				
 				if( nvl2(data.PRODUCT_TYPE1,"") != "" ) {	
 					selectedArr.push(data.PRODUCT_TYPE1);
 				}
@@ -1605,7 +1616,7 @@ li {
 					$("#mat_add_btn").trigger("click");
 				}
 				
-				var fileTypeTxt = "";
+				/* var fileTypeTxt = "";
 				fileType.forEach(function(item,index){
 					$("#docTypeTemp").addOption(item.FILE_TYPE, item.FILE_TEXT, true);
 					if( fileTypeTxt != ""  ){
@@ -1613,15 +1624,26 @@ li {
 					}
 					fileTypeTxt += item.FILE_TEXT;
 				});
-				$("#docTypeTxt").html(fileTypeTxt);
-
-				console.log(fileList);
+				$("#docTypeTxt").html(fileTypeTxt); */
+				
+				
+				console.log(fileType);
+				fileType.forEach(function(item,index){
+					$("#docTypeTemp").addOption(item.FILE_TYPE, item.FILE_TEXT, true);
+					$('input[type="checkbox"][value="' + item.FILE_TYPE + '"]').prop('checked', true);
+				});
+				
 				if( fileList.length > 0 ) {
-					$("#temp_file").show();
+					/* $("#temp_file").show();
 					fileList.forEach(function(item,index){
 						$("#tempFileList").addOption(item.FILE_IDX, item.ORG_FILE_NAME, true);
 						var childTag = '<li><a href="#none" onclick="removeTempFile(this, \''+item.FILE_IDX+'\')"><img src="/resources/images/icon_del_file.png"></a>'+item.ORG_FILE_NAME+'</li>'
 						$("#temp_attatch_file").append(childTag);
+					}); */
+					fileList.forEach(function(item,index){
+						$("#tempFileList").addOption(item.FILE_IDX, item.ORG_FILE_NAME, true);
+						var childTag = '<li><a href="#none" onclick="removeTempFile(this, \''+item.FILE_IDX+'\')"><img src="/resources/images/icon_del_file.png"></a>'+item.ORG_FILE_NAME+'</li>'
+						$("#attatch_file").append(childTag);
 					});
 				}
 				
@@ -1732,19 +1754,14 @@ li {
 			alert("등록된 결재라인이 없습니다. 결재 라인 추가 후 결재상신 해 주세요.");
 			return;
 		} else {
-			//$("#apprLine").removeOption(/./); 
-			//$("#refLine").removeOption(/./); 
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
 				apprTxtFull += item;
 			});
 			$("#apprTxtFull").val(apprTxtFull);
-			//apprTxtFull
-			//refTxtFull
 			var refTxtFull = "";
 			$("#refLine").selectedTexts().forEach(function( item, index ){
 				if( refTxtFull != "" ) {
@@ -2189,12 +2206,12 @@ li {
 		<h2 style="position: relative">
 			<span class="title_s">Product Complete Doc</span><span class="title">제품개발완료보고서</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_modifiy" onclick="fn_copySearch()">&nbsp;</button>
 						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">
@@ -2211,6 +2228,7 @@ li {
 							class="" id="tab2_li">완료보고서상세정보</li></a>
 					</div>
 					<div>
+						<button class="btn_small_search ml5" onclick="fn_copySearch()">불러오기</button>
 						<button class="btn_small_search ml5" onclick="fn_openPreview()">미리보기</button>
 					</div>
 				</ul>
@@ -2467,7 +2485,7 @@ li {
 					</table>
 				</div>
 
-
+				<!-- 
 				<div class="title2 mt20" style="width: 90%;">
 					<span class="txt">파일첨부 <span class="mandatory">*</span></span>
 				</div>
@@ -2501,6 +2519,44 @@ li {
 						</li>
 					</ul>
 				</div>
+				-->
+				
+				<div class="title2 mt20" style="width: 90%;">
+					<span class="txt">파일첨부</span>
+				</div>
+				<div class="list_detail">
+					<ul style="">
+						<li>
+							<dt style="width: 20%">파일유형 <span class="mandatory">*</span></dt>
+							<dd style="width: 80%;">
+								<input id="checkbox_item1" name="docType" type="checkbox" value="10" /><label for="checkbox_item1" style="vertical-align: middle;"><span></span>컨셉서-개발목적</label> 
+								<input id="checkbox_item2" name="docType" type="checkbox" value="20" /><label for="checkbox_item2" style="vertical-align: middle;"><span></span>추정원단위표</label> 
+								<input id="checkbox_item3" name="docType" type="checkbox" value="30" /><label for="checkbox_item3" style="vertical-align: middle;"><span></span>배합비&제조신고용 배합비</label>
+								<input id="checkbox_item4" name="docType" type="checkbox" value="40" /> <label for="checkbox_item4" style="vertical-align: middle;"><span></span>제조공정도</label> 
+								<input id="checkbox_item5" name="docType" type="checkbox" value="50" /> <label for="checkbox_item5" style="vertical-align: middle;"><span></span>제조작업표준서</label>
+								<input id="checkbox_item6" name="docType" type="checkbox" value="60" /> <label for="checkbox_item6" style="vertical-align: middle;"><span></span>제품규격서</label>
+								<select id="docTypeTemp" name="docTypeTemp" multiple style='display: none'></select>
+								<select id="tempFileList" name="tempFileList" multiple style="display: none"></select>
+							</dd>
+						</li>
+						<li>
+							<dt style="width: 20%">첨부파일 <span class="mandatory">*</span></dt>
+							<dd style="width: 80%;">
+								<div class="add_file" id="add_file2" style="width:100%">
+									<span id="upFile">
+										<span class="file_load" id="fileSpan2" style="display: none;"><input type="file" name="files" id="file2" onchange="addFile(this, '00')" style="display:none"><label for="file2">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+										<span class="file_load" id="fileSpan3"><input type="file" name="files" id="file3" onchange="addFile(this, '00')" style="display:none"><label for="file3">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+									</span>
+								</div>
+								<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
+									<ul id="attatch_file">
+									</ul>	
+								</div>
+							</dd>
+						</li>
+					</ul>
+				</div>
+				
 
 			</div>
 			<div id="tab2_div" style="display: none">
@@ -2604,14 +2660,14 @@ li {
 									onclick="changeNewMat(event)" value="Y"> <label
 									for="newMat2"><span></span>사용</label></td>
 							</tr>
-							<tr>
+							<!-- <tr>
 								<th style="border-left: none;">첨부파일 유형</th>
 								<td colspan="5">
 									<div id="docTypeTxt"></div> <select id="docTypeTemp"
 									name="docTypeTemp" multiple style='display: none'>
 								</select>
 								</td>
-							</tr>
+							</tr> -->
 						</tbody>
 					</table>
 				</div>
@@ -2937,6 +2993,7 @@ li {
 <!-- 첨부파일 추가레이어 start-->
 <!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
 <!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
+<!-- 
 <div class="white_content" id="dialog_attatch">
 	<div class="modal"
 		style="margin-left: -355px; width: 710px; height: 550px; margin-top: -250px">
@@ -2961,7 +3018,7 @@ li {
 								id="attatch_common_text" class="form-control form_point_color01"
 								type="text" placeholder="파일을 선택해주세요."
 								style="width: 145px; /* width:308px;  */ float: left; cursor: pointer; color: black;"
-								onclick="callAddFileEvent()" readonly="readonly"> <!-- <label class="btn-default" for="attatch_common" style="float:left; margin-left: 5px; width: 57px">파일 선택</label> -->
+								onclick="callAddFileEvent()" readonly="readonly">
 								<input id="attatch_common" type="file" style="display: none;"
 								onchange="setFileName(this)">
 							</span>
@@ -2996,7 +3053,7 @@ li {
 				<li class=" mb5">
 					<dt style="width: 20%">파일리스트</dt>
 					<dd style="width: 80%;">
-						<div class="file_box_pop" style="width: 95%">
+						<div class="file_box_pop" style="width: 95%" ondrop="drop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
 							<ul name="popFileList"></ul>
 						</div>
 					</dd>
@@ -3010,6 +3067,7 @@ li {
 		</div>
 	</div>
 </div>
+ -->
 <!-- 파일 생성레이어 close-->
 
 <!-- 원료 선택 레이어 start-->
@@ -3173,14 +3231,16 @@ li {
 			<table class="tbl07">
 				<colgroup>
 					<col width="40px">
-					<col width="17%">
-					<col width="23%">
-					<col width="10%">
 					<col />
+					<col width="10%">
+					<col width="20%">
+					<col width="5%">
+					<col width="20%">
 				</colgroup>
 				<thead>
 					<tr>
 						<th></th>
+						<th>제목</th>
 						<th>제품코드</th>
 						<th>제품명</th>
 						<th>버전</th>
@@ -3189,7 +3249,7 @@ li {
 				</thead>
 				<tbody id="productLayerBody">
 					<tr>
-						<td colspan="5">제품코드 혹은 제품명을 검색해주세요</td>
+						<td colspan="6">제품코드 혹은 제품명을 검색해주세요</td>
 					</tr>
 				</tbody>
 			</table>

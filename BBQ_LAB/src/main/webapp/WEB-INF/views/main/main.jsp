@@ -43,8 +43,8 @@ $(document).ready(function() {
     $("#ref_today").text(apprStatusData !== null ? apprStatusData.REF_NO_READ_CNT : 0); // 미열람
     $("#ref_total").text(apprStatusData !== null ? apprStatusData.REF_TOTAL_CNT : 0);   // 전체
 	
-	$("#productDocCount").text(productDocCount || 0);
-	$("#menuDocCount").text(menuDocCount || 0);
+	$("#productDocCount").text(${docCount.PROD_CNT} || 0);
+	$("#menuDocCount").text(${docCount.MENU_CNT} || 0);
 	
 	$("#faq-prev-btn").on("click", function () {
 	  if (faqCurrentIndex > 0) {
@@ -101,8 +101,8 @@ let faqCurrentIndex = 0;
 const chartData1 = ${docCountJson != null ? docCountJson : '{}'};
 const chartData2 = ${docStatusCountJson != null ? docStatusCountJson : '{}'};
 const apprStatusData = ${apprStatusCountJson};
-const productDocCount = ${productDocCount != null ? productDocCount : 0};
-const menuDocCount = ${menuDocCount != null ? menuDocCount : 0};
+const productDocCount = ${docCount.PROD_CNT != null ? docCount.PROD_CNT : 0};
+const menuDocCount = ${docCount.MENU_CNT != null ? docCount.MENU_CNT : 0};
 const chartStatusData = transformFlatToNestedStatusData(chartData2);
 
 //공지사항 //
@@ -675,6 +675,20 @@ function updateBarChartContext(buttonText) {
 			<!-- 품목제조공정서 검색 close -->
 			<div class="title2 mt30">
 				<span class="txt">내문서 현황</span>
+				<!-- <div>
+					<ul class="tab-menu">
+						<li class="tab-item active" data-doc="PROD_DOC">제품개발</li>
+						<li class="tab-item" data-doc="MENU_DOC">메뉴개발</li>
+						<li class="tab-item" data-doc="DESIGN_DOC">상품설계</li>
+						<li class="tab-item" data-doc="SENSE_QUALITY_DOC">관능&품질</li>
+						<li class="tab-item" data-doc="PLAN_DOC">출장계획</li>
+						<li class="tab-item" data-doc="TRIP_DOC">출장결과</li>
+						<li class="tab-item" data-doc="RESEARCH_DOC">시장조사</li>
+						<li class="tab-item" data-doc="RESULT_DOC">신제품품질</li>
+						<li class="tab-item" data-doc="CHEMICAL_DOC">이화학검사</li>
+						<li class="tab-item" data-doc="PACKAGE_DOC">표시사항기재</li>
+					</ul>
+				</div> -->
 			</div>
 			<div class="dashboard01"></div>
 			<div class="btn_box_con"></div>

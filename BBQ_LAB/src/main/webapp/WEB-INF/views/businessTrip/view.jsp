@@ -171,9 +171,6 @@
 			<div class="top_btn_box">
 				<ul>
 					<li>
-						<c:if test="${businessTripData.data.STATUS == 'REG' }">
-							<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-						</c:if>
 					</li>
 				</ul>
 			</div>
@@ -354,7 +351,26 @@
 			</div>
 			
 			<div class="title2 mt20"  style="width:90%;"><span class="txt">첨부파일</span></div>
-			<div class="con_file" style="">
+			<div class="list_detail">
+				<ul style="">
+					<li>
+						<dt style="width: 20%">첨부파일</dt>
+						<dd style="width: 80%;">
+							<div class="add_file" id="add_file2" style="width:100%">
+								
+							</div>
+							<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;">
+								<ul id="attatch_file">
+									<c:forEach items="${businessTripData.fileList}" var="fileList" varStatus="status">
+										<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+									</c:forEach>
+								</ul>	
+							</div>
+						</dd>
+					</li>
+				</ul>
+			</div>
+			<%-- <div class="con_file" style="">
 				<ul>
 					<li class="point_img">
 						<dt>첨부파일</dt><dd>
@@ -366,7 +382,7 @@
 						</dd>
 					</li>
 				</ul>
-			</div>
+			</div> --%>
 							
 			<div class="main_tbl">
 				<div class="btn_box_con5">
@@ -407,133 +423,3 @@
 		</tr>
 	</tbody>
 </table>
-
-<!-- 첨부파일 추가레이어 start-->
-<!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
-<!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
-<div class="white_content" id="dialog_attatch">
-	<div class="modal" style="margin-left: -355px; width: 710px; height: 480px; margin-top: -250px">
-		<h5 style="position: relative">
-			<span class="title">첨부파일 추가</span>
-			<div class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_madal_close" onClick="closeDialogWithClean('dialog_attatch')"></button>
-					</li>
-				</ul>
-			</div>
-		</h5>
-		<div class="list_detail">
-			<ul>
-				<li class="pt10 mb5">
-					<dt style="width: 20%">파일 선택</dt>
-					<dd style="width: 80%" class="ppp">
-						<div style="float: left; display: inline-block;">
-							<span class="file_load" id="fileSpan">
-								<input id="attatch_common_text" class="form-control form_point_color01" type="text" placeholder="파일을 선택해주세요." style="width:308px; float:left; cursor: pointer; color: black;" onclick="callAddFileEvent()" readonly="readonly">
-								<input id="attatch_common" type="file" style="display:none;" onchange="setFileName(this)">
-							</span>
-							<button class="btn_small02 ml5" onclick="addFile(this, '00')">파일등록</button>
-						</div>
-						<div style="float: left; display: inline-block; margin-top: 5px">
-							
-						</div>
-					</dd>
-				</li>
-				<li class=" mb5">
-					<dt style="width: 20%">파일리스트</dt>
-					<dd style="width: 80%;">
-						<div class="file_box_pop" style="width:95%">
-							<ul name="popFileList"></ul>
-						</div>
-					</dd>
-				</li>
-			</ul>
-		</div>
-		<div class="btn_box_con">
-			<button class="btn_admin_red" onclick="uploadFiles();">파일 등록</button>
-			<button class="btn_admin_gray" onClick="closeDialogWithClean('dialog_attatch')">등록 취소</button>
-		</div>
-	</div>
-</div>
-<!-- 파일 생성레이어 close-->
-
-<!-- 결재 상신 레이어  start-->
-<div class="white_content" id="approval_dialog">
-	<input type="hidden" id="docType" value="TRIP"/>
- 	<input type="hidden" id="deptName" />
-	<input type="hidden" id="teamName" />
-	<input type="hidden" id="userId" />
-	<input type="hidden" id="userName"/>
- 	<select style="display:none" id=apprLine name="apprLine" multiple>
- 	</select>
- 	<select style="display:none" id=refLine name="refLine" multiple>
- 	</select>
-	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
-		<h5 style="position:relative">
-			<span class="title">출장결과보고서 결재 상신</span>
-			<div  class="top_btn_box">
-				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
-			</div>
-		</h5>
-		<div class="list_detail">
-			<ul>
-				<li>
-					<dt style="width:20%">결재요청의견</dt>
-					<dd style="width:80%;">
-						<div class="insert_comment">
-							<table style=" width:756px">
-								<tr>
-									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
-									</td>
-									<td width="98px"></td>
-								</tr>
-							</table>
-						</div>
-					</dd>
-				</li>
-				<li class="pt5">
-					<dt style="width:20%">결재자 입력</dt>
-					<dd style="width:80%;" class="ppp">
-						<input type="text" placeholder="결재자명 2자이상 입력후 선택" style="width:198px; float:left;" class="req" id="keyword" name="keyword">
-						<button class="btn_small01 ml5" onclick="apprClass.approvalAddLine(this); return false;" name="appr_add_btn" id="appr_add_btn">결재자 추가</button>
-						<button class="btn_small02  ml5" onclick="apprClass.approvalAddLine(this); return false;" name="ref_add_btn" id="ref_add_btn">참조</button>
-						<div class="selectbox ml5" style="width:180px;">
-							<label for="apprLineSelect" id="apprLineSelect_label">---- 결재라인 불러오기 ----</label>
-							<select id="apprLineSelect" name="apprLineSelect" onchange="apprClass.changeApprLine(this);">
-								<option value="">---- 결재라인 불러오기 ----</option>
-							</select>
-						</div>
-						<button class="btn_small02  ml5" onclick="apprClass.deleteApprovalLine(this); return false;">선택 결재라인 삭제</button>
-					</dd>
-				</li>
-				<li  class="mt5">
-					<dt style="width:20%; background-image:none;" ></dt>
-					<dd style="width:80%;">
-						<div class="file_box_pop2" style="height:190px;">
-							<ul id="apprLineList">
-							</ul>
-						</div>
-						<div class="file_box_pop3" style="height:190px;">
-							<ul id="refLineList">
-							</ul>
-						</div>
-						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->
-						<div class="app_line_edit">
-							저장 결재선라인 입력 :  <input type="text" name="apprLineName" id="apprLineName" class="req" style="width:280px;"/> 
-							<button class="btn_doc" onclick="apprClass.approvalLineSave(this);  return false;"><img src="../resources/images/icon_doc11.png"> 저장</button> 
-							<button class="btn_doc" onclick="apprClass.apprLineSaveCancel(this); return false;"><img src="../resources/images/icon_doc04.png">취소</button>
-						</div>
-						<!-- 현재 추가된 결재선 저장 버튼 눌렀을때 보이게 처리 close -->
-					</dd>
-				</li>
-			</ul>
-		</div>
-		<div class="btn_box_con4" style="padding:15px 0 20px 0">
-			<button class="btn_admin_red" onclick="fn_apprSubmit(); return false;">결재등록</button> 
-			<button class="btn_admin_gray" onclick="apprClass.apprCancel(); return false;">결재삭제</button>
-		</div>
-	</div>
-</div>
-<!-- 결재 상신 레이어  close-->

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="recipe">
+	
+	<sql id="whereRecipeList">
+		<if test="searchValue != null and searchValue != '' ">
+			<if test="searchType != null and searchType != '' ">
+			<choose>
+				<when test="searchType.equals('searchName')">
+				AND PRODUCT_NAME LIKE CONCAT('%',#{searchValue},'%')
+				</when>
+	      		<when test="searchType.equals('searchProductCode')">
+	      		AND PRODUCT_CODE LIKE CONCAT('%',#{searchValue},'%')
+	      		</when>
+	      	</choose>
+			</if>			
+		</if>
+		<if test="searchStatus != null and searchStatus != '' ">
+			AND STATUS = #{searchStatus}
+		</if>
+		<if test="searchPlant != null and searchPlant != '' ">
+			AND PLANT = #{searchPlant}
+		</if>
+	</sql>
+	
+	<select id="selectRecipeCount" parameterType="map" resultType="int">
+		/* recipe.selectRecipeCount */
+		SELECT 
+			count(RECIPE_IDX) as cnt
+		FROM lab_recipe
+		WHERE 1 = 1
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
+			<include refid="recipe.whereRecipeList" />
+	</select>
+	
+	<select id="selectRecipeList" parameterType="map" resultType="hashmap">
+		/* recipe.selectRecipeList */
+		SELECT 
+			lr.*
+			, FN_GET_CODE_NAME('PLANT	', lr.PLANT) AS PLANT_TXT
+			, FN_GET_CODE_NAME('DOC_STATUS', lr.STATUS) AS STATUS_TXT
+			, (SELECT COUNT(*) FROM lab_recipe WHERE 1 = 1 AND PRODUCT_CODE = lr.PRODUCT_CODE AND IS_LAST = 'N' AND VERSION_NO <![CDATA[<]]> lr.VERSION_NO AND IS_DELETE = 'N' ) as CHILD_CNT
+			, FN_GET_CODE_NAME('UNIT', lr.PRODUCT_UNIT) AS UNIT_NAME
+			, FN_GET_USER_NAME(lr.DOC_OWNER) as USER_NAME 
+		FROM 
+			lab_recipe lr
+		WHERE 1 = 1
+			AND DOC_NO in (
+				SELECT 
+					tmp.DOC_NO
+				FROM (
+					SELECT
+						row_number() over (order by  RECIPE_IDX DESC) as rnum
+						, DOC_NO
+					FROM lab_recipe
+					WHERE 1 = 1
+						AND DOC_OWNER = #{userId}
+						AND IS_DELETE = 'N'
+						AND IS_LAST = 'Y'
+						<include refid="recipe.whereRecipeList" />
+				) tmp
+				WHERE rnum between #{startRow} AND #{endRow}
+			)
+		ORDER BY DOC_NO DESC, VERSION_NO DESC, RECIPE_IDX DESC
+	</select>
+	
+	<select id="selectRecipeSeq" resultType="int">
+		/* recipe.selectRecipeSeq */
+		SELECT FN_NEXTVAL('recipe_seq') as seq
+	</select>
+	
+	<insert id="insertRecipe" parameterType="map">
+		/* recipe.selectRecipeSeq */
+		INSERT INTO lab_recipe(
+			RECIPE_IDX
+			, DOC_NO
+			, VERSION_NO
+			, PRODUCT_CODE
+			, PRODUCT_NAME
+			, PLANT
+			, PRODUCT_COUNT
+			, PRODUCT_UNIT
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+		)VALUES(
+			#{idx}
+			, (SELECT ifnull(MAX(lr.DOC_NO),0)+1 FROM lab_recipe lr WHERE 1 = 1)
+			<choose>
+				<when test="productCode != null and productCode !='' ">
+				, (SELECT ifnull(MAX(lr.VERSION_NO),0)+1 FROM lab_recipe lr WHERE 1 = 1 AND PRODUCT_CODE = #{productCode})	
+				</when>
+				<otherwise>
+				, 1
+				</otherwise>
+			</choose>
+			, #{productCode}
+			, #{productName}
+			, #{plant}
+			, #{productCount}
+			, #{unit}
+			, 'N'
+			, 'Y'
+			, #{userId}
+			, #{userId}
+			, #{status}
+		)		
+	</insert>
+	
+	<insert id="insertRecipeMaterial" parameterType="list">
+		/* recipe.insertRecipeMaterial */
+		INSERT
+		INTO lab_recipe_material(
+			RECIPE_IDX
+			, SAP_CODE
+			, ITEM_NAME
+			, ITEM_NO
+			, ITEM_COUNT
+			, ITEM_UNIT
+			, USED_COUNT
+			, USED_UNIT
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( #{item.idx}, #{item.sapCode}, #{item.productName}, #{item.no}, #{item.compCount}, #{item.compUnit}, #{item.useCount}, #{item.useUnit} )
+		</foreach>
+	</insert>
+	
+	<insert id="insertRecipePurchase" parameterType="list">
+		/* recipe.insertRecipePurchase */
+		INSERT
+		INTO lab_recipe_purchase(
+			RECIPE_IDX
+			, PURCHASE_NO
+			, ITEM_NAME
+			, ITEM_COUNT
+			, ITEM_UNIT
+			, USED_COUNT
+			, USED_UNIT
+		)values
+		<foreach collection="list" item="item" separator=",">
+		( #{item.idx}, #{item.no}, #{item.name}, #{item.compCount}, #{item.compUnit}, #{item.useCount}, #{item.useUnit} )
+		</foreach>
+	</insert>
+	
+	<select id="selectMyDataCount" parameterType="map" resultType="int">
+		/* recipe.selectMyDataCount */
+		SELECT
+			COUNT(RECIPE_IDX) AS cnt
+		FROM 
+			lab_recipe
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+			<if test="type != null and type != '' ">
+			AND STATUS IN ('COMP', 'BOM_ERROR')
+			</if>
+	</select>
+	
+	<select id="selectRecipeData" parameterType="map" resultType="hashmap">
+		/* recipe.selectRecipeData */
+		SELECT
+			RECIPE_IDX
+			, PRODUCT_CODE
+			, PRODUCT_NAME
+			, PLANT
+			, FN_GET_CODE_NAME('PLANT', PLANT) AS PLANT_NAME
+			, PRODUCT_COUNT
+			, PRODUCT_UNIT
+			, FN_GET_CODE_NAME('UNIT', PRODUCT_UNIT) AS UNIT_NAME
+			, DOC_NO
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+		FROM
+			lab_recipe
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}
+	</select>
+	
+	<select id="selectMaterialList" parameterType="map" resultType="hashmap">
+		/* recipe.selectMaterialList */
+		SELECT
+			RECIPE_IDX
+			, SAP_CODE
+			, ITEM_NAME
+			, ITEM_NO
+			, ITEM_COUNT
+			, ITEM_UNIT
+			, FN_GET_CODE_NAME('UNIT', ITEM_UNIT) AS ITEM_UNIT_NAME
+			, USED_COUNT
+			, USED_UNIT
+			, FN_GET_CODE_NAME('UNIT', USED_UNIT) AS USED_UNIT_NAME
+		FROM
+			lab_recipe_material
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}	
+		ORDER BY ITEM_NO ASC	
+	</select>
+	
+	<select id="selectPurchaseList" parameterType="map" resultType="hashmap">
+		/* recipe.selectPurchaseList */
+		SELECT
+			RECIPE_IDX
+			, ITEM_NAME
+			, ITEM_COUNT
+			, ITEM_UNIT
+			, FN_GET_CODE_NAME('UNIT', ITEM_UNIT) AS ITEM_UNIT_NAME
+			, USED_COUNT
+			, USED_UNIT
+			, FN_GET_CODE_NAME('UNIT', USED_UNIT) AS USED_UNIT_NAME
+			, PURCHASE_NO
+		FROM
+			lab_recipe_purchase
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}
+		ORDER BY PURCHASE_NO ASC			
+	</select>
+	
+	<update id="updateRecipe" parameterType="map">
+		/* recipe.updateRecipe */
+		UPDATE 
+			lab_recipe
+		SET
+			PLANT = #{plant}
+			, PRODUCT_COUNT = #{productCount}
+			, PRODUCT_UNIT = #{unit}			
+			, STATUS = #{status}
+			
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}
+			AND DOC_NO = #{docNo}
+	</update>
+	
+	<delete id="deleteRecipeMaterial" parameterType="map">
+		/* recipe.deleteRecipeMaterial */
+		DELETE
+		FROM lab_recipe_material
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}
+	</delete>
+	
+	<delete id="deleteRecipePurchase" parameterType="map">
+		/* recipe.deleteRecipePurchase */
+		DELETE
+		FROM lab_recipe_purchase
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}
+	</delete>
+	
+	<insert id="insertVersionUpRecipe" parameterType="map">
+		/* recipe.insertVersionUpRecipe */
+		INSERT INTO lab_recipe(
+			RECIPE_IDX
+			, DOC_NO
+			, VERSION_NO
+			, PRODUCT_CODE
+			, PRODUCT_NAME
+			, PLANT
+			, PRODUCT_COUNT
+			, PRODUCT_UNIT
+			, IS_DELETE
+			, IS_LAST
+			, REG_USER
+			, DOC_OWNER
+			, STATUS
+		)VALUES(
+			#{idx}
+			, #{docNo}
+			, #{versionNo}+1
+			, #{productCode}
+			, #{productName}
+			, #{plant}
+			, #{productCount}
+			, #{unit}
+			, 'N'
+			, 'Y'
+			, #{userId}
+			, #{userId}
+			, #{status}
+		)
+	</insert>
+	
+	<update id="updateRecipeIsLast" parameterType="map">
+		/* recipe.updateRecipeIsLast */
+		UPDATE 
+			lab_recipe
+		SET
+			IS_LAST = 'N'
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{currentIdx}
+			AND DOC_NO = #{docNo}
+	</update>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+		/* recipe.selectHistory */
+		SELECT 
+			lh.DOC_IDX
+			, lh.HISTORY_TYPE
+			, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+				WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+				WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+				WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+				WHEN lh.HISTORY_TYPE  = 'T' then '임시저장'
+				END HISTORY_TYPE_TXT 
+			, lr.VERSION_NO
+			, lr.PRODUCT_NAME 
+			, lr.PRODUCT_CODE 
+			, lh.USER_ID 
+			, FN_GET_USER_NAME(lh.USER_ID) as USER_NAME
+			, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+		FROM lab_history lh ,
+			lab_recipe lr 
+		WHERE 1 = 1
+			AND lh.DOC_IDX IN (SELECT RECIPE_IDX FROM lab_recipe WHERE 1 = 1 AND DOC_NO = #{docNo})
+			AND lh.DOC_TYPE = #{docType}
+			AND lh.DOC_IDX = lr.RECIPE_IDX 
+		ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<update id="updateStatus" parameterType="map">
+		/* recipe.updateStatus */
+		UPDATE 
+			lab_recipe
+		SET
+			STATUS = #{status}
+			, RESULT_MESSAGE = #{message} 
+		WHERE 1 = 1
+			AND RECIPE_IDX = #{idx}
+	</update>
+</mapper>

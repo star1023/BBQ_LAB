@@ -414,11 +414,10 @@ public class DesignReportServiceImpl implements DesignReportService {
 			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
 			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
 			
-			/*ArrayList<String> rowIdArr = (ArrayList<String>)listMap.get("rowIdArr");
-			ArrayList<String> itemDivArr = (ArrayList<String>)listMap.get("itemDivArr");
-			ArrayList<String> itemCurrentArr = (ArrayList<String>)listMap.get("itemCurrentArr");
-			ArrayList<String> itemChangeArr = (ArrayList<String>)listMap.get("itemChangeArr");
-			ArrayList<String> itemNoteArr = (ArrayList<String>)listMap.get("itemNoteArr");*/
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			
 			
 			int designIdx = Integer.parseInt((String)param.get("idx")); 	//key value 조회
 			if( param.get("currentStatus") != null && "COND_APPR".equals(param.get("currentStatus")) ) {
@@ -495,6 +494,20 @@ public class DesignReportServiceImpl implements DesignReportService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			    	String fileIdx = (String)deletedFileIdArr.get(i);
+			        String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {

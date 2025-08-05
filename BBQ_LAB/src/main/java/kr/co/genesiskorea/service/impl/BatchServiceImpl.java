@@ -55,7 +55,7 @@ public class BatchServiceImpl implements BatchService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
         String toDay = sdf.format(cal.getTime());        
 		importParams.put("I_DATUM", toDay);
-		List<Map<String, Object>> returnList = batchDao.selectMaterial(importParams);
+        List<Map<String, Object>> returnList = batchDao.selectMaterial(importParams);
 		logger.debug("전체 RFC 처리 데이터 건수 : "+returnList.size());
 		batchDao.insertMaterial(returnList);
 	}

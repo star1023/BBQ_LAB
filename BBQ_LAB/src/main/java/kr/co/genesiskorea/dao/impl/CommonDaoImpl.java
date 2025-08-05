@@ -151,4 +151,16 @@ public class CommonDaoImpl implements kr.co.genesiskorea.dao.CommonDao {
 		return sqlSessionTemplate.selectList("common.selectUserList",param);
 	}
 
+	@Override
+	public List<Map<String, Object>> selectTempFileList(List<String> list) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("common.selectTempFileList",list);
+	}
+
+	@Override
+	public void deleteFileData(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.delete("common.deleteFileData", param);
+	}
+
 }

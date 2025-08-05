@@ -491,7 +491,26 @@ th.contentBlock {
 			</div>
 			
 			<div class="title2 mt20"  style="width:90%;"><span class="txt">첨부파일</span></div>
-			<div class="con_file" style="">
+			<div class="list_detail">
+				<ul style="">
+					<li>
+						<dt style="width: 20%">첨부파일</dt>
+						<dd style="width: 80%;">
+							<div class="add_file" id="add_file2" style="width:100%">
+								
+							</div>
+							<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;">
+								<ul id="attatch_file">
+									<c:forEach items="${chemicalTestData.fileList}" var="fileList" varStatus="status">
+										<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+									</c:forEach>
+								</ul>	
+							</div>
+						</dd>
+					</li>
+				</ul>
+			</div>
+			<%-- <div class="con_file" style="">
 				<ul>
 					<li class="point_img">
 						<dt>첨부파일</dt><dd>
@@ -503,7 +522,7 @@ th.contentBlock {
 						</dd>
 					</li>
 				</ul>
-			</div>
+			</div> --%>
 							
 			<div class="main_tbl">
 				<div class="btn_box_con5">

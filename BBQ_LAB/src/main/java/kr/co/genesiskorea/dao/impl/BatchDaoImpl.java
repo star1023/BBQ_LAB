@@ -33,18 +33,24 @@ public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
 		List<Map<String, Object>> returnList = null;
 		try {
 			JCoDestination dest = RfcManager.getDestination();
-			JCoFunction function = getFunction(dest, "ZASMM_WMS_MATERIAL_SEND");
+			JCoFunction function = getFunction(dest, "ZASMM_PDM_MATERIAL_SEND");
 			System.err.println("function  :  "+function);
 			execute(function,importParams);
 			
 			returnList = RfcDataHandler.getTableData(function,"T_MATERIAL",new HashMap<String, String>() {
 	            {
-	                put("MATNR", "MATNR");
+	            	put("BUKRS", "BUKRS");
+	            	put("MATNR", "MATNR");
 	                put("MAKTX", "MAKTX");
-	                put("MEINS", "MEINS");
+	                put("MTART", "MTART");
 	                put("STOR_COND", "STOR_COND");
+	                put("MATKL", "MATKL");
+	                put("WGBEZ", "WGBEZ");
+	                put("MEINS", "MEINS");
 	                put("LRMEI", "LRMEI");
 	                put("UMREZ", "UMREZ");
+	                put("RCMEI", "RCMEI");
+	                put("UMREN", "UMREN");
 	                put("HORIZONTAL", "HORIZONTAL");
 	                put("HORIZONTAL_MEINS", "HORIZONTAL_MEINS");
 	                put("VERTICAL", "VERTICAL");
@@ -58,12 +64,11 @@ public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
 	                put("LEADTIMES", "LEADTIMES");
 	                put("SAFETY_STOCK_DAY", "SAFETY_STOCK_DAY");
 	                put("BOX_STOCK", "BOX_STOCK");
-	                put("MOQ", "MOQ");
-	                put("PALLET_HOR_STOCK", "PALLET_HOR_STOCK");
-	                put("PALLET_VER_STOCK", "PALLET_VER_STOCK");
 	                put("PALLET_STOCK", "PALLET_STOCK");
 	                put("MWSKZ", "MWSKZ");
 	                put("EXP_DATE", "EXP_DATE");
+	                put("USE_YN", "USE_YN");
+	                put("MOQ", "MOQ");
 	            }
 	        });
 		} catch( Exception e ) {

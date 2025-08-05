@@ -53,7 +53,7 @@
 </head>
 <body>
 	<h2 style=" position:fixed; background-color: #38b6e6 !important;" class="print_hidden">
-		<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;출장계획보고서 미리보기</span>
+		<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;출장결과보고서 미리보기</span>
 	</h2>
 	<div  class="top_btn_box" style=" position:fixed;">
 		<div style="float:right; margin-right: 30px; display:flex; gap:30px;">
@@ -64,7 +64,7 @@
 	<div style="height: 50px;"></div>
 	<div id="wrapper">
 		<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
-			<span>출장계획보고서</span>
+			<span>출장결과보고서</span>
 		</div>
 		<div class="mainTable">
 			<table>
@@ -121,33 +121,21 @@
 					</tr>
 					<tr>
 						<th >업무수행내용</th>
-						<td colspan="3" class="inner-table-cell">
-							<div>
-								<table width="100%" class="inner-table">
-									<tr>
-										<th width="25%">일정</th>
-										<th width="25%">세부내용</th>
-										<th width="25%">장소</th>
-										<th width="25%">비고</th>
-									</tr>
-									<tbody id="prev_contents_tbody">
-									</tbody>
-								</table>
-							</div>
+						<td colspan="3" id="prev_contents">
 						</td>
 					</tr>
 					<tr>
-						<th  >예상경비</th>
+						<th  >경비</th>
 						<td colspan="3" id="prev_tripCost">
 						</td>
 					</tr>
 					<tr>
-						<th  >산출식</th>
+						<th  >초과사유</th>
 						<td colspan="3" id="prev_calMethod">
 						</td>
 					</tr>
 					<tr>
-						<th  >기대효과</th>
+						<th  >출장효과</th>
 						<td colspan="3" id="prev_tripEffect">
 						</td>
 					</tr>

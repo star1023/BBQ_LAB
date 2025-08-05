@@ -108,12 +108,22 @@ function fn_view(sapCode) {
 			$("#nameTxt").html(data.NAME);
 			$("#unitTxt").html(data.UNIT);
 			$("#keepTxt").html(data.KEEP_CONDITION_TXT);
+			$("#matTypeTxt").html(data.MAT_TYPE_TXT);
 			$("#weightTxt").html(data.TOTAL_WEIGHT);
+			$("#changeUnitTxt").html(data.CHANGE_UNIT);
+			$("#changeCountTxt").html(data.CHANGE_COUNT);
+			$("#totalWeightTxt").html(data.TOTAL_WEIGHT);
+			$("#totalWeightUnitTxt").html(data.TOTAL_WEIGHT_UNIT);
 			$("#standardTxt").html(data.STANDARD);
 			$("#sizeTxt").html(data.WIDTH+"("+data.WIDTH_UNIT+")"+" / "+data.LENGTH+"("+data.LENGTH_UNIT+")"+" / "+data.HEIGHT+"("+data.HEIGHT_UNIT+")");
 			$("#originTxt").html(data.ORIGIN);
-			$("#expDateTxt").html(data.EXPIRATION_DATE);
+			$("#expDateTxt").html(data.EXPIRATION_DATE);			
+			$("#leadTimeTxt").html(data.LEAD_TIME);
+			$("#safetyDayTxt").html(data.SAFETY_STOCK_DAY);
+			$("#boxAmountTxt").html(data.BOX_AMOUNT);
+			$("#palletAmountTxt").html(data.PALLET_AMOUNT);
 			$("#cdTxt").html(data.CD_ACCT);
+			$("#minOrderTxt").html(data.MIN_ORDER_AMOUNT);			
 			openDialog('open3');
 		},
 		error:function(request, status, errorThrown){
@@ -261,7 +271,7 @@ function fn_update() {
 
 <!-- 자재 조회레이어 start-->
 <div class="white_content" id="open3">
-	<div class="modal" style="	width: 800px;margin-left:-400px;height: 450px;margin-top:-200px;">
+	<div class="modal" style="	width: 800px;margin-left:-400px;height: 550px;margin-top:-250px;">
 		<h5 style="position:relative">
 			<span class="title">상품 상세 정보</span>
 			<div  class="top_btn_box">
@@ -293,18 +303,42 @@ function fn_update() {
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">품목단위</th>
-							<td colspan="3" id="unitTxt">
-
-							</td>
-						</tr>
-						<tr>
 							<th style="border-left: none;">보관조건</th>
 							<td id="keepTxt">
 
 							</td>
+							<th style="border-left: none;">유형</th>
+							<td id="matTypeTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">품목단위</th>
+							<td id="unitTxt">
+
+							</td>
 							<th style="border-left: none;">중량</th>
 							<td id="weightTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">환산단위</th>
+							<td id="changeUnitTxt">
+
+							</td>
+							<th style="border-left: none;">환산수량</th>
+							<td id="changeCountTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">총중량</th>
+							<td id="totalWeightTxt">
+
+							</td>
+							<th style="border-left: none;">총중량단위</th>
+							<td id="totalWeightUnitTxt">
 
 							</td>
 						</tr>
@@ -329,9 +363,28 @@ function fn_update() {
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">부가가치세 코드</th>
-							<td id="cdTxt" colspan="3">
+							<th style="border-left: none;">리드타임</th>
+							<td id="leadTimeTxt">
+							</td>
+							<th style="border-left: none;">안전재고일수</th>
+							<td id="safetyDayTxt">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">박스당입수량</th>
+							<td id="boxAmountTxt">
+							</td>
+							<th style="border-left: none;">파레트입수량</th>
+							<td id="palletAmountTxt">
+							</td>
+						</tr>						
+						<tr>
+							<th style="border-left: none;">부가세 코드</th>
+							<td id="cdTxt">
 
+							</td>
+							<th style="border-left: none;">최소발주량</th>
+							<td id="minOrderTxt">
 							</td>
 						</tr>
 					</tbody>
@@ -343,7 +396,7 @@ function fn_update() {
 		</div>
 	</div>
 </div>
-<!-- 자재 생성레이어 close-->
+<!-- 자재 상세레이어 close-->
 
 <!-- 자재 호출레이어 start-->
 <div class="white_content" id="open2">

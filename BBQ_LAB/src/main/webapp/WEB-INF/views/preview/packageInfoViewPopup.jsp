@@ -85,7 +85,7 @@
 						<td >&nbsp;</td>
 					</tr>
 					<tr>
-						<th  rowSpan="5">정면(주표시면)</th>
+						<th  rowSpan="8">정면(주표시면)</th>
 						<td >제품명</td>
 						<td >${packageInfoData.data.PRODUCT_NAME}</td>
 						<td >주표시면(14P이상)</td>
@@ -93,11 +93,23 @@
 					<tr>
 						<td >&nbsp;</td>
 						<td class="value">${packageInfoData.data.ETC_INFO}</td>
-						<td rowSpan="3">주표시면 주원료 함량 표시시 원재료와 함량 표기 기재 요망</td>
+						<td rowSpan="6">주표시면 주원료 함량 표시시 원재료와 함량 표기 기재 요망</td>
 					</tr>
 					<tr>
 						<td >중량</td>
 						<td class="value">${packageInfoData.data.WEIGHT}</td>
+					</tr>
+					<tr>
+						<td >포장단위</td>
+						<td class="value">${packageInfoData.data.PACKAGE_UNIT_NAME}</td>
+					</tr>
+					<tr>
+						<td >낱개 중량</td>
+						<td class="value">${packageInfoData.data.PIECE_WEIGHT}</td>
+					</tr>
+					<tr>
+						<td >박스단위</td>
+						<td class="value">${packageInfoData.data.BOX_UNIT_NAME}</td>
 					</tr>
 					<tr>
 						<td >보관방법</td>

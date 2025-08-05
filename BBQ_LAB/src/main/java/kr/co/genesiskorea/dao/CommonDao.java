@@ -52,4 +52,8 @@ public interface CommonDao {
 
 	List<HashMap<String, Object>> selectUserList(Map<String, Object> param);
 
+	List<Map<String, Object>> selectTempFileList(List<String> list);
+
+	void deleteFileData(Map<String, Object> fileParam);
+
 }

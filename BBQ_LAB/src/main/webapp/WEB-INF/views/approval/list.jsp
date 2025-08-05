@@ -4,6 +4,7 @@
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ page session="false" %>
 <title>결재함</title>
+<script type="text/javascript" src="/resources/js/appr/apprClass.js?v=<%= System.currentTimeMillis()%>"></script>
 <script type="text/javascript">
 	var PARAM = {
 		type : '${paramVO.type}',
@@ -27,6 +28,35 @@
 			//fn_changeTab('myCount'); // 기본값
 			loadMyList('1');
 		}
+		
+		$("#refStartDate").datepicker({
+			showOn: "both",
+			buttonImage: "../resources/images/btn_calendar.png",
+			buttonImageOnly: true,
+			buttonText: "Select date",
+			dateFormat: "yy-mm-dd",
+			showButtonPanel: true,
+			showAnim: "",
+			onClose: function(selectedDate){
+				$("#refEndDate").datepicker("option", "minDate", selectedDate);
+			}
+		});	//당일 선택 가능 0, 당일 선택 불가능 1
+		
+		$("#refEndDate").datepicker({
+			showOn: "both",
+			buttonImage: "../resources/images/btn_calendar.png",
+			buttonImageOnly: true,
+			buttonText: "Select date",
+			dateFormat: "yy-mm-dd",
+			minDate: 0,
+			showButtonPanel: true,
+			showAnim: "",
+			onClose: function(selectedDate){
+				$("#refStartDate").datepicker("option", "maxdate", selectedDate)
+			}
+		});
+		
+		fn.autoComplete($("#refUserKeyword"));
 	});	
 	
 	// 페이징
@@ -408,6 +438,7 @@
 		colgroup += "<col />";
 		colgroup += "<col width=\"10%\">";
 		colgroup += "<col width=\"15%\">";
+		colgroup += "<col width=\"15%\">";
 		var thead = "";
 		thead += "<tr>";
 		thead += "<th>결재번호</th>";
@@ -416,6 +447,7 @@
 		thead += "<th>결재문서명</th>";
 		thead += "<th>현재결재</th>";
 		thead += "<th>상신일</th>";
+		thead += "<th></th>";
 		thead += "</tr>";
 		$("#colgroup").html(colgroup);
 		$("#thead").html(thead);
@@ -460,6 +492,10 @@
 						html += "	<td><a href=\"#\" onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
 						html += "	<td>"+item.REG_USER_NAME+"</td>";
 						html += "	<td>"+item.REG_DATE_TXT+"</td>";
+						html += "	<td>";
+						html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">참조</button>";
+						html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefListPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">참조자리스트</button>";
+						html += "	</td>";
 						html += "</tr>";
 					});					
 				} else {
@@ -578,14 +614,212 @@
 		});
 		if( type == 'myCount' ) {
 			loadMyList('1');
+			$("#li_searchStatus").show();
 		} else if( type == 'apprCount' ) {
 			loadMyApprList('1');
+			$("#li_searchStatus").hide();
 		} else if( type == 'refCount' ) {
 			loadMyRefList('1');
+			$("#li_searchStatus").hide();
 		} else if( type == 'compCount' ) {
 			loadMyCompList('1');
+			$("#li_searchStatus").hide();
 		}
 	}
+	
+	function fn_openRefPopup(idx) {
+		$("#apprIdx").val(idx);
+		openDialog('refUserDialog')
+	}
+	
+	function fn_closeRefPopup() {
+		$("#apprIdx").val("");
+		$("#refUserKeyword").val("");
+		$("#userId").val("");
+		$("#userName").val("");
+		$("#deptName").val("");
+		$("#teamName").val("");
+		$("#refStartDate").val("");
+		$("#refEndDate").val("");
+		$("#refLine").removeOption(/./);
+		$("#refLineList").empty();		
+		closeDialog('refUserDialog')
+	}
+
+	function fn_addRefUser() {
+		if( $("#userId").val() == '' ) {
+			alert("참조자를 선택해주세요.");
+			return;
+		}
+		if( $("#refLine").containsOption($("#userId").val()) ) {
+			alert("이미 등록된 참조자입니다.");
+			$("#refUserKeyword").val("");
+			$("#userId").val("");
+			$("#userName").val("");
+			$("#deptName").val("");
+			$("#teamName").val("");
+			$("#refStartDate").val("");
+			$("#refEndDate").val("");
+			return;
+		}
+		
+
+		if( $("#refStartDate").val() == '' && $("#refEndDate").val() == '' ) {
+			if( confirm('열람기간을 선택하지 않으시겠습니까?') ) {
+				$("#refLine").addOption($("#userId").val(), $("#userName").val(), true);
+				html = "<li>";
+				html += "<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >";
+				html += "<span>참조</span> " + $("#userName").val();
+				//html += "<strong>/" + $("#userId").val() + "/" + $("#deptName").val() + "/" + $("#teamName").val() + "</strong>";
+				html += "<strong> ( 참조기간 제한 없음 ) </strong>";
+				html += "<input type='hidden' name='userIds' data-apprtype='R' value='" + $("#userId").val() + "'/>";
+				html += "<input type='hidden' name='refStartDates' data-apprtype='R' value='" + $("#refStartDate").val() + "'/>";
+				html += "<input type='hidden' name='refEndDates' data-apprtype='R' value='" + $("#refEndDate").val() + "'/>";
+				html += "</li>";
+				$("#refLineList").append(html);
+				$("#refUserKeyword").val("");
+				$("#userId").val("");
+				$("#userName").val("");
+				$("#deptName").val("");
+				$("#teamName").val("");
+				$("#refStartDate").val("");
+				$("#refEndDate").val("");
+			} else {
+				return;
+			}
+		} else {
+			$("#refLine").addOption($("#userId").val(), $("#userName").val(), true);
+			html = "<li>";
+			html += "<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >";
+			html += "<span>참조</span> " + $("#userName").val();
+			html += "<strong> ( " + $("#refStartDate").val();
+			if( $("#refEndDate").val() != '' ) {
+				html += " ~ ";
+			}
+			html += "" + $("#refEndDate").val() + " )</strong>";
+			html += "<input type='hidden' name='userIds' data-apprtype='R' value='" + $("#userId").val() + "'/>";
+			html += "<input type='hidden' name='refStartDates' data-apprtype='R' value='" + $("#refStartDate").val() + "'/>";
+			html += "<input type='hidden' name='refEndDates' data-apprtype='R' value='" + $("#refEndDate").val() + "'/>";
+			html += "</li>";
+			$("#refLineList").append(html);
+			$("#refUserKeyword").val("");
+			$("#userId").val("");
+			$("#userName").val("");
+			$("#deptName").val("");
+			$("#teamName").val("");
+			$("#refStartDate").val("");
+			$("#refEndDate").val("");
+		}
+		
+	}
+	
+	function fn_addRefLine() {
+		if( $("#refLineList").children().length == 0 ) {
+			alert("참조자를 등록해주세요.");
+			return;
+		} else {
+			$('#lab_loading').show();
+			var formData = new FormData();
+			
+			formData.append("apprIdx", $("#apprIdx").val());
+			var userIdArr = new Array();
+			var startDateArr = new Array();
+			var endDateArr = new Array();
+			$("#refLineList").children().each(function(){
+				console.log($(this).children('input[name=userIds]').val());
+				userIdArr.push($(this).children('input[name=userIds]').val());
+				startDateArr.push($(this).children('input[name=refStartDates]').val());
+				endDateArr.push($(this).children('input[name=refEndDates]').val());
+			});
+			formData.append("userIdArr", JSON.stringify(userIdArr));
+			formData.append("startDateArr", JSON.stringify(startDateArr));
+			formData.append("endDateArr", JSON.stringify(endDateArr));
+			
+			var URL = "../approval/addReferenceAjax";
+			$.ajax({
+				type:"POST",
+				url:URL,
+				data: formData,
+				processData: false,
+		        contentType: false,
+		        cache: false,
+				dataType:"json",
+				success:function(data) {
+					if( data.RESULT == 'S' ) {
+						alert("참조자가 추가되었습니다.");
+						fn_closeRefPopup();
+						$('#lab_loading').hide();
+						loadMyCompList(1);	
+					} else {
+						alert("참조자 등록 오류가 발생하였습니다.\n"+data.MESSAGE);
+						fn_closeRefPopup();
+						$('#lab_loading').hide();
+					}
+					
+				},
+				error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+					$('#lab_loading').hide();
+				}			
+			});
+		}
+	}
+	
+	function fn_openRefListPopup(idx) {
+		var URL = "../approval/selectRefInfoListAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				"apprIdx":idx
+			},
+			dataType:"json",
+			success:function(data) {
+				console.log(data);
+				var html = "";
+				$("#refUserListBody").empty();
+				if( data.length > 0 ) {
+					data.forEach(function (item) {
+						html += "<tr>";
+						html += "	<td>"+item.USER_NAME+"</td>";
+						html += "	<td>"+nvl(item.OBJTTX,'')+"</td>";
+						html += "	<td>";
+						if( item.IS_READ == 'Y') {
+							html += "확인";
+						} else {
+							html += "미확인";
+						}
+						html += "	</td>";
+						html += "	<td>";
+						if( item.REF_END_DATE == '9999-12-31') {
+							html += "참조기간 제한 없음";
+						} else {
+							html += item.REF_START_DATE + " ~ "+item.REF_END_DATE;
+						}
+						html += "	</td>";
+						html += "</tr>";
+					});
+				} else {
+					html += "<tr>";
+					html += "<td colspan='4'>참조자 정보가 없습니다.</td>";
+					html += "</tr>";
+				}
+				$("#refUserListBody").html(html);
+				openDialog('refUserListDialog');
+				
+			},
+			error:function(request, status, errorThrown){
+				var html = "";
+				$("#refUserListBody").empty();
+				html += "<tr>";
+				html += "	<td colspan='4'>오류가 발생했습니다.</td>";
+				html += "</tr>";
+				$("#refUserListBody").html(html);
+				openDialog('refUserListDialog');
+			}			
+		});
+	}
+	
 </script>
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
 <input type="hidden" name="listType" id="listType" value="">
@@ -616,14 +850,15 @@
 			</div>
 			<div class="search_box" >
 				<ul style="border-top:none;">
-					<li>
+					<li id="li_searchStatus">
 						<dt>문서상태</dt>
 						<dd style="width:400px">
 						<!-- 초기값은 보통으로 -->
 							<input type="radio" id="r1" name="searchStatus" value="" checked/ ><label for="r1"><span></span>전체</label>
 							<input type="radio" id="r2" name="searchStatus" value="A"/><label for="r2"><span></span>결재중</label>
-							<input type="radio" id="r3" name="searchStatus" value="C"><label for="r3"><span></span>결재완료</label>
-							<input type="radio" id="r4" name="searchStatus" value="R"><label for="r4"><span></span>결재반려</label>
+							<!-- <input type="radio" id="r3" name="searchStatus" value="CA"/><label for="r3"><span></span>상신취소</label> -->
+							<input type="radio" id="r4" name="searchStatus" value="C"><label for="r4"><span></span>결재완료</label>
+							<input type="radio" id="r5" name="searchStatus" value="R"><label for="r5"><span></span>결재반려</label>
 						</dd>
 					</li>
 					<li>
@@ -634,7 +869,7 @@
 								<select id="searchType" name="searchType">
 									<option value="">선택</option>
 									<option value="U">결재자</option>
-									<option value="K">제목</option>
+									<option value="K">문서명</option>
 								</select>
 							</div>
 							<input type="text" name="searchValue" id="searchValue" style="width:200px; margin-left:5px;"/>
@@ -694,4 +929,111 @@
 		</div>
 	</section>
 </div>
+
+<!-- 참조자 추가 팝업 start -->
+<div class="white_content" id="refUserDialog">
+	<input type="hidden" id="apprIdx" name="apprIdx"/>
+	<input type="hidden" id="userId" />
+	<input type="hidden" id="userName"/>
+	<input type="hidden" id="deptName" />
+	<input type="hidden" id="teamName" />
+	<select style="display:none" id=refLine name="refLine" multiple>
+ 	</select>
+	<div class="modal"
+		style="margin-left: -300px; width: 650px; height: 450px; margin-top: -250px">
+		<h5 style="position: relative">
+			<span class="title">문서 참조자 선택</span>
+			<div class="top_btn_box">
+				<ul>
+					<li>
+						<button class="btn_madal_close"
+							onClick="fn_closeRefPopup();"></button>
+					</li>
+				</ul>
+			</div>
+		</h5>
+		<div class="list_detail">
+			<ul>
+				<!-- 사용자 검색 라인 -->
+				<li>
+					<dt style="width: 30%">사용자 조회</dt>
+					<dd style="width: 70%; display: flex; justify-content: flex; align-items: center;">
+						<input type="text" id="refUserKeyword"
+							placeholder="이름 2자 이상 입력"
+							style="width: 330px; margin-right: 5px;">
+						<button class="btn_small01" onclick="fn_addRefUser()">추가</button>
+					</dd>
+				</li>
+				<li>
+					<dt style="width: 30%">열람기간</dt>
+					<dd style="width: 70%; display: flex; justify-content: flex; align-items: center;">
+						<input type="text" id="refStartDate" name="refStartDate" style="width: 120px; margin-right: 5px;">
+						~
+						<input type="text" id="refEndDate" name="refStartDate" style="width: 120px; margin-right: 5px;">
+					</dd>
+				</li>
+
+				<!-- 선택된 사용자 라인 -->
+				<li class="mt5">
+					<dt style="width: 30%">선택된 사용자</dt>
+					<dd style="width: 70%;">
+						<div class="file_box_pop2" style="height: 180px;">
+							<ul id="refLineList" style="margin-top: 10px;"></ul>
+						</div>
+					</dd>
+				</li>
+			</ul>
+		</div>
+		<div class="btn_box_con4" style="padding: 15px 0 20px 0">
+			<button class="btn_admin_red"
+				onclick="fn_addRefLine();">확인</button>
+			<button class="btn_admin_gray"
+				onclick="fn_closeRefPopup();">취소</button>
+		</div>
+	</div>
+</div>
+<!-- 참조자 추가 팝업 close -->
+
+<!-- 참조자 조회 레이어 start-->
+<div class="white_content" id="refUserListDialog">
+	<div class="modal"
+		style="width: 700px; margin-left: -360px; height: 450px; margin-top: -300px;">
+		<h5 style="position: relative">
+			<span class="title">참조자 리스트</span>
+			<div class="top_btn_box">
+				<ul>
+					<li>
+						<button class="btn_madal_close"
+							onClick="closeDialog('refUserListDialog')"></button>
+					</li>
+				</ul>
+			</div>
+		</h5>
+		<div class="main_tbl" style="height: 300px; overflow-y: auto">
+			<table class="tbl01">
+				<colgroup>
+					<col width="20%">
+					<col width="25%">
+					<col width="10%">
+					<col />
+				</colgroup>
+				<thead>
+					<tr>
+						<th>이름</th>
+						<th>부서</th>
+						<th>확인여부</th>
+						<th>참조기간</th>						
+					<tr>
+				</thead>
+				<tbody id="refUserListBody">
+				</tbody>
+			</table>
+		</div>
+		<div class="btn_box_con4" style="padding: 15px 0 5px 0">
+			<button class="btn_admin_gray"
+				onclick="closeDialog('refUserListDialog');">확인</button>
+		</div>
+	</div>
+</div>
+<!-- 참조자 조회 레이어 close-->
 	

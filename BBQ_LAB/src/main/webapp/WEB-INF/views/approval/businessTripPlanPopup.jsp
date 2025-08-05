@@ -57,6 +57,8 @@ $(document).ready(function() {
 	  document.onselectstart = function (e) {
 		   return false;
 	 }
+	  
+	fn_changeDate();
 });
 
 function fn_approvalSubmit() {
@@ -240,6 +242,27 @@ function getTextareaHTML(note) {
 function downloadFile(idx){
 	location.href = '/common/fileDownload?idx='+idx;
 }
+
+function fn_changeDate() {
+	var startDate = $("#tripStartDate").val();
+	var endDate = $("#tripEndDate").val();
+	if( startDate != '' && endDate != '' ) {
+		var startDateArr = startDate.split('-');
+	    var endDateArr = endDate.split('-');
+	    var startDateObj = new Date(startDateArr[0], startDateArr[1], startDateArr[2]);
+	    var endDateObj = new Date(endDateArr[0], endDateArr[1], endDateArr[2]);
+	    var dif = endDateObj - startDateObj;
+	    var cDay = 24 * 60 * 60 * 1000;// 시 * 분 * 초 * 밀리세컨
+	    var difDay = parseInt(dif/cDay);
+	    if( difDay > 0 ) {
+	    	var start = difDay;
+	    	var end = difDay+1;
+	    	$("#txtTripDuration").html("출장기간("+start+"박 "+end+"일)");
+	    } else {
+	    	$("#txtTripDuration").html("출장기간(1일)");
+	    }
+	}
+}
 </script>
 <h2 style=" position:fixed;" class="print_hidden">
 	<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">결재</span>
@@ -405,6 +428,9 @@ function downloadFile(idx){
 						~ 
 						${planData.data.TRIP_END_DATE}
 						</c:if>
+						<input type="hidden" name="tripStartDate" id="tripStartDate" value="${planData.data.TRIP_START_DATE}"/>
+						<input type="hidden" name="tripEndDate" id="tripEndDate" value="${planData.data.TRIP_END_DATE}"/>	
+						<span id="txtTripDuration" name="txtTripDuration" style='margin-left:20px;'></span>
 					</td>
 				</tr>
 				<tr>

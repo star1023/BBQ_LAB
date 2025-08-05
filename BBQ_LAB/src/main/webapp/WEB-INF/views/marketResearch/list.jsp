@@ -48,7 +48,7 @@ function fn_loadList(pageNo) {
 						html += "		<li style=\"float:none; display:inline\">";
 						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.RESEARCH_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
 						if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
-							if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' ) {
+							if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' || item.STATUS == 'RET' ) {
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.RESEARCH_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 							}
 							if( item.STATUS == 'TMP' ) {

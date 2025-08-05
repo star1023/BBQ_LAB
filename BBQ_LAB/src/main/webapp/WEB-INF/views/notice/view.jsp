@@ -154,7 +154,11 @@
 				<div class="btn_box_con5">					
 				</div>
 				<div class="btn_box_con4">
+					<c:if test='${userUtil:getUserType(pageContext.request) == "LEADER" || userUtil:getUserType(pageContext.request) == "ADMIN"}'>
+					<c:if test="${userUtil:getUserId(pageContext.request) == noticeData.data.REG_USER || userUtil:getUserType(pageContext.request) == 'ADMIN'}">
 					<button class="btn_admin_sky" onclick="javascript:fn_update('${noticeData.data.BNOTICE_IDX}')">수정</button>
+					</c:if>
+					</c:if>
 					<button class="btn_admin_gray" onClick="fn_list();" style="width: 120px;">목록</button>
 				</div>
 				<hr class="con_mode" />

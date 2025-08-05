@@ -15,6 +15,7 @@ import javax.annotation.Resource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -289,6 +290,11 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 			JSONArray itemContentArr = (JSONArray)listMap.get("itemContentArr");
 			JSONArray standard1Arr = (JSONArray)listMap.get("standard1Arr");
 			JSONArray standard2Arr = (JSONArray)listMap.get("standard2Arr");
+			
+			JSONParser parser = new JSONParser();
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
 		
 			Calendar cal = Calendar.getInstance();
 			Date day = cal.getTime();
@@ -419,7 +425,7 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 			commonDao.insertHistory(historyParam);
 			
 			// 기존 파일 삭제
-			Object deletedFileListObj = param.get("deletedFileList");
+			/*Object deletedFileListObj = param.get("deletedFileList");
 			if (deletedFileListObj instanceof List<?>) {
 			    List<?> deletedList = (List<?>) deletedFileListObj;
 
@@ -451,6 +457,20 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 			        } catch (NumberFormatException e) {
 			            System.err.println("FILE_IDX 파싱 실패: " + item);
 			        }
+			    }
+			}*/
+			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			        String fileIdx = (String)deletedFileIdArr.get(i);
+			    	String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
 			    }
 			}
 			

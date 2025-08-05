@@ -356,6 +356,10 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			 
 			
 			Calendar cal = Calendar.getInstance();
 	        Date day = cal.getTime();    //시간을 꺼낸다.
@@ -490,7 +494,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			commonDao.insertHistory(historyParam);
 			
 			// 기존 파일 삭제
-			Object deletedFileListObj = param.get("deletedFileList");
+			/*Object deletedFileListObj = param.get("deletedFileList");
 			if (deletedFileListObj instanceof List<?>) {
 			    List<?> deletedList = (List<?>) deletedFileListObj;
 	
@@ -522,6 +526,20 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			        } catch (NumberFormatException e) {
 			            System.err.println("FILE_IDX 파싱 실패: " + item);
 			        }
+			    }
+			}*/
+			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			        String fileIdx = (String)deletedFileIdArr.get(i);
+			    	String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
 			    }
 			}
 			
@@ -581,6 +599,9 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		try {
 			JSONParser parser = new JSONParser();
 			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
 			
 			Calendar cal = Calendar.getInstance();
 	        Date day = cal.getTime();    //시간을 꺼낸다.
@@ -712,7 +733,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			commonDao.insertHistory(historyParam);
 			
 			// 기존 파일 삭제
-			Object deletedFileListObj = param.get("deletedFileList");
+			/*Object deletedFileListObj = param.get("deletedFileList");
 			if (deletedFileListObj instanceof List<?>) {
 			    List<?> deletedList = (List<?>) deletedFileListObj;
 	
@@ -744,6 +765,20 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			        } catch (NumberFormatException e) {
 			            System.err.println("FILE_IDX 파싱 실패: " + item);
 			        }
+			    }
+			}*/
+			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			        String fileIdx = (String)deletedFileIdArr.get(i);
+			    	String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
 			    }
 			}
 			
@@ -792,7 +827,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertVersionUpTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
+	public int insertVersionUpTmp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, List<String> tempFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -916,6 +951,46 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			path = config.getProperty("upload.file.path.package");
+	        path += File.separator+toDay; 
+	        
+	      //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null && tempFile.size() > 0 ) {
+				//기존 파일 정보를 조회한다.
+				List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+				if( tempFileList != null && tempFileList.size() > 0 ) {
+					for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+						Map<String, Object> tempFileData = tempFileList.get(i);
+						String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+						String fileName = (String)tempFileData.get("FILE_NAME");
+						String filePath = (String)tempFileData.get("FILE_PATH");
+						String fileContents = (String)tempFileData.get("FILE_CONTENT");
+						if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+							String currentFilePath = filePath+File.separator+fileName;
+							String fileIdx = FileUtil.getUUID();
+							String newFilePath = path;
+							String newFileName = fileIdx+"_"+orgFileName;
+							File currentFile = new File(currentFilePath);						
+							File newFile = new File(newFilePath+File.separator+newFileName);
+							FileUtils.copyFile(currentFile, newFile);
+							
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", infoIdx);
+							fileMap.put("docType", param.get("docType"));
+							fileMap.put("fileType", "00");
+							fileMap.put("orgFileName", orgFileName);
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", newFileName);
+							fileMap.put("content", fileContents);
+							System.err.println(fileMap);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+						}
+					}
+				}
+			}
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
@@ -964,7 +1039,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	}
 
 	@Override
-	public int insertVersionUp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, MultipartFile[] file) throws Exception {
+	public int insertVersionUp(Map<String, Object> param, MultipartFile imageFile, MultipartFile markFile, List<String> tempFile, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int infoIdx = 0;
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -1088,6 +1163,46 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			path = config.getProperty("upload.file.path.package");
+	        path += File.separator+toDay; 
+	        
+	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null && tempFile.size() > 0 ) {
+				//기존 파일 정보를 조회한다.
+				List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+				if( tempFileList != null && tempFileList.size() > 0 ) {
+					for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+						Map<String, Object> tempFileData = tempFileList.get(i);
+						String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+						String fileName = (String)tempFileData.get("FILE_NAME");
+						String filePath = (String)tempFileData.get("FILE_PATH");
+						String fileContents = (String)tempFileData.get("FILE_CONTENT");
+						if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+							String currentFilePath = filePath+File.separator+fileName;
+							String fileIdx = FileUtil.getUUID();
+							String newFilePath = path;
+							String newFileName = fileIdx+"_"+orgFileName;
+							File currentFile = new File(currentFilePath);						
+							File newFile = new File(newFilePath+File.separator+newFileName);
+							FileUtils.copyFile(currentFile, newFile);
+							
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", infoIdx);
+							fileMap.put("docType", param.get("docType"));
+							fileMap.put("fileType", "00");
+							fileMap.put("orgFileName", orgFileName);
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", newFileName);
+							fileMap.put("content", fileContents);
+							System.err.println(fileMap);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+						}
+					}
+				}
+			}
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {

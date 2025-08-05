@@ -1,5 +1,6 @@
 package kr.co.genesiskorea.service.impl;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,6 +13,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -131,8 +133,8 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
-			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
-			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
+			//ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
+			//ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
 			
 			JSONParser parser = new JSONParser();
@@ -155,6 +157,9 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
 			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
 			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
 			
 			productIdx = 0;
 			productIdx = productDao.selectProductSeq(); 	//key value 조회
@@ -334,6 +339,63 @@ public class ProductServiceImpl implements ProductService {
 				}
 			}
 			
+			String path = config.getProperty("upload.file.path.product");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+			
+			//문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", productIdx);
+								fileMap.put("docType", "PROD");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								System.err.println(fileMap);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+					
+					/*for( int i = 0 ; i < tempFile.size() ; i++ ) {
+						HashMap<String, Object> paramMap = new HashMap<String, Object>();
+						String tempFileIdx = tempFile.get(i);
+						String fileIdx = FileUtil.getUUID();
+						paramMap.put("fileIdx", fileIdx);
+						paramMap.put("tempFileIdx", tempFileIdx);
+						paramMap.put("docIdx", productIdx);
+						paramMap.put("docType", "PROD");
+						productDao.insertFileCopy(paramMap);
+					}*/
+				}
+			}
+			
 			//history 저장
 			Map<String, Object> historyParam = new HashMap<String, Object>();
 			historyParam.put("docIdx", productIdx);
@@ -345,12 +407,7 @@ public class ProductServiceImpl implements ProductService {
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.product");
-				path += "/"+toDay; 
+				
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
 					System.err.println("=================================");
@@ -410,8 +467,8 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
-			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
-			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
+			/*ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
+			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");*/
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
 			
 			JSONParser parser = new JSONParser();
@@ -434,6 +491,9 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
 			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
 			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
 			
 			productIdx = productDao.selectProductSeq(); 	//key value 조회
 			param.put("idx", productIdx);
@@ -617,10 +677,51 @@ public class ProductServiceImpl implements ProductService {
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			String path = config.getProperty("upload.file.path.product");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+			
 			//문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
 			if( tempFile != null ) {
 				if( tempFile.size() > 0 ) {
-					for( int i = 0 ; i < tempFile.size() ; i++ ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", productIdx);
+								fileMap.put("docType", "PROD");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								System.err.println(fileMap);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+					
+					/*for( int i = 0 ; i < tempFile.size() ; i++ ) {
 						HashMap<String, Object> paramMap = new HashMap<String, Object>();
 						String tempFileIdx = tempFile.get(i);
 						String fileIdx = FileUtil.getUUID();
@@ -629,18 +730,12 @@ public class ProductServiceImpl implements ProductService {
 						paramMap.put("docIdx", productIdx);
 						paramMap.put("docType", "PROD");
 						productDao.insertFileCopy(paramMap);
-					}
+					}*/
 				}
 			}
 			
 			//파일 DB 저장
-			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.product");
-				path += "/"+toDay; 
+			if( file != null && file.length > 0 ) {				 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
 					System.err.println("=================================");
@@ -774,8 +869,7 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
-			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
-			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
+			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
 			
 			JSONParser parser = new JSONParser();
 			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
@@ -797,6 +891,9 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
 			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
 			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
 
 			int currentVersionNo = Integer.parseInt((String)param.get("currentVersionNo"));	//현재 문서 버젼
 			int versionNo = Integer.parseInt((String)param.get("versionNo"));				//개정 문서 버젼
@@ -1005,14 +1102,54 @@ public class ProductServiceImpl implements ProductService {
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			String path = config.getProperty("upload.file.path.product");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+	        
+	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", productIdx);
+								fileMap.put("docType", "PROD");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								System.err.println(fileMap);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+				}
+			}
+			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.product");
-				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
 					System.err.println("=================================");
@@ -1073,8 +1210,7 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
-			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
-			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
+			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
 			
 			JSONParser parser = new JSONParser();
 			//JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
@@ -1099,6 +1235,9 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
 			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
 			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
 			
 			int currentVersionNo = Integer.parseInt((String)param.get("currentVersionNo"));	//현재 문서 버젼
 			int versionNo = Integer.parseInt((String)param.get("versionNo"));				//개정 문서 버젼
@@ -1308,14 +1447,54 @@ public class ProductServiceImpl implements ProductService {
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			String path = config.getProperty("upload.file.path.product");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+	        
+	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", productIdx);
+								fileMap.put("docType", "PROD");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								System.err.println(fileMap);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+				}
+			}
+			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.product");
-				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
 					System.err.println("=================================");
@@ -1412,13 +1591,8 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
-			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
-			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
-			ArrayList<String> deleteFileArr = (ArrayList<String>)listMap.get("deleteFileArr");
-			ArrayList<String> deleteFilePathArr = (ArrayList<String>)listMap.get("deleteFilePathArr");
 			
 			JSONParser parser = new JSONParser();
-			//JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
 			
@@ -1444,6 +1618,12 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
 			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
 			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
 			
 			int productIdx = Integer.parseInt((String)param.get("idx")); 	//key value 조회
 			param.put("productIdx", productIdx);
@@ -1699,13 +1879,14 @@ public class ProductServiceImpl implements ProductService {
 			commonDao.insertHistory(historyParam);
 			
 			//삭제된 파일 삭제
-			if (deleteFileArr != null && deleteFileArr.size() > 0) {
-			    for (int i = 0; i < deleteFileArr.size(); i++) {
-			        String fullFileName = deleteFileArr.get(i);
-			        String filePath = deleteFilePathArr.get(i);
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			    	String fileIdx = (String)deletedFileIdArr.get(i);
+			        String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
 
 			        // 첫 번째 '_' 이전의 인덱스 값 추출
-			        String fileIdx = fullFileName.split("_")[0];
+			        //String fileIdx = fullFileName.split("_")[0];
 
 			        logger.error("삭제할 파일 이름: {}", fullFileName);
 			        logger.error("삭제할 파일 경로: {}", filePath);
@@ -1799,13 +1980,8 @@ public class ProductServiceImpl implements ProductService {
 			ArrayList<String> productType = (ArrayList<String>)listMap.get("productType");
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
-			ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
-			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");
-			ArrayList<String> deleteFileArr = (ArrayList<String>)listMap.get("deleteFileArr");
-			ArrayList<String> deleteFilePathArr = (ArrayList<String>)listMap.get("deleteFilePathArr");
 			
 			JSONParser parser = new JSONParser();
-//			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
 			
@@ -1830,6 +2006,12 @@ public class ProductServiceImpl implements ProductService {
 			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
 			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
 			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
 			
 			int productIdx = Integer.parseInt((String)param.get("idx")); 	//key value 조회
 			param.put("productIdx", productIdx);
@@ -2079,13 +2261,14 @@ public class ProductServiceImpl implements ProductService {
 			commonDao.insertHistory(historyParam);
 			
 			//삭제된 파일 삭제
-			if (deleteFileArr != null && deleteFileArr.size() > 0) {
-			    for (int i = 0; i < deleteFileArr.size(); i++) {
-			        String fullFileName = deleteFileArr.get(i);
-			        String filePath = deleteFilePathArr.get(i);
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			        String fileIdx = (String)deletedFileIdArr.get(i);
+			    	String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
 
 			        // 첫 번째 '_' 이전의 인덱스 값 추출
-			        String fileIdx = fullFileName.split("_")[0];
+			        //String fileIdx = fullFileName.split("_")[0];
 
 			        logger.error("삭제할 파일 이름: {}", fullFileName);
 			        logger.error("삭제할 파일 경로: {}", filePath);

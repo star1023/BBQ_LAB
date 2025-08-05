@@ -263,8 +263,12 @@ function fn_renderList(list) {
         html += "  <div class='faq-answer' id='answer-" + index + "' style='display:none;'>";
         html += "    <pre style='white-space:pre-wrap;'>" + item.ANSWER + "</pre>";
         html += "    <div class='faq-ctrl'>";
+        <c:if test='${userUtil:getUserType(pageContext.request) == "LEADER" || userUtil:getUserType(pageContext.request) == "ADMIN"}'>
+		<c:if test="${userUtil:getUserId(pageContext.request) == noticeData.data.REG_USER || userUtil:getUserType(pageContext.request) == 'ADMIN'}">
         html += "  <button class=\"btn_doc\" onclick=\"fn_updatForm('" + item.BFAQ_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>&nbsp; |";
         html += "  <button class=\"btn_doc\" onclick=\"fn_delete('" + item.BFAQ_IDX + "')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+        </c:if>
+        </c:if>
         html += "    </div>";
         html += "  </div>";
         html += "</div>";
@@ -405,7 +409,9 @@ function fn_delete(idx) {
 				<div class="page_navi mt10"></div>
 			</div>
 			<div class="btn_box_con"> 
+				<c:if test='${userUtil:getUserType(pageContext.request) == "LEADER" || userUtil:getUserType(pageContext.request) == "ADMIN"}'>
 				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">FAQ 작성</button>
+				</c:if>
 			</div>
 	 		<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>

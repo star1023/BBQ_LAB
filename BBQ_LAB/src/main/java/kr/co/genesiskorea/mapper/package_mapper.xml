@@ -58,6 +58,9 @@
 			, MARK_FILE_NAME
 			, MARK_ORG_FILE_NAME
 			, MARK_FILE_PATH
+			, PACKAGE_UNIT
+			, PIECE_WEIGHT
+			, BOX_UNIT
 		)VALUES(
 			#{idx}
 			, #{productName}
@@ -101,7 +104,10 @@
 			, #{filePath}			
 			, #{markfileName}	
 			, #{markorgFileName}
-			, #{markfilePath}			
+			, #{markfilePath}
+			, #{packageUnit}	
+			, #{pieceWeight}
+			, #{boxUnit}			
 		)
 	</insert>
 	
@@ -263,6 +269,11 @@
 			, MARK_FILE_NAME
 			, MARK_ORG_FILE_NAME
 			, MARK_FILE_PATH
+			, PACKAGE_UNIT
+			, FN_GET_CODE_NAME('UNIT', PACKAGE_UNIT) AS PACKAGE_UNIT_NAME
+			, PIECE_WEIGHT
+			, BOX_UNIT
+			, FN_GET_CODE_NAME('UNIT', BOX_UNIT) AS BOX_UNIT_NAME
 		FROM 
 			lab_package_info
 		WHERE 1 = 1
@@ -317,6 +328,9 @@
 			, MARK_FILE_NAME = #{markfileName}
 			, MARK_ORG_FILE_NAME = #{markorgFileName}
 			, MARK_FILE_PATH = #{markfilePath}
+			, PACKAGE_UNIT = #{packageUnit}
+			, PIECE_WEIGHT = #{pieceWeight}
+			, BOX_UNIT = #{boxUnit}
 		WHERE 1 = 1
 			AND PACKAGE_IDX = #{idx} 
 	</update>
@@ -378,6 +392,9 @@
 			, MARK_FILE_NAME
 			, MARK_ORG_FILE_NAME
 			, MARK_FILE_PATH
+			, PACKAGE_UNIT
+			, PIECE_WEIGHT
+			, BOX_UNIT
 		)VALUES(
 			#{idx}
 			, #{productName}
@@ -415,6 +432,9 @@
 			, #{markfileName}	
 			, #{markorgFileName}
 			, #{markfilePath}
+			, #{packageUnit}
+			, #{pieceWeight}
+			, #{boxUnit}
 		)
 	</insert>
 	
@@ -497,6 +517,11 @@
 			, MARK_FILE_NAME
 			, MARK_ORG_FILE_NAME
 			, MARK_FILE_PATH
+			, PACKAGE_UNIT
+			, FN_GET_CODE_NAME('UNIT', PACKAGE_UNIT) AS PACKAGE_UNIT_NAME
+			, PIECE_WEIGHT
+			, BOX_UNIT
+			, FN_GET_CODE_NAME('UNIT', BOX_UNIT) AS BOX_UNIT_NAME
 		FROM 
 			lab_package_info
 		WHERE 1 = 1

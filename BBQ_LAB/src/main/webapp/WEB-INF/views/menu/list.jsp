@@ -228,7 +228,7 @@
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.MENU_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
 							}
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.MENU_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-							if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' || item.STATUS == 'APPR_CANCEL') {
+							if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' || item.STATUS == 'APPR_CANCEL' || item.STATUS == 'RET') {
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.MENU_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 							}
 							if( item.STATUS == 'TMP') {

@@ -1,5 +1,7 @@
 package kr.co.genesiskorea.dao;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -73,4 +75,12 @@ public interface ApprovalDao {
 	void updateRefIsRead(Map<String, Object> param) throws Exception;
 
 	void updateApprHeader(Map<String, Object> param) throws Exception;
+
+	void addReference(List<HashMap<String,Object>> list) throws Exception;
+
+	List<Map<String, Object>> selectRefInfoList(Map<String, Object> param);
+
+	void insertArrpHeaderHistory(Map<String, Object> map);
+
+	void insertArrpItemHistory(Map<String, Object> map);
 }

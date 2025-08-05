@@ -13,6 +13,8 @@ import javax.annotation.Resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -375,9 +377,28 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 		     if (!insertList.isEmpty()) {
 		         newProductResultDao.insertNewProductResultItemImage(insertList);
 		     }
+		     
+		     JSONParser parser = new JSONParser();
+		     JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			 JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			 JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			 
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			        String fileIdx = (String)deletedFileIdArr.get(i);
+			    	String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
 
 	        // ✅ 4. 삭제된 찮드파일 삭제 처리
-	        if (deletedFileList != null) {
+	        /*if (deletedFileList != null) {
 	            for (String fileIdx : deletedFileList) {
 	                Map<String, Object> fparam = new HashMap<String, Object>();
 	                fparam.put("idx", fileIdx);
@@ -400,7 +421,7 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	                	
 	                commonDao.deleteFileData(fileIdx);
 	            }
-	        }
+	        }*/
 
 	        // ✅ 5. 일반 찮드파일 저장
 	        if (file != null && file.length > 0) {

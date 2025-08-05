@@ -214,11 +214,6 @@ public class DesignReportController {
 			, @RequestParam(required=false) Map<String, Object> param
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			/*, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemDivArr", required = false) List<String> itemDivArr
-			, @RequestParam(value = "itemCurrentArr", required = false) List<String> itemCurrentArr
-			, @RequestParam(value = "itemChangeArr", required = false) List<String> itemChangeArr
-			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr*/
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -228,11 +223,6 @@ public class DesignReportController {
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemDivArr", itemDivArr);
-			//listMap.put("itemCurrentArr", itemCurrentArr);
-			//listMap.put("itemChangeArr", itemChangeArr);
-			//listMap.put("itemNoteArr", itemNoteArr);
 			reportService.updateDesign(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -249,11 +239,6 @@ public class DesignReportController {
 			, @RequestParam(required=false) Map<String, Object> param
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			/*, @RequestParam(value = "rowIdArr", required = false) List<String> rowIdArr
-			, @RequestParam(value = "itemDivArr", required = false) List<String> itemDivArr
-			, @RequestParam(value = "itemCurrentArr", required = false) List<String> itemCurrentArr
-			, @RequestParam(value = "itemChangeArr", required = false) List<String> itemChangeArr
-			, @RequestParam(value = "itemNoteArr", required = false) List<String> itemNoteArr*/
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -263,11 +248,6 @@ public class DesignReportController {
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
-			//listMap.put("rowIdArr", rowIdArr);
-			//listMap.put("itemDivArr", itemDivArr);
-			//listMap.put("itemCurrentArr", itemCurrentArr);
-			//listMap.put("itemChangeArr", itemChangeArr);
-			//listMap.put("itemNoteArr", itemNoteArr);
 			reportService.updateDesign(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

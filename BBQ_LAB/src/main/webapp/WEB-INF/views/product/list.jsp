@@ -229,7 +229,7 @@
 								if( item.STATUS == 'COMP' ) {
 									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PRODUCT_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
 								}
-								if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' || item.STATUS == 'APPR_CANCEL' ) {
+								if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' || item.STATUS == 'APPR_CANCEL' || item.STATUS == 'RET' ) {
 									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PRODUCT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 								}
 								if( item.STATUS == 'TMP' ) {

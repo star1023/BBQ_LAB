@@ -567,3 +567,10 @@ display:inline-block;width:19px; height:19px; margin:-2px 4px 0 0;  vertical-ali
 /*자재 관리 게시판 */
 
 .m_visible td{ background:#f6dcde; color:#000000;}
+
+
+
+.file_list {}
+.file_list li i{vertical-align: middle;}
+.file_list li {color:#376CC8;cursor: pointer;padding-top:2px ; padding-bottom:2px}
+.file_list li:hover{color: #02ACC4;}

@@ -2,6 +2,102 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="batch">
 	<insert id="insertMaterial" parameterType="list">
+		INSERT INTO lab_erp_material3 ( 
+			COM_CODE
+			, SAP_CODE
+			, NAME
+			, MAT_TYPE
+			, KEEP_CONDITION
+			, MAT_GROUP
+			, MAT_GROUP_NAME
+			, UNIT
+			, CHANGE_UNIT
+			, CHANGE_COUNT
+			, RECIPE_UNIT
+			, RECIPE_AMOUNT
+			, WIDTH
+			, WIDTH_UNIT
+			, LENGTH
+			, LENGTH_UNIT
+			, HEIGHT
+			, HEIGHT_UNIT
+			, TOTAL_WEIGHT
+			, TOTAL_WEIGHT_UNIT
+			, STANDARD
+			, ORIGIN
+			, LEAD_TIME
+			, SAFETY_STOCK_DAY
+			, BOX_AMOUNT
+			, PALLET_AMOUNT
+			, CD_ACCT
+			, EXPIRATION_DATE
+			, USE_YN
+			, MIN_ORDER_AMOUNT
+		) VALUES 
+		<foreach collection = "list" item = "item" separator = ","> 
+	    (	
+	    	#{item.BUKRS}
+			, #{item.MATNR}
+			, #{item.MAKTX}
+			, #{item.MTART}
+			, #{item.STOR_COND}
+			, #{item.MATKL}
+			, #{item.WGBEZ}
+			, #{item.MEINS}
+			, #{item.LRMEI}
+			, #{item.UMREZ}
+			, #{item.RCMEI}
+			, #{item.UMREN}
+			, #{item.HORIZONTAL}
+			, #{item.HORIZONTAL_MEINS}
+			, #{item.VERTICAL}
+			, #{item.VERTICAL_MEINS}
+			, #{item.HEIGHT}
+			, #{item.HEIGHT_MEINS}
+			, #{item.WEIGHT}
+			, #{item.WEIGHT_MEINS}
+			, #{item.SIZE_DIM}
+			, #{item.ORIG_MAT}
+			, #{item.LEADTIMES}
+			, #{item.SAFETY_STOCK_DAY}
+			, #{item.BOX_STOCK}
+			, #{item.PALLET_STOCK}
+			, #{item.MWSKZ}
+			, #{item.EXP_DATE}
+			, #{item.USE_YN}
+			, #{item.MOQ}
+		)	
+	    </foreach>
+	    ON DUPLICATE KEY UPDATE 
+	    	NAME = VALUES(NAME)
+	    	, MAT_TYPE = VALUES(MAT_TYPE)
+			, KEEP_CONDITION = VALUES(KEEP_CONDITION)
+			, MAT_GROUP = VALUES(MAT_GROUP)
+			, MAT_GROUP_NAME = VALUES(MAT_GROUP_NAME)
+			, UNIT = VALUES(UNIT)
+			, CHANGE_UNIT = VALUES(CHANGE_UNIT)
+			, CHANGE_COUNT = VALUES(CHANGE_COUNT)
+			, RECIPE_UNIT = VALUES(RECIPE_UNIT)
+			, RECIPE_AMOUNT = VALUES(RECIPE_AMOUNT)
+			, WIDTH = VALUES(WIDTH)
+			, WIDTH_UNIT = VALUES(WIDTH_UNIT)
+			, LENGTH = VALUES(LENGTH)
+			, LENGTH_UNIT = VALUES(LENGTH_UNIT)
+			, HEIGHT = VALUES(HEIGHT)
+			, HEIGHT_UNIT = VALUES(HEIGHT_UNIT)
+			, TOTAL_WEIGHT = VALUES(TOTAL_WEIGHT)
+			, TOTAL_WEIGHT_UNIT = VALUES(TOTAL_WEIGHT_UNIT)
+			, STANDARD = VALUES(STANDARD)
+			, ORIGIN = VALUES(ORIGIN)
+			, LEAD_TIME = VALUES(LEAD_TIME)
+			, SAFETY_STOCK_DAY = VALUES(SAFETY_STOCK_DAY)
+			, BOX_AMOUNT = VALUES(BOX_AMOUNT)
+			, PALLET_AMOUNT = VALUES(PALLET_AMOUNT)
+			, CD_ACCT = VALUES(CD_ACCT)
+			, EXPIRATION_DATE = VALUES(EXPIRATION_DATE)
+			, USE_YN = VALUES(USE_YN)
+			, MIN_ORDER_AMOUNT = VALUES(MIN_ORDER_AMOUNT)
+		<!-- 
 		INSERT INTO lab_erp_material2 ( 
 			SAP_CODE
 			, NAME
@@ -83,6 +179,7 @@
 		, PALLET_AMOUNT = VALUES(PALLET_AMOUNT)
 		, CD_ACCT = VALUES(CD_ACCT)
 		, EXPIRATION_DATE = VALUES(EXPIRATION_DATE)
+		-->
 	</insert>
 	
 	<update id="initProductSeq">

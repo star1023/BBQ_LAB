@@ -267,13 +267,14 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 			, @RequestParam(required=false) Map<String, Object> param
 			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(value = "markFile", required = false) MultipartFile markFile
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			int infoIdx = packageInfoService.insertVersionUpTmp(param, imageFile, markFile, file);
+			int infoIdx = packageInfoService.insertVersionUpTmp(param, imageFile, markFile, tempFile, file);
 			returnMap.put("IDX", infoIdx);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -290,13 +291,14 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 			, @RequestParam(required=false) Map<String, Object> param
 			, @RequestParam(value = "imageFile", required = false) MultipartFile imageFile
 			, @RequestParam(value = "markFile", required = false) MultipartFile markFile
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			
-			int infoIdx = packageInfoService.insertVersionUp(param, imageFile, markFile, file);
+			int infoIdx = packageInfoService.insertVersionUp(param, imageFile, markFile, tempFile, file);
 			returnMap.put("IDX", infoIdx);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

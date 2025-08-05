@@ -23,6 +23,8 @@
 	var editor2;
 	var editor3;
 	$(document).ready(function(){
+		fn_loadCode("UNIT", "packageUnit");
+		fn_loadCode("UNIT", "boxUnit");
 		fn_loadCode("KEEP_CONDITION", "keepCondition");
 		fn_loadCode("FOOD_TYPE", "foodType");
 		fn_loadCode("DISCHARGE_DISPLAY", "separateDischarge");
@@ -195,7 +197,8 @@
 	var attatchTempFileArr = [];
 	var attatchTempFileTypeArr = [];
 	function callAddFileEvent(){
-		$('#attatch_common').click();
+		//$('#attatch_common').click();
+		$('#file3').click();
 	}
 	function setFileName(element){
 		if(element.files.length > 0)
@@ -206,15 +209,17 @@
 	function addFile(element, fileType){
 		var randomId = Math.random().toString(36).substr(2, 9);
 		
-		if($('#attatch_common').val() == null || $('#attatch_common').val() == ''){
+		if($(element).val() == null || $(element).val() == ''){
 			return alert('파일을 선택해주세요');
 		}
 		
-		fileElement = document.getElementById('attatch_common');
+		fileElement = document.getElementById($(element).prop("id"));
 		
 		var file = fileElement.files;
 		var fileName = file[0].name
 		var fileTypeText = $(element).text();
+
+		
 		var isDuple = false;
 		attatchTempFileArr.forEach(function(file){
 			if(file.name == fileName)
@@ -236,16 +241,54 @@
 			return;
 		}
 		
+		attatchFileArr.push(file[0]);
+		attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+		attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
 		
+		$(element).val("");
 		
-		attatchTempFileArr.push(file[0]);
-		attatchTempFileArr[attatchTempFileArr.length-1].tempId = randomId;
-		attatchTempFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+		$("#attatch_file").append(childTag);
+	}
+	
+	function addDropFile(file, fileType){
+		var randomId = Math.random().toString(36).substr(2, 9);
 		
-		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+randomId+'\')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;'+fileName+'</li>'
-		$('ul[name=popFileList]').append(childTag);
-		$('#attatch_common').val('');
-		$('#attatch_common').change();
+		var fileName = file.name;
+		var fileTypeText = file.text();
+		var isDuple = false;
+		
+		attatchFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		attatchTempFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		attatchFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		if(isDuple){
+			if(!confirm('같은 이름의 파일이 존재합니다. 계속 진행하시겠습니까?')){
+				return;
+			};
+		}
+		
+		if( !checkFileName(fileName) ) {			
+			return;
+		}
+		
+		attatchFileArr.push(file);
+		attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+		attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+		
+		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+		$("#attatch_file").append(childTag);
 	}
 	
 	function removeFile(element, tempId){
@@ -267,36 +310,42 @@
 		//console.log($("#attatch_file").children().length);
 	}
 	
-	
-	function uploadFiles(){
-		if( attatchTempFileArr.length == 0 ) {
-			alert("파일을 등록해주세요.");
-			return;
+	function allowDrop(e) {
+		e.preventDefault();
+		
+		e.target.style.backgroundColor = "black";
+		e.target.style.opacity  = "0.2";
+	}
+
+	function drag(ev) {
+		ev.dataTransfer.setData("text", ev.target.id);
+	}
+
+	function drop(e) {
+		e.preventDefault();
+		
+		var files = e.target.files || e.dataTransfer.files;
+		for(var i=0; i<files.length; i++){
+			addDropFile(files[i], '00')
 		}
-		
-		attatchTempFileArr.forEach(function(tempFile, idx1){
-			attatchFileArr.push(tempFile);
-			attatchFileTypeArr.push(attatchTempFileTypeArr[idx1]);		
-		});
-		
-		$("#attatch_file").html("");
-		attatchFileTypeArr.forEach(function(object,idx){
-			var tempId = object.tempId;
-			var childTag = '<li><a href="#none" onclick="removeFile(this, \''+tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[idx].name+'</li>'
-			$("#attatch_file").append(childTag);
-		});
-		closeDialogWithClean('dialog_attatch');
+		e.target.style.backgroundColor = "#fff";
+		e.target.style.opacity  = "1";
+	}
+
+	function drogEnd(e){
+		e.target.style.backgroundColor = "#fff";
+		e.target.style.opacity  = "1";
 	}
 	
 	function checkFileName(str){
 		var result = true;
 	    //1. 확장자 체크
 	    var ext =  str.split('.').pop().toLowerCase();
-	    if($.inArray(ext, ['pdf']) == -1) {
+	    if($.inArray(ext, ['pdf','png','jpg','jpeg']) == -1) {
 	    	var message = "";
 	    	message += ext+'파일은 업로드 할 수 없습니다.';
 	    	//message += "\n";
-	    	message += "(pdf 만 가능합니다.)";
+	    	message += "(pdf와 이미지(png,jpg,jpeg)만 가능합니다.)";
 	        alert(message);
 	        result = false;
 	    }
@@ -344,6 +393,9 @@
 			formData.append("productCode",$("#productCode").val());
 			formData.append("etcInfo",$("#etcInfo").val());
 			formData.append("weight",$("#weight").val());
+			formData.append("packageUnit",$("#packageUnit").selectedValues()[0]);
+			formData.append("pieceWeight",$("#pieceWeight").val());
+			formData.append("boxUnit",$("#boxUnit").selectedValues()[0]);
 			formData.append("keepCondition",$("#keepCondition").selectedValues()[0]);
 			formData.append("keepConditionTxt",$("#keepConditionTxt").val());
 			formData.append("productNameBack",$("#productNameBack").val());
@@ -444,6 +496,9 @@
 			formData.append("productCode",$("#productCode").val());
 			formData.append("etcInfo",$("#etcInfo").val());
 			formData.append("weight",$("#weight").val());
+			formData.append("packageUnit",$("#packageUnit").selectedValues()[0]);
+			formData.append("pieceWeight",$("#pieceWeight").val());
+			formData.append("boxUnit",$("#boxUnit").selectedValues()[0]);
 			formData.append("keepCondition",$("#keepCondition").selectedValues()[0]);
 			formData.append("keepConditionTxt",$("#keepConditionTxt").val());
 			formData.append("productNameBack",$("#productNameBack").val());
@@ -682,6 +737,9 @@
 	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
 	    $doc.getElementById("prev_etcInfo").innerText = document.getElementById("etcInfo").value;
 	    $doc.getElementById("prev_weight").innerText = document.getElementById("weight").value;
+	    $doc.getElementById("prev_packageUnit").innerText = $("#packageUnit").selectedTexts();
+	    $doc.getElementById("prev_pieceWeight").innerText = document.getElementById("pieceWeight").value;
+	    $doc.getElementById("prev_boxUnit").innerText = $("#boxUnit").selectedTexts();
 
 	    // 셀렉트 항목
 	    $doc.getElementById("prev_keepCondition").innerText = getSelectValue(
@@ -801,12 +859,12 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;" rowspan="5">정면(주표시면)</th>
+							<th style="border-left: none;" rowspan="8">정면(주표시면)</th>
 							<td>
-								제품명
+								제품명<span class="mandatory">*</span>
 							</td>
 							<td>
-								<input type="text" name="productName" id="productName" style="width:250px;float: left" class="req" placeholder="" readonly/>
+								<input type="text" name="productName" id="productName" style="width:250px;float: left" placeholder="" readonly/>
 								<input type="hidden" name="productCode" id="productCode" readonly/>
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_clearProductName();" style="float: left">초기화</button>
@@ -820,9 +878,9 @@
 								&nbsp;
 							</td>
 							<td>
-								<input type="text" name="etcInfo" id="etcInfo" style="width:300px;" class="req" placeholder="" />
+								<input type="text" name="etcInfo" id="etcInfo" style="width:300px;" placeholder="" />
 							</td>
-							<td rowspan="3">
+							<td rowspan="6">
 								주표시면 주원료 함량 표시시
 								원재료와 함량 표기 기재 요망
 							</td>
@@ -832,7 +890,39 @@
 								중량
 							</td>
 							<td>
-								<input type="text" name="weight" id="weight" style="width:300px;" class="req" placeholder="" />
+								<input type="text" name="weight" id="weight" style="width:300px;" placeholder="" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								포장단위
+							</td>
+							<td>
+								<div class="selectbox" style="width:200px;">  
+									<label for="packageUnit" id="packageUnit_label">선택</label> 
+									<select name="packageUnit" id="packageUnit" onChange="">		
+									</select>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								낱개 중량
+							</td>
+							<td>
+								<input type="text" name="pieceWeight" id="pieceWeight" style="width:300px;" placeholder="" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								박스단위
+							</td>
+							<td>
+								<div class="selectbox" style="width:200px;">  
+									<label for="boxUnit" id="boxUnit_label">선택</label> 
+									<select name="boxUnit" id="boxUnit" onChange="">		
+									</select>
+								</div>
 							</td>
 						</tr>
 						<tr>
@@ -845,7 +935,7 @@
 									<select name="keepCondition" id="keepCondition" onChange="fn_changeSelect(this)">		
 									</select>
 								</div>
-								<input type="text" name="keepConditionTxt" id="keepConditionTxt" style="display:none" class="req" placeholder="보관방법을 입력하세요."/>
+								<input type="text" name="keepConditionTxt" id="keepConditionTxt" style="display:none" placeholder="보관방법을 입력하세요."/>
 							</td>
 						</tr>
 						<tr>
@@ -877,9 +967,9 @@
 							</td>
 						</tr>
 						<tr>
-							<td>제품명</td>
+							<td>제품명<span class="mandatory">*</span></td>
 							<td colspan="2">
-								<input type="text" name="productNameBack" id="productNameBack" style="width:300px;" class="req" placeholder="" />
+								<input type="text" name="productNameBack" id="productNameBack" style="width:300px;" placeholder="" />
 							</td>
 						</tr>
 						<tr>
@@ -890,7 +980,7 @@
 									<select name="foodType" id="foodType" onChange="fn_changeSelect(this)">		
 									</select>
 								</div>
-								<input type="text" name="foodTypeTxt" id="foodTypeTxt" style="width:300px;display:none;" class="req" placeholder="식품유형을 입력하세요."/>
+								<input type="text" name="foodTypeTxt" id="foodTypeTxt" style="width:300px;display:none;" placeholder="식품유형을 입력하세요."/>
 							</td>
 						</tr>
 						<tr style="height:285px;">
@@ -914,49 +1004,49 @@
 						<tr>
 							<td>알러지 유발물질</td>
 							<td colspan="2">
-								<input type="text" name="allergyObject" id="allergyObject" style="width:95%;" class="req" placeholder="알러지 유발물질을 입력하세요." />
+								<input type="text" name="allergyObject" id="allergyObject" style="width:95%;" placeholder="알러지 유발물질을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>품목보고번호</td>
 							<td colspan="2">
-								<input type="text" name="manuNo" id="manuNo" style="width:300px;" class="req" placeholder="품목보고번호를 입력하세요." />
+								<input type="text" name="manuNo" id="manuNo" style="width:300px;" placeholder="품목보고번호를 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>소비기한</td>
 							<td colspan="2">
-								<input type="text" name="expiredDate" id="expiredDate" style="width:300px;" class="req" placeholder="소비기한을 입력하세요." />
+								<input type="text" name="expiredDate" id="expiredDate" style="width:300px;" placeholder="소비기한을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>포장재질</td>
 							<td colspan="2">
-								<input type="text" name="packageObject" id="packageObject" style="width:300px;" class="req" placeholder="포장재질을 입력하세요." />
+								<input type="text" name="packageObject" id="packageObject" style="width:300px;" placeholder="포장재질을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>제조원</td>
 							<td colspan="2">
-								<input type="text" name="maker" id="maker" style="width:95%;" class="req" placeholder="제조원을 입력하세요." />
+								<input type="text" name="maker" id="maker" style="width:95%;" placeholder="제조원을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>유통전문판매원</td>
 							<td colspan="2">
-								<input type="text" name="distribution" id="distribution" style="width:95%;" class="req" placeholder="유통전문판매원을 입력하세요." />
+								<input type="text" name="distribution" id="distribution" style="width:95%;" placeholder="유통전문판매원을 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>반품 및 교환장소</td>
 							<td colspan="2">
-								<input type="text" name="returned" id="returned" style="width:95%;" class="req" placeholder="반품 및 교환장소를 입력하세요." />
+								<input type="text" name="returned" id="returned" style="width:95%;" placeholder="반품 및 교환장소를 입력하세요." />
 							</td>
 						</tr>
 						<tr>
 							<td>소비자상담실</td>
 							<td colspan="2">
-								<input type="text" name="customerCounsel" id="customerCounsel" style="width:300px;" class="req" placeholder="소비자상담실 정보를 입력하세요." />
+								<input type="text" name="customerCounsel" id="customerCounsel" style="width:300px;" placeholder="소비자상담실 정보를 입력하세요." />
 							</td>
 						</tr>
 						<tr>
@@ -966,14 +1056,14 @@
 									<tbody id="etc_tbody" name="etc_tbody">
 										<tr id="etc_tr_1">
 											<td>
-												<input type="text" name="etc" id="etc" style="width: 90%;" class="req" />
+												<input type="text" name="etc" id="etc" style="width: 90%;"  />
 											</td>
 										</tr>
 									</tbody>
 									<tbody id="etc_tbody_temp" name="etc_tbody_temp" style="display:none">
 										<tr id="etc_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="etc" id="etc" style="width: 90%;" class="req" />
+												<input type="text" name="etc" id="etc" style="width: 90%;" />
 											</td>
 										</tr>
 									</tbody>
@@ -988,7 +1078,7 @@
 									<select name="separateDischarge" id="separateDischarge" onChange="fn_changeSelect(this)">		
 									</select>
 								</div>
-								<input type="text" name="separateDischargeTxt" id="separateDischargeTxt" style="width:300px;display:none" class="req" placeholder="분리배출 표시사항을 입력하세요."/>
+								<input type="text" name="separateDischargeTxt" id="separateDischargeTxt" style="width:300px;display:none" placeholder="분리배출 표시사항을 입력하세요."/>
 							</td>
 						</tr>
 						<tr>
@@ -1008,7 +1098,26 @@
 			</div>
 			
 			<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
-			<div class="title2 mt20" style="width:10%; display: inline-block;">
+			<div class="list_detail">
+				<ul style="">
+					<li>
+						<dt style="width: 20%">첨부파일</dt>
+						<dd style="width: 80%;">
+							<div class="add_file" id="add_file2" style="width:100%">
+								<span id="upFile">
+									<span class="file_load" id="fileSpan2" style="display: none;"><input type="file" name="files" id="file2" onchange="addFile(this, '00')" style="display:none"><label for="file2">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+									<span class="file_load" id="fileSpan3"><input type="file" name="files" id="file3" onchange="addFile(this, '00')" style="display:none"><label for="file3">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+								</span>
+							</div>
+							<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
+								<ul id="attatch_file">
+								</ul>	
+							</div>
+						</dd>
+					</li>
+				</ul>
+			</div>
+			<!-- <div class="title2 mt20" style="width:10%; display: inline-block;">
 				<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
 					<img src="/resources/images/icon_s_file.png" />파일첨부 
 				</button>
@@ -1022,7 +1131,7 @@
 						</dd>
 					</li>
 				</ul>
-			</div>
+			</div> -->
 							
 			<div class="main_tbl">
 				<div class="btn_box_con5">
@@ -1110,57 +1219,6 @@
 </div>
 <!-- 코드검색 추가레이어 close-->
 <!-- SAP 코드 검색 레이어 close-->
-
-<!-- 첨부파일 추가레이어 start-->
-<!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
-<!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
-<div class="white_content" id="dialog_attatch">
-	<div class="modal" style="margin-left: -355px; width: 710px; height: 550px; margin-top: -250px">
-		<h5 style="position: relative">
-			<span class="title">첨부파일 추가</span>
-			<div class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_madal_close" onClick="closeDialogWithClean('dialog_attatch')"></button>
-					</li>
-				</ul>
-			</div>
-		</h5>
-		<div class="list_detail">
-			<ul>
-				<li class="pt10 mb5">
-					<dt style="width: 20%">파일 선택</dt>
-					<dd style="width: 80%" class="ppp">
-						<div style="float: left; display: inline-block;">
-							<span class="file_load" id="fileSpan">
-								<input id="attatch_common_text" class="form-control form_point_color01" type="text" placeholder="파일을 선택해주세요." style="width:308px;float:left; cursor: pointer; color: black;" onclick="callAddFileEvent()" readonly="readonly">
-								<!-- <label class="btn-default" for="attatch_common" style="float:left; margin-left: 5px; width: 57px">파일 선택</label> -->
-								<input id="attatch_common" type="file" style="display:none;" onchange="setFileName(this)">
-							</span>
-							<button class="btn_small02 ml5" onclick="addFile(this, '00')">파일등록</button>
-						</div>
-						<div style="float: left; display: inline-block; margin-top: 5px">
-							
-						</div>
-					</dd>
-				</li>
-				<li class=" mb5">
-					<dt style="width: 20%">파일리스트</dt>
-					<dd style="width: 80%;">
-						<div class="file_box_pop" style="width:95%">
-							<ul name="popFileList"></ul>
-						</div>
-					</dd>
-				</li>
-			</ul>
-		</div>
-		<div class="btn_box_con">
-			<button class="btn_admin_red" onclick="uploadFiles();">파일 등록</button>
-			<button class="btn_admin_gray" onClick="closeDialogWithClean('dialog_attatch')">등록 취소</button>
-		</div>
-	</div>
-</div>
-<!-- 파일 생성레이어 close-->
 
 <!-- 신규 자재코드 검색 추가레이어 start-->
 <!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->

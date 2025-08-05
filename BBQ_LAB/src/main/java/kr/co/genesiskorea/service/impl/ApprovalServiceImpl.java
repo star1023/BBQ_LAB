@@ -9,6 +9,8 @@ import javax.annotation.Resource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -335,8 +337,10 @@ public class ApprovalServiceImpl implements ApprovalService {
 		int pageNo = 1;
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
 			System.err.println(e.getMessage());
+			viewCount = 10;
 			pageNo = 1;
 		}
 		
@@ -363,9 +367,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 		int pageNo = 1;
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
 			System.err.println(e.getMessage());
 			pageNo = 1;
+			viewCount = 10;
 		}
 		
 		// 페이징: 페이징 정보 SET
@@ -391,9 +397,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 		int pageNo = 1;
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
 			System.err.println(e.getMessage());
 			pageNo = 1;
+			viewCount = 10;
 		}
 		
 		// 페이징: 페이징 정보 SET
@@ -419,9 +427,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 		int pageNo = 1;
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
 			System.err.println(e.getMessage());
 			pageNo = 1;
+			viewCount = 10;
 		}
 		
 		// 페이징: 페이징 정보 SET
@@ -623,9 +633,15 @@ public class ApprovalServiceImpl implements ApprovalService {
 						map.put("status", "Y");								//결재문서 승인처리
 						approvalDao.updateApprStatus(map);
 						map = new HashMap<String, Object>();
+						map.put("apprIdx", (String)param.get("apprIdx"));	//결재 ID
 						map.put("docIdx", (String)param.get("docIdx"));		//문서 ID
 						map.put("docType", (String)param.get("docType"));	//문서 유형
 						map.put("docStatus", "COMP");						//완료
+						//appr header history에 저장한다.
+						approvalDao.insertArrpHeaderHistory(map);
+						//appr item history에 저장한다.
+						approvalDao.insertArrpItemHistory(map);
+						
 						approvalDao.updateDocStatus(map);
 						if( (String)param.get("docType") != null && "MENU".equals((String)param.get("docType")) ) {
 							manualDao.insertManual(param);
@@ -855,10 +871,16 @@ public class ApprovalServiceImpl implements ApprovalService {
 					approvalDao.updateApprStatus(map);
 					//3.결재 header를 반려로 업데이트한다.
 					map = new HashMap<String, Object>();
+					map.put("apprIdx", param.get("apprIdx"));		//문서 ID
 					map.put("docIdx", (String)param.get("docIdx"));		//문서 ID
 					map.put("docType", (String)param.get("docType"));	//문서 유형
 					map.put("docStatus", "RET");						//반려
 					approvalDao.updateDocStatus(map);
+					//appr header history에 저장한다.
+					approvalDao.insertArrpHeaderHistory(map);
+					//appr item history에 저장한다.
+					approvalDao.insertArrpItemHistory(map);
+					
 					returnMap.put("RESULT", "S");
 					//담당자에게 알림을 보낸다.
 					HashMap<String, Object> notiMap = new HashMap<String, Object>();
@@ -901,5 +923,63 @@ public class ApprovalServiceImpl implements ApprovalService {
 	public void updateRefIsRead(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		approvalDao.updateRefIsRead(param);
+	}
+
+	@Override
+	public Map<String, Object> addReference(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		try {
+			JSONParser parser = new JSONParser();
+			JSONArray userIdArr = (JSONArray) parser.parse((String)param.get("userIdArr"));
+			JSONArray startDateArr = (JSONArray) parser.parse((String)param.get("startDateArr"));
+			JSONArray endDateArr = (JSONArray) parser.parse((String)param.get("endDateArr"));
+			
+			System.err.println(userIdArr);
+			System.err.println(startDateArr);
+			System.err.println(endDateArr);
+			
+			ArrayList<HashMap<String,Object>> refInfoList = new ArrayList<HashMap<String,Object>>();
+			for( int i = 0 ; i < userIdArr.size() ; i++ ) {
+				HashMap<String,Object> refInfoMap = new HashMap<String,Object>();
+				refInfoMap.put("apprIdx", param.get("apprIdx") );
+				try{
+					refInfoMap.put("userId", userIdArr.get(i));
+				} catch(Exception e) {
+					refInfoMap.put("userId", "");
+				}
+				
+				try{
+					refInfoMap.put("startDate", startDateArr.get(i));
+				} catch(Exception e) {
+					refInfoMap.put("startDate", "");
+				}
+				
+				try{
+					refInfoMap.put("endDate", endDateArr.get(i));
+				} catch(Exception e) {
+					refInfoMap.put("endDate", "");
+				}
+				
+				refInfoList.add(refInfoMap);
+			}
+			
+			System.err.println(refInfoList);
+			if( refInfoList.size() > 0 ) {
+				approvalDao.addReference(refInfoList);
+			}
+			
+			returnMap.put("RESULT", "S");
+		} catch( Exception e ) {
+			returnMap.put("RESULT", "E");
+			returnMap.put("MESSAGE", e.getMessage());
+		}
+		return returnMap;
+	}
+
+	@Override
+	public List<Map<String, Object>> selectRefInfoList(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return approvalDao.selectRefInfoList(param);
 	}		
 }

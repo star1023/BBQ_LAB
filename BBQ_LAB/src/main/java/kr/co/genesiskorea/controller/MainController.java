@@ -59,19 +59,20 @@ public class MainController {
 		// 결재 상태 리스트 조회
 		Map<String, Object> apprStatusCount = mainService.getApprStatusCount(param);
 		// 제품완료보고서 개수
-		int productDocCount = productService.selectMyDataCount(param);
-		int menuDocCount = menuService.selectMyDataCount(param);
+		//int productDocCount = productService.selectMyDataCount(param);
+		//int menuDocCount = menuService.selectMyDataCount(param);
 		
 		ObjectMapper mapper = new ObjectMapper();
 	    String docCountJson = mapper.writeValueAsString(docCount);
 	    String docStatusCountJson = mapper.writeValueAsString(docStatusCount);
 	    String apprStatusCountJson = mapper.writeValueAsString(apprStatusCount);
 	    model.addAttribute("userData", userData);
+	    model.addAttribute("docCount", docCount);
 	    model.addAttribute("docCountJson", docCountJson);
 	    model.addAttribute("docStatusCountJson", docStatusCountJson);
 	    model.addAttribute("apprStatusCountJson", apprStatusCountJson);
-	    model.addAttribute("productDocCount", productDocCount);
-	    model.addAttribute("menuDocCount", menuDocCount);
+	    //model.addAttribute("productDocCount", productDocCount);
+	    //model.addAttribute("menuDocCount", menuDocCount);
 		
 		return "/main/main";
 	}

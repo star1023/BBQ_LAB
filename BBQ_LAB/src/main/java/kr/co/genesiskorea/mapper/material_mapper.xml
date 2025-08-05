@@ -247,7 +247,8 @@
 		SELECT 
 			COUNT(SAP_CODE) 
 		FROM
-			lab_erp_material2
+			lab_erp_material3
+			<!-- lab_erp_material2 -->
 		WHERE 1 = 1 
 			<!-- AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%') -->
 		<include refid="material.whereErpMaterialList" />
@@ -255,8 +256,49 @@
 	
 	<select id="selectErpMaterialList" parameterType="map" resultType="hashmap">
 		SELECT 
-			* 
+			tmp.*
+			, CASE
+				WHEN MAT_TYPE = 'NLA2' THEN '메장 메뉴'
+				ELSE '원,부재료'
+				END AS MAT_TYPE_TXT
+			, FN_GET_CODE_NAME('KEEP_CONDITION', tmp.KEEP_CONDITION) AS KEEP_CONDITION_TXT  
 		FROM (
+			SELECT 
+				row_number() over (order by  SAP_CODE ASC) as rnum
+				, COM_CODE
+				, SAP_CODE
+				, NAME
+				, MAT_TYPE
+				, KEEP_CONDITION
+				, MAT_GROUP
+				, MAT_GROUP_NAME
+				, UNIT
+				, CHANGE_UNIT
+				, CHANGE_COUNT
+				, RECIPE_UNIT
+				, RECIPE_AMOUNT
+				, WIDTH
+				, WIDTH_UNIT
+				, LENGTH
+				, LENGTH_UNIT
+				, HEIGHT
+				, HEIGHT_UNIT
+				, TOTAL_WEIGHT
+				, TOTAL_WEIGHT_UNIT
+				, STANDARD
+				, ORIGIN
+				, LEAD_TIME
+				, SAFETY_STOCK_DAY
+				, BOX_AMOUNT
+				, PALLET_AMOUNT
+				, CD_ACCT
+				, EXPIRATION_DATE
+				, USE_YN
+				, MIN_ORDER_AMOUNT
+			FROM
+				lab_erp_material3
+			WHERE 1 = 1 
+			<!--			
 			SELECT 
 				row_number() over (order by  SAP_CODE ASC) as rnum
 				, SAP_CODE
@@ -287,12 +329,55 @@
 			FROM
 				lab_erp_material2
 			WHERE 1 = 1 
+			-->
 			<!--  	AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%') -->
 			<include refid="material.whereErpMaterialList" />
 		)tmp WHERE rnum between #{startRow} and #{endRow}	
 	</select>
 	
 	<select id="selectErpMaterialData" parameterType="map" resultType="hashmap">
+		SELECT
+			COM_CODE
+			, SAP_CODE
+			, NAME
+			, MAT_TYPE
+			, CASE
+				WHEN MAT_TYPE = 'NLA2' THEN '메장 메뉴'
+				ELSE '원,부재료'
+				END AS MAT_TYPE_TXT
+			, KEEP_CONDITION
+			, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_TXT  
+			, MAT_GROUP
+			, MAT_GROUP_NAME
+			, UNIT
+			, CHANGE_UNIT
+			, CHANGE_COUNT
+			, RECIPE_UNIT
+			, RECIPE_AMOUNT
+			, WIDTH
+			, WIDTH_UNIT
+			, LENGTH
+			, LENGTH_UNIT
+			, HEIGHT
+			, HEIGHT_UNIT
+			, TOTAL_WEIGHT
+			, TOTAL_WEIGHT_UNIT
+			, STANDARD
+			, ORIGIN
+			, LEAD_TIME
+			, SAFETY_STOCK_DAY
+			, BOX_AMOUNT
+			, PALLET_AMOUNT
+			, CD_ACCT
+			, EXPIRATION_DATE
+			, USE_YN
+			, MIN_ORDER_AMOUNT
+		FROM
+			lab_erp_material3
+		WHERE 1 = 1
+			AND SAP_CODE = #{sapCode}
+		
+		<!-- 
 		SELECT
 			SAP_CODE
 				, NAME
@@ -323,6 +408,7 @@
 			lab_erp_material2
 		WHERE 1 = 1
 			AND SAP_CODE = #{sapCode}
+		 -->	
 	</select>
 	
 	<update id="updateMaterial" parameterType="map">

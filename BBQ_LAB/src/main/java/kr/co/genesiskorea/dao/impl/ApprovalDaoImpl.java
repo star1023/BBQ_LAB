@@ -1,5 +1,7 @@
 package kr.co.genesiskorea.dao.impl;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -227,5 +229,29 @@ public class ApprovalDaoImpl implements ApprovalDao {
 	public void updateApprHeader(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("approval.updateApprHeader", param);
+	}
+
+	@Override
+	public void addReference(List<HashMap<String,Object>> list) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("approval.addReference", list);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectRefInfoList(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("approval.selectRefInfoList", param);
+	}
+
+	@Override
+	public void insertArrpHeaderHistory(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("approval.insertArrpHeaderHistory", param);
+	}
+
+	@Override
+	public void insertArrpItemHistory(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("approval.insertArrpItemHistory", param);
 	}	
 }

@@ -145,8 +145,12 @@
 	var attatchFileTypeArr = [];
 	var attatchTempFileArr = [];
 	var attatchTempFileTypeArr = [];
+	var deletedFileIdArr = [];
+	var deletedFileArr = [];
+	var deletedFilePathArr = [];
 	function callAddFileEvent(){
-		$('#attatch_common').click();
+		//$('#attatch_common').click();
+		$('#file3').click();
 	}
 	function setFileName(element){
 		if(element.files.length > 0)
@@ -157,15 +161,17 @@
 	function addFile(element, fileType){
 		var randomId = Math.random().toString(36).substr(2, 9);
 		
-		if($('#attatch_common').val() == null || $('#attatch_common').val() == ''){
+		if($(element).val() == null || $(element).val() == ''){
 			return alert('파일을 선택해주세요');
 		}
 		
-		fileElement = document.getElementById('attatch_common');
+		fileElement = document.getElementById($(element).prop("id"));
 		
 		var file = fileElement.files;
 		var fileName = file[0].name
 		var fileTypeText = $(element).text();
+
+		
 		var isDuple = false;
 		attatchTempFileArr.forEach(function(file){
 			if(file.name == fileName)
@@ -187,16 +193,59 @@
 			return;
 		}
 		
+		attatchFileArr.push(file[0]);
+		attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+		attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
 		
+		$(element).val("");
 		
-		attatchTempFileArr.push(file[0]);
-		attatchTempFileArr[attatchTempFileArr.length-1].tempId = randomId;
-		attatchTempFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+		$("#attatch_file").append(childTag);
+	}
+	
+	function addDropFile(file, fileType){
+		var randomId = Math.random().toString(36).substr(2, 9);
 		
-		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+randomId+'\')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;'+fileName+'</li>'
-		$('ul[name=popFileList]').append(childTag);
-		$('#attatch_common').val('');
-		$('#attatch_common').change();
+		var fileName = file.name;
+		var fileTypeText = file.text();
+		var isDuple = false;
+		
+		attatchFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		attatchTempFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		attatchFileArr.forEach(function(file){
+			if(file.name == fileName)
+				isDuple = true;
+		})
+		
+		if(isDuple){
+			if(!confirm('같은 이름의 파일이 존재합니다. 계속 진행하시겠습니까?')){
+				return;
+			};
+		}
+		
+		if( !checkFileName(fileName) ) {			
+			return;
+		}
+		
+		attatchFileArr.push(file);
+		attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+		attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+		
+		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+		$("#attatch_file").append(childTag);
+	}
+	
+	function removeTempFile(element, tempId){
+		$(element).parent().remove();
+		$("#tempFileList").removeOption(tempId);
 	}
 	
 	function removeFile(element, tempId){
@@ -218,53 +267,59 @@
 		//console.log($("#attatch_file").children().length);
 	}
 	
+	function fn_removeTempFile(el, fileIdx) {
+	    const $li = $(el).closest('li');
+
+	    // li에 data-* 로 박아둔 파일명 및 경로 추출
+	    const fileName = $li.data('name');
+	    const filePath = $li.data('path');
+
+	    // 배열에 저장
+	    deletedFileIdArr.push(fileIdx);
+	    deletedFileArr.push(fileName);
+	    deletedFilePathArr.push(filePath);
+	    $("#tempFileList").removeOption(fileIdx);
+
+	    // 화면에서 삭제
+	    $li.remove();
+	}
 	
-	function uploadFiles(){
-		if( attatchTempFileArr.length == 0 ) {
-			alert("파일을 등록해주세요.");
-			return;
+	function allowDrop(e) {
+		e.preventDefault();
+		
+		e.target.style.backgroundColor = "black";
+		e.target.style.opacity  = "0.2";
+	}
+
+	function drag(ev) {
+		ev.dataTransfer.setData("text", ev.target.id);
+	}
+
+	function drop(e) {
+		e.preventDefault();
+		
+		var files = e.target.files || e.dataTransfer.files;
+		for(var i=0; i<files.length; i++){
+			addDropFile(files[i], '00')
 		}
-		
-		attatchTempFileArr.forEach(function(tempFile, idx1){
-			attatchFileArr.push(tempFile);
-			attatchFileTypeArr.push(attatchTempFileTypeArr[idx1]);		
-		});
-		
-		$("#attatch_file").html("");
-		attatchFileTypeArr.forEach(function(object,idx){
-			var tempId = object.tempId;
-			var childTag = '<li><a href="#none" onclick="removeFile(this, \''+tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[idx].name+'</li>'
-			$("#attatch_file").append(childTag);
-		});
-		
-		$("#docTypeTemp").removeOption(/./);
-		var docTypeTxt = "";
-		$('input:checkbox[name=docType]').each(function (index) {
-			if($(this).is(":checked")==true){
-		    	$("#docTypeTemp").addOption($(this).val(), $(this).next("label").text(), true);
-		    	//if( index != 0 ) {
-	    		if( docTypeTxt != "" ){
-	    			docTypeTxt += ", ";
-	    		}
-	    		docTypeTxt += $(this).next("label").text();
-		    	//} else {
-		    	//	docTypeTxt += $(this).next("label").text();
-		    	//}
-		    }
-		});
-		$("#docTypeTxt").html(docTypeTxt);
-		closeDialogWithClean('dialog_attatch');
+		e.target.style.backgroundColor = "#fff";
+		e.target.style.opacity  = "1";
+	}
+
+	function drogEnd(e){
+		e.target.style.backgroundColor = "#fff";
+		e.target.style.opacity  = "1";
 	}
 	
 	function checkFileName(str){
 		var result = true;
 	    //1. 확장자 체크
 	    var ext =  str.split('.').pop().toLowerCase();
-	    if($.inArray(ext, ['pdf']) == -1) {
+	    if($.inArray(ext, ['pdf','png','jpg','jpeg']) == -1) {
 	    	var message = "";
 	    	message += ext+'파일은 업로드 할 수 없습니다.';
 	    	//message += "\n";
-	    	message += "(pdf 만 가능합니다.)";
+	    	message += "(pdf와 이미지(png,jpg,jpeg)만 가능합니다.)";
 	        alert(message);
 	        result = false;
 	    }
@@ -316,6 +371,10 @@
 			for (var i = 0; i < attatchFileTypeArr.length; i++) {
 				formData.append('fileType', attatchFileTypeArr[i].fileType)			
 			}
+			
+			formData.append('deletedFileIdArr', JSON.stringify(deletedFileIdArr));
+			formData.append('deletedFileArr', JSON.stringify(deletedFileArr));
+			formData.append('deletedFilePathArr', JSON.stringify(deletedFilePathArr));
 			
 			var changeReasonArr = new Array();
 			$('tr[id^=changeReason_tr]').toArray().forEach(function(contRow){
@@ -528,6 +587,10 @@
 				formData.append('fileType', attatchFileTypeArr[i].fileType)			
 			}
 			
+			formData.append('deletedFileIdArr', JSON.stringify(deletedFileIdArr));
+			formData.append('deletedFileArr', JSON.stringify(deletedFileArr));
+			formData.append('deletedFilePathArr', JSON.stringify(deletedFilePathArr));
+			
 			var changeReasonArr = new Array();
 			$('tr[id^=changeReason_tr]').toArray().forEach(function(contRow){
 				var rowId = $(contRow).attr('id');
@@ -663,7 +726,7 @@
 		location.href = '/designReport/list';
 	}
 	
-	function fn_removeTempFile(element, tempId){
+	/* function fn_removeTempFile(element, tempId){
 		//서버의 파일을 삭제한다.
 		var URL = '/file/deleteFile2Ajax';
 		$.ajax({
@@ -684,7 +747,7 @@
 				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
 			}			
 		});
-	}
+	} */
 	
 	function fn_apprSubmit(){
 		if( $("#apprLine option").length == 0 ) {
@@ -998,7 +1061,7 @@
 								<input type="hidden" name="currentStatus" id="currentStatus" value="${designData.data.STATUS}"/>
 							</td>
 						</tr>
-						<c:if test="${productData.data.STATUS != null && productData.data.STATUS != 'COND_APPR' }">
+						<c:if test="${designData.data.STATUS != null && designData.data.STATUS != 'COND_APPR' }">
 						<tr>
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
@@ -1187,7 +1250,35 @@
 			</div>
 			
 			<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부</span></div>
-			<div class="title2 mt20" style="width:10%; display: inline-block;">
+			<div class="list_detail">
+				<ul style="">
+					<li>
+						<dt style="width: 20%">첨부파일 <span class="mandatory">*</span>
+							<select id="tempFileList" name="tempFileList" multiple style="display: none">
+							<c:forEach items="${designData.fileList}" var="fileList" varStatus="status">
+								<option value="${fileList.FILE_IDX}" selected>${fileList.ORG_FILE_NAME}</option>
+							</c:forEach>
+							</select>
+						</dt>
+						<dd style="width: 80%;">
+							<div class="add_file" id="add_file2" style="width:100%">
+								<span id="upFile">
+									<span class="file_load" id="fileSpan2" style="display: none;"><input type="file" name="files" id="file2" onchange="addFile(this, '00')" style="display:none"><label for="file2">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+									<span class="file_load" id="fileSpan3"><input type="file" name="files" id="file3" onchange="addFile(this, '00')" style="display:none"><label for="file3">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+								</span>
+							</div>
+							<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
+								<ul id="attatch_file">
+									<c:forEach items="${designData.fileList}" var="fileList" varStatus="status">
+										<li data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}"><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${fileList.ORG_FILE_NAME}</li>
+									</c:forEach>
+								</ul>	
+							</div>
+						</dd>
+					</li>
+				</ul>
+			</div>
+			<%-- <div class="title2 mt20" style="width:10%; display: inline-block;">
 				<button class="btn_con_search" onClick="openDialog('dialog_attatch')">
 					<img src="/resources/images/icon_s_file.png" />파일첨부 
 				</button>
@@ -1206,9 +1297,9 @@
 						</dd>
 					</li>
 				</ul>
-			</div>
+			</div> --%>
 			
-			<div class="title2 mt20"  style="width:90%;"><span class="txt">기안문</span></div>
+			<div class="title2 mt20"  style="width:90%;"><span class="txt">비고</span></div>
 			<div class="main_tbl">
 				<ul>
 					<li class="">

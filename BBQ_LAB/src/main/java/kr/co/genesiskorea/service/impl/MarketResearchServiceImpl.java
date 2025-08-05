@@ -440,6 +440,10 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
 			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
 			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
+			
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
 
 			//1. 출장계획 등록
 			reportDao.updateMarketResearch(param);
@@ -531,6 +535,20 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			        String fileIdx = (String)deletedFileIdArr.get(i);
+			    	String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
+			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
 				Calendar cal = Calendar.getInstance();
@@ -596,6 +614,10 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
 			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
 			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
+			
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
+			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
 			
 			//1. 출장계획 수정
 			reportDao.updateMarketResearch(param);
@@ -686,6 +708,20 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			        String fileIdx = (String)deletedFileIdArr.get(i);
+			    	String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
 			
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
