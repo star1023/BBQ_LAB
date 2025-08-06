@@ -2200,8 +2200,6 @@ li {
 			<div class="top_btn_box">
 				<ul>
 					<li>
-						<button class="btn_circle_modifiy" onclick="fn_copySearch()">&nbsp;</button>
-						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
 					</li>
 				</ul>
 			</div>
@@ -2217,6 +2215,7 @@ li {
 						<a href="#" onClick="tabChange('tab2')"><li class="" id="tab2_li">완료보고서상세정보</li></a>
 					</div>
 					<div>
+						<button class="btn_small_search ml5" onclick="fn_copySearch()">불러오기</button>
 						<button class="btn_small_search ml5" onclick="fn_openPreview()">미리보기</button>
 					</div>
 				</ul>
@@ -2692,7 +2691,7 @@ li {
 									<label for="newMat2"><span></span>사용</label>
 								</td>
 							</tr>
-							<tr>
+							<tr style="display:none">
 								<th style="border-left: none;">첨부파일 유형</th>
 								<td colspan="5">
 									<div id="docTypeTxt"></div>
@@ -3175,7 +3174,7 @@ li {
 				<li>
 					<dt>메뉴검색</dt>
 					<dd>
-						<input type="text" value="" class="req" style="width:302px; float: left" name="searchValue" id="searchValue" placeholder="제품코드/제품명을 입력하세요."/>
+						<input type="text" value="" class="req" style="width:302px; float: left" name="searchValue" id="searchValue" placeholder="메뉴코드/메뉴명을 입력하세요."/>
 						<button class="btn_small_search ml5" onclick="fn_search()" style="float: left">조회</button>
 					</dd>
 				</li>

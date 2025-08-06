@@ -859,11 +859,11 @@ li {
 		<h2 style="position: relative">
 			<span class="title_s">Recipe Management</span><span class="title">상품 레시피</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">

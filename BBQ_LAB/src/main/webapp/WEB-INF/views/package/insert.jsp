@@ -818,11 +818,11 @@
 		<h2 style="position:relative">
 			<span class="title_s">Package Info Document</span><span class="title">표시사항기재양식</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">

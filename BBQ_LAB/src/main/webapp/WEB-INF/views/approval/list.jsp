@@ -189,7 +189,7 @@
 		colgroup += "<col />";
 		colgroup += "<col width=\"10%\">";
 		colgroup += "<col width=\"15%\">";
-		colgroup += "<col width=\"8%\">";
+		colgroup += "<col width=\"15%\">";
 		var thead = "";
 		thead += "<tr>";
 		thead += "<th>결재번호</th>";
@@ -251,11 +251,17 @@
 						html += "	<td>"+item.REG_DATE_TXT+"</td>";
 						html += "	<td>";
 						html += "		<ul class=\"list_ul\">";
+						html += "			<li>";
 						if( item.LAST_STATUS == 'N' ) {
-							html += "			<li><button class=\"btn_doc\" onClick=\"cancelAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"')\"><img src=\"/resources/images/icon_doc06.png\"> 상신취소</button></li>";
+							html += "			<button class=\"btn_doc\" onClick=\"cancelAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"')\"><img src=\"/resources/images/icon_doc06.png\"> 상신취소</button>";
 						} else if( item.LAST_STATUS == 'CA' ) {
 							//html += "			<li><button type=\"button\" class=\"btn_doc\" onClick=\"reAppr('"+item.APPR_IDX+"','"+item.DOC_TYPE+"','"+item.DOC_IDX+"');\"><img src=\"/resources/images/icon_doc03.png\"> 재상신</button></li>";
 						}
+						if( item.LAST_STATUS == 'Y' ) {
+							html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">참조</button>";
+							html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefListPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">참조자리스트</button>";
+						}
+						html += "			</li>";
 						html += "		</ul>";
 						html += "	</td>";
 						html += "</tr>";
@@ -438,7 +444,6 @@
 		colgroup += "<col />";
 		colgroup += "<col width=\"10%\">";
 		colgroup += "<col width=\"15%\">";
-		colgroup += "<col width=\"15%\">";
 		var thead = "";
 		thead += "<tr>";
 		thead += "<th>결재번호</th>";
@@ -447,7 +452,6 @@
 		thead += "<th>결재문서명</th>";
 		thead += "<th>현재결재</th>";
 		thead += "<th>상신일</th>";
-		thead += "<th></th>";
 		thead += "</tr>";
 		$("#colgroup").html(colgroup);
 		$("#thead").html(thead);
@@ -492,10 +496,7 @@
 						html += "	<td><a href=\"#\" onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
 						html += "	<td>"+item.REG_USER_NAME+"</td>";
 						html += "	<td>"+item.REG_DATE_TXT+"</td>";
-						html += "	<td>";
-						html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">참조</button>";
-						html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefListPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">참조자리스트</button>";
-						html += "	</td>";
+						
 						html += "</tr>";
 					});					
 				} else {

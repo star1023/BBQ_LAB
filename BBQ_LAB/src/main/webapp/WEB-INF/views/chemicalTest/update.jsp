@@ -939,7 +939,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 	function fn_closeErpMatRayer(){
 		$('#searchErpMatValue').val('')
 		$('#erpMatLayerBody').empty();
-		$('#erpMatLayerBody').append('<tr><td colspan="10">원료코드 혹은 원료코드명을 검색해주세요</td></tr>');
+		$('#erpMatLayerBody').append('<tr><td colspan="10">상품코드 혹은 상품명을 검색해주세요</td></tr>');
 		$('#erpMatCount').text(0);
 		closeDialog('dialog_erpMaterial');
 	}
@@ -1624,7 +1624,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 		<h2 style="position:relative">
 			<span class="title_s">Request For Chemical Test</span><span class="title">이화학 검사 의뢰서</span>
 			<div class="top_btn_box">
-				<ul>
+				<%-- <ul>
 					<li>
 						<c:if test="${isSafeTeam}">
 							<button class="btn_circle_save" onclick="fn_safeTeamUpdate()">&nbsp;</button>
@@ -1633,7 +1633,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 							<button class="btn_circle_save" onclick="fn_update()">&nbsp;</button>
 						</c:if>
 					</li>
-				</ul>
+				</ul> --%>
 			</div>
 		</h2>
 		<div class="group01 mt20">
@@ -1657,18 +1657,18 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">의뢰일자</th>
+							<th style="border-left: none;">의뢰일자<span class="mandatory">*</span></th>
 							<td>
 								<input type="hidden" name="idx" id="idx" value="${chemicalTestData.data.CHEMICAL_IDX}">
-								<input type="text" name="requestDate" id="requestDate" class="req" value="${chemicalTestData.data.REQUEST_DATE}"/>								
+								<input type="text" name="requestDate" id="requestDate"  value="${chemicalTestData.data.REQUEST_DATE}"/>								
 							</td>
 							<th style="border-left: none;">희망 완료일</th>
 							<td>
-								<input type="text" name="completionDate" id="completionDate" class="req" value="${chemicalTestData.data.COMPLETION_DATE}"/>
+								<input type="text" name="completionDate" id="completionDate"  value="${chemicalTestData.data.COMPLETION_DATE}"/>
 							</td>
 							<th style="border-left: none; width:120px;">의뢰자</th>
 							<td>
-								<input type="text" name="requestUser" id="requestUser" class="req" value="${chemicalTestData.data.REQUEST_USER}"/>
+								<input type="text" name="requestUser" id="requestUser"  value="${chemicalTestData.data.REQUEST_USER}"/>
 							</td>
 						</tr>
 					</tbody>
@@ -1691,17 +1691,17 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 					</colgroup>
 					<tbody >
 						<tr style="height:80px;">
-							<th style="border-left: none;" class="contentBlock">시료명</th>
+							<th style="border-left: none;" class="contentBlock">시료명<span class="mandatory">*</span></th>
 							<td >
-								<input type="text"  style="float: left; display: none;" class="req" name="productCode" id="productCode" value="${chemicalTestData.data.PRODUCT_CODE}" placeholder="코드를 조회 하세요." readonly/>
-								<input type="text"  style="float: left; display: none;" class="req" name="sapCode" id="sapCode" value="${chemicalTestData.data.SAP_CODE}" placeholder="코드를 조회 하세요." readonly/>
-								<input type="text"  style="float: left" class="req" name="productName" id="productName" value="${chemicalTestData.data.PRODUCT_NAME}" placeholder="코드를 조회 하세요." />
+								<input type="text"  style="float: left; display: none;"  name="productCode" id="productCode" value="${chemicalTestData.data.PRODUCT_CODE}" placeholder="코드를 조회 하세요." readonly/>
+								<input type="text"  style="float: left; display: none;"  name="sapCode" id="sapCode" value="${chemicalTestData.data.SAP_CODE}" placeholder="코드를 조회 하세요." readonly/>
+								<input type="text"  style="float: left"  name="productName" id="productName" value="${chemicalTestData.data.PRODUCT_NAME}" placeholder="코드를 조회 하세요." />
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 							</td>
-							<th style="border-left: none;" class="contentBlock">시료수량 (EA)</th>
+							<th style="border-left: none;" class="contentBlock">시료수량 (EA)<span class="mandatory">*</span></th>
 							<td>
-								<input type="text" id="productCount" name="productCount" class="req" value="${chemicalTestData.data.PRODUCT_COUNT}"/>
+								<input type="text" id="pr name="productCount"  value="${chemicalTestData.data.PRODUCT_COUNT}"/>
 							</td>
 							<th style="border-left: none;" class="contentBlock">보관방법</th>
 							<!-- 
@@ -1780,7 +1780,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 				</c:if>
 			</c:forEach>
 			<!-- 1. 검사 요청 방법 -->
-			<span class="title3" style="width: 76%; margin-left: 30px;">1. 검사 요청 방법</span>
+			<span class="title3" style="width: 76%; margin-left: 30px;">1. 검사 요청 방법<span class="mandatory">*</span></span>
 			<c:if test="${not isSafeTeam}">
 				<div class="title2" style="width: 20%; display: inline-block;">
 					<button class="btn_con_search" onClick="fn_addCol('standard1')" id="standard1_add_btn">
@@ -1806,7 +1806,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 										<label for="standard1_${status.index}"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="standard1" class="req" style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
+										<inpxt" name="standard1"  style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
 									</td>
 								</tr>
 							</c:if>
@@ -1819,7 +1819,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 									<label for="standard1_0"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="standard1" class="req" style="width:99%; float: left" />
+									<input type="text" name="standard1"  style="width:99%; float: left" />
 								</td>
 							</tr>
 						</c:if>
@@ -1831,7 +1831,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 								<label for="standard1_TEMP"><span></span></label>
 							</td>
 							<td>
-								<input type="text" name="standard1" class="req" style="width:99%; float: left" />
+								<input type="text" name="standard1"  style="width:99%; float: left" />
 							</td>
 						</tr>
 					</tbody>
@@ -1840,7 +1840,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 			
 			<!-- 2. 검사 진행 일정 -->
 			<li style="list-style: none;">
-				<span class="title3" style="width: 76%; margin-left: 30px;">2. 검사 진행 일정</span>
+				<span class="title3" style="width: 76%; margin-left: 30px;">2. 검사 진행 일정<span class="mandatory">*</span></span>
 				<c:if test="${not isSafeTeam}">
 					<div class="title2" style="width: 20%; display: inline-block;">
 						<button class="btn_con_search" onClick="fn_addCol('standard2')" id="standard2_add_btn">
@@ -1866,7 +1866,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 											<label for="standard2_${status.index}"><span></span></label>
 										</td>
 										<td>
-											<input type="text" name="standard2" class="req" style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
+											<inpxt" name="standard2"  style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
 										</td>
 									</tr>
 								</c:if>
@@ -1879,7 +1879,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 										<label for="standard2_0"><span></span></label>
 									</td>
 									<td>
-										<input type="text" name="standard2" class="req" style="width:99%; float: left" />
+										<input type="text" name="standard2"  style="width:99%; float: left" />
 									</td>
 								</tr>
 							</c:if>
@@ -1891,7 +1891,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 									<label for="standard2_TEMP"><span></span></label>
 								</td>
 								<td>
-									<input type="text" name="standard2" class="req" style="width:99%; float: left" />
+									<input type="text" name="standard2"  style="width:99%; float: left" />
 								</td>
 							</tr>
 						</tbody>
@@ -2319,7 +2319,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 	<input id="erpItemType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px ">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeErpMatRayer()"></button></li>
@@ -2362,7 +2362,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 					<tbody id="erpMatLayerBody">
 						<input type="hidden" id="erpMatLayerPage" value="0"/>
 						<Tr>
-							<td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="9">상품코드 혹은 상품명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>

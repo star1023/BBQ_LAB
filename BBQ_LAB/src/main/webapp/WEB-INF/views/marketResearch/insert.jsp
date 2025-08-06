@@ -873,18 +873,19 @@
 		<h2 style="position:relative">
 			<span class="title_s">Market Research Report</span><span class="title">시장조사결과보고서</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_modifiy" onclick="fn_copySearch()">&nbsp;</button>
 						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">기본정보</span>
 				<div class="pr15">
+					<button class="btn_small_search" onclick="fn_copySearch()">불러오기</button>
 					<button class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
 				</div>
 			</div>
@@ -898,14 +899,14 @@
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">제목</th>
+							<th style="border-left: none;">제목<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input type="hidden" name="planIdx" id="planIdx"/>
-								<input type="text" name="title" id="title" style="width: 90%;" class="req" />
+								<input type="text" name="title" id="title" style="width: 90%;" />
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">결재라인</th>
+							<th style="border-left: none;">결재라인<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
 								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
@@ -931,20 +932,20 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">대상업소<span onClick="fn_addCol('market')" id="span_market">(+)</span></th>
+							<th style="border-left: none;">대상업소<span onClick="fn_addCol('market')" id="span_market">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">
 								<table width="100%" border="0">
 									<tbody id="market_tbody" name="market_tbody">
 										<tr id="market_tr_1">
 											<td>
-												<input type="text"  style="width:300px; float: left" class="req" name="marketName" id="marketName" placeholder="가."/>
+												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder="가."/>
 											</td>
 										</tr>
 									</tbody>
 									<tbody id="market_tbody_temp" name="market_tbody_temp" style="display:none">
 										<tr id="market_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text"  style="width:300px; float: left" class="req" name="marketName" id="marketName" placeholder=""/>
+												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder=""/>
 											</td>
 										</tr>
 									</tbody>
@@ -952,20 +953,20 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">목적<span onClick="fn_addCol('purpose')" id="span_purpose">(+)</span></th>
+							<th style="border-left: none;">목적<span onClick="fn_addCol('purpose')" id="span_purpose">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">								
 								<table width="100%" border="0">
 									<tbody id="purpose_tbody" name="purpose_tbody">
 										<tr id="purpose_tr_1">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 90%;" class="req" />
+												<input type="text" name="purpose" id="purpose" style="width: 90%;"/>
 											</td>
 										</tr>
 									</tbody>
 									<tbody id="purpose_tbody_temp" name="purpose_tbody_temp" style="display:none">
 										<tr id="purpose_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 90%;" class="req" />
+												<input type="text" name="purpose" id="purpose" style="width: 90%;"/>
 											</td>
 										</tr>
 									</tbody>
@@ -973,8 +974,8 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">일시</th>
-							<td colspan="3"><input type="text" name="researchDate" id="researchDate" style="width: 150px;" class="req" /></td>
+							<th style="border-left: none;">일시<span class="mandatory">*</span></th>
+							<td colspan="3"><input type="text" name="researchDate" id="researchDate" style="width: 150px;"/></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">주소<span onClick="fn_addCol('address')" id="span_address">(+)</span></th>
@@ -983,14 +984,14 @@
 									<tbody id="address_tbody" name="address_tbody">
 										<tr id="address_tr_1">
 											<td>
-												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;" class="req" />
+												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;"/>
 											</td>
 										</tr>
 									</tbody>
 									<tbody id="address_tbody_temp" name="address_tbody_temp" style="display:none">
 										<tr id="address_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;" class="req" />
+												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;"/>
 											</td>
 										</tr>
 									</tbody>
@@ -1004,7 +1005,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">조사자</th>
+							<th style="border-left: none;">조사자<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input type="text" name="keyword2" id="keyword2" style="width: 50%;float: left"/>
 								<input type="hidden" name="addUserId" id="addUserId"/>
@@ -1036,13 +1037,13 @@
 									<tbody id="user_tbody_temp" name="user_tbody_temp" style="display:none">
 										<tr id="user_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="dept" id="dept" style="width: 100%;"readonly/>
 											</td>
 											<td>
-												<input type="text" name="position" id="position" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="position" id="position" style="width: 100%;"readonly/>
 											</td>
 											<td>
-												<input type="text" name="name" id="name" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="name" id="name" style="width: 100%;"readonly/>
 											</td>
 											<td>
 												<ul>

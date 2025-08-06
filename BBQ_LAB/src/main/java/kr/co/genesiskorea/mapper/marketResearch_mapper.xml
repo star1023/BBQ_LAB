@@ -9,6 +9,16 @@
       		</when>
       	</choose>
 		</if>
+		<if test="searchTeam != null and searchTeam != '' ">
+			<choose>
+				<when test="searchUser != null and searchUser != '' ">
+					AND DOC_OWNER = #{searchUser}
+				</when>
+				<otherwise>
+					AND DOC_OWNER IN (SELECT USER_ID FROM lab_user WHERE 1 = 1 AND EMSTAT = '1' AND ORGAID = #{searchTeam})
+				</otherwise>
+			</choose>	
+		</if>
 	</sql>
 	
 	<select id="selectMarketResearchCount" parameterType="map" resultType="int">
@@ -18,8 +28,22 @@
 		FROM
 			lab_market_research
 		WHERE 1 = 1
-			AND REG_USER = #{userId}
 			AND IS_DELETE = 'N'
+			<choose>
+				<when test="listType != null and listType == 'my' "> 
+				AND DOC_OWNER = #{userId} 
+				</when>
+			    <when test="listType != null and listType == 'team'">
+			    AND DOC_OWNER IN (
+			    	SELECT USER_ID from lab_team_manager_view ltmv
+					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+			    ) 
+			    </when>
+			    <when test="listType != null and listType == 'all'">
+			    
+			    </when>
+				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+			</choose>
 			<include refid="marketResearch.whereMarketResearch" />			
 	</select>
 	
@@ -53,7 +77,21 @@
 			FROM 	
 				lab_market_research
 			WHERE 1 = 1
-				AND REG_USER = #{userId}
+				<choose>
+					<when test="listType != null and listType == 'my' "> 
+					AND DOC_OWNER = #{userId} 
+					</when>
+				    <when test="listType != null and listType == 'team'">
+				    AND DOC_OWNER IN (
+				    	SELECT USER_ID from lab_team_manager_view ltmv
+						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+				    ) 
+				    </when>
+				    <when test="listType != null and listType == 'all'">
+				    
+				    </when>
+					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+				</choose>
 				AND IS_DELETE = 'N'
 				<include refid="marketResearch.whereMarketResearch" />
 		)tmp

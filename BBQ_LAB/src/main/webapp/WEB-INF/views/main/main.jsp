@@ -43,8 +43,8 @@ $(document).ready(function() {
     $("#ref_today").text(apprStatusData !== null ? apprStatusData.REF_NO_READ_CNT : 0); // 미열람
     $("#ref_total").text(apprStatusData !== null ? apprStatusData.REF_TOTAL_CNT : 0);   // 전체
 	
-	$("#productDocCount").text(${docCount.PROD_CNT} || 0);
-	$("#menuDocCount").text(${docCount.MENU_CNT} || 0);
+	$("#productDocCount").text('${docCount.PROD_CNT}' || 0);
+	$("#menuDocCount").text('${docCount.MENU_CNT}' || 0);
 	
 	$("#faq-prev-btn").on("click", function () {
 	  if (faqCurrentIndex > 0) {

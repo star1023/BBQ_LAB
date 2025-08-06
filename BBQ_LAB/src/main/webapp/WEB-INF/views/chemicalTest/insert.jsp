@@ -877,7 +877,7 @@ input:disabled {
 	function fn_closeErpMatRayer(){
 		$('#searchErpMatValue').val('')
 		$('#erpMatLayerBody').empty();
-		$('#erpMatLayerBody').append('<tr><td colspan="10">원료코드 혹은 원료코드명을 검색해주세요</td></tr>');
+		$('#erpMatLayerBody').append('<tr><td colspan="10">상품코드 혹은 상품명을 검색해주세요</td></tr>');
 		$('#erpMatCount').text(0);
 		closeDialog('dialog_erpMaterial');
 	}
@@ -1451,11 +1451,7 @@ input:disabled {
 		<h2 style="position:relative">
 			<span class="title_s">Request For Chemical Test</span><span class="title">이화학 검사 의뢰서</span>
 			<div class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
-					</li>
-				</ul>
+				
 			</div>
 		</h2>
 		<div class="group01 mt20">
@@ -1477,17 +1473,17 @@ input:disabled {
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">의뢰일자</th>
+							<th style="border-left: none;">의뢰일자<span class="mandatory">*</span></th>
 							<td>
-								<input type="text" name="requestDate" id="requestDate" class="req" />								
+								<input type="text" name="requestDate" id="requestDate" />								
 							</td>
-							<th style="border-left: none;">희망 완료일</th>
+							<th style="border-left: none;">희망 완료일<span class="mandatory">*</span></th>
 							<td>
-								<input type="text" name="completionDate" id="completionDate" class="req" />
+								<input type="text" name="completionDate" id="completionDate" />
 							</td>
-							<th style="border-left: none; width:120px;">의뢰자</th>
+							<th style="border-left: none; width:120px;">의뢰자<span class="mandatory">*</span></th>
 							<td>
-								<input type="text" name="requestUser" id="requestUser" class="req" value="${userName}"/>
+								<input type="text" name="requestUser" id="requestUser" value="${userName}"/>
 							</td>
 						</tr>
 					</tbody>
@@ -1508,16 +1504,16 @@ input:disabled {
 					</colgroup>
 					<tbody >
 						<tr style="height:80px;">
-							<th style="border-left: none;" class="contentBlock">시료명</th>
+							<th style="border-left: none;" class="contentBlock">시료명<span class="mandatory">*</span></th>
 							<td >
-								<input type="text"  style="float: left; display: none;" class="req" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
-								<input type="text"  style="float: left" class="req" name="productName" id="productName" placeholder="코드를 조회 하세요." />
+								<input type="text"  style="float: left; display: none;" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
+								<input type="text"  style="float: left" name="productName" id="productName" placeholder="코드를 조회 하세요." />
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 							</td>
-							<th style="border-left: none;" class="contentBlock">시료수량 (EA)</th>
+							<th style="border-left: none;" class="contentBlock">시료수량 (EA)<span class="mandatory">*</span></th>
 							<td>
-								<input type="text" id="productCount" name="productCount" class="req" />
+								<input type="text" id="productCount" name="productCount" />
 							</td>
 							<th style="border-left: none;" class="contentBlock">보관방법</th>
 							<!-- 
@@ -1574,7 +1570,7 @@ input:disabled {
 							<script type="text/javascript" src="/resources/editor/build/ckeditor.js"></script>
 						</div>
 						 -->
-						<span class="title3" style="width: 76%; margin-left: 30px;">1. 검사 요청 방법</span>
+						<span class="title3" style="width: 76%; margin-left: 30px;">1. 검사 요청 방법<span class="mandatory">*</span></span>
 		 				<div class="title2" style="width: 20%; display: inline-block;">
 							<button class="btn_con_search" onClick="fn_addCol('standard1')" id="standard1_add_btn">
 								<img src="/resources/images/icon_s_write.png" />추가 
@@ -1595,7 +1591,7 @@ input:disabled {
 											<input type="checkbox" id="standard1_1"><label for="standard1_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="standard1" placeholder="가."/>
+											<input type="text"  style="width:99%; float: left" name="standard1" placeholder="가."/>
 										</td>
 									</tr>
 								</tbody>
@@ -1605,7 +1601,7 @@ input:disabled {
 											<input type="checkbox" id="standard1_1"><label for="standard1_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="standard1"/>
+											<input type="text"  style="width:99%; float: left" name="standard1"/>
 										</td>
 									</tr>
 								</tbody>
@@ -1613,7 +1609,7 @@ input:disabled {
 						</div>
 					</li>
 					<li style="list-style: none;">
-						<span class="title3" style="width: 76%; margin-left: 30px;">2. 검사 진행 일정</span>
+						<span class="title3" style="width: 76%; margin-left: 30px;">2. 검사 진행 일정<span class="mandatory">*</span></span>
 		 				<div class="title2" style="width: 20%; display: inline-block;">
 							<button class="btn_con_search" onClick="fn_addCol('standard2')" id="standard2_add_btn">
 								<img src="/resources/images/icon_s_write.png" />추가 
@@ -1634,7 +1630,7 @@ input:disabled {
 											<input type="checkbox" id="standard2_1"><label for="standard2_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="standard2" placeholder="가."/>
+											<input type="text"  style="width:99%; float: left" name="standard2" placeholder="가."/>
 										</td>
 									</tr>
 								</tbody>
@@ -1644,7 +1640,7 @@ input:disabled {
 											<input type="checkbox" id="standard2_1"><label for="standard2_1"><span></span></label>
 										</td>
 										<td>
-											<input type="text"  style="width:99%; float: left" class="req" name="standard2"/>
+											<input type="text"  style="width:99%; float: left" name="standard2"/>
 										</td>
 									</tr>
 								</tbody>
@@ -1917,7 +1913,7 @@ input:disabled {
 				<li>
 					<dt>보고서검색</dt>
 					<dd>
-						<input type="text" value="" class="req" style="width:302px; float: left" name="searchValue" id="searchValue" placeholder="시료명, 의뢰일자, 희망 완료일, 의뢰자 등을 입력하세요."/>
+						<input type="text" value="" style="width:302px; float: left" name="searchValue" id="searchValue" placeholder="시료명, 의뢰일자, 희망 완료일, 의뢰자 등을 입력하세요."/>
 						<button class="btn_small_search ml5" onclick="fn_search()" style="float: left">조회</button>
 					</dd>
 				</li>
@@ -1961,7 +1957,7 @@ input:disabled {
 	<input id="erpItemType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px ">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeErpMatRayer()"></button></li>
@@ -2004,7 +2000,7 @@ input:disabled {
 					<tbody id="erpMatLayerBody">
 						<input type="hidden" id="erpMatLayerPage" value="0"/>
 						<Tr>
-							<td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="9">상품코드 혹은 상품명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>

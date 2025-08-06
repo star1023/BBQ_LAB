@@ -125,6 +125,17 @@ public class BatchServiceImpl implements BatchService {
 					} 
 				}
 				
+				//BBQ상품개발팀일 경우
+				if( "".equals(roleCode) && orgId != null && "10001219".equals(orgId) ) {	//나중에 10001219 로 변경	
+					if( respCode != null && "906".equals(respCode) ) {
+						roleCode = "9";
+						userType = "LEADER";
+					} else {
+						roleCode = "8";
+						userType = "RESEARCHER";
+					}
+				}
+				
 				//식품 안전팀일 경우
 				if( "".equals(roleCode) && orgId != null && "10001220".equals(orgId) ) {	//나중에 10001220 로 변경	
 					if( respCode != null && "906".equals(respCode) ) {
