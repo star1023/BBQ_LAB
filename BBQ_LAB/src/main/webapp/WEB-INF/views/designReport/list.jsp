@@ -191,10 +191,15 @@ function fn_loadList(pageNo) {
 					} else {
 						html += "<tr>";
 					}
-					html += "	<td><a href=\"#\" onClick=\"fn_view('"+item.DESIGN_IDX+"')\">"+nvl(item.PRODUCT_NAME,'&nbsp;')+"</a></td>";
-					html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.DESIGN_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";
-					html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.DOC_OWNER_NAME,'&nbsp;')+"</td>";
+					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.PRODUCT_NAME,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">";
+					html += "		<div class=\"ellipsis_txt tgnl\">" + nvl(item.TITLE,'&nbsp;') + "</div>";
+					html += "	</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME,'&nbsp;') + "</td>";
 					html += "	<td>";
 					if( item.IS_LAST == 'Y' ) {
 						html += "		<li style=\"float:none; display:inline\">";

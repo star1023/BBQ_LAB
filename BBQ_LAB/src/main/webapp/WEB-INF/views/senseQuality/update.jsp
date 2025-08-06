@@ -63,6 +63,8 @@ table{font-size: 12px}
 		</c:if>
 	});
 	
+	var deleteContentIdxList = [];
+	
 	function fn_updateTmp(){
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
@@ -91,23 +93,27 @@ table{font-size: 12px}
 				count++;
 			}
 			
+			var imageIndexMap = []; // 이미지가 실제 들어간 row 인덱스 리스트
 			var fileElements = document.querySelectorAll('input[name="file"]');
 			var fileArr = new Array();
 			var orderArr = new Array();
-			count = 1;
+			var count = 1;
 			for (var fileElement of fileElements) {
-				if( contentsDiv*3 >= count) {
-					//var order = fileElement.dataset.order;
-					if( fileElement.value != '' ) {
-						formData.append('file', fileElement.files[0]);
-						orderArr.push(fileElement.dataset.order);
-					} else {
-						formData.append('file', '');
-					}
-				} else {
-					break;
-				}
-				count++;
+			    if (contentsDiv * 3 >= count) {
+			        if (fileElement.value != '') {
+			            formData.append('file', fileElement.files[0]);
+			            orderArr.push(fileElement.dataset.order);
+
+			            imageIndexMap.push(count - 1); // ✅ 행 기준 index로 사용 가능
+			            fileArr.push('file');
+			        } else {
+			            formData.append('file', '');
+			            fileArr.push('');
+			        }
+			    } else {
+			        break;
+			    }
+			    count++;
 			}
 			
 			formData.append("orderArr",orderArr);
@@ -153,32 +159,101 @@ table{font-size: 12px}
 				return;
 			} */
 			
+			var contentsIdxs = document.querySelectorAll('input[name="contentsIdx"]');
+			var contentsIdxArr = new Array();
+			for (var contentsIdx of contentsIdxs) {
+				contentsIdxArr.push(contentsIdx.value);
+			}
+			var originalFiles = document.querySelectorAll('input[name="originalFile"]');
+			var originalFileArr = new Array();
+			for (var originalFile of originalFiles) {
+				originalFileArr.push(originalFile.value);
+			}
+			
+			console.log(originalFileArr);
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
 			contentsDivArr.forEach(function(item, index){
-				if( item == '' && fileArr[index] == '' && contentsResultArr[index] == '' ) {
-					nullIdxArr.push(index);
-				} else if( item == '' || fileArr[index] == '' || contentsResultArr[index] == '' ) {
+				var contentsIdx = contentsIdxArr[index];
+				var isEmptyDiv = item == '';
+				var isEmptyFile = fileArr[index] == '' && (originalFileArr[index] == '' || deleteImageIdxList.includes(contentsIdx));
+				var isEmptyResult = contentsResultArr[index] == '';
+				if (isEmptyDiv && isEmptyFile && isEmptyResult) {
+					if (contentsIdx && contentsIdx != '') {
+						// ✅ 기존 콘텐츠 → 완전 삭제 대상
+						deleteContentIdxList.push(contentsIdx);
+					} else {
+						// ✅ 신규 콘텐츠 → 화면에서 제외만
+						nullIdxArr.push(index);
+					}
+				} else if (isEmptyDiv || isEmptyFile || isEmptyResult) {
 					inputCheckCnt++;
 				}
 			});
+
+			console.log("=== 컨텐츠 인덱스 ===");
+			console.log(contentsIdxArr);
+			console.log("=== 컨텐츠 삭제 대상 ===");
+			console.log(deleteContentIdxList);
+			console.log("=== 컨텐츠 제외 대상 ===");
+			console.log(nullIdxArr);			
 			
 			//if( inputCheckCnt > 0 ) {
 			//	alert("세부내용은 구분, 사진, 결과를 입력하여야 합니다.");
 			//	return;
 			//}
 			
-			for( var i = nullIdxArr.length-1 ; i >= 0 ; i-- ) {
-				contentsDivArr.splice(nullIdxArr[i],1);
-				fileArr.splice(nullIdxArr[i],1);
-				contentsResultArr.splice(nullIdxArr[i],1);
+			// nullIdxArr에 해당하는 index는 splice로 제거 (신규 중 빈 값만 제거)
+			for (var i = nullIdxArr.length - 1; i >= 0; i--) {
+			    contentsDivArr.splice(nullIdxArr[i], 1);
+			    fileArr.splice(nullIdxArr[i], 1);
+			    contentsResultArr.splice(nullIdxArr[i], 1);
+			    originalFileArr.splice(nullIdxArr[i], 1);
+			    contentsIdxArr.splice(nullIdxArr[i], 1);  // 중요: 이거 안 빼면 서버에 빈 인덱스가 날라감
 			}
+			
+			var adjustedImageIndexArr = new Array();
+			for (var i = 0; i < imageIndexMap.length; i++) {
+			    var originalIdx = imageIndexMap[i];
+			    var newIdx = originalIdx;
+
+			    // 몇 개의 nullIdx가 나보다 작은가? → 그 수만큼 앞으로 당겨짐
+			    for (var j = 0; j < nullIdxArr.length; j++) {
+			        if (nullIdxArr[j] < originalIdx) {
+			            newIdx--;
+			        } else if (nullIdxArr[j] === originalIdx) {
+			            // 완전히 제거된 인덱스이면 skip
+			            newIdx = -1;
+			            break;
+			        }
+			    }
+
+			    if (newIdx !== -1) {
+			        adjustedImageIndexArr.push(newIdx);
+			    }
+			}
+			imageIndexMap = adjustedImageIndexArr;
+
+			console.log("=== contentsDivArr ===");
+			console.log(contentsDivArr);
+			console.log("=== fileArr ===");
+			console.log(fileArr);
+			console.log("=== contentsResultArr ===");
+			console.log(contentsResultArr);
+			console.log("=== originalFileArr ===");
+			console.log(originalFileArr);
+			console.log("=== contentsIdxArr ===");
+			console.log(contentsIdxArr);
+			
 			
 			formData.append("contentsDivArr",JSON.stringify(contentsDivArr));
 			//formData.append("file",fileArr);
 			formData.append("contentsResultArr",JSON.stringify(contentsResultArr));
 			formData.append("contentsNoteArr",JSON.stringify(contentsNoteArr));
 			formData.append("resultArr",JSON.stringify(resultArr));
+			formData.append("deleteImageIdxList",JSON.stringify(deleteImageIdxList));
+			formData.append("deleteContentIdxList",JSON.stringify(deleteContentIdxList));
+			formData.append("imageIndexMap",JSON.stringify(imageIndexMap));
 			
 			
 			var displayOrders = document.querySelectorAll('input[name="displayOrder"]');
@@ -212,6 +287,11 @@ table{font-size: 12px}
 			formData.append("displayOrderArr",displayOrderArr);
 			formData.append("contentsIdxArr",contentsIdxArr);
 			formData.append("dataStatusArr",dataStatusArr);
+			
+			console.log("=== 최종 FormData 내용 ===");
+			for (var pair of formData.entries()) {
+			    console.log(pair[0], pair[1]);
+			}
 			
 			$('#lab_loading').show();
 			var URL = "../senseQuality/updateSenseQualityTmpAjax";
@@ -329,23 +409,27 @@ table{font-size: 12px}
 				count++;
 			}
 			
+			var imageIndexMap = []; // 이미지가 실제 들어간 row 인덱스 리스트
 			var fileElements = document.querySelectorAll('input[name="file"]');
 			var fileArr = new Array();
 			var orderArr = new Array();
-			count = 1;
+			var count = 1;
 			for (var fileElement of fileElements) {
-				if( contentsDiv*3 >= count) {
-					//var order = fileElement.dataset.order;
-					if( fileElement.value != '' ) {
-						formData.append('file', fileElement.files[0]);
-						orderArr.push(fileElement.dataset.order);
-					} else {
-						formData.append('file', '');
-					}
-				} else {
-					break;
-				}
-				count++;
+			    if (contentsDiv * 3 >= count) {
+			        if (fileElement.value != '') {
+			            formData.append('file', fileElement.files[0]);
+			            orderArr.push(fileElement.dataset.order);
+
+			            imageIndexMap.push(count - 1); // ✅ 행 기준 index로 사용 가능
+			            fileArr.push('file');
+			        } else {
+			            formData.append('file', '');
+			            fileArr.push('');
+			        }
+			    } else {
+			        break;
+			    }
+			    count++;
 			}
 			
 			formData.append("orderArr",orderArr);
@@ -391,7 +475,52 @@ table{font-size: 12px}
 				return;
 			}
 			
+			var contentsIdxs = document.querySelectorAll('input[name="contentsIdx"]');
+			var contentsIdxArr = new Array();
+			for (var contentsIdx of contentsIdxs) {
+				contentsIdxArr.push(contentsIdx.value);
+			}
+			var originalFiles = document.querySelectorAll('input[name="originalFile"]');
+			var originalFileArr = new Array();
+			for (var originalFile of originalFiles) {
+				originalFileArr.push(originalFile.value);
+			}
+			
+			console.log(originalFileArr);
 			var inputCheckCnt = 0;
+			var nullIdxArr = new Array();
+
+			contentsDivArr.forEach(function(item, index){
+			    var contentsIdx = contentsIdxArr[index];
+			    var isEmptyDiv = item == '';
+			    var isEmptyFile = fileArr[index] == '' && (originalFileArr[index] == '' || deleteImageIdxList.includes(contentsIdx));
+			    var isEmptyResult = contentsResultArr[index] == '';
+
+			    var isAllEmpty = isEmptyDiv && isEmptyFile && isEmptyResult;
+			    var isSomeEmpty = !isAllEmpty && (isEmptyDiv || isEmptyFile || isEmptyResult);
+
+			    if (isAllEmpty) {
+			        if (contentsIdx && contentsIdx != '') {
+			            // 기존 콘텐츠 → 완전 삭제 대상
+			            deleteContentIdxList.push(contentsIdx);
+			        } else {
+			            // 신규 콘텐츠 → 무시 (화면에서 제외만)
+			            nullIdxArr.push(index);
+			        }
+			    } else if (isSomeEmpty) {
+			        // 하나라도 비어 있으면 → 입력 누락
+			        inputCheckCnt++;
+			    }
+			});
+
+			console.log("=== 컨텐츠 인덱스 ===");
+			console.log(contentsIdxArr);
+			console.log("=== 컨텐츠 삭제 대상 ===");
+			console.log(deleteContentIdxList);
+			console.log("=== 컨텐츠 제외 대상 ===");
+			console.log(nullIdxArr);		
+			
+			/* var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
 			contentsDivArr.forEach(function(item, index){
 				if( item == '' && fileArr[index] == '' && contentsResultArr[index] == '' ) {
@@ -399,25 +528,68 @@ table{font-size: 12px}
 				} else if( item == '' || fileArr[index] == '' || contentsResultArr[index] == '' ) {
 					inputCheckCnt++;
 				}
-			});
+			}); */
+
+			if (inputCheckCnt > 0) {
+			    alert("세부내용은 구분, 사진, 결과를 모두 입력해야 저장할 수 있습니다.");
+			    return;
+			}
 			
-			//if( inputCheckCnt > 0 ) {
-			//	alert("세부내용은 구분, 사진, 결과를 입력하여야 합니다.");
-			//	return;
-			//}
-			
-			for( var i = nullIdxArr.length-1 ; i >= 0 ; i-- ) {
+/* 			for( var i = nullIdxArr.length-1 ; i >= 0 ; i-- ) {
 				contentsDivArr.splice(nullIdxArr[i],1);
 				fileArr.splice(nullIdxArr[i],1);
 				contentsResultArr.splice(nullIdxArr[i],1);
+			} */
+			
+			for (var i = nullIdxArr.length - 1; i >= 0; i--) {
+			    contentsDivArr.splice(nullIdxArr[i], 1);
+			    fileArr.splice(nullIdxArr[i], 1);
+			    contentsResultArr.splice(nullIdxArr[i], 1);
+			    originalFileArr.splice(nullIdxArr[i], 1);
+			    contentsIdxArr.splice(nullIdxArr[i], 1);  // 중요: 이거 안 빼면 서버에 빈 인덱스가 날라감
 			}
+			
+			var adjustedImageIndexArr = new Array();
+			for (var i = 0; i < imageIndexMap.length; i++) {
+			    var originalIdx = imageIndexMap[i];
+			    var newIdx = originalIdx;
+
+			    // 몇 개의 nullIdx가 나보다 작은가? → 그 수만큼 앞으로 당겨짐
+			    for (var j = 0; j < nullIdxArr.length; j++) {
+			        if (nullIdxArr[j] < originalIdx) {
+			            newIdx--;
+			        } else if (nullIdxArr[j] === originalIdx) {
+			            // 완전히 제거된 인덱스이면 skip
+			            newIdx = -1;
+			            break;
+			        }
+			    }
+
+			    if (newIdx !== -1) {
+			        adjustedImageIndexArr.push(newIdx);
+			    }
+			}
+			imageIndexMap = adjustedImageIndexArr;
+
+			console.log("=== contentsDivArr ===");
+			console.log(contentsDivArr);
+			console.log("=== fileArr ===");
+			console.log(fileArr);
+			console.log("=== contentsResultArr ===");
+			console.log(contentsResultArr);
+			console.log("=== originalFileArr ===");
+			console.log(originalFileArr);
+			console.log("=== contentsIdxArr ===");
+			console.log(contentsIdxArr);
 			
 			formData.append("contentsDivArr",JSON.stringify(contentsDivArr));
 			//formData.append("file",fileArr);
 			formData.append("contentsResultArr",JSON.stringify(contentsResultArr));
 			formData.append("contentsNoteArr",JSON.stringify(contentsNoteArr));
 			formData.append("resultArr",JSON.stringify(resultArr));
-			
+			formData.append("deleteImageIdxList",JSON.stringify(deleteImageIdxList));
+			formData.append("deleteContentIdxList",JSON.stringify(deleteContentIdxList));
+			formData.append("imageIndexMap",JSON.stringify(imageIndexMap));
 			
 			var displayOrders = document.querySelectorAll('input[name="displayOrder"]');
 			var contentsIdxs = document.querySelectorAll('input[name="contentsIdx"]');
@@ -450,6 +622,12 @@ table{font-size: 12px}
 			formData.append("displayOrderArr",displayOrderArr);
 			formData.append("contentsIdxArr",contentsIdxArr);
 			formData.append("dataStatusArr",dataStatusArr);
+			
+			
+			console.log("=== 최종 FormData 내용 ===");
+			for (var pair of formData.entries()) {
+			    console.log(pair[0], pair[1]);
+			}
 			
 			$('#lab_loading').show();
 			var URL = "../senseQuality/updateSenseQualityAjax";
@@ -627,33 +805,20 @@ table{font-size: 12px}
 		}
 	}
 	
+	var deleteImageIdxList = [];
+	
 	function fn_deleteImageFile2(element, e) {
-		if( confirm("이미지를 삭제하시겠습니까?") ) {			
-			var contentsIdx = $(element).parent().next().next().val();			
-			var URL = "../senseQuality/deleteSenseQualityContenstsDataAjax";
-			$.ajax({
-				type:"POST",
-				url:URL,
-				data: {
-					"contentsIdx" : contentsIdx
-				},
-				dataType:"json",
-				success:function(result) {
-					console.log(result);
-					if( result.RESULT == 'S' ) {
-						$(element).parent().next().next().next().val('M');
-						$(element).parent().parent().hide();
-						$(element).parent().parent().next().show();	
-					} else {
-						alert("이미지 삭제 오류가 발생했습니다.\n다시 시도하여 주세요.");
-					}
-				},
-				error:function(request, status, errorThrown){
-					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-				}			
-			});
-		}
+	    var $td = $(element).closest('td');
+	    $td.find('.image-preview-block').hide();
+	    $td.find('.image-upload-block').show();
+
+	    var contentsIdx = $td.find('input[name="contentsIdx"]').val();
+	    if (contentsIdx && !deleteImageIdxList.includes(contentsIdx)) {
+	        deleteImageIdxList.push(contentsIdx);
+	    }
+	    console.log(contentsIdx);
 	}
+
 	
 	function fn_closeErpMatRayer(){
 		$('#searchErpMatValue').val('')
@@ -1090,45 +1255,64 @@ table{font-size: 12px}
 			        	<c:if test="${status.index >= startNo && status.index <= endNo}">
 			        	<c:set var="count" value="${count + 1}" />
 			        	<td style="height: 250px">
-			        		  <c:choose>
-    <c:when test="${not empty contentsList.FILE_PATH}">
-      <!-- 실제 이미지가 있는 경우 -->
-      <div>
-        <p>
-          <img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}"
-               style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;">
-        </p>
-        <div style="z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
-          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
-        </div>
-        <input type="hidden" name="displayOrder" id="displayOrder" value="${contentsList.DISPLAY_ORDER}">
-        <input type="hidden" name="contentsIdx" id="contentsIdx" value="${contentsList.CONTENTS_IDX}">
-        <input type="hidden" name="dataStatus" id="dataStatus" value="U">
-      </div>
-    </c:when>
-
-    <c:otherwise>
-      <!-- 이미지 없음: 노이미지 + 등록 버튼 표시 -->
-      <div>
-        <p>
-          <img id="preview" src="/resources/images/img_noimg3.png"
-               style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;">
-        </p>
-        <p class="pt10">
-          <div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
-            <input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*"
-                   style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
-            <label for="fileImageInput${status.index+1}" style="cursor: pointer;">
-              이미지파일 등록 <img src="/resources/images/icon_add_file.png">
-            </label>
-          </div>
-        </p>
-        <div style="z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
-          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
-        </div>
-      </div>
-    </c:otherwise>
-  </c:choose>
+						<input type="hidden" name="contentsIdx" id="contentsIdx" value="${contentsList.CONTENTS_IDX}">
+						<input type="hidden" name="originalFile" id="originalFile" value="${contentsList.ORG_FILE_NAME}">
+		        		  <c:choose>
+						    <c:when test="${not empty contentsList.FILE_PATH}">
+						      <!-- 실제 이미지가 있는 경우 -->
+						      <div class="image-preview-block">
+						        <p>
+						          <img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}"
+						               style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;">
+						        </p>
+						        <div style="z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
+						          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
+						        </div>
+						        <input type="hidden" name="displayOrder" id="displayOrder" value="${contentsList.DISPLAY_ORDER}">
+						        <input type="hidden" name="dataStatus" id="dataStatus" value="U">
+						      </div>
+						      <div class="image-upload-block" style="display:none;">
+						        <p>
+						          <img id="preview" src="/resources/images/img_noimg3.png"
+						               style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;">
+						        </p>
+						        <p class="pt10">
+						          <div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+						            <input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*"
+						                   style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
+						            <label for="fileImageInput${status.index+1}" style="cursor: pointer;">
+						              이미지파일 등록 <img src="/resources/images/icon_add_file.png">
+						            </label>
+						          </div>
+						        </p>
+						        <div style="z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
+						          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
+						        </div>
+						      </div>
+						    </c:when>
+						
+						    <c:otherwise>
+						      <!-- 이미지 없음: 노이미지 + 등록 버튼 표시 -->
+						      <div>
+						        <p>
+						          <img id="preview" src="/resources/images/img_noimg3.png"
+						               style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;">
+						        </p>
+						        <p class="pt10">
+						          <div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+						            <input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*"
+						                   style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
+						            <label for="fileImageInput${status.index+1}" style="cursor: pointer;">
+						              이미지파일 등록 <img src="/resources/images/icon_add_file.png">
+						            </label>
+						          </div>
+						        </p>
+						        <div style="z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
+						          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
+						        </div>
+						      </div>
+						    </c:otherwise>
+						  </c:choose>
 			            </td>
 			            </c:if>
 			        	</c:forEach>
@@ -1210,27 +1394,64 @@ table{font-size: 12px}
 			        	<c:if test="${status.index >= startNo && status.index <= endNo}">
 			        	<c:set var="count" value="${count + 1}" />
 			        	<td style="height: 250px">
-			        		<div>
-				        		<p><img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}" style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;"></p>
-				        		<div style=" z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
-									<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
-								</div>
-								<input type="hidden" name="displayOrder" id="displayOrder" value="${contentsList.DISPLAY_ORDER}">
-								<input type="hidden" name="contentsIdx" id="contentsIdx" value="${contentsList.CONTENTS_IDX}">
-								<input type="hidden" name="dataStatus" id="dataStatus" value="U">
-							</div>
-							<div style="display:none">
-								<p><img id="preview" src="/resources/images/img_noimg3.png" style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;"></p>
-								<p class="pt10">
-									<div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
-										<input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*" style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
-										<label for="fileImageInput${status.index+1}" style="cursor: pointer;">이미지파일 등록 <img src="/resources/images/icon_add_file.png"></label>
-									</div>	
-								</p>
-								<div style=" z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
-									<img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
-								</div>
-							</div>	
+				        <input type="hidden" name="contentsIdx" id="contentsIdx" value="${contentsList.CONTENTS_IDX}">
+				        <input type="hidden" name="originalFile" id="originalFile" value="${contentsList.ORG_FILE_NAME}">
+			        		<c:choose>
+						    <c:when test="${not empty contentsList.FILE_PATH}">
+						      <!-- 실제 이미지가 있는 경우 -->
+						      <div class="image-preview-block">
+						        <p>
+						          <img id="preview" src="/images${contentsList.FILE_PATH}/${contentsList.ORG_FILE_NAME}"
+						               style="border:1px solid #e1e1e1; border-radius:5px; width:278px; height:223px;">
+						        </p>
+						        <div style="z-index:3; position:relative;right:-265px; top:-225px; width: 25px; height: 25px;">
+						          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile2(this, event)">
+						        </div>
+						        <input type="hidden" name="displayOrder" id="displayOrder" value="${contentsList.DISPLAY_ORDER}">
+						        <input type="hidden" name="dataStatus" id="dataStatus" value="U">
+						      </div>
+						      <div class="image-upload-block" style="display:none;">
+						        <p>
+						          <img id="preview" src="/resources/images/img_noimg3.png"
+						               style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;">
+						        </p>
+						        <p class="pt10">
+						          <div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+						            <input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*"
+						                   style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
+						            <label for="fileImageInput${status.index+1}" style="cursor: pointer;">
+						              이미지파일 등록 <img src="/resources/images/icon_add_file.png">
+						            </label>
+						          </div>
+						        </p>
+						        <div style="z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
+						          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
+						        </div>
+						      </div>
+						    </c:when>
+						
+						    <c:otherwise>
+						      <!-- 이미지 없음: 노이미지 + 등록 버튼 표시 -->
+						      <div>
+						        <p>
+						          <img id="preview" src="/resources/images/img_noimg3.png"
+						               style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;">
+						        </p>
+						        <p class="pt10">
+						          <div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
+						            <input type="file" name="file" id="fileImageInput${status.index+1}" accept="image/*"
+						                   style="display:none;" onchange="fn_changeImageFile(this, event)" data-order="${status.index+1}">
+						            <label for="fileImageInput${status.index+1}" style="cursor: pointer;">
+						              이미지파일 등록 <img src="/resources/images/icon_add_file.png">
+						            </label>
+						          </div>
+						        </p>
+						        <div style="z-index:3; position:relative;right:-260px; top:-238px; width: 25px; height: 25px;">
+						          <img src="/resources/images/btn_table_header01_del02.png" onClick="fn_deleteImageFile(this, event)">
+						        </div>
+						      </div>
+						    </c:otherwise>
+						  </c:choose>	
 			            </td>
 			            </c:if>
 			        	</c:forEach>
@@ -1300,6 +1521,7 @@ table{font-size: 12px}
 			        <tr>
 			        	<td class="hftitle">사진</td>			        	
 			        	<td style="height: 250px">
+			        	<input type="hidden" name="originalFile" id="originalFile">
 			        		<p><img id="preview" src="/resources/images/img_noimg3.png" style="border:1px solid #e1e1e1; border-radius:5px; width:258px; height:193px;"></p>
 							<p class="pt10">
 								<div class="add_file2" style="width:100%; align:center;" onclick="fn_fileDivClick(event)">
@@ -1389,7 +1611,7 @@ table{font-size: 12px}
 								<input type="checkbox" id="result_1"><label for="result_1}"><span></span></label>
 							</td>
 							<td>
-								<input type="text"  style="width:99%; float: left" class="req" name="result" value="가."/>
+								<input type="text"  style="width:99%; float: left" class="req" name="result" placeholder="가."/>
 							</td>
 						</tr>
 					</c:if>	

@@ -84,27 +84,30 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
 					} else {
 						html += "<tr>";
 					}
-					html += "	<td><a href=\"#\" onClick=\"fn_view('" + item.CHEMICAL_IDX + "')\">" + nvl(item.PRODUCT_NAME, '&nbsp;') + "</a></td>";
-					html += "	<td>" + nvl(item.REQUEST_DATE, '&nbsp;') + "</td>";
-					html += "	<td>" + nvl(item.COMPLETION_DATE, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.PRODUCT_NAME, '&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.REQUEST_DATE, '&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.COMPLETION_DATE, '&nbsp;') + "</td>";
 
 					if (!isRequestList) {
-						html += "	<td>" + nvl(item.TEST_COMPLETION_DATE, '&nbsp;') + "</td>";
+						html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.TEST_COMPLETION_DATE, '&nbsp;') + "</td>";
 					}
 
-					html += "	<td>" + nvl(item.REQUEST_USER, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.REQUEST_USER, '&nbsp;') + "</td>";
 
 					if (!isRequestList) {
-						html += "	<td>" + nvl(item.TEST_MANAGER_NAME, '&nbsp;') + "</td>";
+						html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.TEST_MANAGER_NAME, '&nbsp;') + "</td>";
 					}
-					
+
 					if (!isRequestList) {
-						html += "	<td>" + nvl(item.TEST_STATUS_TXT, '&nbsp;') + "</td>";
+						html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.TEST_STATUS_TXT, '&nbsp;') + "</td>";
 					} else {
-						html += "	<td>" + nvl(item.STATUS_TXT, '&nbsp;') + "</td>";
+						html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT, '&nbsp;') + "</td>";
 					}
-					
-					html += "	<td>" + nvl(item.DOC_OWNER_NAME, '&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME, '&nbsp;') + "</td>";
+
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
 					html += "			<button class=\"btn_doc\" onclick=\"fn_viewHistory('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
@@ -213,6 +216,8 @@ function fn_viewHistory(idx) {
 					html += " 수정되었습니다.";
 				} else if( item.HISTORY_TYPE == 'R' ) {
 					html += " 검사가 완료되었습니다.";
+				} else if( item.HISTORY_TYPE == 'P' ) {
+					html += " PDF 다운로드 되었습니다.";
 				} 
 				html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
 				html += "</li>"; 

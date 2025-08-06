@@ -86,13 +86,21 @@ table{font-size: 12px}
 				count++;
 			}
 			
+			var imageIndexMap = []; // 이미지가 실제 들어간 row 인덱스 리스트
 			var fileElements = document.querySelectorAll('input[name="file"]');
 			var fileArr = new Array();
 			count = 1;
-			for (var fileElement of fileElements) {
+			for (var i = 0; i < fileElements.length; i++) {
+				var fileElement = fileElements[i];
 				if( contentsDiv*3 >= count) {
 					/* fileArr.push(fileElement.value); */
-					formData.append('file', fileElement.files[0]);
+					if(fileElement.files[0] == null || fileElement.files[0] == 'null' || typeof fileElement.files[0] == "undefined" || fileElement.files[0] == "undefined"){
+					    fileArr.push('');
+					} else {
+						imageIndexMap.push(i); // ✅ 이미지가 있는 행의 index 추가
+						formData.append('file', fileElement.files[0]);						
+						fileArr.push('file');
+					}
 				} else {
 					break;
 				}
@@ -139,17 +147,18 @@ table{font-size: 12px}
 				alert("결론을 입력해주세요.");
 				return;
 			} */
-			
+
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
 			contentsDivArr.forEach(function(item, index){
+				console.log(fileArr[index] == '');
 				if( item == '' && fileArr[index] == '' && contentsResultArr[index] == '' ) {
 					nullIdxArr.push(index);
 				} else if( item == '' || fileArr[index] == '' || contentsResultArr[index] == '' ) {
 					inputCheckCnt++;
 				}
 			});
-			
+
 			/* if( inputCheckCnt > 0 ) {
 				alert("세부내용은 구분, 사진, 결과를 입력하여야 합니다.");
 				$('#lab_loading').hide();
@@ -161,12 +170,34 @@ table{font-size: 12px}
 				fileArr.splice(nullIdxArr[i],1);
 				contentsResultArr.splice(nullIdxArr[i],1);
 			}
+			var adjustedImageIndexArr = new Array();
+			for (var i = 0; i < imageIndexMap.length; i++) {
+			    var originalIdx = imageIndexMap[i];
+			    var newIdx = originalIdx;
+
+			    // 몇 개의 nullIdx가 나보다 작은가? → 그 수만큼 앞으로 당겨짐
+			    for (var j = 0; j < nullIdxArr.length; j++) {
+			        if (nullIdxArr[j] < originalIdx) {
+			            newIdx--;
+			        } else if (nullIdxArr[j] === originalIdx) {
+			            // 완전히 제거된 인덱스이면 skip
+			            newIdx = -1;
+			            break;
+			        }
+			    }
+
+			    if (newIdx !== -1) {
+			        adjustedImageIndexArr.push(newIdx);
+			    }
+			}
+			imageIndexMap = adjustedImageIndexArr;
 			
 			formData.append("contentsDivArr",JSON.stringify(contentsDivArr));
 			//formData.append("file",fileArr);
 			formData.append("contentsResultArr",JSON.stringify(contentsResultArr));
 			formData.append("contentsNoteArr",JSON.stringify(contentsNoteArr));
 			formData.append("resultArr",JSON.stringify(resultArr));
+			formData.append("imageIndexMap", JSON.stringify(imageIndexMap));
 			
 		    for (const [key, value] of formData.entries()) {
 		        console.log(key+ " : " + value);
@@ -275,13 +306,21 @@ table{font-size: 12px}
 				count++;
 			}
 			
+			var imageIndexMap = []; // 이미지가 실제 들어간 row 인덱스 리스트
 			var fileElements = document.querySelectorAll('input[name="file"]');
 			var fileArr = new Array();
 			count = 1;
-			for (var fileElement of fileElements) {
+			for (var i = 0; i < fileElements.length; i++) {
+				var fileElement = fileElements[i];
 				if( contentsDiv*3 >= count) {
 					/* fileArr.push(fileElement.value); */
-					formData.append('file', fileElement.files[0]);
+					if(fileElement.files[0] == null || fileElement.files[0] == 'null' || typeof fileElement.files[0] == "undefined" || fileElement.files[0] == "undefined"){
+					    fileArr.push('');
+					} else {
+						imageIndexMap.push(i); // ✅ 이미지가 있는 행의 index 추가
+						formData.append('file', fileElement.files[0]);						
+						fileArr.push('file');
+					}
 				} else {
 					break;
 				}
@@ -351,12 +390,34 @@ table{font-size: 12px}
 				fileArr.splice(nullIdxArr[i],1);
 				contentsResultArr.splice(nullIdxArr[i],1);
 			}
+			var adjustedImageIndexArr = new Array();
+			for (var i = 0; i < imageIndexMap.length; i++) {
+			    var originalIdx = imageIndexMap[i];
+			    var newIdx = originalIdx;
+
+			    // 몇 개의 nullIdx가 나보다 작은가? → 그 수만큼 앞으로 당겨짐
+			    for (var j = 0; j < nullIdxArr.length; j++) {
+			        if (nullIdxArr[j] < originalIdx) {
+			            newIdx--;
+			        } else if (nullIdxArr[j] === originalIdx) {
+			            // 완전히 제거된 인덱스이면 skip
+			            newIdx = -1;
+			            break;
+			        }
+			    }
+
+			    if (newIdx !== -1) {
+			        adjustedImageIndexArr.push(newIdx);
+			    }
+			}
+			imageIndexMap = adjustedImageIndexArr;
 			
 			formData.append("contentsDivArr",JSON.stringify(contentsDivArr));
 			//formData.append("file",fileArr);
 			formData.append("contentsResultArr",JSON.stringify(contentsResultArr));
 			formData.append("contentsNoteArr",JSON.stringify(contentsNoteArr));
 			formData.append("resultArr",JSON.stringify(resultArr));
+			formData.append("imageIndexMap", JSON.stringify(imageIndexMap));
 			
 			$('#lab_loading').show();
 			var URL = "../senseQuality/insertSenseQualityAjax";

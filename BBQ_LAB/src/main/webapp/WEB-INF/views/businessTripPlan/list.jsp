@@ -190,11 +190,18 @@ function fn_loadList(pageNo) {
 					} else {
 						html += "<tr>";
 					}
-					html += "	<td>"+nvl(item.TRIP_TYPE_TXT,'&nbsp;')+"</td>";
-					html += "	<td><div class=\"ellipsis_txt tgnl\">&nbsp;&nbsp;<a href=\"#\" onClick=\"fn_view('"+item.PLAN_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";					
-					html += "	<td>"+nvl(item.TRIP_DESTINATION,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.DOC_OWNER_NAME,'&nbsp;')+"</td>";
+					html += "	<td onclick=\"fn_view('"+item.PLAN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.TRIP_TYPE_TXT,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.PLAN_IDX+"')\" style=\"cursor:pointer;\">";
+					html += "		<div class=\"ellipsis_txt tgnl\">&nbsp;&nbsp;" + nvl(item.TITLE,'&nbsp;') + "</div>";
+					html += "	</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.PLAN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.TRIP_DESTINATION,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.PLAN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.PLAN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME,'&nbsp;') + "</td>";
+
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
 					if( item.IS_LAST == 'Y' ) {						

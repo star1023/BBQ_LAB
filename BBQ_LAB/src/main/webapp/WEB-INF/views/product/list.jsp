@@ -204,11 +204,20 @@
 						}
 						html += "	</td>";
 						
-						html += "	<td>"+nvl(item.PRODUCT_CODE,'&nbsp;')+"</td>";
-						html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.PRODUCT_IDX+"')\">"+nvl(item.NAME,'&nbsp;')+"</a></div></td>";
-						html += "	<td>"+nvl(item.VERSION_NO,'&nbsp;')+"</td>";
-						html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.PRODUCT_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";
-						html += "	<td><div class=\"ellipsis_txt tgnl\">";
+						html += "	<td onclick=\"fn_view('"+item.PRODUCT_IDX+"')\" style=\"cursor:pointer\">"+nvl(item.PRODUCT_CODE,'&nbsp;')+"</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PRODUCT_IDX+"')\" style=\"cursor:pointer\">";
+						html += "		<div class=\"ellipsis_txt tgnl\">"+nvl(item.NAME,'&nbsp;')+"</div>";
+						html += "	</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PRODUCT_IDX+"')\" style=\"cursor:pointer\">"+nvl(item.VERSION_NO,'&nbsp;')+"</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PRODUCT_IDX+"')\" style=\"cursor:pointer\">";
+						html += "		<div class=\"ellipsis_txt tgnl\">"+nvl(item.TITLE,'&nbsp;')+"</div>";
+						html += "	</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PRODUCT_IDX+"')\" style=\"cursor:pointer\">";
+						html += "		<div class=\"ellipsis_txt tgnl\">";
 						if( chkNull(item.CATEGORY_NAME1) ) {
 							html += item.CATEGORY_NAME1;
 						}
@@ -218,9 +227,12 @@
 						if( chkNull(item.CATEGORY_NAME3) ) {
 							html += " > "+item.CATEGORY_NAME3;
 						}
-						html += "	</div></td>";
-						html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.USER_NAME,'&nbsp;')+"</td>";						
+						html += "		</div>";
+						html += "	</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PRODUCT_IDX+"')\" style=\"cursor:pointer\">"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PRODUCT_IDX+"')\" style=\"cursor:pointer\">"+nvl(item.USER_NAME,'&nbsp;')+"</td>";				
 						html += "	<td>";
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";

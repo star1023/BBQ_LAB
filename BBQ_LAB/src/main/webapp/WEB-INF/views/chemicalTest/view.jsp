@@ -83,9 +83,11 @@ th.contentBlock {
 		$('#lab_loading').show();
 	    fetch("/preview/chemicalTestViewPopup?idx=" + idx)
 	        .then(function(res) {
+	        	console.log("📦 HTML 응답 상태:", res.status);
 	            return res.text();
 	        })
 	        .then(function(html) {
+	        	console.log("📄 파싱된 HTML:", html);
 	            var parser = new DOMParser();
 	            var doc = parser.parseFromString(html, "text/html");
 
@@ -99,6 +101,8 @@ th.contentBlock {
 	                }
 
 	                var absoluteSrc = src.startsWith("http") ? src : location.origin + src;
+	            	console.log("🔍 이미지 src:", src);
+	            	console.log("🔗 절대 경로:", absoluteSrc);
 
 	                return fetch(absoluteSrc)
 	                    .then(function(res) { return res.blob(); })
@@ -119,6 +123,7 @@ th.contentBlock {
 
 	            Promise.all(imagePromises).then(function() {
 	                var wrapperHTML = doc.querySelector("#wrapper")?.outerHTML;
+	                console.log("🧱 wrapper 존재 여부:", doc.querySelector("#wrapper"));
 	                if (!wrapperHTML) {
 	                    alert("PDF 생성 실패: 출력할 wrapper 요소가 없습니다.");
 	                    $('#lab_loading').hide();
@@ -145,12 +150,13 @@ th.contentBlock {
 	                formData.append("docType", "CHEMICAL");
 	                formData.append("userId", "${userId}");
 	                formData.append("title", "${chemicalTestData.data.PRODUCT_NAME}_이화학검사의뢰서");
-
+	                
 	                fetch("/preview/downloadPdf", {
 	                    method: "POST",
 	                    body: formData
 	                })
 	                    .then(function(res) {
+	                    	console.log("📥 PDF 응답 상태:", res.status);
 	                        return res.blob();
 	                    })
 	                    .then(function(blob) {

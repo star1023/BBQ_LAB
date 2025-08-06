@@ -162,7 +162,11 @@ public class UserServiceImpl implements UserService {
 		int insertCnt = userDao.insertAccessLog(param);
 		String requestParams = (String)param.get("requestParams");
 		if(requestParams != null && requestParams.length() > 0 ) {
-			userDao.insertAccessLogParams(param);
+			try {
+				userDao.insertAccessLogParams(param);				
+			} catch ( Exception e ) {
+				
+			}
 		}
 		
 		return insertCnt;

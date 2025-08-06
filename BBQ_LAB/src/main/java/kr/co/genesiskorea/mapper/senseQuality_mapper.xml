@@ -264,6 +264,11 @@
 		SET 
 			CONTENTS_DIV = #{contentsDiv}
 			, CONTENTS_RESULT = #{contentsResult}
+			<if test="fileChanged != null and fileChanged == 0">
+				, FILE_PATH = #{filePath}
+				, FILE_NAME = #{orgFileName}
+				, ORG_FILE_NAME = #{changeFileName}
+			</if>
 		WHERE 1 = 1
 			AND CONTENTS_IDX = #{contentsIdx}
 	</update>

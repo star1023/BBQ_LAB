@@ -107,6 +107,8 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 			JSONArray contentsResultArr = (JSONArray)listMap.get("contentsResultArr");
 			JSONArray contentsNoteArr = (JSONArray)listMap.get("contentsNoteArr");
 			JSONArray resultArr = (JSONArray)listMap.get("resultArr");
+			JSONArray imageIndexArr = (JSONArray) listMap.get("imageIndexArr");
+			
 			//1. key value 조회
 			reportIdx = reportDao.selectSenseQualitySeq();	//key value 조회
 			param.put("idx", reportIdx);
@@ -122,11 +124,20 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 	        String toDay = sdf.format(day);
 			String path = config.getProperty("upload.file.path.images");
-			path += "/"+toDay; 			
+			path += "/"+toDay;
+			int imageCursor = 0; //이미지 인덱스용 커서
 			for( int i = 0 ; i < contentsDivArr.size() ; i++ ) {
 				HashMap<String,Object> contentsMap = new HashMap<String,Object>();
 				contentsMap.put("idx", reportIdx);
 				contentsMap.put("displayOrder", i+1);
+				
+			    boolean hasImage = false;
+			    for (int j = 0; j < imageIndexArr.size(); j++) {
+			        if (Integer.parseInt(imageIndexArr.get(j).toString()) == i) {
+			            hasImage = true;
+			            break;
+			        }
+			    }
 				
 				try{
 					contentsMap.put("contentsDiv", contentsDivArr.get(i));
@@ -141,10 +152,10 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 				}
 				
 				try {
-					MultipartFile multipartFile = file[i];
-					logger.error("파일 객체 : " + file.toString());
-					if( file != null && file.length > 0 ) {
+					if (hasImage && file != null && imageCursor < file.length) {
+						MultipartFile multipartFile = file[imageCursor++];
 						if( !multipartFile.isEmpty() ) {
+							logger.error("파일 객체 : " + multipartFile.toString());
 							String fileIdx = FileUtil.getUUID();
 							String result = FileUtil.upload3(multipartFile,path,fileIdx);
 							contentsMap.put("orgFileName", multipartFile.getOriginalFilename());
@@ -154,12 +165,13 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 							contentsMap.put("orgFileName", "");
 							contentsMap.put("filePath", "");
 							contentsMap.put("changeFileName", "");
-						}
+						}						
 					} else {
 						contentsMap.put("orgFileName", "");
 						contentsMap.put("filePath", "");
 						contentsMap.put("changeFileName", "");
 					}
+					
 				} catch( Exception e ) {
 					logger.error("관능 이미지 에러 : " + e);
 					contentsMap.put("orgFileName", "");
@@ -236,6 +248,8 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 			JSONArray contentsResultArr = (JSONArray)listMap.get("contentsResultArr");
 			JSONArray contentsNoteArr = (JSONArray)listMap.get("contentsNoteArr");
 			JSONArray resultArr = (JSONArray)listMap.get("resultArr");
+			JSONArray imageIndexArr = (JSONArray) listMap.get("imageIndexArr");
+			
 			//1. key value 조회
 			reportIdx = reportDao.selectSenseQualitySeq();	//key value 조회
 			param.put("idx", reportIdx);
@@ -252,11 +266,20 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 	        String toDay = sdf.format(day);
 			String path = config.getProperty("upload.file.path.images");
-			path += "/"+toDay; 			
+			path += "/"+toDay; 		
+			int imageCursor = 0; //이미지 인덱스용 커서
 			for( int i = 0 ; i < contentsDivArr.size() ; i++ ) {
 				HashMap<String,Object> contentsMap = new HashMap<String,Object>();
 				contentsMap.put("idx", reportIdx);
 				contentsMap.put("displayOrder", i+1);
+				
+				boolean hasImage = false;
+			    for (int j = 0; j < imageIndexArr.size(); j++) {
+			        if (Integer.parseInt(imageIndexArr.get(j).toString()) == i) {
+			            hasImage = true;
+			            break;
+			        }
+			    }
 				
 				try{
 					contentsMap.put("contentsDiv", contentsDivArr.get(i));
@@ -271,9 +294,10 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 				}
 				
 				try {
-					MultipartFile multipartFile = file[i];
-					if( file != null && file.length > 0 ) {
+					if (hasImage && file != null && imageCursor < file.length) {
+						MultipartFile multipartFile = file[imageCursor++];
 						if( !multipartFile.isEmpty() ) {
+							logger.error("파일 객체 : " + multipartFile.toString());
 							String fileIdx = FileUtil.getUUID();
 							String result = FileUtil.upload3(multipartFile,path,fileIdx);
 							contentsMap.put("orgFileName", multipartFile.getOriginalFilename());
@@ -283,7 +307,7 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 							contentsMap.put("orgFileName", "");
 							contentsMap.put("filePath", "");
 							contentsMap.put("changeFileName", "");
-						}
+						}						
 					} else {
 						contentsMap.put("orgFileName", "");
 						contentsMap.put("filePath", "");
@@ -399,6 +423,8 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 		try {
 			JSONArray contentsNoteArr = (JSONArray)listMap.get("contentsNoteArr");
 			JSONArray resultArr = (JSONArray)listMap.get("resultArr");
+			JSONArray deleteImageIdxArr = (JSONArray)listMap.get("deleteImageIdxArr");
+			JSONArray deleteContentIdxArr = (JSONArray)listMap.get("deleteContentIdxArr");
 			
 			//1. lab_sense_quality_report 등록
 			reportDao.updateSenseQualityReport(param);
@@ -410,40 +436,117 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 	        String toDay = sdf.format(day);
 			String path = config.getProperty("upload.file.path.images");
 			path += "/"+toDay; 			
-			while( keys.hasNext() ) {
-				String key = keys.next();
-				HashMap<String, Object> dataMap = (HashMap<String, Object>)dataListMap.get(key);
-				if( dataMap != null && "U".equals(dataMap.get("dataStatus")) ) {
-					reportDao.updateSenseQualityContent(dataMap);
-				} else {
-					dataMap.put("idx", param.get("idx"));
-					//파일에 대한 정보를 조회한다.
-					try {
-						MultipartFile multipartFile = (MultipartFile)fileMap.get(key);
-						if( file != null && file.length > 0 ) {
-							if( !multipartFile.isEmpty() ) {
-								String fileIdx = FileUtil.getUUID();
-								String result = FileUtil.upload3(multipartFile,path,fileIdx);
-								dataMap.put("orgFileName", multipartFile.getOriginalFilename());
-								dataMap.put("filePath", "/"+toDay);
-								dataMap.put("changeFileName", result);
-							} else {
-								dataMap.put("orgFileName", "");
-								dataMap.put("filePath", "");
-								dataMap.put("changeFileName", "");
-							}
-						} else {
-							dataMap.put("orgFileName", "");
-							dataMap.put("filePath", "");
-							dataMap.put("changeFileName", "");
-						}
-					} catch( Exception e ) {
-						dataMap.put("orgFileName", "");
-						dataMap.put("filePath", "");
-						dataMap.put("changeFileName", "");
-					}
-					reportDao.insertSenseQualityContent(dataMap);
-				}
+			while (keys.hasNext()) {
+			    String key = keys.next();
+			    HashMap<String, Object> dataMap = (HashMap<String, Object>) dataListMap.get(key);
+
+			    String contentsIdx = String.valueOf(dataMap.get("contentsIdx"));
+			    boolean hasContentsIdx = contentsIdx != null
+			        && !"".equals(contentsIdx.trim())
+			        && !"null".equalsIgnoreCase(contentsIdx.trim())
+			        && !"undefined".equalsIgnoreCase(contentsIdx.trim());
+			    boolean isDeleted = deleteImageIdxArr.contains(contentsIdx);
+
+			    MultipartFile multipartFile = (MultipartFile) fileMap.get(key);
+			    String fileIdx = null;
+			    String result = null;
+
+			    logger.info("▶▶ 처리 시작: key={}, contentsIdx={}, hasContentsIdx={}, isDeleted={}, hasFile={}", 
+			        key, contentsIdx, hasContentsIdx, isDeleted, (multipartFile != null && !multipartFile.isEmpty()));
+
+			    // ✅ update (기존 콘텐츠 존재)
+			    if (isDeleted || hasContentsIdx) {
+			        logger.info("✔ UPDATE 대상");
+
+			        // 1. 이미지 삭제 대상일 경우
+			        if (isDeleted) {
+			            logger.info("⛔ 이미지 삭제 대상 → 파일 삭제 시도");
+			            Map<String, Object> fileInfoParam = new HashMap<>();
+			            fileInfoParam.put("contentsIdx", contentsIdx);
+			            Map<String, Object> dbFileInfo = reportDao.selectSenseQualityContenstsData(fileInfoParam);
+
+			            String fileName = (String) dbFileInfo.get("ORG_FILE_NAME");
+			            String filePath = (String) dbFileInfo.get("FILE_PATH");
+
+			            if (filePath != null && fileName != null && !filePath.isEmpty() && !fileName.isEmpty()) {
+			                String fullPath = config.getProperty("upload.file.path.images") + filePath + "/" + fileName;
+			                File targetFile = new File(fullPath);
+			                if (targetFile.exists()) {
+			                    boolean deleted = targetFile.delete();
+			                    logger.info("🗑 파일 삭제 성공 여부: {}, 경로: {}", deleted, fullPath);
+			                } else {
+			                    logger.info("⚠ 삭제 대상 파일이 존재하지 않음: {}", fullPath);
+			                }
+			            } else {
+			                logger.info("⚠ 삭제할 파일 정보 없음: fileName={}, filePath={}", fileName, filePath);
+			            }
+
+			            // DB 내 파일 정보 초기화
+			            dataMap.put("orgFileName", "");
+			            dataMap.put("filePath", "");
+			            dataMap.put("changeFileName", "");
+			            dataMap.put("fileChanged", 0);
+			        }
+
+			        // 2. 새 이미지가 있다면 업로드
+			        if (multipartFile != null && !multipartFile.isEmpty()) {
+			            fileIdx = FileUtil.getUUID();
+			            result = FileUtil.upload3(multipartFile, path, fileIdx);
+			            dataMap.put("orgFileName", multipartFile.getOriginalFilename());
+			            dataMap.put("filePath", "/" + toDay);
+			            dataMap.put("changeFileName", result);
+			            dataMap.put("fileChanged", 0);
+
+			            logger.info("📤 새 이미지 업로드 완료: {}", result);
+			        } else if (!isDeleted) {
+			            dataMap.put("fileChanged", 1);
+			            logger.info("🔁 기존 이미지 유지 (파일 변경 없음)");
+			        }
+
+			        reportDao.updateSenseQualityContent(dataMap);
+			        logger.info("✅ DB UPDATE 완료 (key={})", key);
+
+			    } else {
+			        // ✅ 신규 insert
+			        dataMap.put("idx", param.get("idx"));
+			        logger.info("➕ 신규 INSERT 대상");
+
+			        try {
+			            if (multipartFile != null && !multipartFile.isEmpty()) {
+			                fileIdx = FileUtil.getUUID();
+			                result = FileUtil.upload3(multipartFile, path, fileIdx);
+			                dataMap.put("orgFileName", multipartFile.getOriginalFilename());
+			                dataMap.put("filePath", "/" + toDay);
+			                dataMap.put("changeFileName", result);
+			                logger.info("📥 신규 이미지 업로드 완료: {}", result);
+			            } else {
+			                dataMap.put("orgFileName", "");
+			                dataMap.put("filePath", "");
+			                dataMap.put("changeFileName", "");
+			                logger.info("📎 이미지 없이 신규 INSERT → 파일 정보 없음");
+			            }
+			        } catch (Exception e) {
+			            dataMap.put("orgFileName", "");
+			            dataMap.put("filePath", "");
+			            dataMap.put("changeFileName", "");
+			            logger.warn("❗ 이미지 업로드 중 예외 발생 → 파일 정보 초기화", e);
+			        }
+
+			        reportDao.insertSenseQualityContent(dataMap);
+			        logger.info("✅ DB INSERT 완료 (key={})", key);
+			    }
+			}
+			
+			// 2. 콘텐츠 완전 삭제 (deleteContentIdxArr)
+			if (deleteContentIdxArr != null && !deleteContentIdxArr.isEmpty()) {
+			    for (int j = 0 ; j < deleteContentIdxArr.size() ; j++ ) {
+			        Map<String, Object> delParam = new HashMap<>();
+			        delParam.put("contentsIdx", deleteContentIdxArr.get(j));
+
+			        // 파일 삭제를 이 시점에서 하지 마세요!! 이미 위에서 됐어야 함
+			        reportDao.deleteSenseQualityContenstsData(delParam);
+			        logger.info(">> 최종 삭제 완료된 contentsIdx: {}", deleteContentIdxArr.get(j));
+			    }
 			}
 			
 			//3. lab_sense_quality_add_info 등록
@@ -505,6 +608,8 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 		try {
 			JSONArray contentsNoteArr = (JSONArray)listMap.get("contentsNoteArr");
 			JSONArray resultArr = (JSONArray)listMap.get("resultArr");
+			JSONArray deleteImageIdxArr = (JSONArray)listMap.get("deleteImageIdxArr");
+			JSONArray deleteContentIdxArr = (JSONArray)listMap.get("deleteContentIdxArr");
 			
 			if( param.get("currentStatus") != null && "COND_APPR".equals(param.get("currentStatus")) ) {
 				param.put("status", "APPR");
@@ -522,43 +627,117 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 	        String toDay = sdf.format(day);
 			String path = config.getProperty("upload.file.path.images");
 			path += "/"+toDay; 			
-			while( keys.hasNext() ) {
-				String key = keys.next();
-				HashMap<String, Object> dataMap = (HashMap<String, Object>)dataListMap.get(key);
-				if( dataMap != null && "U".equals(dataMap.get("dataStatus")) ) {
-					//update 하자
-					System.err.println("UPDATE 하자 "+dataMap);
-					reportDao.updateSenseQualityContent(dataMap);
-				} else {
-					dataMap.put("idx", param.get("idx"));
-					//파일에 대한 정보를 조회한다.
-					try {
-						MultipartFile multipartFile = (MultipartFile)fileMap.get(key);
-						if( file != null && file.length > 0 ) {
-							if( !multipartFile.isEmpty() ) {
-								String fileIdx = FileUtil.getUUID();
-								String result = FileUtil.upload3(multipartFile,path,fileIdx);
-								dataMap.put("orgFileName", multipartFile.getOriginalFilename());
-								dataMap.put("filePath", "/"+toDay);
-								dataMap.put("changeFileName", result);
-							} else {
-								dataMap.put("orgFileName", "");
-								dataMap.put("filePath", "");
-								dataMap.put("changeFileName", "");
-							}
-						} else {
-							dataMap.put("orgFileName", "");
-							dataMap.put("filePath", "");
-							dataMap.put("changeFileName", "");
-						}
-					} catch( Exception e ) {
-						dataMap.put("orgFileName", "");
-						dataMap.put("filePath", "");
-						dataMap.put("changeFileName", "");
-					}
-					System.err.println("INSERT 하자 "+dataMap);
-					reportDao.insertSenseQualityContent(dataMap);
-				}
+			while (keys.hasNext()) {
+			    String key = keys.next();
+			    HashMap<String, Object> dataMap = (HashMap<String, Object>) dataListMap.get(key);
+
+			    String contentsIdx = String.valueOf(dataMap.get("contentsIdx"));
+			    boolean hasContentsIdx = contentsIdx != null
+			        && !"".equals(contentsIdx.trim())
+			        && !"null".equalsIgnoreCase(contentsIdx.trim())
+			        && !"undefined".equalsIgnoreCase(contentsIdx.trim());
+			    boolean isDeleted = deleteImageIdxArr.contains(contentsIdx);
+
+			    MultipartFile multipartFile = (MultipartFile) fileMap.get(key);
+			    String fileIdx = null;
+			    String result = null;
+
+			    logger.info("▶▶ 처리 시작: key={}, contentsIdx={}, hasContentsIdx={}, isDeleted={}, hasFile={}", 
+			        key, contentsIdx, hasContentsIdx, isDeleted, (multipartFile != null && !multipartFile.isEmpty()));
+
+			    // ✅ update (기존 콘텐츠 존재)
+			    if (isDeleted || hasContentsIdx) {
+			        logger.info("✔ UPDATE 대상");
+
+			        // 1. 이미지 삭제 대상일 경우
+			        if (isDeleted) {
+			            logger.info("⛔ 이미지 삭제 대상 → 파일 삭제 시도");
+			            Map<String, Object> fileInfoParam = new HashMap<>();
+			            fileInfoParam.put("contentsIdx", contentsIdx);
+			            Map<String, Object> dbFileInfo = reportDao.selectSenseQualityContenstsData(fileInfoParam);
+
+			            String fileName = (String) dbFileInfo.get("ORG_FILE_NAME");
+			            String filePath = (String) dbFileInfo.get("FILE_PATH");
+
+			            if (filePath != null && fileName != null && !filePath.isEmpty() && !fileName.isEmpty()) {
+			                String fullPath = config.getProperty("upload.file.path.images") + filePath + "/" + fileName;
+			                File targetFile = new File(fullPath);
+			                if (targetFile.exists()) {
+			                    boolean deleted = targetFile.delete();
+			                    logger.info("🗑 파일 삭제 성공 여부: {}, 경로: {}", deleted, fullPath);
+			                } else {
+			                    logger.info("⚠ 삭제 대상 파일이 존재하지 않음: {}", fullPath);
+			                }
+			            } else {
+			                logger.info("⚠ 삭제할 파일 정보 없음: fileName={}, filePath={}", fileName, filePath);
+			            }
+
+			            // DB 내 파일 정보 초기화
+			            dataMap.put("orgFileName", "");
+			            dataMap.put("filePath", "");
+			            dataMap.put("changeFileName", "");
+			            dataMap.put("fileChanged", 0);
+			        }
+
+			        // 2. 새 이미지가 있다면 업로드
+			        if (multipartFile != null && !multipartFile.isEmpty()) {
+			            fileIdx = FileUtil.getUUID();
+			            result = FileUtil.upload3(multipartFile, path, fileIdx);
+			            dataMap.put("orgFileName", multipartFile.getOriginalFilename());
+			            dataMap.put("filePath", "/" + toDay);
+			            dataMap.put("changeFileName", result);
+			            dataMap.put("fileChanged", 0);
+
+			            logger.info("📤 새 이미지 업로드 완료: {}", result);
+			        } else if (!isDeleted) {
+			            dataMap.put("fileChanged", 1);
+			            logger.info("🔁 기존 이미지 유지 (파일 변경 없음)");
+			        }
+
+			        reportDao.updateSenseQualityContent(dataMap);
+			        logger.info("✅ DB UPDATE 완료 (key={})", key);
+
+			    } else {
+			        // ✅ 신규 insert
+			        dataMap.put("idx", param.get("idx"));
+			        logger.info("➕ 신규 INSERT 대상");
+
+			        try {
+			            if (multipartFile != null && !multipartFile.isEmpty()) {
+			                fileIdx = FileUtil.getUUID();
+			                result = FileUtil.upload3(multipartFile, path, fileIdx);
+			                dataMap.put("orgFileName", multipartFile.getOriginalFilename());
+			                dataMap.put("filePath", "/" + toDay);
+			                dataMap.put("changeFileName", result);
+			                logger.info("📥 신규 이미지 업로드 완료: {}", result);
+			            } else {
+			                dataMap.put("orgFileName", "");
+			                dataMap.put("filePath", "");
+			                dataMap.put("changeFileName", "");
+			                logger.info("📎 이미지 없이 신규 INSERT → 파일 정보 없음");
+			            }
+			        } catch (Exception e) {
+			            dataMap.put("orgFileName", "");
+			            dataMap.put("filePath", "");
+			            dataMap.put("changeFileName", "");
+			            logger.warn("❗ 이미지 업로드 중 예외 발생 → 파일 정보 초기화", e);
+			        }
+
+			        reportDao.insertSenseQualityContent(dataMap);
+			        logger.info("✅ DB INSERT 완료 (key={})", key);
+			    }
+			}
+			
+			// 2. 콘텐츠 완전 삭제 (deleteContentIdxArr)
+			if (deleteContentIdxArr != null && !deleteContentIdxArr.isEmpty()) {
+			    for (int j = 0 ; j < deleteContentIdxArr.size() ; j++ ) {
+			        Map<String, Object> delParam = new HashMap<>();
+			        delParam.put("contentsIdx", deleteContentIdxArr.get(j));
+
+			        // 파일 삭제를 이 시점에서 하지 마세요!! 이미 위에서 됐어야 함
+			        reportDao.deleteSenseQualityContenstsData(delParam);
+			        logger.info(">> 최종 삭제 완료된 contentsIdx: {}", deleteContentIdxArr.get(j));
+			    }
 			}
 			
 			//3. lab_sense_quality_add_info 등록

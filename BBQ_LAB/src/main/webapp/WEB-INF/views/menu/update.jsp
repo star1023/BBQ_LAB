@@ -79,6 +79,11 @@ var selectedArr = new Array();
 		<c:forEach var="fileType" items="${menuData.fileType}" varStatus="status">
 		$('input[type="checkbox"][value="${fileType.FILE_TYPE}"]').prop('checked', true);
 		</c:forEach>
+		
+	    // ✅ name="docType" 체크박스 중 모든 항목이 체크되어 있다면 #checkAll 도 체크
+	    const docCheckboxes = $('input[name="docType"]'); // checkAll은 name이 없으므로 자동 제외됨
+	    const allChecked = docCheckboxes.length > 0 && docCheckboxes.filter(':checked').length === docCheckboxes.length;
+	    $('#checkAll').prop('checked', allChecked);
 	});
 	
 	let _brandFullList = []; // 전체 브랜드 저장용 전역변수
@@ -1564,7 +1569,7 @@ var selectedArr = new Array();
 									}			
 								});
 							} else {
-								alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 생성되었습니다.");
+								alert($("#menuName").val()+"("+$("#menuCode").val()+")"+"가 정상적으로 생성되었습니다.");
 								$('#lab_loading').hide();
 								fn_list();
 							}
@@ -1778,15 +1783,35 @@ var selectedArr = new Array();
 	            brand.itemCode +
 	            "' data-name='" +
 	            brand.itemName +
-	            "'" + (isChecked ? " checked" : "") + "></td>" +
+	            "' onchange='syncBrandCheckAll()'" + (isChecked ? " checked" : "") + "></td>" +
 	            "<td>" + brand.itemCode + "</td>" +
 	            "<td>" + brand.itemName + "</td>";
 	        tbody.appendChild(row);
 	    });
 
 	    if (countElement) countElement.textContent = brandList.length;
+	    
+	    const brandCheckboxes = document.querySelectorAll("input[name='brandChk']");
+	    const allChecked = brandCheckboxes.length > 0 && [...brandCheckboxes].every(cb => cb.checked);
+
+	    const selectAllCheckbox = document.getElementById("selectAllBrands");
+	    if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
+
 	}
 
+	function toggleSelectAllBrands(masterCheckbox) {
+	    const checkboxes = document.querySelectorAll("#brandLayerBody input[name='brandChk']");
+	    checkboxes.forEach(cb => {
+	        cb.checked = masterCheckbox.checked;
+	    });
+	}
+	
+	function syncBrandCheckAll() {
+		const checkboxes = document.querySelectorAll("input[name='brandChk']");
+	    const allChecked = [...checkboxes].length > 0 && [...checkboxes].every(cb => cb.checked);
+	    const masterCheckbox = document.getElementById("selectAllBrands");
+	    if (masterCheckbox) masterCheckbox.checked = allChecked;
+	}
 	
 	function chooseBrandMulti() {
 	    const idx = window._brandIdx;
@@ -2139,6 +2164,22 @@ var selectedArr = new Array();
 		});
 		$("#refTxtFull").html("&nbsp;"+refTxtFull);
 	}
+	
+	function toggleDocTypeCheckboxes(masterCheckbox) {
+	    const checkboxes = document.querySelectorAll('input[name="docType"]');
+	    checkboxes.forEach(cb => {
+	        if (cb.id !== 'checkAll') {
+	            cb.checked = masterCheckbox.checked;
+	        }
+	    });
+	}
+	
+	function syncCheckAll() {
+	    const checkboxes = document.querySelectorAll('input[name="docType"]:not(#checkAll)');
+	    const allChecked = [...checkboxes].every(cb => cb.checked);
+	    document.getElementById("checkAll").checked = allChecked;
+	}
+		
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -2742,17 +2783,18 @@ var selectedArr = new Array();
 						<li>
 							<dt style="width: 20%">파일유형 <span class="mandatory">*</span></dt>
 							<dd style="width: 80%;">
-								<input id="checkbox_item1" name="docType" type="checkbox" value="10"/>
+								<input id="checkAll" type="checkbox" onchange="toggleDocTypeCheckboxes(this)" /><label for="checkAll" style="vertical-align: middle; font-weight: bold;"><span></span>전체 선택</label>
+								<input id="checkbox_item1" name="docType" type="checkbox" value="10" onchange="syncCheckAll()"/>
 								<label for="checkbox_item1" style="vertical-align: middle;"><span></span>컨셉서-개발목적</label>
-								<input id="checkbox_item2" name="docType" type="checkbox" value="20"/>
+								<input id="checkbox_item2" name="docType" type="checkbox" value="20" onchange="syncCheckAll()"/>
 								<label for="checkbox_item2" style="vertical-align: middle;"><span></span>추정 원단위표</label>
-								<input id="checkbox_item3" name="docType" type="checkbox" value="30"/>
+								<input id="checkbox_item3" name="docType" type="checkbox" value="30" onchange="syncCheckAll()"/>
 								<label for="checkbox_item3" style="vertical-align: middle;"><span></span>배합비&제조신고용 배합비</label>						
-								<input id="checkbox_item4" name="docType" type="checkbox" value="40"/>
+								<input id="checkbox_item4" name="docType" type="checkbox" value="40" onchange="syncCheckAll()"/>
 								<label for="checkbox_item4" style="vertical-align: middle;"><span></span>제조공정도</label>						
-								<input id="checkbox_item5" name="docType" type="checkbox" value="50"/>
+								<input id="checkbox_item5" name="docType" type="checkbox" value="50" onchange="syncCheckAll()"/>
 								<label for="checkbox_item5" style="vertical-align: middle;"><span></span>제조작업표준서</label>
-								<input id="checkbox_item6" name="docType" type="checkbox" value="60"/>
+								<input id="checkbox_item6" name="docType" type="checkbox" value="60" onchange="syncCheckAll()"/>
 								<label for="checkbox_item6" style="vertical-align: middle;"><span></span>제품규격서</label>
 								<select id="tempFileList" name="tempFileList" multiple style="display: none">
 								<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
@@ -3489,7 +3531,7 @@ var selectedArr = new Array();
 				</colgroup>
 				<thead>
 					<tr>
-						<th></th>	
+						<th><input  style='width:20px; height:20px;' type="checkbox" id="selectAllBrands" onclick="toggleSelectAllBrands(this)"></th>	
 						<th>브랜드 코드</th>
 						<th>브랜드 명</th>
 					</tr>
@@ -3504,8 +3546,9 @@ var selectedArr = new Array();
 		</div>
 		<div style="margin-top: 40px;">
 		    <!-- ✅ 선택 완료 버튼 추가 -->
-		    <div style="text-align: center;">
-		      <button class="btn_large_search" onclick="chooseBrandMulti()">선택 완료</button>
+		    <div style="text-align: right;">
+		      <button class="btn_admin_red" onclick="chooseBrandMulti()">확인</button>
+		      <button class="btn_admin_gray" onclick="closeDialog('dialog_brand')">취소</button>
 		    </div>
 		</div>
 	</div>

@@ -200,11 +200,16 @@ function fn_search() {
 							html += "&nbsp;";
 						}
 						html += "	</td>";
-						html += "	<td><a href=\"#\" onClick=\"fn_view('"+item.PACKAGE_IDX+"')\">"+nvl(item.PRODUCT_NAME,'&nbsp;')+"</a></td>";
-						html += "	<td>"+nvl(item.VERSION_NO,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.USER_NAME,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.REG_DATE,'&nbsp;')+"</td>";
+						html += "	<td onclick=\"fn_view('"+item.PACKAGE_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.PRODUCT_NAME,'&nbsp;') + "</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PACKAGE_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.VERSION_NO,'&nbsp;') + "</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PACKAGE_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PACKAGE_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.USER_NAME,'&nbsp;') + "</td>";
+
+						html += "	<td onclick=\"fn_view('"+item.PACKAGE_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.REG_DATE,'&nbsp;') + "</td>";
+
 						html += "	<td>";
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";

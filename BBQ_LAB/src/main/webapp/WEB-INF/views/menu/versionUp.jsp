@@ -75,6 +75,10 @@ var selectedArr = new Array();
 		$('input[type="checkbox"][value="${fileType.FILE_TYPE}"]').prop('checked', true);
 		</c:forEach>
 		
+		// ✅ name="docType" 체크박스 중 모든 항목이 체크되어 있다면 #checkAll 도 체크
+	    const docCheckboxes = $('input[name="docType"]'); // checkAll은 name이 없으므로 자동 제외됨
+	    const allChecked = docCheckboxes.length > 0 && docCheckboxes.filter(':checked').length === docCheckboxes.length;
+	    $('#checkAll').prop('checked', allChecked);
 	});
 	
 	let _brandFullList = []; // 전체 브랜드 저장용 전역변수
@@ -1189,6 +1193,10 @@ var selectedArr = new Array();
 			tabChange('tab1');
 			$("#attatch_file").focus();
 			return;
+		}  else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
+			tabChange('tab2');
+			return;
 		} else {
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
 				var matCount = 0;
@@ -1736,8 +1744,21 @@ var selectedArr = new Array();
 	    });
 
 	    if (countElement) countElement.textContent = brandList.length;
+	    
+	    // ✅ 전체 선택 상태 동기화
+	    const brandCheckboxes = document.querySelectorAll("input[name='brandChk']");
+	    const allChecked = brandCheckboxes.length > 0 && [...brandCheckboxes].every(cb => cb.checked);
+
+	    const selectAllCheckbox = document.getElementById("selectAllBrands");
+	    if (selectAllCheckbox) selectAllCheckbox.checked = allChecked;
 	}
 
+	function toggleSelectAllBrands(masterCheckbox) {
+	    const checkboxes = document.querySelectorAll("#brandLayerBody input[name='brandChk']");
+	    checkboxes.forEach(cb => {
+	        cb.checked = masterCheckbox.checked;
+	    });
+	}
 	
 	function chooseBrandMulti() {
 	    const idx = window._brandIdx;
@@ -2886,7 +2907,7 @@ var selectedArr = new Array();
 					 -->
 					<c:if test="${userUtil:getUserId(pageContext.request) == menuData.data.DOC_OWNER}">
 					<button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
-					<button class="btn_admin_sky" onclick="fn_insert()">개정 및 결재</button>
+					<button class="btn_admin_sky" onclick="fn_insert()">결재</button>
 					</c:if>
 					<button class="btn_admin_gray" onclick="fn_goList();">취소</button>
 				</div>
@@ -3303,7 +3324,7 @@ var selectedArr = new Array();
 				</colgroup>
 				<thead>
 					<tr>
-						<th></th>	
+						<th><input  style='width:20px; height:20px;' type="checkbox" id="selectAllBrands" onclick="toggleSelectAllBrands(this)"></th>	
 						<th>브랜드 코드</th>
 						<th>브랜드 명</th>
 					</tr>
@@ -3318,8 +3339,9 @@ var selectedArr = new Array();
 		</div>
 		<div style="margin-top: 40px;">
 		    <!-- ✅ 선택 완료 버튼 추가 -->
-		    <div style="text-align: center;">
-		      <button class="btn_large_search" onclick="chooseBrandMulti()">선택 완료</button>
+		    <div style="text-align: right;">
+		      <button class="btn_admin_red" onclick="chooseBrandMulti()">확인</button>
+		      <button class="btn_admin_gray" onclick="closeDialog('dialog_brand')">취소</button>
 		    </div>
 		</div>
 	</div>

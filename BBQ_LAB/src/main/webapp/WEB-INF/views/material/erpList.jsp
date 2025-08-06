@@ -50,20 +50,27 @@ function fn_loadList(pageNo) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
 					html += "<tr>";
-					html += "	<td>"+nvl(item.SAP_CODE,'&nbsp;')+"</td>";
-					html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.SAP_CODE+"')\">"+nvl(item.NAME,'&nbsp;')+"</div></td>";
-					html += "	<td>"+item.UNIT+"</td>";
-					html += "	<td>"+nvl(item.KEEP_CONDITION_TXT,'&nbsp;')+"</td>";
-					html += "	<td>";
-					if( item.TOTAL_WEIGHT != "" ) {
-						html += nvl(item.TOTAL_WEIGHT,'&nbsp;');
-						if( item.TOTAL_WEIGHT_UNIT != "" ) {
-							html += " ("+nvl(item.TOTAL_WEIGHT_UNIT,'&nbsp;')+")";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.SAP_CODE, '&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.NAME, '&nbsp;') + "</div></td>";
+
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + item.UNIT + "</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.KEEP_CONDITION_TXT, '&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">";
+					if (item.TOTAL_WEIGHT != "") {
+						html += nvl(item.TOTAL_WEIGHT, '&nbsp;');
+						if (item.TOTAL_WEIGHT_UNIT != "") {
+							html += " (" + nvl(item.TOTAL_WEIGHT_UNIT, '&nbsp;') + ")";
 						}
 					}
 					html += "	</td>";
-					html += "	<td><div class=\"ellipsis_txt tgnl\">"+nvl(item.STANDARD,'&nbsp;')+"</div></td>";
-					html += "	<td>"+nvl(item.EXPIRATION_DATE,'&nbsp;')+"</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.STANDARD, '&nbsp;') + "</div></td>";
+
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.EXPIRATION_DATE, '&nbsp;') + "</td>";
+
 					html += "</tr>"					
 				});				
 			} else {

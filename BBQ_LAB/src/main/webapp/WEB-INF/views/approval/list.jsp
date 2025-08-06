@@ -227,28 +227,36 @@
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						html += "<tr>";
-						html += "	<td>"+item.APPR_IDX+"</td>";
-						html += "	<td>"+item.DOC_TYPE_NAME+"</td>";
-						if( item.LAST_STATUS == 'N' ) {
-							html += "		<td><span class=\"app01\">"+item.LAST_STATUS_TXT+"</span></td>";
-						} else if( item.LAST_STATUS == 'A' ) {
-							html += "		<td><span class=\"app01\">"+item.LAST_STATUS_TXT+" ("+item.CURRENT_STEP+"/"+item.TOTAL_STEP+")</span></td>";
-						} else if( item.LAST_STATUS == 'R' ) {
-							html += "		<td><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
-						} else if( item.LAST_STATUS == 'C' ) {
-							html += "		<td><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
-						}  else if( item.LAST_STATUS == 'CA' ) {
-							html += "		<td><span class=\"app04\">"+item.LAST_STATUS_TXT+"</span></td>";
-						}  else if( item.LAST_STATUS == 'Y' ) {
-							html += "		<td><span class=\"app02\">"+item.LAST_STATUS_TXT+"</span></td>";
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">"+item.APPR_IDX+"</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">"+item.DOC_TYPE_NAME+"</td>";
+
+						if (item.LAST_STATUS == 'N') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app01\">"+item.LAST_STATUS_TXT+"</span></td>";
+						} else if (item.LAST_STATUS == 'A') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app01\">"+item.LAST_STATUS_TXT+" ("+item.CURRENT_STEP+"/"+item.TOTAL_STEP+")</span></td>";
+						} else if (item.LAST_STATUS == 'R') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
+						} else if (item.LAST_STATUS == 'C') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
+						} else if (item.LAST_STATUS == 'CA') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app04\">"+item.LAST_STATUS_TXT+"</span></td>";
+						} else if (item.LAST_STATUS == 'Y') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app02\">"+item.LAST_STATUS_TXT+"</span></td>";
 						}
-						html += "	<td><a href=\"#\" onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
-						html += "	<td>";
-						if( item.LAST_STATUS == 'N' ) {
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">";
+						html += "		<div class=\"ellipsis_txt tgnl\">" + item.TITLE + "</div>";
+						html += "	</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">";
+						if (item.LAST_STATUS == 'N') {
 							html += item.CURRENT_USER_NAME;
 						}
-						html += "	</td>"
-						html += "	<td>"+item.REG_DATE_TXT+"</td>";
+						html += "	</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">"+item.REG_DATE_TXT+"</td>";
+
 						html += "	<td>";
 						html += "		<ul class=\"list_ul\">";
 						if( item.LAST_STATUS == 'N' ) {
@@ -323,24 +331,28 @@
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						html += "<tr>";
-						html += "	<td>"+item.APPR_IDX+"</td>";
-						html += "	<td>"+item.DOC_TYPE_NAME+"</td>";
-						if( item.LAST_STATUS == 'N' ) {
-							html += "		<td><span class=\"app01\">"+item.LAST_STATUS_TXT+" ("+item.CURRENT_STEP+"/"+item.TOTAL_STEP+")</span></td>";
-						} else if( item.LAST_STATUS == 'A' ) {
-							html += "		<td><span class=\"app01\">"+item.LAST_STATUS_TXT+" ("+item.CURRENT_STEP+"/"+item.TOTAL_STEP+")</span></td>";
-						} else if( item.LAST_STATUS == 'R' ) {
-							html += "		<td><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
-						} else if( item.LAST_STATUS == 'C' ) {
-							html += "		<td><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
-						}  else if( item.LAST_STATUS == 'CA' ) {
-							html += "		<td><span class=\"app04\">"+item.LAST_STATUS_TXT+"</span></td>";
-						}  else if( item.LAST_STATUS == 'Y' ) {
-							html += "		<td><span class=\"app02\">"+item.LAST_STATUS_TXT+"</span></td>";
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">" + item.APPR_IDX + "</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">" + item.DOC_TYPE_NAME + "</td>";
+
+						if (item.LAST_STATUS == 'N' || item.LAST_STATUS == 'A') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app01\">" + item.LAST_STATUS_TXT + " (" + item.CURRENT_STEP + "/" + item.TOTAL_STEP + ")</span></td>";
+						} else if (item.LAST_STATUS == 'R' || item.LAST_STATUS == 'C') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app03\">" + item.LAST_STATUS_TXT + "</span></td>";
+						} else if (item.LAST_STATUS == 'CA') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app04\">" + item.LAST_STATUS_TXT + "</span></td>";
+						} else if (item.LAST_STATUS == 'Y') {
+							html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\"><span class=\"app02\">" + item.LAST_STATUS_TXT + "</span></td>";
 						}
-						html += "	<td><a href=\"#\" onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
-						html += "	<td>"+item.REG_USER_NAME+"</td>";
-						html += "	<td>"+item.REG_DATE_TXT+"</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">";
+						html += "		<div class=\"ellipsis_txt tgnl\">" + item.TITLE + "</div>";
+						html += "	</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">" + item.REG_USER_NAME + "</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"')\" style=\"cursor:pointer;\">" + item.REG_DATE_TXT + "</td>";
+
 						html += "</tr>";
 					});					
 				} else {
@@ -404,11 +416,18 @@
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						html += "<tr>";
-						html += "	<td>"+item.APPR_IDX+"</td>";
-						html += "	<td>"+item.DOC_TYPE_NAME+"</td>";
-						html += "	<td><a href=\"#\" onclick=\"fn_refInfo('"+item.APPR_IDX+"', '"+item.REF_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
-						html += "	<td>"+item.REG_USER_NAME+"</td>";
-						html += "	<td>"+item.REG_DATE_TXT+"</td>";
+						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.APPR_IDX + "</td>";
+
+						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.DOC_TYPE_NAME + "</td>";
+
+						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">";
+						html += "		<div class=\"ellipsis_txt tgnl\">" + item.TITLE + "</div>";
+						html += "	</td>";
+
+						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.REG_USER_NAME + "</td>";
+
+						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.REG_DATE_TXT + "</td>";
+
 						html += "</tr>";
 					});					
 				} else {
@@ -476,22 +495,24 @@
 					$("#list").html(html);
 					data.list.forEach(function (item) {
 						html += "<tr>";
-						html += "	<td>"+item.APPR_IDX+"</td>";
-						html += "	<td>"+item.DOC_TYPE_NAME+"</td>";
-						if( item.LAST_STATUS == 'N' ) {
-							html += "		<td><span class=\"app01\">"+item.LAST_STATUS_TXT+"</span></td>";
-						} else if( item.LAST_STATUS == 'A' ) {
-							html += "		<td><span class=\"app01\">"+item.LAST_STATUS_TXT+" ("+item.CURRENT_STEP+"/"+item.TOTAL_STEP+")</span></td>";
-						} else if( item.LAST_STATUS == 'R' ) {
-							html += "		<td><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
-						} else if( item.LAST_STATUS == 'C' ) {
-							html += "		<td><span class=\"app03\">"+item.LAST_STATUS_TXT+"</span></td>";
-						}  else if( item.LAST_STATUS == 'Y' ) {
-							html += "		<td><span class=\"app02\">"+item.LAST_STATUS_TXT+"</span></td>";
+						html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.APPR_IDX + "</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.DOC_TYPE_NAME + "</td>";
+
+						if (item.LAST_STATUS == 'N') {
+							html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\"><span class='app01'>" + item.LAST_STATUS_TXT + "</span></td>";
+						} else if (item.LAST_STATUS == 'A') {
+							html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\"><span class='app01'>" + item.LAST_STATUS_TXT + " (" + item.CURRENT_STEP + "/" + item.TOTAL_STEP + ")</span></td>";
+						} else if (item.LAST_STATUS == 'R' || item.LAST_STATUS == 'C') {
+							html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\"><span class='app03'>" + item.LAST_STATUS_TXT + "</span></td>";
+						} else if (item.LAST_STATUS == 'Y') {
+							html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\"><span class='app02'>" + item.LAST_STATUS_TXT + "</span></td>";
 						}
-						html += "	<td><a href=\"#\" onclick=\"fn_approvalInfo('"+item.APPR_IDX+"', '"+item.DOC_TYPE+"', '"+item.DOC_IDX+"'); return false;\">"+item.TITLE+"</a></td>";
-						html += "	<td>"+item.REG_USER_NAME+"</td>";
-						html += "	<td>"+item.REG_DATE_TXT+"</td>";
+
+						html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.TITLE + "</td>";
+						html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.REG_USER_NAME + "</td>";
+						html += "	<td onclick=\"fn_approvalInfo('" + item.APPR_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.REG_DATE_TXT + "</td>";
+
 						html += "	<td>";
 						html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">참조</button>";
 						html += "		<button class=\"btn_doc\" onclick=\"javascript:fn_openRefListPopup('"+item.APPR_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">참조자리스트</button>";

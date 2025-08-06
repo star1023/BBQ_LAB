@@ -114,24 +114,24 @@ function fn_renderList(list) {
             row += "<td></td>";
         }
 
-    	// 제목 (유효한 공지는 BOLD 처리)
+     // 제목 (유효한 공지는 BOLD 처리)
         if (isNotice && isValidPeriod) {
-            row += "<td><a href=\"javascript:fn_viewDetail(" + item.BNOTICE_IDX + ");\"><b>" + item.TITLE + "</b></a></td>";
+            row += "<td onclick=\"fn_viewDetail(" + item.BNOTICE_IDX + ")\" style=\"cursor:pointer;\"><b>" + item.TITLE + "</b></td>";
         } else {
-            row += "<td><a href=\"javascript:fn_viewDetail(" + item.BNOTICE_IDX + ");\">" + item.TITLE + "</a></td>";
+            row += "<td onclick=\"fn_viewDetail(" + item.BNOTICE_IDX + ")\" style=\"cursor:pointer;\">" + item.TITLE + "</td>";
         }
 
         // 게시 기간
         if (item.POST_START_DATE && item.POST_END_DATE) {
-            row += "<td>" + item.POST_START_DATE + " ~ " + item.POST_END_DATE + "</td>";
+            row += "<td onclick=\"fn_viewDetail(" + item.BNOTICE_IDX + ")\" style=\"cursor:pointer;\">" + item.POST_START_DATE + " ~ " + item.POST_END_DATE + "</td>";
         } else {
-            row += "<td></td>";
+            row += "<td onclick=\"fn_viewDetail(" + item.BNOTICE_IDX + ")\" style=\"cursor:pointer;\"></td>";
         }
 
         // 작성자 / 조회수
-        row += "<td>" + item.REG_USER_NAME + "</td>";
-        row += "<td>" + item.REG_DATE + "</td>";
-        row += "<td>" + item.HITS + "</td>";
+        row += "<td onclick=\"fn_viewDetail(" + item.BNOTICE_IDX + ")\" style=\"cursor:pointer;\">" + item.REG_USER_NAME + "</td>";
+        row += "<td onclick=\"fn_viewDetail(" + item.BNOTICE_IDX + ")\" style=\"cursor:pointer;\">" + item.REG_DATE + "</td>";
+        row += "<td onclick=\"fn_viewDetail(" + item.BNOTICE_IDX + ")\" style=\"cursor:pointer;\">" + item.HITS + "</td>";
 
         // 버튼
         row += "<td>";

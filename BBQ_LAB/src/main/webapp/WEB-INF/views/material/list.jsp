@@ -56,31 +56,34 @@ function fn_loadList(pageNo) {
 						html += "&nbsp;";
 					}
 					html += "	</td>";
-					html += "	<td>"+nvl(item.MATERIAL_CODE,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.SAP_CODE,'&nbsp;')+"</td>";
-					html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.MATERIAL_IDX+"')\">"+nvl(item.NAME,'&nbsp;')+"</div></td>";
-					//html += "	<td>"+nvl(item.PRICE,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.UNIT_NAME,'&nbsp;')+"</td>";
-					html += "	<td><div class=\"ellipsis_txt tgnl\">";
-					if( chkNull(item.CATEGORY_NAME1) ) {
+					html += "	<td onclick=\"fn_view('" + item.MATERIAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.MATERIAL_CODE, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.MATERIAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.SAP_CODE, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.MATERIAL_IDX + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.NAME, '&nbsp;') + "</div></td>";
+					// html += "	<td>"+nvl(item.PRICE,'&nbsp;')+"</td>";
+					html += "	<td onclick=\"fn_view('" + item.MATERIAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.UNIT_NAME, '&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('" + item.MATERIAL_IDX + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">";
+					if (chkNull(item.CATEGORY_NAME1)) {
 						html += item.CATEGORY_NAME1;
 					}
-					if( chkNull(item.CATEGORY_NAME2) ) {
-						html += " > "+item.CATEGORY_NAME2;
+					if (chkNull(item.CATEGORY_NAME2)) {
+						html += " > " + item.CATEGORY_NAME2;
 					}
-					if( chkNull(item.CATEGORY_NAME3) ) {
-						html += " > "+item.CATEGORY_NAME3;
+					if (chkNull(item.CATEGORY_NAME3)) {
+						html += " > " + item.CATEGORY_NAME3;
 					}
 					html += "	</div></td>";
-					html += "	<td>";
+
+					html += "	<td onclick=\"fn_view('" + item.MATERIAL_IDX + "')\" style=\"cursor:pointer;\">";
 					html += "		<ul class=\"list_ul2\">";
-					html += "			<li class=\""+(item.FILE_CNT10 == 0 ? 's01' : '02')+"\">품</li>";
-					html += "			<li class=\""+(item.FILE_CNT20 == 0 ? 's01' : '02')+"\">수</li>";
-					html += "			<li class=\""+(item.FILE_CNT30 == 0 ? 's01' : '02')+"\">시</li>";
-					html += "			<li class=\""+(item.FILE_CNT40 == 0 ? 's01' : '02')+"\">한</li>";
-					html += "			<li class=\""+(item.FILE_CNT50 == 0 ? 's01' : '02')+"\">견</li>";
+					html += "			<li class=\"" + (item.FILE_CNT10 == 0 ? 's01' : '02') + "\">품</li>";
+					html += "			<li class=\"" + (item.FILE_CNT20 == 0 ? 's01' : '02') + "\">수</li>";
+					html += "			<li class=\"" + (item.FILE_CNT30 == 0 ? 's01' : '02') + "\">시</li>";
+					html += "			<li class=\"" + (item.FILE_CNT40 == 0 ? 's01' : '02') + "\">한</li>";
+					html += "			<li class=\"" + (item.FILE_CNT50 == 0 ? 's01' : '02') + "\">견</li>";
 					html += "		</ul>";
 					html += "	</td>";
+
 					html += "	<td>";
 					if( item.IS_LAST == 'Y' ) {
 						html += "		<li style=\"float:none; display:inline\">";

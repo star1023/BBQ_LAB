@@ -1821,7 +1821,7 @@ public class MenuServiceImpl implements MenuService {
 			commonDao.deleteFileType(map);
 			
 			//첨부파일 유형 저장
-			if( docType != null ) {
+			if( docType != null && docType.size() > 0 ) {
 				List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 				for( int i = 0 ; i < docType.size() ; i++ ) {
 					HashMap<String, Object> paramMap = new HashMap<String, Object>();

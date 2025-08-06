@@ -190,10 +190,16 @@ function fn_loadList(pageNo) {
 					} else {
 						html += "<tr>";
 					}
-					html += "	<td><a href=\"#\" onClick=\"fn_view('"+item.REPORT_IDX+"')\">"+nvl(item.PRODUCT_NAME,'&nbsp;')+"</a></td>";
-					html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.REPORT_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";
-					html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.REG_USER_NAME,'&nbsp;')+"</td>";
+					html += "	<td onclick=\"fn_view('"+item.REPORT_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.PRODUCT_NAME,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.REPORT_IDX+"')\" style=\"cursor:pointer;\">";
+					html += "		<div class=\"ellipsis_txt tgnl\">" + nvl(item.TITLE,'&nbsp;') + "</div>";
+					html += "	</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.REPORT_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.REPORT_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.REG_USER_NAME,'&nbsp;') + "</td>";
+
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
 					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.REPORT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
@@ -333,6 +339,11 @@ function fn_searchClear() {
     document.getElementById('searchTitle').value = '';
     document.getElementById('searchFileTxt').value = '';
 }
+
+function paging( pageNo ) {
+	fn_loadList(pageNo);
+}
+
 </script>
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">

@@ -387,7 +387,7 @@ table{font-size: 12px}
 	                formData.append("docType", "SENSE_QUALITY");
 	                formData.append("userId", "${userId}");
 	                formData.append("title", "${senseQualityData.reportMap.TITLE}_관능&품질평가테스트결과보고서");
-
+					
 	                fetch("/preview/downloadPdf", {
 	                    method: "POST",
 	                    body: formData

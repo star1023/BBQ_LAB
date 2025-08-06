@@ -81,22 +81,29 @@ function fn_loadList(pageNo) {
 					} else {
 						html += "<tr>";
 					}
-					html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.RESULT_IDX+"')\">"+nvl(item.TITLE,'&nbsp;')+"</a></div></td>";
-					html += "	<td style='text-align:center;'>"+nvl(item.EXCUTE_DATE,'&nbsp;')+"</td>";
-					html += "	<td>";
-					var columnItems = item.COLUMN_STATE_TEXT && item.COLUMN_STATE_TEXT.trim() !== ""
-						  ? item.COLUMN_STATE_TEXT.split(',').filter(v => v && v.trim() !== "")
-						  : [];
+					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">";
+					html += "		<div class=\"ellipsis_txt tgnl\">" + nvl(item.TITLE,'&nbsp;') + "</div>";
+					html += "	</td>";
 
-						if (columnItems.length === 0) {
-						  columnItems = ['업로드'];
-						}
+					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer; text-align:center;\">" + nvl(item.EXCUTE_DATE,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">";
+					var columnItems = item.COLUMN_STATE_TEXT && item.COLUMN_STATE_TEXT.trim() !== ""
+					      ? item.COLUMN_STATE_TEXT.split(',').filter(v => v && v.trim() !== "")
+					      : [];
+
+					if (columnItems.length === 0) {
+					  columnItems = ['업로드'];
+					}
 					for (var i = 0; i < columnItems.length; i++) {
 						html += columnItems[i] + "<br>";
 					}
 					html += "</td>";
-					html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-					html += "	<td>"+nvl(item.DOC_OWNER_NAME,'&nbsp;')+"</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
+
+					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME,'&nbsp;') + "</td>";
+
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
 					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
@@ -229,6 +236,8 @@ function fn_viewHistory(idx) {
 					html += " 임시 저장되었습니다.";
 				} else if( item.HISTORY_TYPE == 'U' ) {
 					html += " 수정되었습니다.";
+				} else if( item.HISTORY_TYPE == 'P' ) {
+					html += " PDF 다운로드 되었습니다.";
 				} 
 				html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
 				html += "</li>"; 
