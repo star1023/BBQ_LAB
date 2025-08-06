@@ -163,8 +163,8 @@ public class UserServiceImpl implements UserService {
 		String requestParams = (String)param.get("requestParams");
 		if(requestParams != null && requestParams.length() > 0 ) {
 			try {
-				userDao.insertAccessLogParams(param);				
-			} catch ( Exception e ) {
+				userDao.insertAccessLogParams(param);
+			} catch( Exception e ) {
 				
 			}
 		}

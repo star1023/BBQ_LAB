@@ -985,16 +985,16 @@
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">제목</th>
+							<th style="border-left: none;">제목<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input type="hidden" name="idx" id="idx" value="${planData.data.PLAN_IDX}">
 								<input type="hidden" name="currentStatus" id="currentStatus" value="${planData.data.STATUS}"/>
-								<input type="text" name="title" id="title" style="width: 90%;" class="req" value="${planData.data.TITLE}"/>
+								<input type="text" name="title" id="title" style="width: 90%;" value="${planData.data.TITLE}"/>
 							</td>
 						</tr>
 						<c:if test="${planData.data.STATUS != null && planData.data.STATUS != 'COND_APPR' }">
 							<tr>
-								<th style="border-left: none;">결재라인</th>
+								<th style="border-left: none;">결재라인<span class="mandatory">*</span></th>
 								<td colspan="3">
 									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
 									<button class="btn_small_search ml5"
@@ -1009,7 +1009,7 @@
 							</tr>
 							</c:if>
 						<tr>
-							<th style="border-left: none;">출장구분</th>
+							<th style="border-left: none;">출장구분<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<div class="selectbox" style="width:150px;">  
 									<label for="tripType" id="tripType_label">${planData.data.TRIP_TYPE_TXT}</label> 
@@ -1030,7 +1030,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장자<span onClick="fn_addCol('user')">(+)</span></th>
+							<th style="border-left: none;">출장자<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input type="text" name="keyword2" id="keyword2" style="width: 50%;float: left"/>
 								<input type="hidden" name="addUserId" id="addUserId"/>
@@ -1052,13 +1052,13 @@
 										<c:set var="count" value="${count + 1}" />										 
 										<tr id="user_tr_${status.count}">
 											<td>
-												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" value="${userList.DEPT}" readonly/>
+												<input type="text" name="dept" id="dept" style="width: 100%;" value="${userList.DEPT}" readonly/>
 											</td>
 											<td>
-												<input type="text" name="position" id="position" style="width: 100%;" class="req" value="${userList.POSITION}" readonly/>
+												<input type="text" name="position" id="position" style="width: 100%;"  value="${userList.POSITION}" readonly/>
 											</td>
 											<td>
-												<input type="text" name="name" id="name" style="width: 100%;" class="req" value="${userList.NAME}" readonly/>
+												<input type="text" name="name" id="name" style="width: 100%;"  value="${userList.NAME}" readonly/>
 											</td>
 											<td>
 												<ul>
@@ -1073,13 +1073,13 @@
 									<tbody id="user_tbody_temp" name="user_tbody_temp" style="display:none">
 										<tr id="user_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="dept" id="dept" style="width: 100%;"  readonly/>
 											</td>
 											<td>
-												<input type="text" name="position" id="position" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="position" id="position" style="width: 100%;"  readonly/>
 											</td>
 											<td>
-												<input type="text" name="name" id="name" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="name" id="name" style="width: 100%;"  readonly/>
 											</td>
 											<td>
 												<ul>
@@ -1094,7 +1094,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장목적<span onClick="fn_addCol('purpose')">(+)</span></th>
+							<th style="border-left: none;">출장목적<span onClick="fn_addCol('purpose')">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">
 								<table width="100%" border="0">
 									<tbody id="purpose_tbody" name="purpose_tbody">
@@ -1104,7 +1104,7 @@
 										<c:set var="count" value="${count + 1}" />
 										<tr id="purpose_tr_${status.count}">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 100%;" class="req" value="${infoList.INFO_TEXT}"/>
+												<input type="text" name="purpose" id="purpose" style="width: 100%;"  value="${infoList.INFO_TEXT}"/>
 											</td>
 										</tr>
 										</c:if>
@@ -1112,7 +1112,7 @@
 										<c:if test="${count == 0 }">
 										<tr id="purpose_tr_1">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 100%;" class="req" />
+												<input type="text" name="purpose" id="purpose" style="width: 100%;"  />
 											</td>
 										</tr>
 										</c:if>
@@ -1120,7 +1120,7 @@
 									<tbody id="purpose_tbody_temp" name="purpose_tbody_temp" style="display:none">
 										<tr id="purpose_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 100%;" class="req" />
+												<input type="text" name="purpose" id="purpose" style="width: 100%;"  />
 											</td>
 										</tr>
 									</tbody>
@@ -1128,16 +1128,16 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장기간</th>
+							<th style="border-left: none;">출장기간<span class="mandatory">*</span></th>
 							<td colspan="3">
-								<input type="text" name="tripStartDate" id="tripStartDate" style="width: 120px;" class="req" value="${planData.data.TRIP_START_DATE}"/>
+								<input type="text" name="tripStartDate" id="tripStartDate" style="width: 120px;"  value="${planData.data.TRIP_START_DATE}"/>
 								&nbsp;~&nbsp;
-								<input type="text" name="tripEndDate" id="tripEndDate" style="width: 120px;" class="req" value="${planData.data.TRIP_END_DATE}"/>
+								<input type="text" name="tripEndDate" id="tripEndDate" style="width: 120px;"  value="${planData.data.TRIP_END_DATE}"/>
 								<span id="txtTripDuration" name="txtTripDuration" style='margin-left:20px;'></span>
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장지<span onClick="fn_addCol('destination')">(+)</span></th>
+							<th style="border-left: none;">출장지<span onClick="fn_addCol('destination')">(+)</span><span class="mandatory">*</span></th>
 							<td>
 								
 								<table width="100%" border="0">
@@ -1148,7 +1148,7 @@
 										<c:set var="count" value="${count + 1}" />
 										<tr id="destination_tr_${status.count}">
 											<td>
-												<input type="text"  style="width:95%; float: left" class="req" name="tripDestination" id="tripDestination" placeholder="" value="${infoList.INFO_TEXT}"/>
+												<input type="text"  style="width:95%; float: left"  name="tripDestination" id="tripDestination" placeholder="" value="${infoList.INFO_TEXT}"/>
 											</td>
 										</tr>
 										</c:if>
@@ -1156,7 +1156,7 @@
 										<c:if test="${count == 0 }">
 										<tr id="destination_tr_1">
 											<td>
-												<input type="text"  style="width:95%; float: left" class="req" name="tripDestination" id="tripDestination" placeholder=""/>
+												<input type="text"  style="width:95%; float: left"  name="tripDestination" id="tripDestination" placeholder=""/>
 											</td>
 										</tr>
 										</c:if>
@@ -1164,7 +1164,7 @@
 									<tbody id="destination_tbody_temp" name="destination_tbody_temp" style="display:none">
 										<tr id="destination_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text"  style="width:95%; float: left" class="req" name="tripDestination" id="tripDestination" placeholder=""/>
+												<input type="text"  style="width:95%; float: left"  name="tripDestination" id="tripDestination" placeholder=""/>
 											</td>
 										</tr>
 									</tbody>
@@ -1172,11 +1172,11 @@
 							</td>
 							<th style="border-left: none;">경유지</th>
 							<td>
-								<input type="text"  style="width:95%; float: left" class="req" name="tripTransit" id="tripTransit" placeholder=""/>
+								<input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder=""/>
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">업무수행내용<span onClick="fn_addCol('contents')">(+)</span></th>
+							<th style="border-left: none;">업무수행내용<span onClick="fn_addCol('contents')">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">
 								<table width="100%">
 									<tr>
@@ -1191,32 +1191,32 @@
 									<c:set var="count" value="${count + 1}" />
 										<tr id="contents_tr_${status.count}">
 											<td>
-												<input type="text" name="schedule" id="schedule" style="width: 100%;" class="req" value="${contentsList.SCHEDULE}"/>
+												<input type="text" name="schedule" id="schedule" style="width: 100%;"  value="${contentsList.SCHEDULE}"/>
 											</td>
 											<td>
-												<input type="text" name="content" id="content" style="width: 100%;" class="req" value="${contentsList.CONTENT}"/>
+												<input type="text" name="content" id="content" style="width: 100%;"  value="${contentsList.CONTENT}"/>
 											</td>
 											<td>
-												<input type="text" name="place" id="place" style="width: 100%;" class="req" value="${contentsList.PLACE}"/>
+												<input type="text" name="place" id="place" style="width: 100%;"  value="${contentsList.PLACE}"/>
 											</td>
 											<td>
-												<input type="text" name="note" id="note" style="width: 100%;" class="req" value="${contentsList.NOTE}"/>
+												<input type="text" name="note" id="note" style="width: 100%;"  value="${contentsList.NOTE}"/>
 											</td>
 										</tr>
 									</c:forEach>
 									<c:if test="${count == 0 }">
 										<tr id="contents_tr_1">
 											<td>
-												<input type="text" name="schedule" id="schedule" style="width: 100%;" class="req" />
+												<input type="text" name="schedule" id="schedule" style="width: 100%;"  />
 											</td>
 											<td>
-												<input type="text" name="content" id="content" style="width: 100%;" class="req" />
+												<input type="text" name="content" id="content" style="width: 100%;"  />
 											</td>
 											<td>
-												<input type="text" name="place" id="place" style="width: 100%;" class="req" />
+												<input type="text" name="place" id="place" style="width: 100%;"  />
 											</td>
 											<td>
-												<input type="text" name="note" id="note" style="width: 100%;" class="req" />
+												<input type="text" name="note" id="note" style="width: 100%;"  />
 											</td>
 										</tr>
 									</c:if>
@@ -1224,16 +1224,16 @@
 									<tbody id="contents_tbody_temp" name="contents_tbody_temp" style="display:none">
 										<tr id="contents_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="schedule" id="schedule" style="width: 100%;" class="req" />
+												<input type="text" name="schedule" id="schedule" style="width: 100%;"  />
 											</td>
 											<td>
-												<input type="text" name="content" id="content" style="width: 100%;" class="req" />
+												<input type="text" name="content" id="content" style="width: 100%;"  />
 											</td>
 											<td>
-												<input type="text" name="place" id="place" style="width: 100%;" class="req" />
+												<input type="text" name="place" id="place" style="width: 100%;"  />
 											</td>
 											<td>
-												<input type="text" name="note" id="note" style="width: 100%;" class="req" />
+												<input type="text" name="note" id="note" style="width: 100%;"  />
 											</td>
 										</tr>
 									</tbody>

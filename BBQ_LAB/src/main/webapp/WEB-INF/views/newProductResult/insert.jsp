@@ -1652,18 +1652,14 @@ function fn_openPreview() {
 		<h2 style="position:relative">
 			<span class="title_s">Menu Quality Test Report</span><span class="title">메뉴 품질 점검 결과 보고서</span>
 			<div class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_circle_modifiy" onclick="fn_copySearch()">&nbsp;</button>
-						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
-					</li>
-				</ul>
+				
 			</div>
 		</h2>
 		<div class="group01 mt20">
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">기본정보</span>
 				<div class="pr15">
+					<button id="prevBtn" class="btn_small_search" onclick="fn_copySearch()" >불러오기</button>
 					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()" style="display:none;">미리보기</button>
 				</div>
 			</div>
@@ -1677,8 +1673,8 @@ function fn_openPreview() {
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">제목</th>
-							<td colspan="3"><input type="text" name="title" id="title" style="width: 90%;" class="req" /></td>
+							<th style="border-left: none;">제목<span class="mandatory">*</span></th>
+							<td colspan="3"><input type="text" name="title" id="title" style="width: 90%;"/></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">결재라인</th>
@@ -1694,8 +1690,8 @@ function fn_openPreview() {
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">시행월</th>
-							<td colspan="3"><input type="text" id="excuteDate" readonly class="req" placeholder="시행월 선택 (예: 2024-05)" style="width: 170px;"></td>
+							<th style="border-left: none;">시행월<span class="mandatory">*</span></th>
+							<td colspan="3"><input type="text" id="excuteDate" readonly placeholder="시행월 선택 (예: 2024-05)" style="width: 170px;"></td>
 						</tr>
 						<!-- 
 						<tr>

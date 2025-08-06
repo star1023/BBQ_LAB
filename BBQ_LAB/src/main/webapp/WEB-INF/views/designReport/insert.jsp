@@ -734,7 +734,7 @@
 	function fn_closeErpMatRayer(){
 		$('#searchErpMatValue').val('')
 		$('#erpMatLayerBody').empty();
-		$('#erpMatLayerBody').append('<tr><td colspan="10">원료코드 혹은 원료코드명을 검색해주세요</td></tr>');
+		$('#erpMatLayerBody').append('<tr><td colspan="10">상품코드 혹은 상품명을 검색해주세요</td></tr>');
 		$('#erpMatCount').text(0);
 		closeDialog('dialog_erpMaterial');
 	}
@@ -1390,7 +1390,7 @@
 	<input id="erpItemType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px ">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeErpMatRayer()"></button></li>
@@ -1433,7 +1433,7 @@
 					<tbody id="erpMatLayerBody">
 						<input type="hidden" id="erpMatLayerPage" value="0"/>
 						<Tr>
-							<td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="9">상품코드 혹은 상품명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>

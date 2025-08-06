@@ -76,7 +76,7 @@
 					});
 				} else {
 					$("#list").html(html);
-					html += "<tr><td align='center' colspan='8'>데이터가 없습니다.</td></tr>";
+					html += "<tr><td align='center' colspan='9'>데이터가 없습니다.</td></tr>";
 				}
 				$("#list").html(html);
 				$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
@@ -85,7 +85,7 @@
 			error:function(request, status, errorThrown){
 				var html = "";
 				$("#list").html(html);
-				html += "<tr><td align='center' colspan='8'>오류가 발생하였습니다.</td></tr>";
+				html += "<tr><td align='center' colspan='9'>오류가 발생하였습니다.</td></tr>";
 				$("#list").html(html);
 				$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
 				$('#pageNo').val(data.navi.pageNo);
@@ -209,8 +209,8 @@
 	</span>
 	<section class="type01">
 	<!-- 상세 페이지  start-->
-		<h2 style="position:relative"><span class="title_s">Recipe List</span>
-			<span class="title">레시피</span>
+		<h2 style="position:relative"><span class="title_s">Recipe Management</span>
+			<span class="title">레시피 관리</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>

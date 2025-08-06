@@ -914,11 +914,11 @@
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">제목</th>
+							<th style="border-left: none;">제목<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input type="hidden" name="idx" id="idx"value="${researchData.data.RESEARCH_IDX}"/>
 								<input type="hidden" name="planIdx" id="planIdx"value="${researchData.data.PLAN_IDX}"/>
-								<input type="text" name="title" id="title" style="width: 90%;" class="req" value="${researchData.data.TITLE}"/>
+								<input type="text" name="title" id="title" style="width: 90%;" value="${researchData.data.TITLE}"/>
 							</td>
 						</tr>
 						<tr>
@@ -948,7 +948,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">대상업소<span onClick="fn_addCol('market')" id="span_market">(+)</span></th>
+							<th style="border-left: none;">대상업소<span onClick="fn_addCol('market')" id="span_market">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">
 								<table width="100%" border="0">
 									<tbody id="market_tbody" name="market_tbody">
@@ -958,7 +958,7 @@
 										<c:set var="count" value="${count + 1}" />
 										<tr id="market_tr_${status.count}">
 											<td>
-												<input type="text"  style="width:300px; float: left" class="req" name="marketName" id="marketName" placeholder="" value="${infoList.INFO_TEXT}"/>
+												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder="" value="${infoList.INFO_TEXT}"/>
 											</td>
 										</tr>
 										</c:if>
@@ -966,7 +966,7 @@
 										<c:if test="${count == 0 }">
 										<tr id="market_tr_1">
 											<td>
-												<input type="text"  style="width:300px; float: left" class="req" name="marketName" id="marketName" placeholder="" value="가."/>
+												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder="" value="가."/>
 											</td>
 										</tr>
 										</c:if>
@@ -974,7 +974,7 @@
 									<tbody id="market_tbody_temp" name="market_tbody_temp" style="display:none">
 										<tr id="market_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text"  style="width:300px; float: left" class="req" name="marketName" id="marketName" placeholder=""/>
+												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder=""/>
 											</td>
 										</tr>
 									</tbody>
@@ -982,7 +982,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">목적<span onClick="fn_addCol('purpose')" id="span_purpose">(+)</span></th>
+							<th style="border-left: none;">목적<span onClick="fn_addCol('purpose')" id="span_purpose">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">								
 								<table width="100%" border="0">
 									<tbody id="purpose_tbody" name="purpose_tbody">
@@ -992,7 +992,7 @@
 										<c:set var="count" value="${count + 1}" />
 										<tr id="purpose_tr_${status.count}">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 90%;" class="req" value="${infoList.INFO_TEXT}"/>
+												<input type="text" name="purpose" id="purpose" style="width: 90%;" value="${infoList.INFO_TEXT}"/>
 											</td>
 										</tr>
 										</c:if>
@@ -1000,7 +1000,7 @@
 										<c:if test="${count == 0 }">
 										<tr id="purpose_tr_1">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 90%;" class="req" />
+												<input type="text" name="purpose" id="purpose" style="width: 90%;" />
 											</td>
 										</tr>
 										</c:if>
@@ -1008,7 +1008,7 @@
 									<tbody id="purpose_tbody_temp" name="purpose_tbody_temp" style="display:none">
 										<tr id="purpose_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="purpose" id="purpose" style="width: 90%;" class="req" />
+												<input type="text" name="purpose" id="purpose" style="width: 90%;" />
 											</td>
 										</tr>
 									</tbody>
@@ -1016,13 +1016,13 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">일시</th>
+							<th style="border-left: none;">일시<span class="mandatory">*</span></th>
 							<td colspan="3">
-								<input type="text" name="researchDate" id="researchDate" style="width: 150px;" class="req" value="${researchData.data.RESEARCH_DATE}"/>
+								<input type="text" name="researchDate" id="researchDate" style="width: 150px;" value="${researchData.data.RESEARCH_DATE}"/>
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">주소<span onClick="fn_addCol('address')" id="span_address">(+)</span></th>
+							<th style="border-left: none;">주소<span onClick="fn_addCol('address')" id="span_address">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">
 								<table width="100%" border="0">
 									<tbody id="address_tbody" name="address_tbody">
@@ -1032,7 +1032,7 @@
 										<c:set var="count" value="${count + 1}" />
 										<tr id="address_tr_${status.count}">
 											<td>
-												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;" class="req" value="${infoList.INFO_TEXT}"/>
+												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;" value="${infoList.INFO_TEXT}"/>
 											</td>
 										</tr>
 										</c:if>
@@ -1040,7 +1040,7 @@
 										<c:if test="${count == 0 }">
 										<tr id="address_tr_1">
 											<td>
-												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;" class="req"/>
+												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;"/>
 											</td>
 										</tr>
 										</c:if>
@@ -1048,7 +1048,7 @@
 									<tbody id="address_tbody_temp" name="address_tbody_temp" style="display:none">
 										<tr id="address_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;" class="req" />
+												<input type="text" name="marketAddress" id="marketAddress" style="width: 90%;"/>
 											</td>
 										</tr>
 									</tbody>
@@ -1062,7 +1062,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">조사자<span onClick="fn_addCol('user')" id="span_user">(+)</span></th>
+							<th style="border-left: none;">조사자<span onClick="fn_addCol('user')" id="span_user">(+)</span><span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input type="text" name="keyword2" id="keyword2" style="width: 50%;float: left"/>
 								<input type="hidden" name="addUserId" id="addUserId"/>
@@ -1084,13 +1084,13 @@
 										<c:set var="count" value="${count + 1}" />
 										<tr id="user_tr_${status.count}">
 											<td>
-												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" value="${userList.DEPT}"/>
+												<input type="text" name="dept" id="dept" style="width: 100%;" value="${userList.DEPT}"/>
 											</td>
 											<td>
-												<input type="text" name="position" id="position" style="width: 100%;" class="req" value="${userList.POSITION}"/>
+												<input type="text" name="position" id="position" style="width: 100%;" value="${userList.POSITION}"/>
 											</td>
 											<td>
-												<input type="text" name="name" id="name" style="width: 100%;" class="req" value="${userList.NAME}"/>
+												<input type="text" name="name" id="name" style="width: 100%;" value="${userList.NAME}"/>
 											</td>
 											<td>
 												<ul>
@@ -1105,13 +1105,13 @@
 									<tbody id="user_tbody_temp" name="user_tbody_temp" style="display:none">
 										<tr id="user_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="dept" id="dept" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="dept" id="dept" style="width: 100%;" readonly/>
 											</td>
 											<td>
-												<input type="text" name="position" id="position" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="position" id="position" style="width: 100%;" readonly/>
 											</td>
 											<td>
-												<input type="text" name="name" id="name" style="width: 100%;" class="req" readonly/>
+												<input type="text" name="name" id="name" style="width: 100%;" readonly/>
 											</td>
 											<td>
 												<ul>
