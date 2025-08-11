@@ -1225,6 +1225,10 @@ var selectedArr = new Array();
 			alert("제품유형을 선택하여 주세요.");
 			tabChange('tab2');
 			return;
+		} else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
+			tabChange('tab2');
+			return;
 		} /* else if( $("#temp_attatch_file").children("li").length == 0 && attatchFileArr.length == 0 ) {
 			alert("첨부파일을 등록해주세요.");		
 			tabChange('tab1');

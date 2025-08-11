@@ -79,9 +79,15 @@
 			, VERSION_NO
 			, PRODUCT_CODE
 			, PRODUCT_NAME
+			<if test="plant != null and plant != '' ">
 			, PLANT
+			</if>
+			<if test="productCount != null and productCount != '' ">
 			, PRODUCT_COUNT
+			</if>
+			<if test="unit != null and unit != '' ">
 			, PRODUCT_UNIT
+			</if>
 			, IS_DELETE
 			, IS_LAST
 			, REG_USER
@@ -100,9 +106,15 @@
 			</choose>
 			, #{productCode}
 			, #{productName}
+			<if test="plant != null and plant != '' ">
 			, #{plant}
+			</if>
+			<if test="productCount != null and productCount != '' ">
 			, #{productCount}
+			</if>
+			<if test="unit != null and unit != '' ">
 			, #{unit}
+			</if>
 			, 'N'
 			, 'Y'
 			, #{userId}
@@ -140,9 +152,11 @@
 			, ITEM_UNIT
 			, USED_COUNT
 			, USED_UNIT
+			, ITEM_PRICE
+			, ITEM_DESC
 		)values
 		<foreach collection="list" item="item" separator=",">
-		( #{item.idx}, #{item.no}, #{item.name}, #{item.compCount}, #{item.compUnit}, #{item.useCount}, #{item.useUnit} )
+		( #{item.idx}, #{item.no}, #{item.name}, #{item.compCount}, #{item.compUnit}, #{item.useCount}, #{item.useUnit}, #{item.price}, #{item.desc} )
 		</foreach>
 	</insert>
 	
@@ -217,6 +231,8 @@
 			, USED_UNIT
 			, FN_GET_CODE_NAME('UNIT', USED_UNIT) AS USED_UNIT_NAME
 			, PURCHASE_NO
+			, ITEM_PRICE
+			, ITEM_DESC
 		FROM
 			lab_recipe_purchase
 		WHERE 1 = 1
@@ -229,11 +245,16 @@
 		UPDATE 
 			lab_recipe
 		SET
-			PLANT = #{plant}
+			STATUS = #{status}
+			<if test="plant != null and plant != '' ">
+			, PLANT = #{plant}
+			</if>
+			<if test="plant != null and plant != '' ">
 			, PRODUCT_COUNT = #{productCount}
-			, PRODUCT_UNIT = #{unit}			
-			, STATUS = #{status}
-			
+			</if>
+			<if test="plant != null and plant != '' ">
+			, PRODUCT_UNIT = #{unit}
+			</if>
 		WHERE 1 = 1
 			AND RECIPE_IDX = #{idx}
 			AND DOC_NO = #{docNo}
@@ -263,9 +284,15 @@
 			, VERSION_NO
 			, PRODUCT_CODE
 			, PRODUCT_NAME
+			<if test="plant != null and plant != '' ">
 			, PLANT
+			</if>
+			<if test="productCount != null and productCount != '' ">
 			, PRODUCT_COUNT
+			</if>
+			<if test="unit != null and unit != '' ">
 			, PRODUCT_UNIT
+			</if>
 			, IS_DELETE
 			, IS_LAST
 			, REG_USER
@@ -277,9 +304,15 @@
 			, #{versionNo}+1
 			, #{productCode}
 			, #{productName}
+			<if test="plant != null and plant != '' ">
 			, #{plant}
+			</if>
+			<if test="productCount != null and productCount != '' ">
 			, #{productCount}
+			</if>
+			<if test="unit != null and unit != '' ">
 			, #{unit}
+			</if>
 			, 'N'
 			, 'Y'
 			, #{userId}

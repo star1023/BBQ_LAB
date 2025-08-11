@@ -31,6 +31,7 @@ import kr.co.genesiskorea.service.MenuService;
 import kr.co.genesiskorea.service.NewProductResultService;
 import kr.co.genesiskorea.service.PackageInfoService;
 import kr.co.genesiskorea.service.ProductService;
+import kr.co.genesiskorea.service.RecipeService;
 import kr.co.genesiskorea.service.SenseQualityService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -74,6 +75,9 @@ public class ApprovalController {
 	
 	@Autowired
 	PackageInfoService packageInfoService;
+	
+	@Autowired
+	RecipeService recipeService;
 	
 	@RequestMapping("/searchUserAjax")
 	@ResponseBody
@@ -579,6 +583,38 @@ public class ApprovalController {
 		model.addAttribute("paramVO", param);
 		
 		return "/approval/newProductResultPopup";
+	}
+	
+	@RequestMapping("/recipePopup")
+	public String recipePopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+		System.err.println(param);
+		//결재 정보 조회
+		param.put("userId", AuthUtil.getAuth(request).getUserId());
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		List<Map<String, Object>> apprItem = approvalService.selectApprItemList(param);
+		List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+		Map<String, Object> recipeData = recipeService.selectRecipeData(param);
+		model.addAttribute("recipeData", recipeData);
+		//2.lab_recipe_material 조회
+		List<Map<String, Object>> materialList = recipeService.selectMaterialList(param);
+		model.addAttribute("materialList", materialList);
+		//3.lab_recipe_purchase
+		List<Map<String, Object>> purchaseList = recipeService.selectPurchaseList(param);
+		model.addAttribute("purchaseList", purchaseList);
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
+		model.addAttribute("apprHeader", apprHeader);
+		model.addAttribute("apprItem", apprItem);
+		model.addAttribute("refList", refList);
+		model.addAttribute("paramVO", param);
+		
+		return "/approval/recipePopup";
 	}
 
 	@RequestMapping("/approvalSubmitAjax")

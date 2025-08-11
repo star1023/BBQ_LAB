@@ -55,8 +55,9 @@
 					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
 			    ) 
 			    </when>
-			    <when test="listType != null and listType == 'all'">
-			    
+			    <when test="listType != null and listType == 'all'">			    
+			    </when>
+			    <when test="listType != null and listType == 'search'">			    
 			    </when>
 				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
 			</choose>
@@ -68,6 +69,58 @@
 	<select id="selectDesignList" parameterType="map" resultType="hashmap">
 		/*	designReport.selectDesignList */
 		SELECT
+		DESIGN_IDX
+		, PRODUCT_CODE
+		, SAP_CODE
+		, TITLE
+		, PRODUCT_NAME
+		, CONTENTS
+		, VERSION_NO
+		, IS_DELETE
+		, IS_LAST
+		, STATUS
+		, REG_USER
+		, DOC_OWNER
+		, DOC_NO
+		, FN_GET_USER_NAME(ld.DOC_OWNER) as DOC_OWNER_NAME
+	    , FN_GET_CODE_NAME('DOC_STATUS', ld.STATUS) AS STATUS_TXT
+	    , (SELECT COUNT(*) FROM lab_design WHERE 1 = 1 AND DOC_NO = ld.DOC_NO AND IS_LAST = 'N' AND VERSION_NO <![CDATA[<]]> ld.VERSION_NO AND IS_DELETE = 'N' ) as CHILD_CNT
+	FROM 	
+		lab_design ld
+	WHERE 1 = 1
+		AND DOC_NO in (
+			SELECT 
+				tmp.DOC_NO
+			FROM (
+				SELECT
+					row_number() over (order by  DESIGN_IDX DESC) as rnum
+					, DOC_NO
+				FROM lab_design
+				WHERE 1 = 1
+					<choose>
+					<when test="listType != null and listType == 'my' "> 
+					AND DOC_OWNER = #{userId} 
+					</when>
+				    <when test="listType != null and listType == 'team'">
+				    AND DOC_OWNER IN (
+				    	SELECT USER_ID from lab_team_manager_view ltmv
+						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+				    ) 
+				    </when>
+				    <when test="listType != null and listType == 'all'">				    
+				    </when>
+				    <when test="listType != null and listType == 'search'">			    
+			    	</when>
+					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+				</choose>
+					AND IS_DELETE = 'N'
+					AND IS_LAST = 'Y'
+					<include refid="designReport.whereDesignList" />
+			) tmp
+			WHERE rnum between 1 and 10	
+		)
+	ORDER BY DOC_NO DESC, VERSION_NO DESC, DESIGN_IDX DESC
+		<!-- SELECT
 			tmp.*
 			, FN_GET_USER_NAME(tmp.DOC_OWNER) as DOC_OWNER_NAME
 			, FN_GET_CODE_NAME('DOC_STATUS', tmp.STATUS) AS STATUS_TXT
@@ -87,6 +140,7 @@
 				, STATUS
 				, REG_USER
 				, DOC_OWNER
+				, DOC_NO
 			FROM 	
 				lab_design
 			WHERE 1 = 1
@@ -109,7 +163,7 @@
 				AND IS_LAST = 'Y'
 				<include refid="designReport.whereDesignList" />
 		)tmp
-		WHERE rnum between #{startRow} and #{endRow}		
+		WHERE rnum between #{startRow} and #{endRow}	 -->	
 	</select>
 	
 	<select id="selectDesignSeq" resultType="int">
@@ -131,7 +185,8 @@
 			, IS_LAST
 			, STATUS
 			, REG_USER
-			, DOC_OWNER			
+			, DOC_OWNER		
+			, DOC_NO		
 		)VALUES(
 			#{idx}
 			, #{productCode}
@@ -144,7 +199,7 @@
 			, 'Y'
 			, #{status}
 			, #{userId}
-			, #{userId}			
+			, (SELECT ifnull(MAX(ld.DOC_NO),0)+1 FROM lab_design ld WHERE 1 = 1)	
 		)
 	</insert>
 	
@@ -181,6 +236,7 @@
 			, REG_USER
 			, DOC_OWNER
 			, TITLE
+			, DOC_NO
 		FROM 
 			lab_design
 		WHERE 1 = 1
@@ -348,4 +404,48 @@
 		WHERE 1 = 1
 			AND DESIGN_IDX = #{idx}
 	</update>
+	
+	<update id="updateDesignIsLast" parameterType="map">
+		/* designReport.updateDesignIsLast */
+		UPDATE 
+			lab_design
+		SET
+			IS_LAST = 'N'
+		WHERE 1 = 1
+			AND DESIGN_IDX = #{currentIdx}
+			AND DOC_NO = #{docNo}
+	</update>
+	
+	<insert id="insertVersionUpDesign" parameterType="map">
+		/*	designReport.insertVersionUpDesign */
+		INSERT INTO lab_design(
+			DESIGN_IDX
+			, PRODUCT_CODE
+			, SAP_CODE
+			, TITLE
+			, PRODUCT_NAME
+			, CONTENTS
+			, VERSION_NO
+			, IS_DELETE
+			, IS_LAST
+			, STATUS
+			, REG_USER
+			, DOC_OWNER		
+			, DOC_NO		
+		)VALUES(
+			#{idx}
+			, #{productCode}
+			, #{sapCode}
+			, #{title}
+			, #{productName}
+			, #{contents}
+			, (SELECT ifnull(MAX(ld.VERSION_NO),0)+1 FROM lab_design ld WHERE 1 = 1 AND DOC_NO = #{docNo})	
+			, 'N'
+			, 'Y'
+			, #{status}
+			, #{userId}
+			, #{userId}
+			, #{docNo}
+		)
+	</insert>
 </mapper>

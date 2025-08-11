@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ page import="kr.co.genesiskorea.util.*"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
@@ -43,6 +44,12 @@ li {
 		$("#plant_label").html($("#plant").selectedTexts());
 		$("#unit").selectOptions('${recipeData.PRODUCT_UNIT}');
 		$("#unit_label").html($("#unit").selectedTexts());
+		
+		fn.autoComplete($("#keyword"));
+		
+		<c:if test="${fn:length(apprItemList) > 0}">
+	    fn_loadAppr();
+		</c:if>
 	});
 	
 	function fn_loadCode(codeId,selectBoxId) {
@@ -462,6 +469,8 @@ li {
 		var newItemCompUnitArr = new Array();
 		var newItemUseCountArr = new Array();
 		var newItemUseUnitArr = new Array();
+		var newItemPriceArr = new Array();
+		var newItemDescArr = new Array();
 		
 		var newValid = true;
 		$('tr[id^=new_tr]').toArray().forEach(function(newRow){
@@ -473,8 +482,10 @@ li {
 				var itemCompUnit = $('#'+ rowId + ' select[name=itemCompUnit]').selectedValues()[0];
 				var itemUseCount = $('#'+ rowId + ' input[name=itemUseCount]').val();
 				var itemUseUnit = $('#'+ rowId + ' select[name=itemUseUnit]').selectedValues()[0];
+				var itemPrice = $('#'+ rowId + ' input[name=itemPrice]').val();
+				var itemDesc = $('#'+ rowId + ' textarea[name=itemDesc]').val();
 				
-				if( itemName.length > 0 || itemCompCount.length > 0 || itemCompUnit.length > 0 || itemUseCount.length > 0  || itemUseUnit.length > 0 ) {
+				if( itemName.length > 0 || itemCompCount.length > 0 || itemCompUnit.length > 0 || itemUseCount.length > 0  || itemUseUnit.length > 0 || itemPrice.length > 0 ) {
 					var message = "";
 					if( !chkNull(itemName) ) {
 						alert("사입품 제품명을 입력해주세요.");
@@ -491,6 +502,9 @@ li {
 					} else if( !chkNull(itemUseUnit) ) {
 						alert("사입품 사용량단위를 선택해주세요.");
 						newValid = false;
+					} else if( !chkNull(itemPrice) ) {
+						alert(itemName+"사입품 단가를  입력해주세요.");
+						newValid = false;
 					}
 				}
 				newItemNameArr.push(itemName);
@@ -498,6 +512,8 @@ li {
 				newItemCompUnitArr.push(itemCompUnit);
 				newItemUseCountArr.push(itemUseCount);
 				newItemUseUnitArr.push(itemUseUnit);
+				newItemPriceArr.push(itemPrice);
+				newItemDescArr.push(itemDesc);
 				console.log(newValid);
 			}
 		});
@@ -512,6 +528,8 @@ li {
 		formData.append("newItemCompUnitArr", JSON.stringify(newItemCompUnitArr));	
 		formData.append("newItemUseCountArr", JSON.stringify(newItemUseCountArr));	
 		formData.append("newItemUseUnitArr", JSON.stringify(newItemUseUnitArr));	
+		formData.append("newItemPriceArr", JSON.stringify(newItemPriceArr));
+		formData.append("newItemDescArr", JSON.stringify(newItemDescArr));
 		formData.append("status", "TMP");
 		
 		URL = "../recipe/updateTmpRecipeAjax";
@@ -526,9 +544,47 @@ li {
 			success:function(result) {
 				console.log(result);
 				if( result.RESULT == 'S' ) {
-					alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 수정되었습니다.");
-					$('#lab_loading').hide();
-					fn_goList();
+					if( $("#apprLine option").length > 0 ) {
+						var apprFormData = new FormData();
+						apprFormData.append("docIdx", '${recipeData.RECIPE_IDX}' );
+						apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
+						apprFormData.append("apprComment", $("#apprComment").val());
+						apprFormData.append("apprLine", $("#apprLine").selectedValues());
+						apprFormData.append("refLine", $("#refLine").selectedValues());
+						apprFormData.append("title", $("#productName").val()+" 사전원가서 결재요청");
+						apprFormData.append("docType", $("#docType").val());
+						apprFormData.append("status", "N");
+						var URL = "../approval/insertApprTmpAjax";
+						$.ajax({
+							type:"POST",
+							url:URL,
+							dataType:"json",
+							data: apprFormData,
+							processData: false,
+					        contentType: false,
+					        cache: false,
+							success:function(data) {
+								if(data.RESULT == 'S') {
+									alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 수정되었습니다.");
+									$('#lab_loading').hide();
+									fn_goList();
+								} else {
+									alert("결재선 등록 중 오류가 발생하였습니다."+data.MESSAGE);
+									$('#lab_loading').hide();
+									fn_goList();										
+								}
+							},
+							error:function(request, status, errorThrown){
+								alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+								$('#lab_loading').hide();
+								fn_goList();
+							}			
+						});
+					} else {
+						alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 수정되었습니다.");
+						$('#lab_loading').hide();
+						fn_goList();	
+					}
 				} else {
 					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
 					$('#lab_loading').hide();
@@ -556,6 +612,9 @@ li {
 		} else if( !chkNull($("#unit").selectedValues()[0]) ) {
 			alert("제품단위를 선택해 주세요.");
 			$("#unit").focus();
+			return;
+		} else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
 			return;
 		} else {
 			$('#lab_loading').show();
@@ -638,6 +697,8 @@ li {
 			var newItemCompUnitArr = new Array();
 			var newItemUseCountArr = new Array();
 			var newItemUseUnitArr = new Array();
+			var newItemPriceArr = new Array();
+			var newItemDescArr = new Array();
 			
 			var newValid = true;
 			$('tr[id^=new_tr]').toArray().forEach(function(newRow){
@@ -649,8 +710,10 @@ li {
 					var itemCompUnit = $('#'+ rowId + ' select[name=itemCompUnit]').selectedValues()[0];
 					var itemUseCount = $('#'+ rowId + ' input[name=itemUseCount]').val();
 					var itemUseUnit = $('#'+ rowId + ' select[name=itemUseUnit]').selectedValues()[0];
+					var itemPrice = $('#'+ rowId + ' input[name=itemPrice]').val();
+					var itemDesc = $('#'+ rowId + ' textarea[name=itemDesc]').val();
 					
-					if( itemName.length > 0 || itemCompCount.length > 0 || itemCompUnit.length > 0 || itemUseCount.length > 0  || itemUseUnit.length > 0 ) {
+					if( itemName.length > 0 || itemCompCount.length > 0 || itemCompUnit.length > 0 || itemUseCount.length > 0  || itemUseUnit.length > 0 || itemPrice.length > 0 ) {
 						var message = "";
 						if( !chkNull(itemName) ) {
 							alert("사입품 제품명을 입력해주세요.");
@@ -667,6 +730,9 @@ li {
 						} else if( !chkNull(itemUseUnit) ) {
 							alert("사입품 사용량단위를 선택해주세요.");
 							newValid = false;
+						} else if( !chkNull(itemPrice) ) {
+							alert(itemName+"사입품 단가를  입력해주세요.");
+							newValid = false;
 						}
 					}
 					newItemNameArr.push(itemName);
@@ -674,6 +740,8 @@ li {
 					newItemCompUnitArr.push(itemCompUnit);
 					newItemUseCountArr.push(itemUseCount);
 					newItemUseUnitArr.push(itemUseUnit);
+					newItemPriceArr.push(itemPrice);
+					newItemDescArr.push(itemDesc);
 					console.log(newValid);
 				}
 			});
@@ -687,8 +755,10 @@ li {
 			formData.append("newItemCompCountArr", JSON.stringify(newItemCompCountArr));	
 			formData.append("newItemCompUnitArr", JSON.stringify(newItemCompUnitArr));	
 			formData.append("newItemUseCountArr", JSON.stringify(newItemUseCountArr));	
-			formData.append("newItemUseUnitArr", JSON.stringify(newItemUseUnitArr));	
-			formData.append("status", "COMP");
+			formData.append("newItemUseUnitArr", JSON.stringify(newItemUseUnitArr));
+			formData.append("newItemPriceArr", JSON.stringify(newItemPriceArr));
+			formData.append("newItemDescArr", JSON.stringify(newItemDescArr));
+			formData.append("status", "REG");
 			
 			URL = "../recipe/updateRecipeAjax";
 			$.ajax({
@@ -702,9 +772,48 @@ li {
 				success:function(result) {
 					console.log(result);
 					if( result.RESULT == 'S' ) {
-						alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 수정되었습니다.");
-						$('#lab_loading').hide();
-						fn_goList();						
+						if( $("#apprLine option").length > 0 ) {
+							var apprFormData = new FormData();
+							apprFormData.append("docIdx", '${recipeData.RECIPE_IDX}' );
+							apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
+							apprFormData.append("apprComment", $("#apprComment").val());
+							apprFormData.append("apprLine", $("#apprLine").selectedValues());
+							apprFormData.append("refLine", $("#refLine").selectedValues());
+							apprFormData.append("title", $("#productName").val()+" 사전원가서 결재요청");
+							apprFormData.append("docType", $("#docType").val());
+							apprFormData.append("status", "N");
+							var URL = "../approval/insertApprAjax";
+							$.ajax({
+								type:"POST",
+								url:URL,
+								dataType:"json",
+								data: apprFormData,
+								processData: false,
+						        contentType: false,
+						        cache: false,
+								success:function(data) {
+									if(data.RESULT == 'S') {
+										alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 수정되었습니다.");
+										$('#lab_loading').hide();
+										fn_goList();
+									} else {
+										alert("결재선 상신 오류가 발생하였습니다."+data.MESSAGE);
+										$('#lab_loading').hide();
+										fn_goList();
+										return;
+									}
+								},
+								error:function(request, status, errorThrown){
+									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+									$('#lab_loading').hide();
+									fn_goList();
+								}			
+							});
+						} else {
+							alert("문서가 수정되었습니다.");
+							$('#lab_loading').hide();
+							fn_goList();
+						}						
 					} else {
 						alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
 						$('#lab_loading').hide();
@@ -817,15 +926,63 @@ li {
 			range.select();
 		}
 	}
+	
+	function clearNum(obj) {
+		const regex = /^[0-9]+$/;
+		var needToSet = false;
+		var numStr = obj.value;
+		var CaretPos = doGetCaretPosition(obj); //input field에서의 캐럿의 위치를 확인
+		
+		if( (/[^\d.]/g).test(numStr) ) {
+			numStr = numStr.replace(/[^\d.]/g,"");
+			CaretPos--;
+			alert("입력은 숫자만 가능 합니다.");('.')
+			needToSet = true;
+		}
+		if(needToSet) { //변경이 필요할 경우에만 셋팅함.
+			obj.value = numStr;
+			setCaretPosition(obj, CaretPos)
+		}
+	}
+	
+	function fn_apprSubmit(){
+		if( $("#apprLine option").length == 0 ) {
+			alert("등록된 결재라인이 없습니다. 결재 라인 추가 후 결재상신 해 주세요.");
+			return;
+		} else {
+			fn_loadAppr();
+		}
+		closeDialog('approval_dialog');
+	}
+	
+	function fn_loadAppr() {
+		var apprTxtFull = "";
+		$("#apprLine").selectedTexts().forEach(function( item, index ){
+			console.log(item);
+			if( apprTxtFull != "" ) {
+				apprTxtFull += " > ";
+			}
+			apprTxtFull += item;
+		});
+		$("#apprTxtFull").val(apprTxtFull);
+		var refTxtFull = "";
+		$("#refLine").selectedTexts().forEach(function( item, index ){
+			if( refTxtFull != "" ) {
+				refTxtFull += ", ";
+			}
+			refTxtFull += item;
+		});
+		$("#refTxtFull").html("&nbsp;"+refTxtFull);
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
-	<span class="path"> 상품레시피 등록&nbsp;&nbsp; <img
-		src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;상품레시피등록&nbsp;&nbsp; <img src="/resources/images/icon_path.png"
+	<span class="path"> 사전원가서 수정&nbsp;&nbsp; <img
+		src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;사전원가서수정&nbsp;&nbsp; <img src="/resources/images/icon_path.png"
 		style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position: relative">
-			<span class="title_s">Recipe Management</span><span class="title">상품 레시피</span>
+			<span class="title_s">Cost Management</span><span class="title">사전원가서 수정</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -876,6 +1033,22 @@ li {
 									${recipeData.PRODUCT_NAME}
 								</td>
 							</tr>
+							<c:if test="${recipeData.STATUS != null && recipeData.STATUS != 'COND_APPR' }">
+							<tr>
+								<th style="border-left: none;">결재라인</th>
+								<td colspan="3">
+									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
+									<button class="btn_small_search ml5"
+										onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								</td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">참조자</th>
+								<td colspan="3">
+									<div id="refTxtFull" name="refTxtFull"></div>
+								</td>
+							</tr>
+							</c:if>
 							<tr>
 								<th style="border-left: none;">플랜트 <span class="mandatory">*</span></th>
 								<td colspan="3">
@@ -1048,10 +1221,12 @@ li {
 					<colgroup>
 						<col width="20">
 						<col />
-						<col width="150">
 						<col width="100">
-						<col width="150">
 						<col width="100">
+						<col width="100">
+						<col width="100">
+						<col width="100">
+						<col width="250">
 					</colgroup>
 					<thead>
 						<tr>
@@ -1061,6 +1236,8 @@ li {
 							<th>구성품단위</th>
 							<th>사용량</th>
 							<th>사용량단위</th>
+							<th>단가</th>
+							<th>비고</th>
 						</tr>
 					</thead>
 					<tbody id="new_tbody" name="new_tbody">
@@ -1097,6 +1274,12 @@ li {
 											<option value="g" ${purchaseList.USED_UNIT == 'g' or purchaseList.USED_UNIT == 'G' ? 'selected' : ''}>그램</option>
 									</select>
 								<!--</div>-->
+							</td>
+							<td>
+								<input type="text" name="itemPrice" style="width: 100%; text-align:right;" class="" onkeyup="clearNum(this)" value="${purchaseList.ITEM_PRICE}" maxlength="11"/>
+							</td>
+							<td>
+								<textarea style="width:100%; height:35px;" name="itemDesc" id="itemDesc">${purchaseList.ITEM_DESC}</textarea>
 							</td>
 						</tr>
 						</c:forEach>
@@ -1136,6 +1319,12 @@ li {
 									</select>
 								<!--</div>-->
 							</td>
+							<td>
+								<input type="text" name="itemPrice" style="width: 100%; text-align:right;" class="" onkeyup="clearNum(this)" maxlength="11"/>
+							</td>
+							<td>
+								<textarea style="width:100%; height:35px;" name="itemDesc" id="itemDesc"></textarea>
+							</td>
 						</tr>
 					</tbody>
 					<tfoot>
@@ -1154,7 +1343,7 @@ li {
 						 -->
 					<c:if test="${recipeData.STATUS == 'TMP' and recipeData.IS_LAST == 'Y'}">
 					<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
-					<button class="btn_admin_sky" onclick="fn_update()">저장</button>
+					<button class="btn_admin_sky" onclick="fn_update()">결재</button>
 					</c:if>
 					<c:if test="${recipeData.STATUS == 'COMP' and recipeData.IS_LAST == 'Y'}">
 					<button class="btn_admin_sky" onclick="fn_erp()">ERP반영</button>
@@ -1318,3 +1507,104 @@ li {
 	</div>
 </div>
 <!-- 코드검색 추가레이어 close-->
+
+<!-- 결재 상신 레이어  start-->
+<div class="white_content" id="approval_dialog">
+	<input type="hidden" id="docType" value="RECIPE"/>
+ 	<input type="hidden" id="deptName" />
+	<input type="hidden" id="teamName" />
+	<input type="hidden" id="userId" />
+	<input type="hidden" id="userName"/>
+ 	<select style="display:none" id=apprLine name="apprLine" multiple>
+ 	<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+ 		<option value="${apprItemList.TARGET_USER_ID}" selected>${apprItemList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
+ 	</select>
+ 	<select style="display:none" id=refLine name="refLine" multiple>
+ 	<c:forEach items="${refList}" var="refList" varStatus="status">
+ 		<option value="${refList.TARGET_USER_ID}" selected>${refList.TARGET_USER_NAME}</option>	
+ 	</c:forEach>
+ 	</select>
+	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
+		<h5 style="position:relative">
+			<span class="title">사전원가서 결재 상신</span>
+			<div  class="top_btn_box">
+				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+			</div>
+		</h5>
+		<div class="list_detail">
+			<ul>
+				<li>
+					<dt style="width:20%">결재요청의견</dt>
+					<dd style="width:80%;">
+						<div class="insert_comment">
+							<table style=" width:756px">
+								<tr>
+									<td>
+										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment">${apprHeader.COMMENT}</textarea>
+									</td>
+									<td width="98px"></td>
+								</tr>
+							</table>
+						</div>
+					</dd>
+				</li>
+				<li class="pt5">
+					<dt style="width:20%">결재자 입력</dt>
+					<dd style="width:80%;" class="ppp">
+						<input type="text" placeholder="결재자명 2자이상 입력후 선택" style="width:198px; float:left;" class="req" id="keyword" name="keyword">
+						<button class="btn_small01 ml5" onclick="apprClass.approvalAddLine(this); return false;" name="appr_add_btn" id="appr_add_btn">결재자 추가</button>
+						<button class="btn_small02  ml5" onclick="apprClass.approvalAddLine(this); return false;" name="ref_add_btn" id="ref_add_btn">참조</button>
+						<div class="selectbox ml5" style="width:180px;">
+							<label for="apprLineSelect" id="apprLineSelect_label">---- 결재라인 불러오기 ----</label>
+							<select id="apprLineSelect" name="apprLineSelect" onchange="apprClass.changeApprLine(this);">
+								<option value="">---- 결재라인 불러오기 ----</option>
+							</select>
+						</div>
+						<button class="btn_small02  ml5" onclick="apprClass.deleteApprovalLine(this); return false;">선택 결재라인 삭제</button>
+					</dd>
+				</li>
+				<li  class="mt5">
+					<dt style="width:20%; background-image:none;" ></dt>
+					<dd style="width:80%;">
+						<div class="file_box_pop2" style="height:190px;">
+							<ul id="apprLineList">
+								<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='A' onclick='apprClass.approvalRemoveLine(this);' >
+										<span id="lineLength">${status.count}차 결재</span>${apprItemList.TARGET_USER_NAME}<strong>/ ${apprItemList.TARGET_USER_ID} / ${apprItemList.OBJTTX} / ${apprItemList.RESP_TXT}</strong>
+								 		<input type='hidden' name='userIds' data-apprtype='A' value='${apprItemList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>
+							</ul>
+						</div>
+						<div class="file_box_pop3" style="height:190px;">
+							<ul id="refLineList">
+								<c:forEach items="${refList}" var="refList" varStatus="status">	
+								<li>
+									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >
+									<span>참조</span> ${refList.TARGET_USER_NAME}
+									<strong>/ ${refList.TARGET_USER_ID} / ${refList.OBJTTX} / ${refList.RESP_TXT}</strong>
+									<input type='hidden' name='userIds' data-apprtype='R' value='${refList.TARGET_USER_ID}'/>
+								</li>
+								</c:forEach>
+							</ul>
+						</div>
+						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->
+						<div class="app_line_edit">
+							저장 결재선라인 입력 :  <input type="text" name="apprLineName" id="apprLineName" class="req" style="width:280px;"/> 
+							<button class="btn_doc" onclick="apprClass.approvalLineSave(this);  return false;"><img src="../resources/images/icon_doc11.png"> 저장</button> 
+							<button class="btn_doc" onclick="apprClass.apprLineSaveCancel(this); return false;"><img src="../resources/images/icon_doc04.png">취소</button>
+						</div>
+						<!-- 현재 추가된 결재선 저장 버튼 눌렀을때 보이게 처리 close -->
+					</dd>
+				</li>
+			</ul>
+		</div>
+		<div class="btn_box_con4" style="padding:15px 0 20px 0">
+			<button class="btn_admin_red" onclick="fn_apprSubmit(); return false;">결재등록</button> 
+			<button class="btn_admin_gray" onclick="apprClass.apprCancel(); return false;">결재삭제</button>
+		</div>
+	</div>
+</div>
+<!-- 결재 상신 레이어  close-->

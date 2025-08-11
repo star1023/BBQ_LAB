@@ -1260,6 +1260,9 @@ var selectedArr = new Array();
 			tabChange('tab1');
 			$("#attatch_file").focus();
 			return;			
+		} else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
+			return;
 		} else {
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
 				var matCount = 0;

@@ -203,14 +203,14 @@
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
 <div class="wrap_in" id="fixNextTag">
-	<span class="path">매뉴얼&nbsp;&nbsp;
+	<span class="path">사전원가서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align:middle"/>&nbsp;&nbsp;
 		<a href="#">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 	<!-- 상세 페이지  start-->
-		<h2 style="position:relative"><span class="title_s">Recipe Management</span>
-			<span class="title">레시피 관리</span>
+		<h2 style="position:relative"><span class="title_s">Cost Management</span>
+			<span class="title">사전원가서 관리</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -313,7 +313,7 @@
 				</div>
 			</div>
 			<div class="btn_box_con"> 
-				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">상품 레시피 생성</button>
+				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">사전원가서 생성</button>
 			</div>
 	 		<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>

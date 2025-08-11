@@ -503,21 +503,13 @@
 			alert("제품명을 입력해 주세요.");
 			$("#productName").focus();
 			return;
-		} /* else if( !chkNull($("#changeComment").val()) ) {
-			alert("변경사유를 입력해 주세요.");
-			$("#changeComment").focus();
-			return;
-		} else if( !chkNull($("#changeTime").val()) ) {
-			alert("변경시점을 입력해 주세요.");
-			$("#changeTime").focus();
-			return;
-		} */ else if( attatchFileArr.length == 0 ) {
+		} else if( attatchFileArr.length == 0 ) {
 			alert("첨부파일을 등록해주세요.");		
 			return;			
-		} /* else if( !chkNull(contents) ) {
-			alert("기안문을 작성해주세요.");		
+		} else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
 			return;
-		}  */else {
+		} else {
 			var rowCount = 0;
 			var validData = true;
 			$('tr[id^=changeRow]').toArray().forEach(function(contRow){

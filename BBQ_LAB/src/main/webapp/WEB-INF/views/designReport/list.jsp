@@ -186,17 +186,30 @@ function fn_loadList(pageNo) {
 			if( data.totalCount > 0 ) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
-					if( item.STATUS == 'APPR_RET' || item.STATUS == 'RET' ) {
-						html += "<tr class=\"m_visible\">";
+					if( item.IS_LAST == 'Y' ) {
+						if( item.STATUS == 'APPR_RET' || item.STATUS == 'RET' ) {
+							html += "<tr id=\"design_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_visible\">";
+						} else {
+							html += "<tr id=\"design_"+item.DOC_NO+"_"+item.VERSION_NO+"\">";
+						}	
 					} else {
-						html += "<tr>";
+						html += "<tr id=\"design_"+item.DOC_NO+"_"+item.VERSION_NO+"\" class=\"m_version\" style=\"display: none\">";
 					}
+					
+					html += "	<td>";
+					if( item.CHILD_CNT > 0 && item.IS_LAST == 'Y' ) {
+						html += "		<img src=\"/resources/images/img_add_doc.png\" style=\"cursor: pointer;\" onclick=\"showChildVersion(this)\"/>";
+					} else {
+						html += "&nbsp;";
+					}
+					html += "	</td>";
+					
 					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.PRODUCT_NAME,'&nbsp;') + "</td>";
 
 					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">";
 					html += "		<div class=\"ellipsis_txt tgnl\">" + nvl(item.TITLE,'&nbsp;') + "</div>";
 					html += "	</td>";
-
+					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.VERSION_NO,'&nbsp;') + "</td>";
 					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
 
 					html += "	<td onclick=\"fn_view('"+item.DESIGN_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME,'&nbsp;') + "</td>";
@@ -209,6 +222,9 @@ function fn_loadList(pageNo) {
 						}
 						if( item.STATUS == 'TMP' ) {
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+						}
+						if( item.STATUS == 'COMP' ) {
+							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
 						}
 						html += "		</li>";
 					}
@@ -234,6 +250,30 @@ function fn_loadList(pageNo) {
 	});
 }
 
+function showChildVersion(imgElement){
+    var parentIdParts = $(imgElement).closest('tr').attr('id').split('_');
+    var parentNo = parentIdParts[1]; // 정확한 부모 번호 추출
+
+    var imgSrc = $(imgElement).attr('src');
+    var isAddIcon = imgSrc.includes('_add_');
+
+    if (isAddIcon) {
+        $(imgElement).attr('src', imgSrc.replace('_add_', '_m_')); 
+
+        // 정확히 product_1_ 또는 product_12_ 같은 prefix만 포함하는 자식만 열기
+        $('tr[id^="design_' + parentNo + '_"]').show();
+    } else {
+        $(imgElement).attr('src', imgSrc.replace('_m_', '_add_'));
+
+        // 자식 중에서 첫 번째 tr (부모)는 제외하고 나머지 숨기기
+        $('tr[id^="design_' + parentNo + '_"]').toArray().forEach(function(v, i){
+            if (i !== 0) {
+                $(v).hide();
+            }
+        });
+    }
+}
+
 function fn_search() {
 	fn_loadList(1);
 }
@@ -248,6 +288,10 @@ function fn_view(idx) {
 
 function fn_update(idx) {
 	location.href = '/designReport/update?idx='+idx;
+}
+
+function fn_versionUp(idx) {
+	location.href = '/designReport/versionUp?idx='+idx;
 }
 
 function fn_delete(idx) {
@@ -464,16 +508,20 @@ function fn_searchClear() {
 			<div class="main_tbl">
 				<table class="tbl01">
 					<colgroup id="list_colgroup">
+						<col width="45px">
 						<col width="25%">
 						<col />
+						<col width="8%">
 						<col width="10%">
 						<col width="10%">						
 						<col width="15%">						
 					</colgroup>
 					<thead id="list_header">
 						<tr>
+							<th>&nbsp;</th>
 							<th>제품명</th>
 							<th>제목</th>
+							<th>버전</th>
 							<th>문서상태</th>
 							<th>담당자</th>
 							<th></th>

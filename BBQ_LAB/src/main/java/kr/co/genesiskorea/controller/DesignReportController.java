@@ -204,8 +204,6 @@ public class DesignReportController {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
 			throw e;
 		}
-		
-		
 	}
 	
 	@RequestMapping("/updateTmpDesignAjax")
@@ -277,5 +275,94 @@ public class DesignReportController {
 			map.put("MESSAGE", e.getMessage());
 		}
 		return map;
+	}
+	
+	@RequestMapping(value = "/versionUp")
+	public String versionUp( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			if( reportService.selectMyDataCheck(param) > 0 ) {
+				Map<String, Object> designData = reportService.selectDesignData(param);
+				//lab_design 테이블 조회, lab_file 테이블 조회
+				model.addAttribute("designData", designData);
+				//lab_design_change_info 테이블 조회
+				model.addAttribute("designChangeList", reportService.selectDesignChangeList(param));
+				//lab_design_add_info 테이블 조회
+				model.addAttribute("addInfoList", reportService.selectAddInfoList(param));
+				
+				return "/designReport/versionUp";
+			} else {
+				model.addAttribute("returnPage", "/designReport/list");
+				return "/error/noAuth";
+			}
+					
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+	}
+	
+	@RequestMapping("/versionUpTmpDesignAjax")
+	@ResponseBody
+	public Map<String, Object> versionUpTmpDesignAjax(HttpServletRequest request, HttpServletResponse response
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(required=false) MultipartFile... file) throws Exception {
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			System.err.println(param);
+			System.err.println(tempFile);
+
+			HashMap<String, Object> listMap = new HashMap<String, Object>();
+			listMap.put("fileType", fileType);
+			listMap.put("fileTypeText", fileTypeText);
+			listMap.put("tempFile", tempFile);
+			int designIdx = reportService.insertVersionUpTmpDesign(param, listMap, file);
+			returnMap.put("IDX", designIdx);
+			returnMap.put("RESULT", "S");			
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			returnMap.put("RESULT", "E");
+			returnMap.put("MESSAGE",e.getMessage());
+		}
+		return returnMap;
+	}
+	
+	@RequestMapping("/versionUpDesignAjax")
+	@ResponseBody
+	public Map<String, Object> versionUpDesignAjax(HttpServletRequest request, HttpServletResponse response
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(required=false) MultipartFile... file) throws Exception {
+		Map<String, Object> returnMap = new HashMap<String, Object>();
+		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
+			
+			System.err.println(param);
+			System.err.println(tempFile);
+
+			HashMap<String, Object> listMap = new HashMap<String, Object>();
+			listMap.put("fileType", fileType);
+			listMap.put("fileTypeText", fileTypeText);
+			listMap.put("tempFile", tempFile);
+			int designIdx = reportService.insertVersionUpDesign(param, listMap, file);
+			returnMap.put("IDX", designIdx);
+			returnMap.put("RESULT", "S");			
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			returnMap.put("RESULT", "E");
+			returnMap.put("MESSAGE",e.getMessage());
+		}
+		return returnMap;
 	}
 }

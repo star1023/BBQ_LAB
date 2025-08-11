@@ -308,6 +308,8 @@
 			    <when test="listType != null and listType == 'all'">
 			    
 			    </when>
+			    <when test="listType != null and listType == 'search'">			    
+				</when>
 				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
 			</choose>
 			AND IS_DELETE = 'N'
@@ -370,9 +372,10 @@
 						    <when test="listType != null and listType == 'share'">
 						    	AND MENU_IDX IN (SELECT DOC_IDX FROM lab_doc_shared_user WHERE 1 = 1 AND USER_ID = #{userId} AND DOC_TYPE = #{docType})
 						    </when>
-						    <when test="listType != null and listType == 'all'">
-						    
+						    <when test="listType != null and listType == 'all'">						    
 						    </when>
+						    <when test="listType != null and listType == 'search'">			    
+							</when>
 							<otherwise> AND DOC_OWNER = #{userId} </otherwise>
 						</choose>
 						AND IS_DELETE = 'N'

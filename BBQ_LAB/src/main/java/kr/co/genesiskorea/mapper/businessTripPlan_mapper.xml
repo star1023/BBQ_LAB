@@ -52,7 +52,8 @@
 			    ) 
 			    </when>
 			    <when test="listType != null and listType == 'all'">
-			    
+			    </when>
+			    <when test="listType != null and listType == 'search'">
 			    </when>
 				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
 			</choose>
@@ -107,8 +108,9 @@
 				    ) 
 				    </when>
 				    <when test="listType != null and listType == 'all'">
-				    
 				    </when>
+				    <when test="listType != null and listType == 'search'">
+			    	</when>
 					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
 				</choose>
 				AND IS_DELETE = 'N'

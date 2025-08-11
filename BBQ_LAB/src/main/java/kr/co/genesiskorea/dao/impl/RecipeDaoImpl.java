@@ -155,6 +155,7 @@ public class RecipeDaoImpl extends RfcCommonMapper implements RecipeDao {
 				table.setValue("LMENGE", bomItem.get("LMENGE"));//사용량
 				table.setValue("LMEINS", bomItem.get("LMEINS"));//사용량단위
 				table.setValue("POGB", bomItem.get("POGB"));	//구성품 구매형태 구분 (본사 / 직사입)
+				table.setValue("NETPR", bomItem.get("NETPR"));	//레시피수량 별 단가
 			}
 			
 			execute(function);

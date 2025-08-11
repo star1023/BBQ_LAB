@@ -29,4 +29,8 @@ public interface DesignReportService {
 
 	void deleteDesignReport(Map<String, Object> param) throws Exception;
 
+	int insertVersionUpTmpDesign(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
+
+	int insertVersionUpDesign(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
+
 }

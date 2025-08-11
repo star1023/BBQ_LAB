@@ -366,6 +366,9 @@
 			alert("비용을 입력해 주세요.");
 			$("#cost").focus();
 			return;
+		} else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
+			return;
 		} else {
 			var formData = new FormData();
 			formData.append("planIdx",$("#planIdx").val());
