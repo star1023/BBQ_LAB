@@ -516,9 +516,7 @@ function fn_goList() {
 					<button class="btn_admin_navi">임시저장</button>
 					 <button class="btn_admin_navi" onclick="fn_insertTmp()">임시저장</button>
 					 -->
-					<c:if test='${userUtil:getUserType(pageContext.request) == "LEADER" || userUtil:getUserType(pageContext.request) == "ADMIN"}'> 
 					<button class="btn_admin_sky" onclick="fn_insert()">저장</button>
-					</c:if>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />

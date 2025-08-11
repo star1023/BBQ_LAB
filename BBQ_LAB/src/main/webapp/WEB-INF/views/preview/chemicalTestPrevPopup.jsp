@@ -57,7 +57,7 @@
 	</h2>
 	<div  class="top_btn_box" style=" position:fixed;">
 		<div style="float:right; margin-right: 30px; display:flex; gap:30px;">
-			<!-- <button type="button" class="btn_print" onclick="fn_printPreview()"></button> -->
+			<button type="button" class="btn_print" onclick="fn_printPreview()"></button>
 			<button type="button" class="btn_pop_close" onClick="self.close();"></button>		
 		</div>
 	</div>

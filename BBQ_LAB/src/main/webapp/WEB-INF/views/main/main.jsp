@@ -8,6 +8,44 @@
 <title>BBQ세계식문화과학기술원</title>
 <link href="../resources/css/main.css" rel="stylesheet" type="text/css" />
 <style>
+.tab-item2 {
+    background-color: #e9ecef;
+    padding: 6px 12px;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    border-top-left-radius: 6px;
+    border-top-right-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    height: 22px;
+    line-height: 22px;
+    position: relative;
+    z-index: 1;
+    transition: background 0.2s ease;
+}
+
+.tab-item2.active{
+	background: white;
+    font-weight: bold;
+    z-index: 2;
+    border-bottom: 1px solid white;
+}
+
+.myDocTable {
+	margin : 0 0 30px;
+	padding : 10px 0;
+	min-height: 318px;
+}
+.main_bottom_box{
+    box-shadow: 2px 2px 3px 2px #93939380;
+    margin: 1px 0;
+    padding: 10px 10px;
+    border: 2px #ccc solid;
+    border-radius: 10px;
+}
+
+.m_version td{background-color:#f6f6f6;}
+.m_version td:first-child{background-image:url(../resources/images/bg_ver.png); background-repeat:no-repeat; background-position:20px 0}
 
 </style>
 <script type="text/javascript"
@@ -29,6 +67,16 @@ $(document).ready(function() {
 	  const docType = $(this).data('doc');
 	  drawBarChartByDocType(docType);
 	});
+	
+	$('.tab-item2').on('click', function () {
+	  $('.tab-item2').removeClass('active');
+	  $(this).addClass('active');
+
+	  const docType = $(this).data('doc');
+	  renderMyDocTable(docType);
+	});
+	
+	renderMyDocTable("PROD_DOC");
 	
     // 올린 결재 문서
     $("#my_reg").text(apprStatusData !== null ? apprStatusData.APPR_NCNT : 0);   // 대기 (상신)
@@ -483,6 +531,169 @@ function updateBarChartContext(buttonText) {
   }
 
 }
+
+function renderMyDocTable(docTypeParam) {
+    // "PROD_DOC" → "PROD"
+    var docTypeKey = docTypeParam.replace("_DOC", "");
+
+    // URL 앞부분 매핑 ("/product", "/menu" 등)
+    var docTypePathMap = {
+        "PROD": "/product",
+        "MENU": "/menu",
+        "DESIGN": "/designReport",
+        "SENSE_QUALITY": "/senseQuality",
+        "PLAN": "/businessTripPlan",
+        "TRIP": "/businessTrip",
+        "RESEARCH": "/marketResearch",
+        "RESULT": "/newProductResult",
+        "CHEMICAL": "/chemicalTest",
+        "PACKAGE": "/package"
+    };
+
+    // URL 뒷부분 매핑 ("selectXXXListAjax")
+    var endpointMap = {
+        "PROD": "selectProductListAjax",
+        "MENU": "selectMenuListAjax",
+        "DESIGN": "selectDesignListAjax",
+        "SENSE_QUALITY": "selectSenseQualityListAjax",
+        "PLAN": "selectBusinessTripPlanListAjax",
+        "TRIP": "selectBusinessTripListAjax",
+        "RESEARCH": "selectMarketResearchListAjax",
+        "RESULT": "selectNewProductResultListAjax",
+        "CHEMICAL": "selectChemicalTestListAjax",
+        "PACKAGE": "selectPackageInfoListAjax"
+    };
+
+    // 유효성 체크
+    if (!docTypePathMap[docTypeKey] || !endpointMap[docTypeKey]) {
+        console.warn("Unknown docType: " + docTypeParam);
+        return;
+    }
+
+    var docType = docTypePathMap[docTypeKey]; // e.g., "/product"
+    var url = endpointMap[docTypeKey];        // e.g., "selectProductListAjax"
+
+    // 최종 AJAX 요청
+    $.ajax({
+        type: "POST",
+        url: docType + "/" + url, // e.g., "/product/selectProductListAjax"
+        data: {
+            "docType": docTypeKey, // e.g., "PROD"
+            "viewCount": 5,
+            "pageNo": 1
+        },
+        dataType: "json",
+        success: function (response) {
+            console.log("데이터 수신 성공", response);
+            renderMyDocTableRow(response, docType, docTypeKey);
+        },
+        error: function (request, status, error) {
+            alert("데이터 요청 중 오류 발생");
+        }
+    });
+}
+
+function renderMyDocTableRow(data, docType, docTypeKey) {
+    var list = data.list || [];
+    console.log(docTypeKey);
+    var hasVersioningDoc = 
+        docTypeKey === 'PROD' || docTypeKey === 'MENU' || docTypeKey === 'PACKAGE';
+    
+    // 1. 헤더 먼저 렌더링
+    var theadHtml = "";
+    theadHtml += "<tr>";
+    if(hasVersioningDoc) {
+    	theadHtml += "  <th style=\"width:40px\"></th>"; // 버전아이콘    	
+    }
+    theadHtml += "  <th>제목</th>";
+    theadHtml += "  <th>작성자</th>";
+    theadHtml += "</tr>";
+
+    $("#myDocTableHaed").html(theadHtml);
+
+    // 2. 바디 렌더링
+    var tbodyHtml = "";
+	var idxText = docTypeKey == 'SENSE_QUALITY' ? "REPORT_IDX" : docTypeKey+'_IDX';
+	idxText = docTypeKey == 'PROD' ? "PRODUCT_IDX" : docTypeKey+'_IDX';
+	
+	console.log(idxText);	
+    list.forEach(function(item, i) {
+        var viewUrl = docType + "/view?idx=" + item[idxText];
+        var id = docTypeKey + '_' + item.DOC_NO + '_' + i; 
+        
+        
+        // === 행 시작 ===
+        if (hasVersioningDoc) {
+            // 버전이 있는 문서 처리
+            if (item.IS_LAST === 'Y') {
+                if (item.STATUS === 'APPR_RET' || item.STATUS === 'RET') {
+                    tbodyHtml += "<tr id=\"" + id + "\"class=\"m_visible\">";
+                } else {
+                    tbodyHtml += "<tr id=\"" + id + "\">";
+                }
+            } else {
+                tbodyHtml += "<tr id=\"" + id + "\" class=\"m_version\" style=\"display: none\">";
+            }
+        } else {
+            // 버전 없는 문서 처리 (그냥 기본 tr)
+            tbodyHtml += "<tr>";
+        }
+        
+     	// === 버전이 있는 문서만 <td> 아이콘 컬럼 추가 ===
+        if (hasVersioningDoc) {
+            tbodyHtml += "<td>";
+            if (item.CHILD_CNT > 0 && item.IS_LAST === 'Y') {
+                tbodyHtml += "<img src=\"/resources/images/img_add_doc.png\" style=\"cursor: pointer;\" onclick=\"showChildVersion(this)\">";
+            } else {
+                tbodyHtml += "&nbsp;";
+            }
+            tbodyHtml += "</td>";
+        }
+        
+        // === 제목 ===
+        var title = nvl(item.TITLE || item.PRODUCT_NAME, '&nbsp;');
+        tbodyHtml += "<td onclick=\"location.href='" + viewUrl + "'\" style=\"cursor:pointer\">";
+        tbodyHtml += "  <div class=\"ellipsis_txt tgnl\" style=\"text-align:center !important;\">" + title + "</div>";
+        tbodyHtml += "</td>";
+
+        // === 작성자 ===
+        tbodyHtml += "<td onclick=\"location.href='" + viewUrl + "'\" style=\"cursor:pointer\">";
+        tbodyHtml += nvl(item.DOC_OWNER, '&nbsp;');
+        tbodyHtml += "</td>";
+
+        tbodyHtml += "</tr>";
+    });
+    
+    $("#myDocTableBody").html(tbodyHtml);
+}
+
+function nvl(value, defaultValue) {
+    return (value !== undefined && value !== null && value !== '') ? value : defaultValue;
+}
+
+function showChildVersion(imgElement) {
+    var trId = $(imgElement).closest('tr').attr('id');  // 예: prod_12345_1
+    var parts = trId.split('_');
+
+    var docTypeKey = parts[0];  // 예: 'prod'
+    var docNo = parts[1];       // 예: '12345'
+    var versionNo = parts[2];   // 예: '1'
+
+    var imgSrc = $(imgElement).attr('src');
+    var isAddIcon = imgSrc.includes('_add_');
+
+    var rowPrefix = docTypeKey + "_" + docNo + "_"; // 예: 'prod_12345_'
+
+    if (isAddIcon) {
+        $(imgElement).attr('src', imgSrc.replace('_add_', '_m_')); 
+        $('tr[id^="' + rowPrefix + '"]').show();
+    } else {
+        $(imgElement).attr('src', imgSrc.replace('_m_', '_add_')); 
+        $('tr[id^="' + rowPrefix + '"]').toArray().forEach(function(v, i) {
+            if (i !== 0) $(v).hide();
+        });
+    }
+}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path"> <a href="#">BBQ세계식문화과학기술원</a>
@@ -628,69 +839,79 @@ function updateBarChartContext(buttonText) {
 					</div>
 				</div>
 			</div>
-			<div class="board_box">
-				<div class="wd60">
-					<span class="noti_box_title">공지사항</span>
-					<div class="dashboard02 scroll-wrapper" style="box-shadow: 1px 1px 2px 1px #93939380;">
-					  <table class="tbl_dashboard" style="font-size: 14px; width: 100%;">
-					    <thead>
-					      <tr>
-					        <th style='text-align: center;'></th>
-					        <th style='text-align: center;'>제목</th>
-					        <th style='text-align: center;'>등록일</th>
-					      </tr>
-					    </thead>
-					    <tbody id="noticeTableBody">
-					      <!-- JS에서 동적으로 tr만 삽입 -->
-					    </tbody>
-					  </table>
-					</div>
-				</div>
-				<div class="wd40">
-					<span class="noti_box_title">FAQ</span>
-					<div style="box-shadow: 1px 1px 2px 1px #93939380; border : 1px solid #ddd;">
-						<div class="slider_wrap">
-						  <button id="faq-prev-btn">&lt;</button>
-						  <div class="slider_viewport">
-						    <div class="slider_track" id="faq-slider-track"></div>
-						  </div>
-						  <button id="faq-next-btn">&gt;</button>
+			<div class="main_bottom_box">
+				<div class="board_box">
+					<div class="wd60">
+						<span class="noti_box_title">공지사항</span>
+						<div class="dashboard02 scroll-wrapper" style="box-shadow: 1px 1px 2px 1px #93939380; border-radius: 6px;">
+						  <table class="tbl_dashboard" style="font-size: 14px; width: 100%;">
+						    <thead>
+						      <tr>
+						        <th style='text-align: center;'></th>
+						        <th style='text-align: center;'>제목</th>
+						        <th style='text-align: center;'>등록일</th>
+						      </tr>
+						    </thead>
+						    <tbody id="noticeTableBody">
+						      <!-- JS에서 동적으로 tr만 삽입 -->
+						    </tbody>
+						  </table>
 						</div>
-						<div class="dashboard03_wrap" >
-							<div class="dashboard03">
-								<div class="faq-list">
-								  <!-- FAQ 항목 반복 -->
-								  <div class="faq-item" data-index="0">
-								    <div class="faq-title">
-								    </div>
-								    <div class="faq-content">
-								    </div>
-								  </div>
+					</div>
+					<div class="wd40">
+						<span class="noti_box_title">FAQ</span>
+						<div style="box-shadow: 1px 1px 2px 1px #93939380; border : 1px solid #ddd; border-radius: 7px;">
+							<div class="slider_wrap">
+							  <button id="faq-prev-btn">&lt;</button>
+							  <div class="slider_viewport">
+							    <div class="slider_track" id="faq-slider-track"></div>
+							  </div>
+							  <button id="faq-next-btn">&gt;</button>
+							</div>
+							<div class="dashboard03_wrap" >
+								<div class="dashboard03">
+									<div class="faq-list">
+									  <!-- FAQ 항목 반복 -->
+									  <div class="faq-item" data-index="0">
+									    <div class="faq-title">
+									    </div>
+									    <div class="faq-content">
+									    </div>
+									  </div>
+									</div>
 								</div>
 							</div>
 						</div>
 					</div>
 				</div>
+				
+				<div class="myDocTable">
+					<span class="noti_box_title">내문서 현황</span>
+					<div>
+						<ul class="tab-menu">
+							<li class="tab-item2 active" data-doc="PROD_DOC">제품개발</li>
+							<li class="tab-item2" data-doc="MENU_DOC">메뉴개발</li>
+							<li class="tab-item2" data-doc="DESIGN_DOC">상품설계</li>
+							<li class="tab-item2" data-doc="SENSE_QUALITY_DOC">관능&품질</li>
+							<li class="tab-item2" data-doc="PLAN_DOC">출장계획</li>
+							<li class="tab-item2" data-doc="TRIP_DOC">출장결과</li>
+							<li class="tab-item2" data-doc="RESEARCH_DOC">시장조사</li>
+							<li class="tab-item2" data-doc="RESULT_DOC">신제품품질</li>
+							<li class="tab-item2" data-doc="CHEMICAL_DOC">이화학검사</li>
+							<li class="tab-item2" data-doc="PACKAGE_DOC">표시사항기재</li>
+						</ul>
+					</div>
+					<div class="dashboard02 scroll-wrapper" style="box-shadow: 1px 1px 2px 1px #93939380;">
+					  <table class="tbl_dashboard" style="font-size: 14px; width: 100%;">
+					    <thead id="myDocTableHaed">
+					    </thead>
+					    <tbody id="myDocTableBody">
+					      <!-- JS에서 동적으로 tr만 삽입 -->
+					    </tbody>
+					  </table>
+					</div>
+				</div>
 			</div>
-			<!-- 품목제조공정서 검색 close -->
-			<div class="title2 mt30">
-				<span class="txt">내문서 현황</span>
-				<!-- <div>
-					<ul class="tab-menu">
-						<li class="tab-item active" data-doc="PROD_DOC">제품개발</li>
-						<li class="tab-item" data-doc="MENU_DOC">메뉴개발</li>
-						<li class="tab-item" data-doc="DESIGN_DOC">상품설계</li>
-						<li class="tab-item" data-doc="SENSE_QUALITY_DOC">관능&품질</li>
-						<li class="tab-item" data-doc="PLAN_DOC">출장계획</li>
-						<li class="tab-item" data-doc="TRIP_DOC">출장결과</li>
-						<li class="tab-item" data-doc="RESEARCH_DOC">시장조사</li>
-						<li class="tab-item" data-doc="RESULT_DOC">신제품품질</li>
-						<li class="tab-item" data-doc="CHEMICAL_DOC">이화학검사</li>
-						<li class="tab-item" data-doc="PACKAGE_DOC">표시사항기재</li>
-					</ul>
-				</div> -->
-			</div>
-			<div class="dashboard01"></div>
 			<div class="btn_box_con"></div>
 			<hr class="con_mode" />
 			<!-- 신규 추가 꼭 데려갈것 !-->

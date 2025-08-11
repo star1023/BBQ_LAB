@@ -32,7 +32,9 @@ import com.itextpdf.kernel.pdf.canvas.PdfCanvas;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.font.FontProvider;
 
+import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.BusinessTripPlanService;
 import kr.co.genesiskorea.service.BusinessTripService;
 import kr.co.genesiskorea.service.ChemicalTestService;
@@ -45,6 +47,7 @@ import kr.co.genesiskorea.service.NewProductResultService;
 import kr.co.genesiskorea.service.PackageInfoService;
 import kr.co.genesiskorea.service.ProductService;
 import kr.co.genesiskorea.service.SenseQualityService;
+import kr.co.genesiskorea.service.UserService;
 
 @Controller
 @RequestMapping("/preview")
@@ -84,6 +87,12 @@ public class PreviewController {
 	PackageInfoService packageInfoService;
 	
 	@Autowired
+	UserService userService;
+	
+	@Autowired
+	ApprovalService approvalService;
+	
+	@Autowired
 	CommonService commonService;
 	
     @RequestMapping("/productPopup")
@@ -121,6 +130,55 @@ public class PreviewController {
 		//lab_menu 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> menuData = menuService.selectMenuData(param);
 		model.addAttribute("menuData", menuData);
+		
+	    // 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) menuData.get("data");
+	    if (data == null) {
+	        data = menuData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("MENU_IDX"));
+		headerParam.put("docType", "MENU");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
 		Map<String, Object> addInfoCount = menuService.selectAddInfoCount(param);
 		model.addAttribute("addInfoCount", addInfoCount);
 		List<Map<String, String>> addInfoList = menuService.selectAddInfo(param);
@@ -141,6 +199,55 @@ public class PreviewController {
 		//lab_product 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> productData = productService.selectProductData(param);
 		model.addAttribute("productData", productData);
+		
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) productData.get("data");
+	    if (data == null) {
+	        data = productData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("PRODUCT_IDX"));
+		headerParam.put("docType", "PROD");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
 		Map<String, Object> addInfoCount = productService.selectAddInfoCount(param);
 		model.addAttribute("addInfoCount", addInfoCount);
 		List<Map<String, Object>> addInfoList = productService.selectAddInfo(param);
@@ -161,6 +268,55 @@ public class PreviewController {
 		//lab_design 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> designData = designService.selectDesignData(param);
 		model.addAttribute("designData", designData);
+		
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) designData.get("data");
+	    if (data == null) {
+	        data = designData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("DESIGN_IDX"));
+		headerParam.put("docType", "DESIGN");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
 		//lab_design_change_info 테이블 조회
 		model.addAttribute("designChangeList", designService.selectDesignChangeList(param));
 		//lab_design_add_info 테이블 조회
@@ -178,6 +334,55 @@ public class PreviewController {
     public String businessTripPlanViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
     	//1.lab_business_trip_plan 조회
 		Map<String, Object> planData = businessTripPlanService.selectBusinessTripPlanData(param);
+		
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) planData.get("data");
+	    if (data == null) {
+	        data = planData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("PLAN_IDX"));
+		headerParam.put("docType", "PLAN");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
 		//2.lab_business_trip_plan_user 조회
 		List<Map<String, Object>> userList = businessTripPlanService.selectBusinessTripPlanUserList(param);
 		//3.lab_business_trip_plan_add_info 조회
@@ -201,6 +406,55 @@ public class PreviewController {
     public String businessTripViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
 		//lab_design 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> businessTripData = businessTripService.selectBusinessTripData(param);
+		
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) businessTripData.get("data");
+	    if (data == null) {
+	        data = businessTripData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("TRIP_IDX"));
+		headerParam.put("docType", "TRIP");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
 		//2.lab_business_trip_user 조회
 		List<Map<String, Object>> userList = businessTripService.selectBusinessTripUserList(param);
 		//3.lab_business_trip_add_info 조회
@@ -225,6 +479,55 @@ public class PreviewController {
     public String marketResearchViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
     	//1.lab_market_research 조회
 		Map<String, Object> researchData = marketResearchService.selectMarketResearchData(param);
+		
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) researchData.get("data");
+	    if (data == null) {
+	        data = researchData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("RESEARCH_IDX"));
+		headerParam.put("docType", "RESEARCH");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
 		//2.lab_market_research_user 조회
 		List<Map<String, Object>> userList = marketResearchService.selectMarketResearchUserList(param);
 		//3.lab_market_research_add_info 조회
@@ -246,6 +549,7 @@ public class PreviewController {
     public String chemicalTestViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
     	//1. lab_chemical_test 테이블 조회, lab_chemical_test 테이블 조회
 		Map<String, Object> chemicalData = chemicalTestService.selectChemicalTestData(param);
+		
 		//2. lab_chemical_test_item 조회
 		List<Map<String, Object>> itemList = chemicalTestService.selectChemicalTestItemList(param);
 		//3. lab_chemical_test_standard 조회
@@ -268,6 +572,55 @@ public class PreviewController {
 		Map<String, Object> senseQualityData = senseQualityService.selectSenseQualityData(param);
 		model.addAttribute("userId", AuthUtil.getAuth(request).getUserId());
 		model.addAttribute("senseQualityData", senseQualityData);
+		
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) senseQualityData.get("reportMap");
+	    if (data == null) {
+	        data = senseQualityData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("REPORT_IDX"));
+		headerParam.put("docType", "SENSE_QUALITY");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
     	return "preview/senseQualityViewPopup";
     }
     
@@ -280,6 +633,55 @@ public class PreviewController {
     public String newProductViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
     	//결재 정보 조회
 		Map<String, Object> newProductResultData = newProductResultService.selectNewProductResultData(param);
+		
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) newProductResultData.get("data");
+	    if (data == null) {
+	        data = newProductResultData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("RESULT_IDX"));
+		headerParam.put("docType", "RESULT");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+		
 		List<Map<String, Object>> newProductResultItemList = newProductResultService.selectNewProductResultItemList(param);
 		List<Map<String, Object>> newProductResultImageList = newProductResultService.selectNewProductResultItemImageList(param);
 		Map<String, String> codeParam = new HashMap<>();
@@ -302,7 +704,12 @@ public class PreviewController {
 		Map<String, Object> packageInfoData = packageInfoService.selectPackageInfoData(param);
 		List<Map<String, Object>> addInfoList = packageInfoService.selectAddInfoList(param);
 		
-		model.addAttribute("packageInfoData", packageInfoData);		
+		model.addAttribute("packageInfoData", packageInfoData);
+		
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)packageInfoData.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
 		model.addAttribute("addInfoList", addInfoList);
     	
     	return "preview/packageInfoViewPopup";

@@ -64,9 +64,91 @@
 	</div>
 	<div style="height: 50px;"></div>
 	<div id="wrapper">
-		<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+		<div class="mainTable" style="width:100%; margin: 10px 0 10px; display:flex; justify-content: space-between;">
+    		<div style="width:40%; margin: 0 0 5px; display:flex; justify-content: center; flex-direction: column; align-items: center; font-weight: bold; font-size: 24px;">
+				<span style="text-align: center; ">
+					${designData.data.PRODUCT_NAME}
+					<br>
+					<span style="font-size: 20px; font-weight: normal;">
+						상품설계변경보고서
+					</span>
+				</span>
+			</div>
+    		<div style="width:60%">
+				<table style="width:100%; border-collapse:collapse; table-layout:fixed;">
+				  <colgroup>
+				    <col style="width:80px;">
+				    <c:choose>
+				      <c:when test="${not empty apprItem and fn:length(apprItem) > 0}">
+				        <c:forEach items="${apprItem}" var="it"><col /></c:forEach>
+				      </c:when>
+				      <c:otherwise>
+				        <col />
+				      </c:otherwise>
+				    </c:choose>
+				  </colgroup>
+				
+				  <tbody>
+				    <tr>
+					  <th rowspan="3" style="border:1px solid #ccc; padding:8px; text-align:center; background:#f2f2f2;">결재</th>
+					  <c:choose>
+					    <c:when test="${not empty apprItem and fn:length(apprItem) > 0}">
+					      <c:forEach items="${apprItem}" var="item">
+					        <td style="border:1px solid #ccc;">
+					              ${empty item.OBJTTX ? '&nbsp;' : item.OBJTTX}
+					        </td>
+					      </c:forEach>
+					    </c:when>
+					    <c:otherwise>
+					      <td style="border:1px solid #ccc; padding:0; vertical-align:top;">
+					        <div style="display:grid; grid-template-rows:32px auto; width:100%; height:100%;">
+					          <div style="height:32px; line-height:32px; text-align:center; font-weight:600; background:#f2f2f2; border-bottom:1px solid #e5e5e5;">
+					            1차 결재
+					          </div>
+					          <div style="padding:8px;">&nbsp;</div>
+					        </div>
+					      </td>
+					    </c:otherwise>
+					  </c:choose>
+					</tr>
+				    <tr>
+				      <c:choose>
+				        <c:when test="${not empty apprItem and fn:length(apprItem) > 0}">
+				          <c:forEach items="${apprItem}" var="item">
+				            <td style="border:1px solid #ccc; padding:8px; text-align:left;">
+				              ${empty item.TARGET_USER_NAME ? '&nbsp;' : item.TARGET_USER_NAME}
+				            </td>
+				          </c:forEach>
+				        </c:when>
+				        <c:otherwise>
+				          <td style="border:1px solid #ccc; padding:8px;">&nbsp;</td>
+				        </c:otherwise>
+				      </c:choose>
+				    </tr>
+				    <tr>
+				      <c:choose>
+				        <c:when test="${not empty apprItem and fn:length(apprItem) > 0}">
+				          <c:forEach items="${apprItem}" var="item">
+				            <td style="border:1px solid #ccc; padding:8px; text-align:left;">
+				              <c:choose>
+				                <c:when test="${not empty item.REG_DATE}">${item.REG_DATE}</c:when>
+				                <c:otherwise>&nbsp;</c:otherwise>
+				              </c:choose>
+				            </td>
+				          </c:forEach>
+				        </c:when>
+				        <c:otherwise>
+				          <td style="border:1px solid #ccc; padding:8px;">&nbsp;</td>
+				        </c:otherwise>
+				      </c:choose>
+				    </tr>
+				  </tbody>
+				</table>
+    		</div>
+    	</div>
+		<!-- <div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
 			<span>상품설계변경보고서</span>
-		</div>
+		</div> -->
 		<div class="mainTable">
 			<table >
 				<colgroup>

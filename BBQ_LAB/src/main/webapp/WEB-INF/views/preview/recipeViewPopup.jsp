@@ -10,7 +10,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
+  <title>${recipeData.PRODUCT_NAME}_사전원가서</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
   <meta charset="UTF-8">
@@ -54,7 +54,7 @@
 </head>
 <body>
 	<h2 style=" position:fixed; background-color: #38b6e6 !important;" class="print_hidden">
-		<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;시장조사결과보고서 미리보기</span>
+		<span class="title"><img src="/resources/images/bg_bs_box_fast02.png">&nbsp;사전원가서 미리보기</span>
 	</h2>
 	<div  class="top_btn_box" style=" position:fixed;">
 		<div style="float:right; margin-right: 30px; display:flex; gap:30px;">
@@ -63,10 +63,16 @@
 		</div>
 	</div>
 	<div style="height: 50px;"></div>
-	<div id="wrapper">
-		<div class="mainTable" style="width:100%; margin: 10px 0 10px; display:flex; justify-content: space-between;">
-    		<div style="width:40%; margin: 0 0 5px; display:flex; justify-content: center; align-items: center; font-weight: bold; font-size: 24px;">
-				<span style="text-align: center;">시장조사결과보고서</span>
+    <div id="wrapper">
+    	<div class="mainTable" style="width:100%; margin: 10px 0 10px; display:flex; justify-content: space-between;">
+    		<div style="width:40%; margin: 0 0 5px; display:flex; justify-content: center; flex-direction: column; align-items: center; font-weight: bold; font-size: 24px;">
+				<span style="text-align: center; ">
+					${recipeData.PRODUCT_NAME}
+					<br>
+					<span style="font-size: 20px; font-weight: normal;">
+						사전원가서
+					</span>
+				</span>
 			</div>
     		<div style="width:60%">
 				<table style="width:100%; border-collapse:collapse; table-layout:fixed;">
@@ -140,11 +146,8 @@
 				</table>
     		</div>
     	</div>
-		<!-- <div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
-			<span>시장조사결과보고서</span>
-		</div> -->
-		<div class="mainTable">
-			<table  >
+    	<div class="mainTable">
+			<table >
 				<colgroup>
 					<col width="15%" />
 					<col width="35%" />
@@ -153,89 +156,56 @@
 				</colgroup>
 				<tbody>
 					<tr>
-						<th >제목</th>
+						<th style="border-left: none;">제품코드</th>
+						<td>
+							<input type="hidden" name="idx" id="idx" value="${recipeData.RECIPE_IDX}">
+							<input type="hidden" name="docNo" id="docNo" value="${recipeData.DOC_NO}">
+							${recipeData.PRODUCT_CODE}
+						</td>
+						<th style="border-left: none;">제품명</th>
+						<td>
+							${recipeData.PRODUCT_NAME}
+						</td>
+					</tr>
+					<tr>
+						<th style="border-left: none;">플랜트 </th>
 						<td colspan="3">
-							${researchData.data.TITLE}
-						</td>
+							${recipeData.PLANT_NAME}	
+						</td>								
 					</tr>
 					<tr>
-						<th >출장구분</th>
-						<td colspan="3">
-							${researchData.data.TRIP_TYPE_TXT}
+						<th style="border-left: none;">제품수량 </th>
+						<td>
+							${recipeData.PRODUCT_COUNT}									
 						</td>
-					</tr>
-					<tr>
-						<th  >대상업소</th>
-						<td colspan="3">
-							<c:forEach items="${infoList}" var="infoList" varStatus="status">
-							<c:if test="${infoList.INFO_TYPE == 'NAME' }">
-								${infoList.INFO_TEXT}<br>
-							</c:if>
-							</c:forEach>
-						</td>
-					</tr>
-					<tr>
-						<th  >목적</th>
-						<td colspan="3">	
-							<c:forEach items="${infoList}" var="infoList" varStatus="status">
-							<c:if test="${infoList.INFO_TYPE == 'PUR' }">
-								${infoList.INFO_TEXT}<br>
-							</c:if>
-							</c:forEach>						
-						</td>
-					</tr>
-					<tr>
-						<th  >일시</th>
-						<td colspan="3">
-							${researchData.data.RESEARCH_DATE}
-						</td>
-					</tr>
-					<tr>
-						<th  >주소</th>
-						<td colspan="3">
-							<c:forEach items="${infoList}" var="infoList" varStatus="status">
-							<c:if test="${infoList.INFO_TYPE == 'ADDRESS' }">
-								${infoList.INFO_TEXT}<br>
-							</c:if>
-							</c:forEach>
-						</td>
-					</tr>
-					<tr>
-						<th  >비용</th>
-						<td colspan="3">
-							<p style="white-space: pre-line; text-align:left;">${researchData.data.COST}</p>
-						</td>
-					</tr>
-					<tr>
-						<th  >조사자</th>
-						<td colspan="3" class="inner-table-cell">
-							<table class="inner-table">
-								<tr>
-									<th>소속</th>
-									<th>직위(직급)</th>
-									<th>성명</th>
-								</tr>
-								<tbody id="user_tbody" name="user_tbody">
-									<c:forEach items="${userList}" var="userList" varStatus="status">
-									<tr>
-										<td>
-											${userList.DEPT}
-										</td>
-										<td>
-											${userList.POSITION}
-										</td>
-										<td>
-											${userList.NAME}
-										</td>
-									</tr>
-									</c:forEach>
-								</tbody>									
-							</table>
+						<th style="border-left: none;">제품단위</th>
+						<td>
+							${recipeData.UNIT_NAME}	
 						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
-	</div>
+		<div>
+			<span style="font-size: 14px;">※ 원료</span>
+		</div>
+		<div class="mainTable">
+			
+		</div>
+		
+		
+		<%-- <c:if test="${not empty }">
+			<div>
+				<span style="font-size: 14px;">※ 사입품</span>
+			</div>
+			<div class="mainTable">
+				<table >
+					<tr>
+						<td><pre>${productData.data.CONTENTS}</pre></td>
+					</tr>
+				</table>
+			</div>
+		</c:if> --%>
+    </div>
 </body>
 </html>

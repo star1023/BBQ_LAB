@@ -136,12 +136,12 @@ function fn_renderList(list) {
         // 버튼
         row += "<td>";
         row += "  <button class=\"btn_doc\" onclick=\"fn_viewHistory('" + item.BNOTICE_IDX + "', '" + item.BNOTICE_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-        <c:if test='${userUtil:getUserType(pageContext.request) == "LEADER" || userUtil:getUserType(pageContext.request) == "ADMIN"}'>
-        if( '${userUtil:getUserId(pageContext.request)}' == item.REG_USER || '${userUtil:getUserType(pageContext.request)}' == "ADMIN" ) {
-        row += "  <button class=\"btn_doc\" onclick=\"fn_updatForm('" + item.BNOTICE_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
-        row += "  <button class=\"btn_doc\" onclick=\"fn_delete('" + item.BNOTICE_IDX + "')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+        
+        if( '${userUtil:getUserId(pageContext.request)}' == item.REG_USER ) {
+	        row += "  <button class=\"btn_doc\" onclick=\"fn_updatForm('" + item.BNOTICE_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+	        row += "  <button class=\"btn_doc\" onclick=\"fn_delete('" + item.BNOTICE_IDX + "')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
         }
-        </c:if>
+        
         row += "</td>";
 
         row += "</tr>";
@@ -377,10 +377,7 @@ function isNoticePeriodValid(startDateStr, endDateStr) {
 				</div>
 			</div>
 			<div class="btn_box_con"> 
-				<c:if test='${userUtil:getUserType(pageContext.request) == "LEADER" || userUtil:getUserType(pageContext.request) == "ADMIN"}'>
 				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">공지사항 작성</button>
-				</c:if>
-				
 			</div>
 	 		<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>
