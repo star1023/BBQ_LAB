@@ -315,7 +315,7 @@ function fn_changeDate() {
 								</ul>
 							</div>
 						</td>
-						<td id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
+						<td colspan="2" id="viewComment">결재자 리스트 클릭시 결재의견을 확인할 수 있습니다.</td>
 					</tr>
 					<tr>
 						<th style="border-left: none; ">참조자</th>

@@ -1,5 +1,6 @@
 package kr.co.genesiskorea.service.impl;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -11,6 +12,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -585,6 +587,390 @@ public class DesignReportServiceImpl implements DesignReportService {
 	public void deleteDesignReport(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		reportDao.deleteDesignReport(param);
+	}
+
+	@Override
+	@Transactional
+	public int insertVersionUpTmpDesign(Map<String, Object> param, HashMap<String, Object> listMap,
+			MultipartFile[] file) throws Exception {
+		// TODO Auto-generated method stub
+		int designIdx = 0;
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		
+		try {
+			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
+			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
+			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
+			
+			JSONParser parser = new JSONParser();
+			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
+			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
+			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
+			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
+			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
+			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+			
+			reportDao.updateDesignIsLast(param);
+			
+			designIdx = reportDao.selectDesignSeq();	//key value 조회
+			param.put("idx", designIdx);
+			
+			//제품 등록
+			reportDao.insertVersionUpDesign(param);
+			
+			ArrayList<HashMap<String,Object>> addInfoList = new ArrayList<HashMap<String,Object>>();
+			if( changeReasonArr.size() > 0 ) {
+				for( int i = 0 ; i < changeReasonArr.size() ; i++ ) {
+					HashMap<String,Object> changeReasonData = new HashMap<String,Object>();
+					changeReasonData.put("idx", designIdx);
+					changeReasonData.put("displayOrder", i+1);
+					changeReasonData.put("infoType", "REA");
+					changeReasonData.put("infoText", changeReasonArr.get(i));
+					addInfoList.add(changeReasonData);
+				}				
+			}
+			
+			if( changeTimeArr.size() > 0 ) {
+				for( int i = 0 ; i < changeTimeArr.size() ; i++ ) {
+					HashMap<String,Object> changeTimeData = new HashMap<String,Object>();
+					changeTimeData.put("idx", designIdx);
+					changeTimeData.put("displayOrder", i+1);
+					changeTimeData.put("infoType", "TIME");
+					changeTimeData.put("infoText", changeTimeArr.get(i));
+					addInfoList.add(changeTimeData);
+				}				
+			}
+			
+			if( addInfoList != null && addInfoList.size() > 0 ) {
+				//등록한다.
+				reportDao.insertAddInfo(addInfoList);
+			}
+			
+			ArrayList<HashMap<String,String>> changeList = new ArrayList<HashMap<String,String>>();
+			for( int i = 0 ; i < itemDivArr.size() ; i++ ) {
+				HashMap<String,String> matMap = new HashMap<String,String>();
+				try{
+					matMap.put("itemDiv", (String)itemDivArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemDiv", "");
+				}				
+				try{
+					matMap.put("itemCurrent", (String)itemCurrentArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemCurrent", "");
+				}				
+				try{
+					matMap.put("itemChange", (String)itemChangeArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemChange", "");
+				}
+				try{
+					matMap.put("itemNote", (String)itemNoteArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemNote", "");
+				}
+				
+				changeList.add(matMap);
+			}
+			param.put("changeList", changeList);
+			reportDao.insertChangeList(param);
+			
+			//history 저장
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", designIdx);
+			historyParam.put("docType", "DESIGN");
+			historyParam.put("historyType", "V");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+			
+			String path = config.getProperty("upload.file.path.design");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+	        
+			//문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", designIdx);
+								fileMap.put("docType", "DESIGN");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								System.err.println(fileMap);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+				}
+			}
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					System.err.println("=================================");
+					System.err.println("isEmpty : "+multipartFile.isEmpty());
+					System.err.println("name : " + multipartFile.getName());
+					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
+					System.err.println("size : " + multipartFile.getSize());				
+					System.err.println("=================================");
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", designIdx);
+							fileMap.put("docType", "DESIGN");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							System.err.println(fileMap);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+		
+		return designIdx;
+	}
+
+	@Override
+	@Transactional
+	public int insertVersionUpDesign(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file)
+			throws Exception {
+		// TODO Auto-generated method stub
+		int designIdx = 0;
+		
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		
+		try {
+			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
+			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
+			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
+			
+			JSONParser parser = new JSONParser();
+			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
+			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
+			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
+			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
+			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
+			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+			
+			reportDao.updateDesignIsLast(param);
+			
+			designIdx = reportDao.selectDesignSeq();	//key value 조회
+			param.put("idx", designIdx);
+			
+			//제품 등록
+			reportDao.insertVersionUpDesign(param);
+			
+			ArrayList<HashMap<String,Object>> addInfoList = new ArrayList<HashMap<String,Object>>();
+			if( changeReasonArr.size() > 0 ) {
+				for( int i = 0 ; i < changeReasonArr.size() ; i++ ) {
+					HashMap<String,Object> changeReasonData = new HashMap<String,Object>();
+					changeReasonData.put("idx", designIdx);
+					changeReasonData.put("displayOrder", i+1);
+					changeReasonData.put("infoType", "REA");
+					changeReasonData.put("infoText", changeReasonArr.get(i));
+					addInfoList.add(changeReasonData);
+				}				
+			}
+			
+			if( changeTimeArr.size() > 0 ) {
+				for( int i = 0 ; i < changeTimeArr.size() ; i++ ) {
+					HashMap<String,Object> changeTimeData = new HashMap<String,Object>();
+					changeTimeData.put("idx", designIdx);
+					changeTimeData.put("displayOrder", i+1);
+					changeTimeData.put("infoType", "TIME");
+					changeTimeData.put("infoText", changeTimeArr.get(i));
+					addInfoList.add(changeTimeData);
+				}				
+			}
+			
+			if( addInfoList != null && addInfoList.size() > 0 ) {
+				//등록한다.
+				reportDao.insertAddInfo(addInfoList);
+			}
+			
+			ArrayList<HashMap<String,String>> changeList = new ArrayList<HashMap<String,String>>();
+			for( int i = 0 ; i < itemDivArr.size() ; i++ ) {
+				HashMap<String,String> matMap = new HashMap<String,String>();
+				try{
+					matMap.put("itemDiv", (String)itemDivArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemDiv", "");
+				}				
+				try{
+					matMap.put("itemCurrent", (String)itemCurrentArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemCurrent", "");
+				}				
+				try{
+					matMap.put("itemChange", (String)itemChangeArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemChange", "");
+				}
+				try{
+					matMap.put("itemNote", (String)itemNoteArr.get(i));
+				} catch(Exception e) {
+					matMap.put("itemNote", "");
+				}
+				
+				changeList.add(matMap);
+			}
+			param.put("changeList", changeList);
+			reportDao.insertChangeList(param);
+			
+			//history 저장
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", designIdx);
+			historyParam.put("docType", "DESIGN");
+			historyParam.put("historyType", "V");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+			
+			String path = config.getProperty("upload.file.path.design");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+	        
+			//문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", designIdx);
+								fileMap.put("docType", "DESIGN");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								System.err.println(fileMap);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+				}
+			}
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					System.err.println("=================================");
+					System.err.println("isEmpty : "+multipartFile.isEmpty());
+					System.err.println("name : " + multipartFile.getName());
+					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
+					System.err.println("size : " + multipartFile.getSize());				
+					System.err.println("=================================");
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", designIdx);
+							fileMap.put("docType", "DESIGN");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							System.err.println(fileMap);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
+		
+		return designIdx;
 	}
 
 }

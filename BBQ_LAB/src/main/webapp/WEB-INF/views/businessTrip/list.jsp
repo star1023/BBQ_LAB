@@ -91,6 +91,11 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+		} else if( listType == 'search' ) {
+			$("#searchTeam_li").hide();
+			$("#searchUser_li").hide();
+			$("#searchTeam").selectOptions("");
+			$("#searchUser").selectOptions("");
 		}
 	}
 	fn_search();
@@ -205,7 +210,7 @@ function fn_loadList(pageNo) {
 					if( item.IS_LAST == 'Y' ) {
 						html += "		<li style=\"float:none; display:inline\">";
 						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.TRIP_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-						if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+						if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER && $('#listType').val() != 'search') {
 							if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' || item.STATUS == 'RET' ) {
 								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.TRIP_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 							}
@@ -242,7 +247,9 @@ function fn_insertForm() {
 }
 
 function fn_view(idx) {
-	window.location.href = "../businessTrip/view?idx="+idx;
+	if( $('#listType').val() != 'search' ) {
+		window.location.href = "../businessTrip/view?idx="+idx;
+	}
 }
 
 function fn_update(idx) {

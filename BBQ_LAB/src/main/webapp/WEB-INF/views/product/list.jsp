@@ -91,6 +91,11 @@
 				$("#searchUser_li").hide();
 				$("#searchTeam").selectOptions("");
 				$("#searchUser").selectOptions("");
+			} else if( listType == 'search' ) {
+				$("#searchTeam_li").hide();
+				$("#searchUser_li").hide();
+				$("#searchTeam").selectOptions("");
+				$("#searchUser").selectOptions("");
 			}
 		}
 		fn_search();
@@ -237,7 +242,7 @@
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PRODUCT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-							if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+							if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER && $('#listType').val() != 'search' ) {
 								if( item.STATUS == 'COMP' ) {
 									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PRODUCT_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
 								}
@@ -277,7 +282,9 @@
 	}
 	
 	function fn_view(idx) {
-		window.location.href = "../product/view?idx="+idx;
+		if( $('#listType').val() != 'search' ) {
+			window.location.href = "../product/view?idx="+idx;			
+		}
 	}
 	
 	function fn_versionUp(idx) {
@@ -452,10 +459,12 @@
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
 							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 제품완료보고서</li></a>
 							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 제품완료보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 제품완료보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 제품완료보고서</li></a>
 							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 제품완료보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 제품완료보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
 							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 제품완료보고서</li></a>

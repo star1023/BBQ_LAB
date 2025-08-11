@@ -21,6 +21,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import kr.co.genesiskorea.common.auth.Auth;
 import kr.co.genesiskorea.common.auth.AuthUtil;
+import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.RecipeService;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -31,6 +32,9 @@ public class RecipeController {
 	
 	@Autowired
 	RecipeService recipeService;
+	
+	@Autowired
+	ApprovalService approvalService;
 	
 	@RequestMapping(value = "/list")
 	public String productList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
@@ -120,6 +124,21 @@ public class RecipeController {
 		List<Map<String, Object>> purchaseList = recipeService.selectPurchaseList(param);
 		model.addAttribute("purchaseList", purchaseList);
 		
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "RECIPE");
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+			model.addAttribute("apprHeader", apprHeader);
+			//lab_approval_item 테이블 조회
+			param.put("apprIdx", apprHeader.get("APPR_IDX"));
+			List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+			model.addAttribute("apprItemList", apprItemList);
+			
+			//lab_approval_reference 테이블 조회
+			List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+			model.addAttribute("refList", refList);
+		}
+		
 		return "/recipe/view";
 	}
 	
@@ -141,6 +160,21 @@ public class RecipeController {
 				//3.lab_recipe_purchase
 				List<Map<String, Object>> purchaseList = recipeService.selectPurchaseList(param);
 				model.addAttribute("purchaseList", purchaseList);
+				
+				param.put("docIdx", param.get("idx"));
+				param.put("docType", "RECIPE");
+				Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+				if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
+					model.addAttribute("apprHeader", apprHeader);
+					//lab_approval_item 테이블 조회
+					param.put("apprIdx", apprHeader.get("APPR_IDX"));
+					List<Map<String, Object>> apprItemList = approvalService.selectApprItemList(param);
+					model.addAttribute("apprItemList", apprItemList);
+					
+					//lab_approval_reference 테이블 조회
+					List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+					model.addAttribute("refList", refList);
+				}
 				
 				return "/recipe/update";
 			} else {

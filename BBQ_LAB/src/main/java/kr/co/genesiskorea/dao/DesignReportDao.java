@@ -37,4 +37,8 @@ public interface DesignReportDao {
 
 	void deleteDesignReport(Map<String, Object> param) throws Exception;
 
+	void updateDesignIsLast(Map<String, Object> param) throws Exception;
+
+	void insertVersionUpDesign(Map<String, Object> param) throws Exception;
+
 }

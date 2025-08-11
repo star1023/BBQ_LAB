@@ -113,15 +113,19 @@ li {
 			}			
 		});
 	}
+	
+	function fn_versionUp(idx) {
+		location.href = '/recipe/versionUp?idx='+idx;
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
-	<span class="path"> 상품레시피 상세보기&nbsp;&nbsp; <img
-		src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;상품레시피상세보기&nbsp;&nbsp; <img src="/resources/images/icon_path.png"
+	<span class="path"> 사전원가서 상세보기&nbsp;&nbsp; <img
+		src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;사전원가서상세보기&nbsp;&nbsp; <img src="/resources/images/icon_path.png"
 		style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position: relative">
-			<span class="title_s">Recipe Management</span><span class="title">상품 레시피</span>
+			<span class="title_s">Cost Management</span><span class="title">사전원가서 상세</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -174,6 +178,30 @@ li {
 									${recipeData.PRODUCT_NAME}
 								</td>
 							</tr>
+							<c:if test="${userUtil:getUserId(pageContext.request) == recipeData.DOC_OWNER }">
+							<tr>
+								<th style="border-left: none;">결재라인</th>
+								<td colspan="3">
+									<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
+										<c:if test="${status.count > 1}">
+											&nbsp; > &nbsp; 
+										</c:if>
+										${apprItemList.TARGET_USER_NAME}										
+									</c:forEach>
+								</td>
+							</tr>
+							<tr>
+								<th style="border-left: none;">참조자</th>
+								<td colspan="3">
+									<c:forEach items="${refList}" var="refList" varStatus="status">
+										<c:if test="${status.count > 1}">
+											&nbsp; , &nbsp; 
+										</c:if>
+										${refList.TARGET_USER_NAME}										
+									</c:forEach>
+								</td>
+							</tr>
+							</c:if>
 							<tr>
 								<th style="border-left: none;">플랜트 </th>
 								<td colspan="3">
@@ -253,10 +281,12 @@ li {
 				<table id="new_Table" class="tbl01" style="border-bottom: 2px solid #4b5165;">
 					<colgroup>
 						<col />
-						<col width="150">
 						<col width="100">
-						<col width="150">
 						<col width="100">
+						<col width="100">
+						<col width="100">
+						<col width="100">
+						<col width="250">
 					</colgroup>
 					<thead>
 						<tr>
@@ -265,6 +295,8 @@ li {
 							<th>구성품단위</th>
 							<th>사용량</th>
 							<th>사용량단위</th>
+							<th>단가</th>
+							<th>비고</th>
 						</tr>
 					</thead>
 					<tbody id="new_tbody" name="new_tbody">
@@ -284,6 +316,12 @@ li {
 							</td>
 							<td>
 								${purchaseList.USED_UNIT_NAME}
+							</td>
+							<td>
+								${purchaseList.ITEM_PRICE}
+							</td>
+							<td>
+								<span style="text-align: left;"><pre>${purchaseList.ITEM_DESC}</pre></span>
 							</td>
 						</tr>
 						</c:forEach>

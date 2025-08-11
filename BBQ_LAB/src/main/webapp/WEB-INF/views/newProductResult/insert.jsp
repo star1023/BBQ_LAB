@@ -441,7 +441,10 @@
 	    } else if (attatchFileArr.length == 0) {
 	        alert("첨부파일을 등록해주세요.");
 	        return;
-	    }
+	    } else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
+			return;
+		} 
 
 	 	// 1. 유효성 검사: 선택되지 않은 컬럼이 있는지 확인
 	    const columnSelects = document.querySelectorAll('#columnHeaderRow select');

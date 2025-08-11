@@ -383,6 +383,9 @@ table{font-size: 12px}
 			alert("세부내용을 입력해 주세요.");
 			$("#contentsHeader").focus();
 			return;
+		} else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
+			return;
 		} else {
 			var formData = new FormData();
 			formData.append("idx",$("#idx").val());

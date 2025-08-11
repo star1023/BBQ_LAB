@@ -21,10 +21,6 @@
 		CreateEditor("contents");
 		
 		fn.autoComplete($("#keyword"));
-		
-		<c:if test="${fn:length(apprItemList) > 0}">
-	    fn_loadAppr();
-		</c:if>
 	});
 	
 	function addRow(element, type){
@@ -145,9 +141,6 @@
 	var attatchFileTypeArr = [];
 	var attatchTempFileArr = [];
 	var attatchTempFileTypeArr = [];
-	var deletedFileIdArr = [];
-	var deletedFileArr = [];
-	var deletedFilePathArr = [];
 	function callAddFileEvent(){
 		//$('#attatch_common').click();
 		$('#file3').click();
@@ -268,19 +261,9 @@
 	}
 	
 	function fn_removeTempFile(el, fileIdx) {
-	    const $li = $(el).closest('li');
-
-	    // li에 data-* 로 박아둔 파일명 및 경로 추출
-	    const fileName = $li.data('name');
-	    const filePath = $li.data('path');
-
-	    // 배열에 저장
-	    deletedFileIdArr.push(fileIdx);
-	    deletedFileArr.push(fileName);
-	    deletedFilePathArr.push(filePath);
-	    $("#tempFileList").removeOption(fileIdx);
-
+		$("#tempFileList").removeOption(fileIdx);
 	    // 화면에서 삭제
+	    const $li = $(el).closest('li');
 	    $li.remove();
 	}
 	
@@ -340,7 +323,7 @@
 		$('#attatch_common').val('')
 	}
 	
-	function fn_updateTmp(){
+	function fn_versionUpTmp(){
 		//var containQuantity = editor1.getData();
 		var contents = editor.getData();
 		if( !chkNull($("#title").val()) ) {
@@ -349,6 +332,10 @@
 			return;
 		} else {
 			var formData = new FormData();
+			formData.append("currentIdx",$("#idx").val());
+			formData.append("currentVersionNo",$("#currentVersionNo").val());
+			formData.append("versionNo",$("#versionNo").val());
+			formData.append("docNo",$("#docNo").val());
 			formData.append("idx",$("#idx").val());
 			formData.append("currentStatus",$("#currentStatus").val());
 			formData.append("title",$("#title").val());
@@ -372,9 +359,9 @@
 				formData.append('fileType', attatchFileTypeArr[i].fileType)			
 			}
 			
-			formData.append('deletedFileIdArr', JSON.stringify(deletedFileIdArr));
-			formData.append('deletedFileArr', JSON.stringify(deletedFileArr));
-			formData.append('deletedFilePathArr', JSON.stringify(deletedFilePathArr));
+			$('select[name=tempFileList] option:selected').each(function(index){
+				formData.append('tempFile', $(this).attr('value'));							
+			});
 			
 			var changeReasonArr = new Array();
 			$('tr[id^=changeReason_tr]').toArray().forEach(function(contRow){
@@ -431,7 +418,7 @@
 			formData.append("itemNoteArr", JSON.stringify(itemNoteArr));
 			
 			$('#lab_loading').show();
-			URL = "../designReport/updateTmpDesignAjax";
+			URL = "../designReport/versionUpTmpDesignAjax";
 			$.ajax({
 				type:"POST",
 				url:URL,
@@ -443,47 +430,53 @@
 				success:function(result) {
 					console.log(result);
 					if( result.RESULT == 'S' ) {
-						if( $("#apprLine option").length > 0 ) {
-							var apprFormData = new FormData();
-							apprFormData.append("docIdx", '${designData.data.DESIGN_IDX}' );
-							apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
-							apprFormData.append("apprComment", $("#apprComment").val());
-							apprFormData.append("apprLine", $("#apprLine").selectedValues());
-							apprFormData.append("refLine", $("#refLine").selectedValues());
-							apprFormData.append("title", $("#title").val());
-							apprFormData.append("docType", $("#docType").val());
-							apprFormData.append("status", "N");
-							var URL = "../approval/insertApprTmpAjax";
-							$.ajax({
-								type:"POST",
-								url:URL,
-								dataType:"json",
-								data: apprFormData,
-								processData: false,
-						        contentType: false,
-						        cache: false,
-								success:function(data) {
-									if(data.RESULT == 'S') {
-										alert("임시저장 되었습니다.");
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
+								var apprFormData = new FormData();
+								apprFormData.append("docIdx", result.IDX );
+								apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
+								apprFormData.append("apprComment", $("#apprComment").val());
+								apprFormData.append("apprLine", $("#apprLine").selectedValues());
+								apprFormData.append("refLine", $("#refLine").selectedValues());
+								apprFormData.append("title", $("#title").val());
+								apprFormData.append("docType", $("#docType").val());
+								apprFormData.append("status", "N");
+								var URL = "../approval/insertApprTmpAjax";
+								$.ajax({
+									type:"POST",
+									url:URL,
+									dataType:"json",
+									data: apprFormData,
+									processData: false,
+							        contentType: false,
+							        cache: false,
+									success:function(data) {
+										if(data.RESULT == 'S') {
+											alert($("#title").val()+"가 정상적으로 개정되었습니다.");
+											$('#lab_loading').hide();
+											fn_goList();
+										} else {
+											alert("결재선 등록 중 오류가 발생하였습니다."+data.MESSAGE);
+											$('#lab_loading').hide();
+											return;
+										}
+									},
+									error:function(request, status, errorThrown){
+										alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
 										$('#lab_loading').hide();
 										fn_goList();
-									} else {
-										alert("결재선 등록 중 오류가 발생하였습니다."+data.MESSAGE);
-										$('#lab_loading').hide();
-										return;
-									}
-								},
-								error:function(request, status, errorThrown){
-									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-									$('#lab_loading').hide();
-									fn_goList();
-								}			
-							});
+									}			
+								});
+							} else {
+								alert($("#title").val()+" 문서가 임시저장 되었습니다.");
+								$('#lab_loading').hide();
+								fn_goList();	
+							}
 						} else {
 							alert($("#title").val()+" 문서가 임시저장 되었습니다.");
 							$('#lab_loading').hide();
 							fn_goList();	
-						}
+						}						
 					} else if( result.RESULT == 'F' ) {
 						alert(result.MESSAGE);
 						$('#lab_loading').hide();						
@@ -501,7 +494,7 @@
 	}
 	
 	//입력확인
-	function fn_update(){
+	function fn_versionUp(){
 		var contents = editor.getData();
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
@@ -511,10 +504,10 @@
 			alert("제품명을 입력해 주세요.");
 			$("#productName").focus();
 			return;
-		} else if( $("#temp_attatch_file").children("li").length == 0 && attatchFileArr.length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
+		} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
+			alert("첨부파일을 등록해주세요.");
 			return;
-		} else if( !chkNull($("#apprTxtFull").val()) ) {
+		}  else if( !chkNull($("#apprTxtFull").val()) ) {
 			alert("결재라인을 등록해주세요.");
 			return;
 		} else {
@@ -552,6 +545,10 @@
 			
 			
 			var formData = new FormData();
+			formData.append("currentIdx",$("#idx").val());
+			formData.append("currentVersionNo",$("#currentVersionNo").val());
+			formData.append("versionNo",$("#versionNo").val());
+			formData.append("docNo",$("#docNo").val());
 			formData.append("idx",$("#idx").val());
 			formData.append("currentStatus",$("#currentStatus").val());
 			formData.append("title",$("#title").val());
@@ -575,9 +572,9 @@
 				formData.append('fileType', attatchFileTypeArr[i].fileType)			
 			}
 			
-			formData.append('deletedFileIdArr', JSON.stringify(deletedFileIdArr));
-			formData.append('deletedFileArr', JSON.stringify(deletedFileArr));
-			formData.append('deletedFilePathArr', JSON.stringify(deletedFilePathArr));
+			$('select[name=tempFileList] option:selected').each(function(index){
+				formData.append('tempFile', $(this).attr('value'));							
+			});
 			
 			var changeReasonArr = new Array();
 			$('tr[id^=changeReason_tr]').toArray().forEach(function(contRow){
@@ -634,7 +631,7 @@
 			formData.append("itemNoteArr", JSON.stringify(itemNoteArr));
 			
 			$('#lab_loading').show();
-			URL = "../designReport/updateDesignAjax";
+			URL = "../designReport/versionUpDesignAjax";
 			$.ajax({
 				type:"POST",
 				url:URL,
@@ -645,17 +642,16 @@
 				dataType:"json",
 				success:function(result) {
 					console.log(result);
-					if( result.RESULT == 'S' ) {						
-						<c:choose>
-					      <c:when test="${designData.data.STATUS != null && designData.data.STATUS != 'COND_APPR' }">
-						if( $("#apprLine option").length > 0 ) {
+					if( result.RESULT == 'S' ) {
+						if( result.IDX > 0 ) {
+							if( $("#apprLine option").length > 0 ) {
 								var apprFormData = new FormData();
-								apprFormData.append("docIdx", '${designData.data.DESIGN_IDX}' );
+								apprFormData.append("docIdx", result.IDX );
 								apprFormData.append("apprIdx", '${apprHeader.APPR_IDX}' );
 								apprFormData.append("apprComment", $("#apprComment").val());
 								apprFormData.append("apprLine", $("#apprLine").selectedValues());
 								apprFormData.append("refLine", $("#refLine").selectedValues());
-								apprFormData.append("title", '${designData.data.TITLE}');
+								apprFormData.append("title", $("#title").val());
 								apprFormData.append("docType", $("#docType").val());
 								apprFormData.append("status", "N");
 								var URL = "../approval/insertApprAjax";
@@ -669,7 +665,7 @@
 							        cache: false,
 									success:function(data) {
 										if(data.RESULT == 'S') {
-											alert("결재상신이 완료되었습니다.");
+											alert($("#title").val()+"가 정상적으로 개정되었습니다.");
 											$('#lab_loading').hide();
 											fn_goList();
 										} else {
@@ -686,17 +682,15 @@
 									}			
 								});
 							} else {
-								alert("수정되었습니다.");
+								alert($("#title").val()+"가 정상적으로 개정되었습니다.");
 								$('#lab_loading').hide();
 								fn_goList();
 							}
-						 </c:when>
-					      <c:otherwise>
-							alert("결재상신이 완료되었습니다.");
+						} else {
+							alert($("#title").val()+"가 정상적으로 개정되었습니다.");
 							$('#lab_loading').hide();
 							fn_goList();
-					      </c:otherwise>
-					    </c:choose>
+						}						
 					} else {
 						alert("오류가 발생하였습니다.\n"+result.MESSAGE);
 						$('#lab_loading').hide();
@@ -1045,11 +1039,11 @@
 							<td colspan="5">
 								<input type="text" name="title" id="title" style="width: 90%;" class="req" value="${designData.data.TITLE}"/>
 								<input type="hidden" name="idx" id="idx" value="${designData.data.DESIGN_IDX}"/>
+								<input type="hidden" name="docNo" id="docNo" value="${designData.data.DOC_NO}">
 								<input type="hidden" name="currentVersionNo" id="currentVersionNo" value="${designData.data.VERSION_NO}"/>
 								<input type="hidden" name="currentStatus" id="currentStatus" value="${designData.data.STATUS}"/>
 							</td>
 						</tr>
-						<c:if test="${designData.data.STATUS != null && designData.data.STATUS != 'COND_APPR' }">
 						<tr>
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
@@ -1063,7 +1057,6 @@
 								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
-						</c:if>
 						<tr>
 							<th style="border-left: none;">ERP코드</th>
 							<td>
@@ -1304,12 +1297,8 @@
 					<button class="btn_admin_gray" onClick="fn_goList();" style="width: 120px;">목록</button>
 				</div>
 				<div class="btn_box_con4">
-					<c:if test="${userUtil:getUserId(pageContext.request) == designData.data.DOC_OWNER}">
-						<c:if test="${designData.data.STATUS == 'TMP'}">
-						<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
-						</c:if>
-						<button class="btn_admin_sky" onclick="fn_update()">결재</button>
-					</c:if>
+					<button class="btn_admin_navi" onclick="fn_versionUpTmp()">임시저장</button>
+					<button class="btn_admin_sky" onclick="fn_versionUp()">결재</button>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>
 				<hr class="con_mode" />
@@ -1340,56 +1329,6 @@
 	</tbody>
 </table>
 
-<!-- 첨부파일 추가레이어 start-->
-<!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
-<!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
-<div class="white_content" id="dialog_attatch">
-	<div class="modal" style="margin-left: -355px; width: 710px; height: 480px; margin-top: -250px">
-		<h5 style="position: relative">
-			<span class="title">첨부파일 추가</span>
-			<div class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_madal_close" onClick="closeDialogWithClean('dialog_attatch')"></button>
-					</li>
-				</ul>
-			</div>
-		</h5>
-		<div class="list_detail">
-			<ul>
-				<li class="pt10 mb5">
-					<dt style="width: 20%">파일 선택</dt>
-					<dd style="width: 80%" class="ppp">
-						<div style="float: left; display: inline-block;">
-							<span class="file_load" id="fileSpan">
-								<input id="attatch_common_text" class="form-control form_point_color01" type="text" placeholder="파일을 선택해주세요." style="width:308px; float:left; cursor: pointer; color: black;" onclick="callAddFileEvent()" readonly="readonly">
-								<input id="attatch_common" type="file" style="display:none;" onchange="setFileName(this)">
-							</span>
-							<button class="btn_small02 ml5" onclick="addFile(this, '00')">파일등록</button>
-						</div>
-						<div style="float: left; display: inline-block; margin-top: 5px">
-							
-						</div>
-					</dd>
-				</li>
-				<li class=" mb5">
-					<dt style="width: 20%">파일리스트</dt>
-					<dd style="width: 80%;">
-						<div class="file_box_pop" style="width:95%">
-							<ul name="popFileList"></ul>
-						</div>
-					</dd>
-				</li>
-			</ul>
-		</div>
-		<div class="btn_box_con">
-			<button class="btn_admin_red" onclick="uploadFiles();">파일 등록</button>
-			<button class="btn_admin_gray" onClick="closeDialogWithClean('dialog_attatch')">등록 취소</button>
-		</div>
-	</div>
-</div>
-<!-- 파일 생성레이어 close-->
-
 <!-- 결재 상신 레이어  start-->
 <div class="white_content" id="approval_dialog">
 	<input type="hidden" id="docType" value="DESIGN"/>
@@ -1398,14 +1337,8 @@
 	<input type="hidden" id="userId" />
 	<input type="hidden" id="userName"/>
  	<select style="display:none" id=apprLine name="apprLine" multiple>
- 	<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
- 		<option value="${apprItemList.TARGET_USER_ID}" selected>${apprItemList.TARGET_USER_NAME}</option>	
- 	</c:forEach>
  	</select>
  	<select style="display:none" id=refLine name="refLine" multiple>
- 	<c:forEach items="${refList}" var="refList" varStatus="status">
- 		<option value="${refList.TARGET_USER_ID}" selected>${refList.TARGET_USER_NAME}</option>	
- 	</c:forEach>
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
@@ -1423,7 +1356,7 @@
 							<table style=" width:756px">
 								<tr>
 									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment">${apprHeader.COMMENT}</textarea>
+										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
 									</td>
 									<td width="98px"></td>
 								</tr>
@@ -1451,25 +1384,10 @@
 					<dd style="width:80%;">
 						<div class="file_box_pop2" style="height:190px;">
 							<ul id="apprLineList">
-								<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
-								<li>
-									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='A' onclick='apprClass.approvalRemoveLine(this);' >
-										<span id="lineLength">${status.count}차 결재</span>${apprItemList.TARGET_USER_NAME}<strong>/ ${apprItemList.TARGET_USER_ID} / ${apprItemList.OBJTTX} / ${apprItemList.RESP_TXT}</strong>
-								 		<input type='hidden' name='userIds' data-apprtype='A' value='${apprItemList.TARGET_USER_ID}'/>
-								</li>
-								</c:forEach>
 							</ul>
 						</div>
 						<div class="file_box_pop3" style="height:190px;">
 							<ul id="refLineList">
-								<c:forEach items="${refList}" var="refList" varStatus="status">	
-									<li>
-									<img src='../resources/images/icon_del_file.png' name='delImg' alt='' data-apprtype='R' onclick='apprClass.approvalRemoveLine(this);' >
-									<span>참조</span> ${refList.TARGET_USER_NAME}
-									<strong>/ ${refList.TARGET_USER_ID} / ${refList.OBJTTX} / ${refList.RESP_TXT}</strong>
-									<input type='hidden' name='userIds' data-apprtype='R' value='${refList.TARGET_USER_ID}'/>
-									</li>
-								</c:forEach>	
 							</ul>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->

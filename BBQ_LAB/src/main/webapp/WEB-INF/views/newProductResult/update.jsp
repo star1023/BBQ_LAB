@@ -357,7 +357,10 @@ function fn_update() {
     } else if (attatchFileArr.length === 0 && $("#attatch_file li").length === 0) {
         alert("첨부파일을 등록해주세요.");
         return;
-    }
+    } else if( !chkNull($("#apprTxtFull").val()) ) {
+		alert("결재라인을 등록해주세요.");
+		return;
+	} 
 
     const columnSelects = document.querySelectorAll('#columnHeaderRow select');
     const inputMode = document.querySelector('input[name="inputMode"]:checked')?.value;

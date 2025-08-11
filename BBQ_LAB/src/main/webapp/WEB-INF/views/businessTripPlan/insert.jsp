@@ -460,6 +460,9 @@
 		} else if( !chkNull($("#tripCost").val()) ) {
 			alert("경비를 입력해주세요.");		
 			return;
+		} else if( !chkNull($("#apprTxtFull").val()) ) {
+			alert("결재라인을 등록해주세요.");
+			return;
 		} /* else if( attatchFileArr.length == 0  && $("#tempFileList option").length == 0) {
 			alert("첨부파일을 등록해주세요.");		
 			return;			

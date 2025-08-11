@@ -87,6 +87,8 @@ public class RecipeServiceImpl implements RecipeService {
 			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
 			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
 			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
+			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
+			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
 			
 			recipeIdx = recipeDao.selectRecipeSeq(); 	//key value 조
 			param.put("idx", recipeIdx);
@@ -166,6 +168,16 @@ public class RecipeServiceImpl implements RecipeService {
 						newData.put("useUnit", newItemUseUnit.get(i));
 					} catch(Exception e) {
 						newData.put("useUnit", "");
+					}
+					try{
+						newData.put("price", newItemPrice.get(i));
+					} catch(Exception e) {
+						newData.put("price", "");
+					}
+					try{
+						newData.put("desc", newItemDesc.get(i));
+					} catch(Exception e) {
+						newData.put("desc", "");
 					}
 					newList.add(newData);
 				}
@@ -218,6 +230,8 @@ public class RecipeServiceImpl implements RecipeService {
 			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
 			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
 			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
+			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
+			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
 			
 			recipeIdx = recipeDao.selectRecipeSeq(); 	//key value 조
 			param.put("idx", recipeIdx);
@@ -297,6 +311,16 @@ public class RecipeServiceImpl implements RecipeService {
 						newData.put("useUnit", newItemUseUnit.get(i));
 					} catch(Exception e) {
 						newData.put("useUnit", "");
+					}
+					try{
+						newData.put("price", newItemPrice.get(i));
+					} catch(Exception e) {
+						newData.put("price", "");
+					}
+					try{
+						newData.put("desc", newItemDesc.get(i));
+					} catch(Exception e) {
+						newData.put("desc", "");
 					}
 					newList.add(newData);
 				}
@@ -377,6 +401,8 @@ public class RecipeServiceImpl implements RecipeService {
 			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
 			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
 			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
+			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
+			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
 			
 			recipeDao.updateRecipe(param);
 			
@@ -456,6 +482,16 @@ public class RecipeServiceImpl implements RecipeService {
 					} catch(Exception e) {
 						newData.put("useUnit", "");
 					}
+					try{
+						newData.put("price", newItemPrice.get(i));
+					} catch(Exception e) {
+						newData.put("price", "");
+					}
+					try{
+						newData.put("desc", newItemDesc.get(i));
+					} catch(Exception e) {
+						newData.put("desc", "");
+					}
 					newList.add(newData);
 				}
 			}
@@ -468,7 +504,7 @@ public class RecipeServiceImpl implements RecipeService {
 			Map<String, Object> historyParam = new HashMap<String, Object>();
 			historyParam.put("docIdx", param.get("idx"));
 			historyParam.put("docType", "RECIPE");
-			historyParam.put("historyType", "UT");
+			historyParam.put("historyType", "T");
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
@@ -504,7 +540,8 @@ public class RecipeServiceImpl implements RecipeService {
 			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
 			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
 			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
-			
+			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
+			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
 			
 			recipeDao.updateRecipe(param);
 			
@@ -583,6 +620,16 @@ public class RecipeServiceImpl implements RecipeService {
 						newData.put("useUnit", newItemUseUnit.get(i));
 					} catch(Exception e) {
 						newData.put("useUnit", "");
+					}
+					try{
+						newData.put("price", newItemPrice.get(i));
+					} catch(Exception e) {
+						newData.put("price", "");
+					}
+					try{
+						newData.put("desc", newItemDesc.get(i));
+					} catch(Exception e) {
+						newData.put("desc", "");
 					}
 					newList.add(newData);
 				}
@@ -659,6 +706,8 @@ public class RecipeServiceImpl implements RecipeService {
 			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
 			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
 			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
+			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
+			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
 			
 			recipeDao.updateRecipeIsLast(param);
 			
@@ -740,6 +789,16 @@ public class RecipeServiceImpl implements RecipeService {
 						newData.put("useUnit", newItemUseUnit.get(i));
 					} catch(Exception e) {
 						newData.put("useUnit", "");
+					}
+					try{
+						newData.put("price", newItemPrice.get(i));
+					} catch(Exception e) {
+						newData.put("price", "");
+					}
+					try{
+						newData.put("desc", newItemDesc.get(i));
+					} catch(Exception e) {
+						newData.put("desc", "");
 					}
 					newList.add(newData);
 				}
@@ -792,6 +851,8 @@ public class RecipeServiceImpl implements RecipeService {
 			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
 			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
 			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
+			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
+			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
 			
 			recipeDao.updateRecipeIsLast(param);
 			
@@ -873,6 +934,16 @@ public class RecipeServiceImpl implements RecipeService {
 						newData.put("useUnit", newItemUseUnit.get(i));
 					} catch(Exception e) {
 						newData.put("useUnit", "");
+					}
+					try{
+						newData.put("price", newItemPrice.get(i));
+					} catch(Exception e) {
+						newData.put("price", "");
+					}
+					try{
+						newData.put("desc", newItemDesc.get(i));
+					} catch(Exception e) {
+						newData.put("desc", "");
 					}
 					newList.add(newData);
 				}
@@ -927,10 +998,11 @@ public class RecipeServiceImpl implements RecipeService {
 			erpDataMap.put("LMATNR", materialItem.get("SAP_CODE"));	//구성품목코드
 			erpDataMap.put("LMAKTX", materialItem.get("ITEM_NAME"));	//구성품목명
 			erpDataMap.put("UMREN", materialItem.get("ITEM_COUNT"));	//레시피수량
-			erpDataMap.put("RCMEI", materialItem.get("ITEM_UNIT"));	//레시피단위
+			erpDataMap.put("RCMEI", materialItem.get("ITEM_UNIT").toString().toUpperCase());	//레시피단위
 			erpDataMap.put("LMENGE", materialItem.get("USED_COUNT"));	//사용량
-			erpDataMap.put("LMEINS", materialItem.get("USED_UNIT"));	//사용량단위
+			erpDataMap.put("LMEINS", materialItem.get("USED_UNIT").toString().toUpperCase());	//사용량단위
 			erpDataMap.put("POGB", "본사");		//구성품 구매형태 구분 (본사 / 직사입)
+			erpDataMap.put("NETPR", "");		//레시피수량 별 단가
 			
 			erpItemList.add(erpDataMap);
 		}
@@ -949,10 +1021,11 @@ public class RecipeServiceImpl implements RecipeService {
 			erpDataMap.put("LMATNR", "");	//구성품목코드
 			erpDataMap.put("LMAKTX", purchaseItem.get("ITEM_NAME"));	//구성품목명
 			erpDataMap.put("UMREN", purchaseItem.get("ITEM_COUNT"));	//레시피수량
-			erpDataMap.put("RCMEI", purchaseItem.get("ITEM_UNIT"));	//레시피단위
+			erpDataMap.put("RCMEI", purchaseItem.get("ITEM_UNIT").toString().toUpperCase());	//레시피단위
 			erpDataMap.put("LMENGE", purchaseItem.get("USED_COUNT"));	//사용량
-			erpDataMap.put("LMEINS", purchaseItem.get("USED_UNIT"));	//사용량단위
+			erpDataMap.put("LMEINS", purchaseItem.get("USED_UNIT").toString().toUpperCase());	//사용량단위
 			erpDataMap.put("POGB", "직사입");		//구성품 구매형태 구분 (본사 / 직사입)
+			erpDataMap.put("NETPR", purchaseItem.get("ITEM_PRICE"));		//레시피수량 별 단가
 			
 			erpItemList.add(erpDataMap);
 		}

@@ -106,4 +106,16 @@ public class DesignReportDaoImpl implements DesignReportDao {
 		sqlSessionTemplate.update("designReport.deleteDesignReport", param);
 	}
 
+	@Override
+	public void updateDesignIsLast(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("designReport.updateDesignIsLast", param);
+	}
+
+	@Override
+	public void insertVersionUpDesign(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.insert("designReport.insertVersionUpDesign", param);
+	}
+
 }
