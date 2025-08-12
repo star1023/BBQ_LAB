@@ -14,7 +14,7 @@ public interface MaterialService {
 	String selectmaterialCode();
 
 	void insertMaterial(Map<String, Object> param, List<String> materialType, List<String> fileType,
-			List<String> fileTypeText, List<String> docType, List<String> docTypeText, MultipartFile[] file) throws Exception;
+			List<String> fileTypeText, MultipartFile[] file) throws Exception;
 
 	Map<String, Object> selectMaterialData(Map<String, Object> param);
 
@@ -23,7 +23,7 @@ public interface MaterialService {
 	Map<String, Object> selectErpMaterialData(Map<String, Object> param);
 
 	void insertNewVersion(Map<String, Object> param, List<String> materialType, List<String> fileType,
-			List<String> fileTypeText, List<String> docType, List<String> docTypeText, MultipartFile[] file) throws Exception;
+			List<String> fileTypeText, List<String> tempFile, MultipartFile[] file) throws Exception;
 
 	List<Map<String, Object>> selectHistory(Map<String, Object> param);
 

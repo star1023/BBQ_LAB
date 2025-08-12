@@ -88,6 +88,11 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+		} else if( listType == 'search' ) {
+			$("#searchTeam_li").hide();
+			$("#searchUser_li").hide();
+			$("#searchTeam").selectOptions("");
+			$("#searchUser").selectOptions("");
 		}
 	}
 	fn_search();
@@ -208,7 +213,7 @@ function fn_loadList(pageNo) {
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
 					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-					if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+					if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER && $('#listType').val() != 'search' ) {
 						if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' || item.STATUS == 'RET' ) {
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 						}
@@ -248,7 +253,9 @@ function fn_insertForm() {
 }
 
 function fn_view(idx) {
-	window.location.href = "../newProductResult/view?idx="+idx;
+	if( $('#listType').val() != 'search' ) {
+		window.location.href = "../newProductResult/view?idx="+idx;
+	}
 }
 
 function fn_update(idx) {
@@ -351,6 +358,10 @@ function fn_viewHistory(idx) {
 		}
 	});
 }
+
+function paging( pageNo ) {
+	fn_loadList(pageNo);
+}
 </script>
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
@@ -392,9 +403,11 @@ function fn_viewHistory(idx) {
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 품질점검결과보고서</li></a>
 							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 품질점검결과보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 품질점검결과보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 품질점검결과보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 품질점검결과보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
 							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 품질점검결과보고서</li></a>

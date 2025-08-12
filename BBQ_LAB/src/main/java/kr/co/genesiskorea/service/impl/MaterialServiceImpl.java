@@ -1,5 +1,6 @@
 package kr.co.genesiskorea.service.impl;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -12,8 +13,11 @@ import java.util.Properties;
 import javax.annotation.Resource;
 
 import org.apache.commons.compress.utils.FileNameUtils;
+import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.stereotype.Service;
@@ -92,7 +96,7 @@ public class MaterialServiceImpl implements MaterialService {
 	@SuppressWarnings("deprecation")
 	@Override
 	public void insertMaterial(Map<String, Object> param, List<String> materialType, List<String> fileType,
-			List<String> fileTypeText, List<String> docType, List<String> docTypeText, MultipartFile[] file)
+			List<String> fileTypeText, MultipartFile[] file)
 			throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -114,6 +118,9 @@ public class MaterialServiceImpl implements MaterialService {
 			materialDao.insertMaterial(param);
 			
 			//첨부파일 유형 저장
+			JSONParser parser = new JSONParser();
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));			
 			List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 			for( int i = 0 ; i < docType.size() ; i++ ) {
 				HashMap<String, Object> paramMap = new HashMap<String, Object>();
@@ -251,7 +258,7 @@ public class MaterialServiceImpl implements MaterialService {
 
 	@Override
 	public void insertNewVersion(Map<String, Object> param, List<String> materialType, List<String> fileType,
-			List<String> fileTypeText, List<String> docType, List<String> docTypeText, MultipartFile[] file)
+			List<String> fileTypeText, List<String> tempFile, MultipartFile[] file)
 			throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
@@ -279,6 +286,9 @@ public class MaterialServiceImpl implements MaterialService {
 			
 			//첨부파일 유형 저장
 			List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
+			JSONParser parser = new JSONParser();
+			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
+			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));	
 			for( int i = 0 ; i < docType.size() ; i++ ) {
 				HashMap<String, Object> paramMap = new HashMap<String, Object>();
 				paramMap.put("docIdx", materialIdx);
@@ -297,14 +307,54 @@ public class MaterialServiceImpl implements MaterialService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			String path = config.getProperty("upload.file.path.material");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+	        
+	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", materialIdx);
+								fileMap.put("docType", "MAT");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								System.err.println(fileMap);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+				}
+			}
 			//파일 DB 저장
 			if( file != null && file.length > 0 ) {
-				Calendar cal = Calendar.getInstance();
-		        Date day = cal.getTime();    //시간을 꺼낸다.
-		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
-		        String toDay = sdf.format(day);
-				String path = config.getProperty("upload.file.path.material");
-				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
 					System.err.println("=================================");

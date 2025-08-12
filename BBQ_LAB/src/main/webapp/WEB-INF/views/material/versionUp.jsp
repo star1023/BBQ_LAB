@@ -12,7 +12,8 @@
 var selectedArr = new Array();
 $(document).ready(function(){
 	fn_loadCategory();
-	fn_loadUnit();
+	fn_loadCode("UNIT", "unit");
+	fn_loadCode("KEEP_CONDITION", "keepCondition");
 	if( '${materialData.data.MATERIAL_TYPE3}' != '' ) {
 		selectedArr.push('${materialData.data.MATERIAL_TYPE3}');
 	}
@@ -23,7 +24,47 @@ $(document).ready(function(){
 		selectedArr.push('${materialData.data.MATERIAL_TYPE1}');
 	}
 	console.log(selectedArr);
+	
+	$("#unit").val('${materialData.data.UNIT}').prop("selected", true);
+	$("#unit_label").html($("#unit option:checked").text());
+	
+	$("#keepCondition").val('${materialData.data.KEEP_CONDITION}').prop("selected", true);
+	$("#keepCondition_label").html($("#keepCondition option:checked").text());
+	
+	
+	<c:forEach var="fileType" items="${materialData.fileType}" varStatus="status">
+	$('input[type="checkbox"][value="${fileType.FILE_TYPE}"]').prop('checked', true);
+	</c:forEach>
+	
+	const docCheckboxes = $('input[name="docType"]'); // checkAll은 name이 없으므로 자동 제외됨
+	const allChecked = docCheckboxes.length > 0 && docCheckboxes.filter(':checked').length === docCheckboxes.length;
+	$('#checkAll').prop('checked', allChecked);
 });
+
+function fn_loadCode(codeId,selectBoxId) {
+	var URL = "../common/codeListAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{ groupCode : codeId
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			var list = data.RESULT;
+			$("#"+selectBoxId).removeOption(/./);
+			$("#"+selectBoxId).addOption("", "전체", false);
+			$.each(list, function( index, value ){ //배열-> index, value
+				if( value.itemCode != '999' ) {
+					$("#"+selectBoxId).addOption(value.itemCode, value.itemName, false);	
+				}
+			});
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}			
+	});
+}
 
 function fn_loadUnit() {
 	var URL = "../common/unitListAjax";
@@ -164,7 +205,8 @@ var attatchTempFileArr = [];
 var attatchTempFileTypeArr = [];
 
 function callAddFileEvent(){
-	$('#attatch_common').click();
+	//$('#attatch_common').click();
+	$('#file3').click();
 }
 function setFileName(element){
 	if(element.files.length > 0)
@@ -175,15 +217,17 @@ function setFileName(element){
 function addFile(element, fileType){
 	var randomId = Math.random().toString(36).substr(2, 9);
 	
-	if($('#attatch_common').val() == null || $('#attatch_common').val() == ''){
+	if($(element).val() == null || $(element).val() == ''){
 		return alert('파일을 선택해주세요');
 	}
 	
-	fileElement = document.getElementById('attatch_common');
+	fileElement = document.getElementById($(element).prop("id"));
 	
 	var file = fileElement.files;
 	var fileName = file[0].name
 	var fileTypeText = $(element).text();
+
+	
 	var isDuple = false;
 	attatchTempFileArr.forEach(function(file){
 		if(file.name == fileName)
@@ -205,26 +249,54 @@ function addFile(element, fileType){
 		return;
 	}
 	
-	attatchTempFileArr.push(file[0]);
-	attatchTempFileArr[attatchTempFileArr.length-1].tempId = randomId;
-	attatchTempFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+	attatchFileArr.push(file[0]);
+	attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+	attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
 	
-	var childTag = '<li><a href="#none" onclick="removeTempFile(this, \''+randomId+'\')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;'+fileName+'</li>'
-	$('ul[name=popFileList]').append(childTag);
-	$('#attatch_common').val('');
-	$('#attatch_common').change();
+	$(element).val("");
+	
+	var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+	$("#attatch_file").append(childTag);
 }
-function removeTempFile(element, tempId){
-	$(element).parent().remove();
-	attatchTempFileArr = attatchTempFileArr.filter(function(file){
-		if(file.tempId != tempId) {
-			return file;
-		}
+
+function addDropFile(file, fileType){
+	var randomId = Math.random().toString(36).substr(2, 9);
+	
+	var fileName = file.name;
+	var fileTypeText = file.text();
+	var isDuple = false;
+	
+	attatchFileArr.forEach(function(file){
+		if(file.name == fileName)
+			isDuple = true;
 	})
-	attatchTempFileTypeArr = attatchTempFileTypeArr.filter(function(typeObj){
-		if(typeObj.tempId != tempId) 
-			return typeObj;
-	});
+	
+	attatchTempFileArr.forEach(function(file){
+		if(file.name == fileName)
+			isDuple = true;
+	})
+	
+	attatchFileArr.forEach(function(file){
+		if(file.name == fileName)
+			isDuple = true;
+	})
+	
+	if(isDuple){
+		if(!confirm('같은 이름의 파일이 존재합니다. 계속 진행하시겠습니까?')){
+			return;
+		};
+	}
+	
+	if( !checkFileName(fileName) ) {			
+		return;
+	}
+	
+	attatchFileArr.push(file);
+	attatchFileArr[attatchFileArr.length-1].tempId = randomId;
+	attatchFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+	
+	var childTag = '<li><a href="#none" onclick="removeFile(this, \''+attatchFileTypeArr[attatchFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+attatchFileArr[attatchFileTypeArr.length-1].name+'</li>';
+	$("#attatch_file").append(childTag);
 }
 
 function removeFile(element, tempId){
@@ -241,51 +313,38 @@ function removeFile(element, tempId){
 	//console.log(attatchFileArr);
 }
 
+function fn_removeTempFile(el, fileIdx) {
+	$("#tempFileList").removeOption(fileIdx);
+    // 화면에서 삭제
+    const $li = $(el).closest('li');
+    $li.remove();
+}
 
-function uploadFiles(){
-	if( attatchTempFileArr.length == 0 ) {
-		alert("파일을 등록해주세요.");
-		return;
+function allowDrop(e) {
+	e.preventDefault();
+	
+	e.target.style.backgroundColor = "black";
+	e.target.style.opacity  = "0.2";
+}
+
+function drag(ev) {
+	ev.dataTransfer.setData("text", ev.target.id);
+}
+
+function drop(e) {
+	e.preventDefault();
+	
+	var files = e.target.files || e.dataTransfer.files;
+	for(var i=0; i<files.length; i++){
+		addDropFile(files[i], '00')
 	}
-	
-	if( $('input:checkbox[name=docType]:checked').length == 0 ) {
-		alert("첨부파일 유형을 선택해주세요.");
-		return;
-	}
-	
-	attatchTempFileArr.forEach(function(tempFile, idx1){
-		attatchFileArr.push(tempFile);
-		attatchFileTypeArr.push(attatchTempFileTypeArr[idx1]);		
-	});
-	
-	attatchFileTypeArr.forEach(function(object,idx){
-		/*if( idx == 0 ) {
-			$("#attatch_file_10").html("");
-			$("#attatch_file_20").html("");
-			$("#attatch_file_30").html("");
-			$("#attatch_file_40").html("");
-			$("#attatch_file_50").html("");
-		}*/
-		var tempId = object.tempId;
-		var childTag = '<li><a href="#none" onclick="removeFile(this, \''+tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>&nbsp;'+attatchFileArr[idx].name+'</li>'
-		//$("#attatch_file_"+object.fileType).append(childTag);
-		$("#fileData").append(childTag);
-	});
-	
-	$("#docTypeTemp").removeOption(/./);
-	var docTypeTxt = "";
-	$('input:checkbox[name=docType]').each(function (index) {
-		if($(this).is(":checked")==true){
-	    	$("#docTypeTemp").addOption($(this).val(), $(this).next("label").text(), true);
-	    	if( index != 0 ) {
-	    		docTypeTxt += ", "+$(this).next("label").text();
-	    	} else {
-	    		docTypeTxt += $(this).next("label").text();
-	    	}
-	    }
-	});
-	$("#docTypeTxt").html(docTypeTxt);
-	closeDialogWithClean('dialog_attatch');
+	e.target.style.backgroundColor = "#fff";
+	e.target.style.opacity  = "1";
+}
+
+function drogEnd(e){
+	e.target.style.backgroundColor = "#fff";
+	e.target.style.opacity  = "1";
 }
 
 function checkFileName(str){
@@ -323,15 +382,7 @@ function fn_insert(){
 		alert("원료명을 입력하여 주세요.");
 		$("#name").focus();
 		return;
-	}/*else if( $("#company").selectedValues()[0] == '' ) {
-		alert("회사를 선택하여 주세요.");
-		$("#company").focus();
-		return;
-	} else if( $("#plant").selectedValues()[0] == '' ) {
-		alert("공장을 선택하여 주세요.");
-		$("#plant").focus();
-		return;
-	}*/ else if( !chkNull($("#price").val()) ) {
+	} else if( !chkNull($("#price").val()) ) {
 		alert("단가를 입력하여 주세요.");
 		$("#price").focus();
 		return;
@@ -342,7 +393,7 @@ function fn_insert(){
 	} else if( selectedArr.length == 0 ) {
 		alert("원료구분을 선택하여 주세요.");		
 		return;
-	} else if( attatchFileArr.length == 0 ) {
+	} else if( attatchFileArr.length == 0 && $("#tempFileList option").length == 0 ) {
 		alert("첨부파일을 등록해주세요.");		
 		return;
 	} else {
@@ -372,8 +423,6 @@ function fn_insert(){
 		formData.append("expireDate",$("#expireDate").val());
 		formData.append("supplier",$("#supplier").val());
 		
-		console.log(attatchFileArr);
-		console.log(attatchFileTypeArr);
 		for (var i = 0; i < attatchFileArr.length; i++) {
 			formData.append('file', attatchFileArr[i])
 		}
@@ -386,10 +435,26 @@ function fn_insert(){
 			formData.append('fileType', attatchFileTypeArr[i].fileType)			
 		}
 		
-		$('select[name=docTypeTemp] option:selected').each(function(index){
+		var docTypeArr = new Array();
+		var docTypeTextArr = new Array();
+		$('input:checkbox[name=docType]').each(function (index) {
+			if($(this).is(":checked")==true){
+				docTypeArr.push($(this).val());
+				docTypeTextArr.push($(this).next("label").text());
+		    }
+		});
+		
+		formData.append('docTypeArr', JSON.stringify(docTypeArr));
+		formData.append('docTypeTextArr', JSON.stringify(docTypeTextArr));
+		
+		$('select[name=tempFileList] option:selected').each(function(index){
+			formData.append('tempFile', $(this).attr('value'));							
+		});
+		
+		/* $('select[name=docTypeTemp] option:selected').each(function(index){
 			formData.append('docType', $(this).attr('value'));
 			formData.append('docTypeText', $(this).text());
-		});
+		}); */
 		
 		$.ajax({
 			type:"POST",
@@ -401,7 +466,7 @@ function fn_insert(){
 			dataType:"json",
 			success:function(result) {
 				if( result.RESULT == 'S' ) {
-					alert($("#name").val()+"("+$("#sapCode").val()+")"+"가 정상적으로 개정었습니다.");
+					alert($("#name").val()+"가 정상적으로 개정었습니다.");
 					$('#lab_loading').hide();
 					fn_goList();
 				} else {
@@ -533,6 +598,27 @@ function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, 
 	$("#name").prop("readonly",true);
 	fn_closeMatRayer();
 }
+
+function toggleDocTypeCheckboxes(masterCheckbox) {
+    const checkboxes = document.querySelectorAll('input[name="docType"]');
+    checkboxes.forEach(cb => {
+        if (cb.id !== 'checkAll') {
+            cb.checked = masterCheckbox.checked;
+        }
+    });
+}
+
+function syncCheckAll() {
+    const checkboxes = document.querySelectorAll('input[name="docType"]:not(#checkAll)');
+    const allChecked = [...checkboxes].every(cb => cb.checked);
+    document.getElementById("checkAll").checked = allChecked;
+}
+
+function fn_initalCode() {
+	$("#name").val("");
+	$("#sapCode").val("");
+}
+
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">원료관리&nbsp;&nbsp;
@@ -550,158 +636,155 @@ function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, 
 				</ul>
 			</div>
 		</h2>
-		<div class="group01" >
-			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
+		<div class="group01 mt20">
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">기본정보</span>
+				<div class="pr15">
+				</div>
+			</div>
+			<div class="main_tbl">
+				<table class="insert_proc01">
+					<colgroup>
+						<col width="15%" />
+						<col width="35%" />
+						<col width="15%" />
+						<col width="35%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<th style="border-left: none;">ERP 코드<span class="mandatory">*</span></th>
+							<td>
+								<input type="hidden"  name="idx" id="idx" value="${materialData.data.MATERIAL_IDX}"/>
+								<input type="hidden"  name="docNo" id="docNo" value="${materialData.data.DOC_NO}"/>
+								<input type="hidden"  name="versionNo" id="versionNo" value="${materialData.data.VERSION_NO}"/>
+								<input type="hidden"  name="isSample" id="isSample" value="${materialData.data.IS_SAMPLE}"/>
+								<input type="hidden"  name="matCode" id="matCode" value="${materialData.data.MATERIAL_CODE}"/>
+								<input type="text"  style="width:200px; float: left"  name="sapCode" id="sapCode" placeholder="코드를 조회/생성 하세요." readonly/>
+								<button class="btn_small_search ml5" onclick="openDialog('dialog_material')" style="float: left">조회</button>
+								<button class="btn_small_search ml5" onclick="fn_initalCode()" style="float: left">초기화</button>
+							</td>
+							<th style="border-left: none;">원료명<span class="mandatory">*</span></th>
+							<td>
+								<input type="text" value="${materialData.data.NAME}" style="width:302px;" name="name" id="name" placeholder="원료명을 입력하세요."/>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">단가</th>
+							<td>
+								<input type="text"  style="width:149px;" name="price" id="price" placeholder="숫자만 입력하세요." onkeyup="checkDecNum(this)" value="${materialData.data.PRICE}">
+							</td>
+							<th style="border-left: none;">단위<span class="mandatory">*</span></th>
+							<td>
+								<div class="selectbox" style="width:147px;">  
+									<label for="unit" id="unit_label"> 선택</label> 
+									<select id="unit" id="unit">
+									</select>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">보관기준<span class="mandatory">*</span></th>
+							<td>
+								<div class="selectbox" style="width:147px;">  
+									<label for="keepCondition" id="keepCondition_label"> 선택</label> 
+									<select id="keepCondition" id="keepCondition">
+									</select>
+								</div>
+							</td>
+							<th style="border-left: none;">사이즈<span class="mandatory">*</span></th>
+							<td>
+								<input type="text"  style="width:49px;" name="width" id="width" onkeyup="checkDecNum(this)" value="${materialData.data.WIDTH}"> /
+								<input type="text"  style="width:49px;" name="length" id="length" onkeyup="checkDecNum(this)" value="${materialData.data.LENGTH}"> /
+								<input type="text"  style="width:49px;" name="height" id="height" onkeyup="checkDecNum(this)" value="${materialData.data.HEIGHT}">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">중량<span class="mandatory">*</span></th>
+							<td>
+								<input type="text" style="width:149px;" name="weight" id="weight" placeholder="숫자만 입력하세요." onkeyup="checkDecNum(this)" value="${materialData.data.TOTAL_WEIGHT}">
+							</td>
+							<th style="border-left: none;">규격<span class="mandatory">*</span></th>
+							<td>
+								<input type="text"  style="width:302px;" name="standard" id="standard" value="${materialData.data.STANDARD}">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">원산지<span class="mandatory">*</span></th>
+							<td>
+								<input type="text"  style="width:302px;" name="origin" id="origin" value="${materialData.data.ORIGIN}">
+							</td>
+							<th style="border-left: none;">소비기한<span class="mandatory">*</span></th>
+							<td>
+								<input type="text"  style="width:149px;" name="expireDate" id="expireDate" value="${materialData.data.EXPIRATION_DATE}">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">원료구분상세<span class="mandatory">*</span></th>
+							<td colspan="3">
+								<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 302px; float: left" value="${materialData.data.MATERIAL_TYPE_NAME1}>${materialData.data.MATERIAL_TYPE_NAME2}>${materialData.data.MATERIAL_TYPE_NAME3}" readonly>
+								<button class="btn_small_search ml5" onclick="openDialog('open2')" style="float: left">조회</button>
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">제조사/공급처</th>
+							<td colspan="3">
+								<input type="text"  style="width:302px;" name="supplier" id="supplier" value="${materialData.data.SUPPLIER}">
+							</td>
+						</tr>
+					</tbody>					
+				</table>	
+			</div>
+			
+			<div class="title2 mt20" style="width: 90%;">
+				<span class="txt">파일첨부</span>
+			</div>
 			<div class="list_detail">
-				<ul style="border-top:none;">
-					<li  class="pt10">
-						<dt>원료 코드</dt>
-						<dd>
-							<input type="hidden"  name="idx" id="idx" value="${materialData.data.MATERIAL_IDX}"/>
-							<input type="hidden"  name="docNo" id="docNo" value="${materialData.data.DOC_NO}"/>
-							<input type="hidden"  name="versionNo" id="versionNo" value="${materialData.data.VERSION_NO}"/>
-							<input type="hidden"  name="isSample" id="isSample" value="${materialData.data.IS_SAMPLE}"/>
-							<input type="hidden"  name="matCode" id="matCode" value="${materialData.data.MATERIAL_CODE}"/>
-							${materialData.data.MATERIAL_CODE}
-						</dd>
-					</li>
-					<li class="">
-						<dt>ERP 코드</dt>
-						<dd>
-							<input type="text"  style="width:200px; float: left" class="req" name="sapCode" id="sapCode" value="${materialData.data.SAP_CODE}" placeholder="코드를 조회/생성 하세요." readonly/>
-							<button class="btn_small_search ml5" onclick="openDialog('dialog_material')" style="float: left">조회</button>
-						</dd>
-					</li>
+				<ul style="">
 					<li>
-						<dt>원료명</dt>
-						<dd>
-							<input type="text" value="${materialData.data.NAME}" class="req" style="width:302px;" name="name" id="name" placeholder="원료명을 입력하세요."/> 
-						</dd>
-					</li>
-					<!--li>
-						<dt>공장</dt>
-						<dd>
-							<div class="selectbox req" style="width:147px;">  
-								<label for="company" id="company_label"> 선택</label> 
-								<select id="company" name="company" onChange="companyChange('company','plant')">
-								</select>
-							</div>
-							<div class="selectbox req ml5" style="width:147px;">  
-								<label for="plant" id="plant_label"> 선택</label> 
-								<select id="plant" name="plant">
-								</select>
-							</div>
-						</dd>
-					</li-->
-					<li>
-						<dt>단가</dt>
-						<dd>
-							<input type="text" class="req" style="width:149px;" name="price" id="price" placeholder="숫자만 입력하세요." onkeyup="checkDecNum(this)" value="${materialData.data.PRICE}">
-						</dd>
-					</li>
-					<li>
-						<dt>단위</dt>
-						<dd>
-							<div class="selectbox req" style="width:147px;">  
-								<label for="unit" id="unit_label"> 선택</label> 
-								<select id="unit" id="unit">
-								</select>
-							</div>
-						</dd>
-					</li>
-					<li>
-						<dt>보관기준</dt>
-						<dd>
-							<input type="text" class="req" style="width:149px;" name="keepCondition" id="keepCondition" value="${materialData.data.KEEP_CONDITION}">
-						</dd>
-					</li>
-					<li>
-						<dt>사이즈</dt>
-						<dd>
-							<input type="text" class="req" style="width:49px;" name="width" id="width" onkeyup="checkDecNum(this)" value="${materialData.data.WIDTH}"> /
-							<input type="text" class="req" style="width:49px;" name="length" id="length" onkeyup="checkDecNum(this)" value="${materialData.data.LENGTH}"> /
-							<input type="text" class="req" style="width:49px;" name="height" id="height" onkeyup="checkDecNum(this)" value="${materialData.data.HEIGHT}">
-						</dd>
-					</li>
-					<li>
-						<dt>중량</dt>
-						<dd>
-							<input type="text" class="req" style="width:149px;" name="weight" id="weight" placeholder="숫자만 입력하세요." onkeyup="checkDecNum(this)" value="${materialData.data.TOTAL_WEIGHT}">
-						</dd>
-					</li>
-					<li>
-						<dt>규격</dt>
-						<dd>
-							<input type="text" class="req" style="width:302px;" name="standard" id="standard" value="${materialData.data.STANDARD}">
-						</dd>
-					</li>
-					<li>
-						<dt>원산지</dt>
-						<dd>
-							<input type="text" class="req" style="width:302px;" name="origin" id="origin" value="${materialData.data.ORIGIN}">
-						</dd>
-					</li>
-					<li>
-						<dt>소비기한</dt>
-						<dd>
-							<input type="text" class="req" style="width:149px;" name="expireDate" id="expireDate" value="${materialData.data.EXPIRATION_DATE}">
-						</dd>
-					</li>
-					<!--li>
-						<dt>원료구분</dt>
-						<dd>
-							<input type="radio" name="type" id="type1" value="M" checked/ ><label for="type1"><span></span>원료</label>
-							<input type="radio" name="type" id="type2" value="S"/><label for="type2"><span></span>부자재</label>
-						</dd>
-					</li-->
-					<li>
-						<dt>원료구분상세</dt>
-						<dd>
-							<input class="" id="selectTxtFull" name="selectTxtFull" type="text" style="width: 250px; float: left" value="${materialData.data.MATERIAL_TYPE_NAME1}>${materialData.data.MATERIAL_TYPE_NAME2}>${materialData.data.MATERIAL_TYPE_NAME3}" readonly>
-							<button class="btn_small_search ml5" onclick="openDialog('open2')" style="float: left">조회</button>
-						</dd>
-					</li>
-					<li>
-						<dt>제조사/공급처</dt>
-						<dd>
-							<input type="text" class="req" style="width:302px;" name="supplier" id="supplier" value="${materialData.data.SUPPLIER}">
-						</dd>
-					</li>
-					<li>
-						<dt>첨부파일 유형</dt>
-						<dd>
-							<div id="docTypeTxt">
-								<c:forEach items="${fileType}" var="fileType" varStatus="status">
-									<c:if test="${status.index ne 0}">, </c:if>${fileType.FILE_TEXT}
-								</c:forEach>
-							</div>
-							<select id="docTypeTemp" name="docTypeTemp" multiple style='display:none'>
-								<c:forEach items="${fileType}" var="fileType" varStatus="status">
-								<option value="${fileType.FILE_TYPE}">${fileType.FILE_TEXT}</option>
-								</c:forEach>
+						<dt style="width: 20%">파일유형 <span class="mandatory">*</span></dt>
+						<dd style="width: 80%;">
+							<input id="checkAll" type="checkbox" onchange="toggleDocTypeCheckboxes(this)" /><label for="checkAll" style="vertical-align: middle; font-weight: bold;"><span></span>전체 선택</label> 
+							<input id="checkbox_item1" name="docType" type="checkbox" value="10" onchange="syncCheckAll()"/><label for="checkbox_item1" style="vertical-align: middle;"><span></span>품목제조보고서</label>
+							<input id="checkbox_item2" name="docType" type="checkbox" value="20" onchange="syncCheckAll()"/><label for="checkbox_item2" style="vertical-align: middle;"><span></span>수입신고필증</label>
+							<input id="checkbox_item3" name="docType" type="checkbox" value="30" onchange="syncCheckAll()"/><label for="checkbox_item3" style="vertical-align: middle;"><span></span>시험성적서(국내)</label>
+							<input id="checkbox_item4" name="docType" type="checkbox" value="40" onchange="syncCheckAll()"/><label for="checkbox_item4" style="vertical-align: middle;"><span></span>시험성적서(해외)</label>
+							<input id="checkbox_item5" name="docType" type="checkbox" value="50" onchange="syncCheckAll()"/><label for="checkbox_item5" style="vertical-align: middle;"><span></span>한글표시사항</label>
+							<input id="checkbox_item6" name="docType" type="checkbox" value="60" onchange="syncCheckAll()"/><label for="checkbox_item6" style="vertical-align: middle;"><span></span>견적서</label>
+							<select id="tempFileList" name="tempFileList" multiple style="display: none">
+							<c:forEach items="${materialData.fileList}" var="fileList" varStatus="status">
+								<option value="${fileList.FILE_IDX}" selected>${fileList.ORG_FILE_NAME}</option>
+							</c:forEach>
 							</select>
 						</dd>
 					</li>
 					<li>
-						<div class="add_file2" id="add_file2" style="width:97.5%">
-							<span class="file_load" id="fileSpan1">
-								<label for="file1" onClick="openDialog('dialog_attatch')">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label>
-							</span>
-							<span id="upFile"></span>
-						</div>
-						<div class="file_box_pop" style=" height:85px; width:97.5%; border-top-left-radius:0px;border-top-right-radius:0px; border-top:1px solid #ddd;box-sizing:border-box;" id="fileList">
-							<ul id="fileData">									
-							</ul>
-						</div>
+						<dt style="width: 20%">첨부파일 <span class="mandatory">*</span></dt>
+						<dd style="width: 80%;">
+							<div class="add_file" id="add_file2" style="width:100%">
+								<span id="upFile">
+									<span class="file_load" id="fileSpan2" style="display: none;"><input type="file" name="files" id="file2" onchange="addFile(this, '00')" style="display:none"><label for="file2">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+									<span class="file_load" id="fileSpan3"><input type="file" name="files" id="file3" onchange="addFile(this, '00')" style="display:none"><label for="file3">첨부파일 등록 <img src="/resources/images/icon_add_file.png"></label></span>
+								</span>
+							</div>
+							<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
+								<ul id="attatch_file">
+									<c:forEach items="${materialData.fileList}" var="fileList" varStatus="status">
+										<li data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}"><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${fileList.ORG_FILE_NAME}</li>
+									</c:forEach>
+								</ul>	
+							</div>
+						</dd>
 					</li>
 				</ul>
 			</div>
-			<div class="btn_box_con5">
-			</div>
-			<div class="btn_box_con4"> 
-				<!--input type='button' value="상신" class="btn_admin_red" id="request" onclick="javascript:goInsert();"-->
-				<input type='button' value="개정" class="btn_admin_sky" id="save" onclick="javascript:fn_insert();">
-				<input type='button' value="취소" class="btn_admin_gray" id="cancel" onclick="javascript:fn_goList();">
+			<div class="main_tbl">
+				<div class="btn_box_con5">
+				</div>
+				<div class="btn_box_con4">
+					<button class="btn_admin_sky" onclick="javascript:fn_insert();">개정</button>
+					<button class="btn_admin_gray" onclick="fn_goList()">목록</button>
+				</div>
+				<hr class="con_mode" />
 			</div>
 		</div>
 	</section>	
@@ -729,75 +812,6 @@ function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, 
 	</div>
 </div>
 <!-- 원료 선택 레이어 close-->
-
-<!-- 첨부파일 추가레이어 start-->
-<!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
-<!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
-<div class="white_content" id="dialog_attatch">
-	<div class="modal" style="margin-left: -355px; width: 750px; height: 550px; margin-top: -250px">
-		<h5 style="position: relative">
-			<span class="title">첨부파일 추가</span>
-			<div class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_madal_close" onClick="closeDialogWithClean('dialog_attatch')"></button>
-					</li>
-				</ul>
-			</div>
-		</h5>
-		<div class="list_detail">
-			<ul>
-				<li class="pt10 mb5">
-					<dt style="width: 20%">파일 선택</dt>
-					<dd style="width: 80%" class="ppp">
-						<div style="float: left; display: inline-block;">
-							<span class="file_load" id="fileSpan">
-								<input id="attatch_common_text" class="form-control form_point_color01" type="text" placeholder="파일을 선택해주세요." style="width:145px;/* width:308px;  */float:left; cursor: pointer; color: black;" onclick="callAddFileEvent()" readonly="readonly">
-								<!-- <label class="btn-default" for="attatch_common" style="float:left; margin-left: 5px; width: 57px">파일 선택</label> -->
-								<input id="attatch_common" type="file" style="display:none;" onchange="setFileName(this)">
-							</span>
-							<button class="btn_small02 ml5" onclick="addFile(this, '00')">파일등록</button>							
-						</div>
-						<div style="float: left; display: inline-block; margin-top: 5px">
-							
-						</div>
-					</dd>
-				</li>
-				<li class=" mb5">
-					<dt style="width: 20%">파일리스트</dt>
-					<dd style="width: 80%;">
-						<input id="checkbox_item1" name="docType" type="checkbox" value="10"/>
-						<label for="checkbox_item1" style="vertical-align: middle;"><span></span>품목제조보고서</label>
-						<input id="checkbox_item2" name="docType" type="checkbox" value="20"/>
-						<label for="checkbox_item2" style="vertical-align: middle;"><span></span>수입신고필증</label>
-						<input id="checkbox_item3" name="docType" type="checkbox" value="30"/>
-						<label for="checkbox_item3" style="vertical-align: middle;"><span></span>시험성적서(국내)</label>
-						<input id="checkbox_item4" name="docType" type="checkbox" value="40"/>
-						<label for="checkbox_item4" style="vertical-align: middle;"><span></span>시험성적서(해외)</label>
-						<br>
-						<input id="checkbox_item5" name="docType" type="checkbox" value="50"/>
-						<label for="checkbox_item5" style="vertical-align: middle;"><span></span>한글표시사항</label>
-						<input id="checkbox_item6" name="docType" type="checkbox" value="60"/>
-						<label for="checkbox_item6" style="vertical-align: middle;"><span></span>견적서</label>
-					</dd>
-				</li>
-				<li class=" mb5">
-					<dt style="width: 20%">파일리스트</dt>
-					<dd style="width: 80%;">
-						<div class="file_box_pop" style="width:95%">
-							<ul name="popFileList"></ul>
-						</div>
-					</dd>
-				</li>
-			</ul>
-		</div>
-		<div class="btn_box_con">
-			<button class="btn_admin_red" onclick="uploadFiles();">파일 등록</button>
-			<button class="btn_admin_gray" onClick="closeDialogWithClean('dialog_attatch')">등록 취소</button>
-		</div>
-	</div>
-</div>
-<!-- 파일 생성레이어 close-->
 
 <!-- SAP 코드 검색 레이어 start-->
 <!-- SAP 코드 검색 추가레이어 start-->

@@ -91,6 +91,11 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+		} else if( listType == 'search' ) {
+			$("#searchTeam_li").hide();
+			$("#searchUser_li").hide();
+			$("#searchTeam").selectOptions("");
+			$("#searchUser").selectOptions("");
 		}
 	}
 	fn_search();
@@ -217,14 +222,16 @@ function fn_loadList(pageNo) {
 					if( item.IS_LAST == 'Y' ) {
 						html += "		<li style=\"float:none; display:inline\">";
 						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-						if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' || item.STATUS == 'RET') {
-							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
-						}
-						if( item.STATUS == 'TMP' ) {
-							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
-						}
-						if( item.STATUS == 'COMP' ) {
-							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
+						if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER && $('#listType').val() != 'search' ) {
+							if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' || item.STATUS == 'RET') {
+								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+							}
+							if( item.STATUS == 'TMP' ) {
+								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+							}
+							if( item.STATUS == 'COMP' ) {
+								html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.DESIGN_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
+							}
 						}
 						html += "		</li>";
 					}
@@ -283,7 +290,9 @@ function fn_insertForm() {
 }
 
 function fn_view(idx) {
-	window.location.href = "../designReport/view?idx="+idx;
+	if( $('#listType').val() != 'search' ) {
+		window.location.href = "../designReport/view?idx="+idx;
+	}
 }
 
 function fn_update(idx) {
@@ -292,6 +301,10 @@ function fn_update(idx) {
 
 function fn_versionUp(idx) {
 	location.href = '/designReport/versionUp?idx='+idx;
+}
+
+function paging( pageNo ) {
+	fn_loadList(pageNo);
 }
 
 function fn_delete(idx) {
@@ -423,9 +436,11 @@ function fn_searchClear() {
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 상품설계변경보고서</li></a>
 							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 상품설계변경보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 상품설계변경보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 상품설계변경보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 상품설계변경보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
 							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 상품설계변경보고서</li></a>

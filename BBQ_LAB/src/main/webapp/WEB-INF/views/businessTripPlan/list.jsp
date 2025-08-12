@@ -257,6 +257,10 @@ function fn_update(idx) {
 	location.href = '/businessTripPlan/update?idx='+idx;
 }
 
+function paging( pageNo ) {
+	fn_loadList(pageNo);
+}
+
 function fn_delete(idx) {
 	$('#lab_loading').show();
 	var URL = "../businessTripPlan/deletePlanAjax";
