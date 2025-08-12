@@ -988,6 +988,100 @@ li {
 		}
 		closeDialog('approval_dialog');
 	}
+	
+	function fn_previewDataBinding(popup) {
+	    const $doc = popup.document;
+
+	    // 제목
+	    $doc.title = document.getElementById("productName").value + '_사전원가서';
+
+	    // 제품 기본 정보
+	    $doc.getElementById("prev_productCode").innerText = document.getElementById("productCode").value;
+	    $doc.getElementById("prev_productName").innerText = document.getElementById("productName").value;
+	    const plantLabel = document.getElementById("plant_label")?.innerText?.trim();
+	    $doc.getElementById("prev_plantName").innerText = (plantLabel && plantLabel !== "선택") ? plantLabel : "";
+	    $doc.getElementById("prev_plantCount").innerText = document.getElementById("productCount").value;
+	    const unitLabel = document.getElementById("unit_label")?.innerText?.trim();
+	    $doc.getElementById("prev_unitName").innerText = (unitLabel && unitLabel !== "선택") ? unitLabel : "";
+
+	    // 원료 정보
+	    const matRows = document.querySelectorAll("#mat_tbody tr");
+	    const matTbody = $doc.getElementById("prev_matTbody");
+	    matTbody.innerHTML = "";
+
+	    matRows.forEach(row => {
+	        const itemSapCode = row.querySelector("input[name='itemSapCode']").value;
+	        const itemName = row.querySelector("input[name='itemName']").value;
+	        const itemCompCount = row.querySelector("input[name='itemCompCount']").value;
+
+	        const itemCompUnitSelect = row.querySelector("select[name='itemCompUnit']");
+	        const itemCompUnit = itemCompUnitSelect.value ? 
+	            itemCompUnitSelect.options[itemCompUnitSelect.selectedIndex].text : "";
+
+	        const itemUseCount = row.querySelector("input[name='itemUseCount']").value;
+
+	        const itemUseUnitSelect = row.querySelector("select[name='itemUseUnit']");
+	        const itemUseUnit = itemUseUnitSelect.value ? 
+	            itemUseUnitSelect.options[itemUseUnitSelect.selectedIndex].text : "";
+
+	        const tr = $doc.createElement("tr");
+	        tr.innerHTML =
+	            '<td>' + itemSapCode + '</td>' +
+	            '<td>' + itemName + '</td>' +
+	            '<td style="text-align:right;">' + itemCompCount + '</td>' +
+	            '<td>' + itemCompUnit + '</td>' +
+	            '<td style="text-align:right;">' + itemUseCount + '</td>' +
+	            '<td>' + itemUseUnit + '</td>';
+	        matTbody.appendChild(tr);
+	    });
+
+	    // 사입품 정보
+	    const newRows = document.querySelectorAll("#new_tbody tr");
+	    const newTbody = $doc.getElementById("prev_newMatTbody");
+	    newTbody.innerHTML = "";
+
+	    newRows.forEach(row => {
+	        const itemName = row.querySelector("input[name='itemName']").value;
+	        const itemCompCount = row.querySelector("input[name='itemCompCount']").value;
+
+	        const itemCompUnitSelect = row.querySelector("select[name='itemCompUnit']");
+	        const itemCompUnit = itemCompUnitSelect.value ? 
+	            itemCompUnitSelect.options[itemCompUnitSelect.selectedIndex].text : "";
+
+	        const itemUseCount = row.querySelector("input[name='itemUseCount']").value;
+
+	        const itemUseUnitSelect = row.querySelector("select[name='itemUseUnit']");
+	        const itemUseUnit = itemUseUnitSelect.value ? 
+	            itemUseUnitSelect.options[itemUseUnitSelect.selectedIndex].text : "";
+
+	        const itemPrice = row.querySelector("input[name='itemPrice']").value;
+	        const itemDesc = row.querySelector("textarea[name='itemDesc']").value;
+
+	        const tr = $doc.createElement("tr");
+	        tr.innerHTML =
+	            '<td>' + itemName + '</td>' +
+	            '<td style="text-align:right;">' + itemCompCount + '</td>' +
+	            '<td>' + itemCompUnit + '</td>' +
+	            '<td style="text-align:right;">' + itemUseCount + '</td>' +
+	            '<td>' + itemUseUnit + '</td>' +
+	            '<td style="text-align:right;">' + itemPrice + '</td>' +
+	            '<td>' + itemDesc + '</td>';
+	        newTbody.appendChild(tr);
+	    });
+	}
+	
+	function fn_openPreview() {
+		var url = "/preview/recipePrevPopup";
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+
+		// 팝업이 완전히 열린 뒤에 데이터 전달
+		popup.onload = function () {
+			// 여기서 fn_openPreview() 호출해서 팝업 DOM에 값 세팅
+			fn_previewDataBinding(popup);
+		};
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path"> 사전원가서 등록&nbsp;&nbsp; <img
@@ -1009,11 +1103,12 @@ li {
 			<div class="title">
 				<!--span class="txt">연구개발시스템 공지사항</span-->
 			</div>
-				<div class="title2" style="width: 80%;">
-					<span class="txt">제품정보 <span class="mandatory">*</span></span>
+			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
+				<span class="txt">제품정보 <span class="mandatory">*</span></span>
+				<div class="pr15">
+					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
 				</div>
-				<div class="title2" style="width: 20%; display: inline-block;">
-				</div>
+			</div>
 				<div class="main_tbl">
 					<table class="insert_proc01">
 						<colgroup>

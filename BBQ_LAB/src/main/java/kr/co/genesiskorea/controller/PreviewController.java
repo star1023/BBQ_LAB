@@ -46,6 +46,7 @@ import kr.co.genesiskorea.service.MenuService;
 import kr.co.genesiskorea.service.NewProductResultService;
 import kr.co.genesiskorea.service.PackageInfoService;
 import kr.co.genesiskorea.service.ProductService;
+import kr.co.genesiskorea.service.RecipeService;
 import kr.co.genesiskorea.service.SenseQualityService;
 import kr.co.genesiskorea.service.UserService;
 
@@ -85,6 +86,9 @@ public class PreviewController {
 	
 	@Autowired
 	PackageInfoService packageInfoService;
+	
+	@Autowired
+	RecipeService recipeService;
 	
 	@Autowired
 	UserService userService;
@@ -718,6 +722,75 @@ public class PreviewController {
     @RequestMapping("/packageInfoPrevPopup")
     public String packageInfoPrevPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
     	return "preview/packageInfoPrevPopup";
+    }
+    
+    @RequestMapping("/recipeViewPopup")
+    public String recipeViewPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+
+    	Map<String, Object> recipeData = recipeService.selectRecipeData(param);
+		model.addAttribute("recipeData", recipeData);
+		//2.lab_recipe_material 조회
+		List<Map<String, Object>> materialList = recipeService.selectMaterialList(param);
+		model.addAttribute("materialList", materialList);
+		//3.lab_recipe_purchase
+		List<Map<String, Object>> purchaseList = recipeService.selectPurchaseList(param);
+		model.addAttribute("purchaseList", purchaseList);
+    	
+		// 1) 중첩 구조 안전 해제
+	    @SuppressWarnings("unchecked")
+	    Map<String, Object> data = (Map<String, Object>) recipeData.get("data");
+	    if (data == null) {
+	        data = recipeData; // 혹시나 평탄 구조일 경우 대비
+	    }
+	    
+		// 문서 담당자의 기본 정보 조회
+		Map<String, Object> userData = userService.getUserData((String)data.get("DOC_OWNER"));
+		model.addAttribute("userData", userData);
+		
+		Map<String, Object> headerParam = new HashMap<>();
+
+		headerParam.put("docIdx", data.get("RECIPE_IDX"));
+		headerParam.put("docType", "RECIPE");
+		headerParam.put("lastStatus", "Y");
+		
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(headerParam);
+		model.addAttribute("apprHeader", apprHeader);
+		// APPR_IDX로 결재 아이템/참조 조회
+		if (apprHeader != null && apprHeader.get("APPR_IDX") != null) {
+		    Map<String, Object> apprOnly = new HashMap<>();
+		    apprOnly.put("apprIdx", apprHeader.get("APPR_IDX"));
+
+		    List<Map<String, Object>> apprItem = approvalService.selectApprItemList(apprOnly);
+		    
+		    apprItem.sort((a, b) -> {
+		        int x = Integer.parseInt(String.valueOf(a.get("APPR_NO")));
+		        int y = Integer.parseInt(String.valueOf(b.get("APPR_NO")));
+		        return Integer.compare(x, y);
+		    });
+		    
+		    for (Map<String, Object> row : apprItem) {
+		        String targetId = (String) row.get("TARGET_USER_ID");
+		        if (targetId != null && !targetId.isEmpty()) {
+		            Map<String, Object> u = userService.getUserData(targetId);
+		            if (u != null) {
+		                // 프로젝트마다 키가 다를 수 있어 안전하게 처리
+		                Object dept =
+		                    u.get("OBJTTX") != null ? u.get("OBJTTX") : "";
+		                row.put("OBJTTX", dept);
+		            }
+		        }
+		    }
+		    
+		    model.addAttribute("apprItem", apprItem);
+		}
+    	
+    	
+    	return "preview/recipeViewPopup";
+    }
+    
+    @RequestMapping("/recipePrevPopup")
+    public String recipePrevPopup(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
+    	return "preview/recipePrevPopup";
     }
     
     @PostMapping("/downloadPdf")

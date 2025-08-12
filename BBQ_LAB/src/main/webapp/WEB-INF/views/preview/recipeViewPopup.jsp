@@ -147,7 +147,7 @@
     		</div>
     	</div>
     	<div class="mainTable">
-			<table >
+			<table>
 				<colgroup>
 					<col width="15%" />
 					<col width="35%" />
@@ -190,22 +190,112 @@
 			<span style="font-size: 14px;">※ 원료</span>
 		</div>
 		<div class="mainTable">
-			
+			<table >
+				<colgroup>
+					<col width="9%">
+					<col width="25%"/>
+					<col width="8%">
+					<col width="7%">
+					<col width="8%">
+					<col width="7%">
+				</colgroup>
+				<thead>
+					<tr>
+						<th>구성품코드</th>
+						<th>구성품명</th>
+						<th>구성품수량</th>
+						<th>구성품단위</th>
+						<th>사용량</th>
+						<th>사용량단위</th>
+					</tr>
+				</thead>
+				<tbody id="mat_tbody" name="mat_tbody">
+					<c:forEach items="${materialList}" var="materialList" varStatus="status">
+					<tr id="mat_tr_${status.count}" class="temp_color">
+						<td>
+							${materialList.SAP_CODE}
+						</td>
+						<td>
+							${materialList.ITEM_NAME}
+						</td>
+						<td>
+							${materialList.ITEM_COUNT}
+						</td>
+						<td>
+							${materialList.ITEM_UNIT_NAME}
+						</td>
+						<td>
+							${materialList.USED_COUNT}
+						</td>
+						<td>
+							${materialList.USED_UNIT_NAME}
+						</td>
+					</tr>
+					</c:forEach>
+				</tbody>
+				<tfoot>
+				</tfoot>
+			</table>
 		</div>
 		
-		
-		<%-- <c:if test="${not empty }">
+		<c:if test="${not empty purchaseList}">
 			<div>
 				<span style="font-size: 14px;">※ 사입품</span>
 			</div>
 			<div class="mainTable">
 				<table >
-					<tr>
-						<td><pre>${productData.data.CONTENTS}</pre></td>
-					</tr>
+					<colgroup>
+						<col width="10%">
+						<col width="10%">
+						<col width="10%">
+						<col width="10%">
+						<col width="10%">
+						<col width="10%">
+						<col width="15%">
+					</colgroup>
+					<thead>
+						<tr>
+							<th>제품명</th>
+							<th>구성품수량</th>
+							<th>구성품단위</th>
+							<th>사용량</th>
+							<th>사용량단위</th>
+							<th>단가</th>
+							<th>비고</th>
+						</tr>
+					</thead>
+					<tbody >
+						<c:forEach items="${purchaseList}" var="purchaseList" varStatus="status">
+						<tr id="new_tr_${status.count}" class="temp_color">
+							<td>
+								${purchaseList.ITEM_NAME}
+							</td>
+							<td>
+								${purchaseList.ITEM_COUNT}
+							</td>
+							<td>
+								${purchaseList.ITEM_UNIT_NAME}
+							</td>
+							<td>
+								${purchaseList.USED_COUNT}
+							</td>
+							<td>
+								${purchaseList.USED_UNIT_NAME}
+							</td>
+							<td>
+								${purchaseList.ITEM_PRICE}
+							</td>
+							<td>
+								<span style="text-align: left;"><pre>${purchaseList.ITEM_DESC}</pre></span>
+							</td>
+						</tr>
+						</c:forEach>
+					</tbody>
+					<tfoot>
+					</tfoot>
 				</table>
 			</div>
-		</c:if> --%>
+		</c:if>
     </div>
 </body>
 </html>

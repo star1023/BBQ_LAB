@@ -114,6 +114,7 @@ public class RecipeController {
 		logger.debug("param : {} ",param.toString());
 		Auth auth = AuthUtil.getAuth(request);
 		param.put("userId", auth.getUserId());
+		model.addAttribute("userId", auth.getUserId());
 		
 		Map<String, Object> recipeData = recipeService.selectRecipeData(param);
 		model.addAttribute("recipeData", recipeData);
