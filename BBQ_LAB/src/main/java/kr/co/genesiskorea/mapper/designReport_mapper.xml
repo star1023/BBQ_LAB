@@ -117,7 +117,7 @@
 					AND IS_LAST = 'Y'
 					<include refid="designReport.whereDesignList" />
 			) tmp
-			WHERE rnum between 1 and 10	
+			WHERE rnum between #{startRow} and #{endRow}
 		)
 	ORDER BY DOC_NO DESC, VERSION_NO DESC, DESIGN_IDX DESC
 		<!-- SELECT

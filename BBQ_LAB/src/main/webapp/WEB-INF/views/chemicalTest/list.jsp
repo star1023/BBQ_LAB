@@ -147,6 +147,10 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
 	});
 }
 
+function paging( pageNo ) {
+	fn_loadList(pageNo);
+}
+
 function fn_search() {
 	fn_loadList(1, isUserSafeTeam(), isRequestList());
 }

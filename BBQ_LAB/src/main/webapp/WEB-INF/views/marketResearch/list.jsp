@@ -55,6 +55,10 @@ function changeListType(listType){
 	fn_search();
 }
 
+function fn_search() {
+	fn_loadList(1);
+}
+
 function fn_loadUser() {
 	if( $("#searchTeam").selectedValues()[0] != "" ) {
 		var URL = "../common/userListAjax";

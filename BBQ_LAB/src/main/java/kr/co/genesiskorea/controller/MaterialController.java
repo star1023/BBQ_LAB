@@ -70,8 +70,8 @@ public class MaterialController {
 			, @RequestParam(value = "materialType", required = false) List<String> materialType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			, @RequestParam(value = "docType", required = false) List<String> docType
-			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
+			/*, @RequestParam(value = "docType", required = false) List<String> docType
+			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText*/
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
@@ -87,9 +87,9 @@ public class MaterialController {
 			System.err.println(param);
 			System.err.println(fileType);
 			System.err.println(fileTypeText);
-			System.err.println(docType);
-			System.err.println(docTypeText);
-			materialService.insertMaterial(param, materialType, fileType, fileTypeText, docType, docTypeText, file);
+			/*System.err.println(docType);
+			System.err.println(docTypeText);*/
+			materialService.insertMaterial(param, materialType, fileType, fileTypeText, file);
 			returnMap.put("MATERIAL_CODE", matCode);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -174,14 +174,15 @@ public class MaterialController {
 			, @RequestParam(value = "materialType", required = false) List<String> materialType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-			, @RequestParam(value = "docType", required = false) List<String> docType
-			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
+			/*, @RequestParam(value = "docType", required = false) List<String> docType
+			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText*/
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			materialService.insertNewVersion(param, materialType, fileType, fileTypeText, docType, docTypeText, file);
+			materialService.insertNewVersion(param, materialType, fileType, fileTypeText, tempFile, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));

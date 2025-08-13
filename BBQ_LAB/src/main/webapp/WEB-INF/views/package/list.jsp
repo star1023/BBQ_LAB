@@ -91,6 +91,11 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+		} else if( listType == 'search' ) {
+			$("#searchTeam_li").hide();
+			$("#searchUser_li").hide();
+			$("#searchTeam").selectOptions("");
+			$("#searchUser").selectOptions("");
 		}
 	}
 	fn_search();
@@ -214,7 +219,7 @@ function fn_search() {
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";
 							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.PACKAGE_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-							if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+							if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER && $('#listType').val() != 'search' ) {
 								if( item.STATUS == 'COMP' ) {
 									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_versionUp('"+item.PACKAGE_IDX+"')\"><img src=\"/resources/images/icon_doc02.png\">개정</button>";
 								}
@@ -254,7 +259,9 @@ function fn_search() {
 	}
 	
 	function fn_view(idx) {
-		window.location.href = "../package/view?idx="+idx;
+		if( $('#listType').val() != 'search' ) {
+			window.location.href = "../package/view?idx="+idx;
+		}
 	}
 	
 	function fn_versionUp(idx) {
@@ -421,9 +428,11 @@ function fn_search() {
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 표시사항 기재양식</li></a>
 							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 표시사항 기재양식</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 표시사항 기재양식</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
 							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 표시사항 기재양식</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 표시사항 기재양식</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
 							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 표시사항 기재양식</li></a>

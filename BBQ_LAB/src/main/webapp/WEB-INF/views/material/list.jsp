@@ -83,13 +83,15 @@ function fn_loadList(pageNo) {
 					html += "			<li class=\"" + (item.FILE_CNT50 == 0 ? 's01' : '02') + "\">견</li>";
 					html += "		</ul>";
 					html += "	</td>";
-
+					html += "	<td onclick=\"fn_view('" + item.MATERIAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME, '&nbsp;') + "</td>";
 					html += "	<td>";
 					if( item.IS_LAST == 'Y' ) {
 						html += "		<li style=\"float:none; display:inline\">";
-						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_goVersionUp('"+item.MATERIAL_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">개정</button>";
 						html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_goViewHistory('"+item.MATERIAL_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-						html += "			<button class=\"btn_doc\" onClick=\"javascript:fn_goDelete('"+item.MATERIAL_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+						if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_goVersionUp('"+item.MATERIAL_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">개정</button>";
+							html += "			<button class=\"btn_doc\" onClick=\"javascript:fn_goDelete('"+item.MATERIAL_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";	
+						}
 						html += "		</li>";
 					}
 					html += "	</td>";
@@ -135,7 +137,7 @@ function fn_view(idx) {
 			$("#plantTxt").html(data.data.PLANT);
 			$("#priceTxt").html(data.data.PRICE);
 			$("#unitTxt").html(data.data.UNIT_NAME);
-			$("#keepConditionTxt").html(data.data.KEEP_CONDITION);
+			$("#keepConditionTxt").html(data.data.KEEP_CONDITION_NAME);
 			$("#sizeTxt").html(nvl(data.data.WIDTH,"0")+" / "+nvl(data.data.LENGTH,"0")+" / "+nvl(data.data.HEIGHT,"0"));
 			$("#weightTxt").html(data.data.TOTAL_WEIGHT);
 			$("#standardTxt").html(data.data.STANDARD);
@@ -806,9 +808,10 @@ function paging(pageNo) {
 						<col width="9%">
 						<col width="15%">
 						<!--col width="8%"-->
-						<col width="8%">
+						<col width="6%">
 						<col width="20%">
-						<col width="20%">
+						<col width="18%">
+						<col width="7%">
 						<col />
 					</colgroup>
 					<thead id="list_header">
@@ -817,10 +820,10 @@ function paging(pageNo) {
 							<th>원료코드</th>
 							<th>ERP코드</th>
 							<th>원료명</th>
-							<!--th>단가</th-->
 							<th>단위</th>
 							<th>원료구분</th>
 							<th>첨부문서</th>
+							<th>담당자</th>
 							<th>설정</th>
 						<tr>
 					</thead>
@@ -935,125 +938,6 @@ function paging(pageNo) {
 </div>
 <!-- 자재 생성레이어 close-->
 
-<!-- 자재 조회레이어 start-->
-<div class="white_content" id="open3">
-	<div class="modal" style="	width: 700px;margin-left:-350px;height: 840px;margin-top:-400px;">
-		<h5 style="position:relative">
-			<span class="title">원료 상세 정보</span>
-			<div  class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_madal_close" onClick="closeDialog('open3')"></button>
-					</li>
-				</ul>
-			</div>
-		</h5>
-		<div class="list_detail">
-			<ul>
-				<li class="">
-					<dt>원료명</dt>
-					<dd>
-						 <div id="nameTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>원료 코드</dt>
-					<dd>
-						<div id="matCodeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>SAP 코드</dt>
-					<dd>
-						<div id="sapCodeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>단가</dt>
-					<dd>
-						<div id="priceTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>단위</dt>
-					<dd>
-						<div id="unitTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>보관기준</dt>
-					<dd>
-						<div id="keepConditionTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>사이즈</dt>
-					<dd>
-						<div id="sizeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>중량</dt>
-					<dd>
-						<div id="weightTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>규격</dt>
-					<dd>
-						<div id="standardTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>원산지</dt>
-					<dd>
-						<div id="originTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>소비기한</dt>
-					<dd>
-						<div id="expireDateTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>원료구분상세</dt>
-					<dd>
-						<div id="typeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>제조사/공급처</dt>
-					<dd>
-						<div id="supplierTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<dt>첨부파일 유형</dt>
-					<dd>
-						<div id="fileTypeTxt"></div>
-					</dd>
-				</li>
-				<li>
-					<div class="add_file2" style="width:97.5%">
-						<span class="" >
-							<label>첨부파일</label>
-						</span>						
-					</div>
-					<div class="file_box_pop" style=" height:120px; width:97.5%; border-top-left-radius:0px;border-top-right-radius:0px; border-top:1px solid #ddd;box-sizing:border-box;">
-						<ul id="fileDataList">									
-						</ul>
-					</div>
-				</li>
-			</ul>
-		</div>
-		<div class="btn_box_con">
-			<button class="btn_admin_gray" onclick="closeDialog('open3')"> 닫기</button>
-		</div>
-	</div>
-</div>
-<!-- 자재 생성레이어 close-->
-
 <!-- 원료 선택 레이어 start-->
 <div class="white_content" id="open2">
 	<div class="modal" style="	width: 400px;margin-left:-210px;height: 350px;margin-top:-100px;">
@@ -1077,60 +961,6 @@ function paging(pageNo) {
 </div>
 <!-- 자재 생성레이어 close-->
 
-<!-- 첨부파일 추가레이어 start-->
-<!-- 신규로 레이어창을 생성하고싶을때는  아이디값 교체-->
-<!-- 클래스 옆에 적힌 스타일 값을 인라인으로 작성해서 팝업 사이즈를 직접 조정 -->
-<div class="white_content" id="dialog_attatch">
-	<div class="modal" style="margin-left: -355px; width: 750px; height: 500px; margin-top: -250px">
-		<h5 style="position: relative">
-			<span class="title">첨부파일 추가</span>
-			<div class="top_btn_box">
-				<ul>
-					<li>
-						<button class="btn_madal_close" onClick="closeDialogWithClean('dialog_attatch')"></button>
-					</li>
-				</ul>
-			</div>
-		</h5>
-		<div class="list_detail">
-			<ul>
-				<li class="pt10 mb5">
-					<dt style="width: 20%">파일 선택</dt>
-					<dd style="width: 80%" class="ppp">
-						<div style="float: left; display: inline-block;">
-							<span class="file_load" id="fileSpan">
-								<input id="attatch_common_text" class="form-control form_point_color01" type="text" placeholder="파일을 선택해주세요." style="width:145px;/* width:308px;  */float:left; cursor: pointer; color: black;" onclick="callAddFileEvent()" readonly="readonly">
-								<!-- <label class="btn-default" for="attatch_common" style="float:left; margin-left: 5px; width: 57px">파일 선택</label> -->
-								<input id="attatch_common" type="file" style="display:none;" onchange="setFileName(this)">
-							</span>
-							<button class="btn_small02 ml5" onclick="addFile(this, '10')">품목제조보고서</button>
-							<button class="btn_small02 ml5" onclick="addFile(this, '20')">수입신고필증</button>
-							<button class="btn_small02 ml5" onclick="addFile(this, '30')">시험성적서</button>
-							<button class="btn_small02 ml5" onclick="addFile(this, '40')">한글표시사항</button>
-							<button class="btn_small02 ml5" onclick="addFile(this, '50')">기타</button>
-						</div>
-						<div style="float: left; display: inline-block; margin-top: 5px">
-							
-						</div>
-					</dd>
-				</li>
-				<li class=" mb5">
-					<dt style="width: 20%">파일리스트</dt>
-					<dd style="width: 80%;">
-						<div class="file_box_pop" style="width:95%">
-							<ul name="popFileList"></ul>
-						</div>
-					</dd>
-				</li>
-			</ul>
-		</div>
-		<div class="btn_box_con">
-			<button class="btn_admin_red" onclick="uploadFiles();">파일 등록</button>
-			<button class="btn_admin_gray" onClick="closeDialogWithClean('dialog_attatch')">등록 취소</button>
-		</div>
-	</div>
-</div>
-<!-- 파일 생성레이어 close-->
 <!-- 이력내역 레이어 start-->
 <div class="white_content" id="dialog_history">
 	<div class="modal"
@@ -1153,3 +983,117 @@ function paging(pageNo) {
 	</div>
 </div>
 <!-- 이력내역 레이어 생성레이어 close-->
+
+<!-- 자재조회 레이어 start-->
+<div class="white_content" id="open3">
+	<div class="modal" style="	width: 800px;margin-left:-400px;height: 620px;margin-top:-250px;">
+		<h5 style="position:relative">
+			<span class="title">상품 상세 정보</span>
+			<div  class="top_btn_box">
+				<ul>
+					<li>
+						<button class="btn_madal_close" onClick="closeDialog('open3')"></button>
+					</li>
+				</ul>
+			</div>
+		</h5>
+		<div class="list_detail">
+			<div class="main_tbl">
+				<table class="insert_proc01">
+					<colgroup>
+						<col width="15%" />
+						<col width="35%" />
+						<col width="15%" />
+						<col width="35%" />
+					</colgroup>
+					<tbody>
+						<tr>
+							<th style="border-left: none;">원료명</th>
+							<td id="nameTxt">
+
+							</td>
+							<th style="border-left: none;">원료코드</th>
+							<td id="matCodeTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">SAP 코드</th>
+							<td id="sapCodeTxt">
+
+							</td>
+							<th style="border-left: none;">단가</th>
+							<td id="priceTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">단위</th>
+							<td id="unitTxt">
+
+							</td>
+							<th style="border-left: none;">보관기준</th>
+							<td id="keepConditionTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">사이즈</th>
+							<td id="sizeTxt">
+
+							</td>
+							<th style="border-left: none;">중량</th>
+							<td id="weightTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">규격</th>
+							<td id="standardTxt">
+
+							</td>
+							<th style="border-left: none;">원산지</th>
+							<td id="originTxt">
+
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">소비기한</th>
+							<td colspan="3" id="expireDateTxt">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">제조사/공급처</th>
+							<td colspan="3" id="supplierTxt">
+							</td>
+						</tr>
+						<tr>
+							<th style="border-left: none;">첨부파일 유형</th>
+							<td colspan="3" id="fileTypeTxt">
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="list_detail">
+			<ul>
+				<li>
+					<div class="add_file2" style="width:97.5%">
+						<span class="" >
+							<label>첨부파일</label>
+						</span>						
+					</div>
+					<div class="file_box_pop" style=" height:120px; width:97.5%; border-top-left-radius:0px;border-top-right-radius:0px; border-top:1px solid #ddd;box-sizing:border-box;">
+						<ul id="fileDataList">									
+						</ul>
+					</div>
+				</li>
+			</ul>
+			</div>
+		</div>			
+		<div class="btn_box_con">
+			<button class="btn_admin_gray" onclick="closeDialog('open3')"> 닫기</button>
+		</div>
+	</div>
+</div>
+<!-- 자재조회 레이어 close-->
