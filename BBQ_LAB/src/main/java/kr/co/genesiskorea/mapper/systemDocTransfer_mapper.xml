@@ -1,0 +1,333 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="systemDocTransfer">
+
+	  <select id="selectUserDocs" parameterType="map" resultType="hashmap">
+    SELECT IDX, DOC_NO, TITLE, DOC_TYPE, TYPE_NAME, STATUS_TXT
+    FROM (
+      /* PRODUCT */
+      SELECT 
+        p.PRODUCT_IDX AS IDX,
+        p.DOC_NO      AS DOC_NO,
+        p.TITLE       AS TITLE,
+        'PROD'        AS DOC_TYPE,
+        '제품완료보고서'    AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', p.STATUS) AS STATUS_TXT	
+      FROM lab_product p
+      WHERE p.DOC_OWNER = #{userId}
+      	and p.IS_LAST = 'Y'
+      	and p.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* MENU */
+      SELECT 
+        m.MENU_IDX AS IDX,
+        m.DOC_NO   AS DOC_NO,
+        m.TITLE    AS TITLE,
+        'MENU'     AS DOC_TYPE,
+        '메뉴완료보고서'     AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', m.STATUS) AS STATUS_TXT
+      FROM lab_menu m
+      WHERE m.DOC_OWNER = #{userId}
+      	and m.IS_LAST = 'Y'
+      	and m.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* DESIGN (DOC_NO 없음, TITLE 없으면 PRODUCT_NAME) */
+      SELECT 
+        d.DESIGN_IDX                                       AS IDX,
+        d.DOC_NO                                           AS DOC_NO,
+        COALESCE(d.TITLE, d.PRODUCT_NAME)                  AS TITLE,
+        'DESIGN'                                           AS DOC_TYPE,
+        '상품설계변경보고서'                                       AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', d.STATUS) AS STATUS_TXT
+      FROM lab_design d
+      WHERE d.DOC_OWNER = #{userId}
+        and d.IS_LAST = 'Y'
+        and d.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* SENSE QUALITY REPORT (DOC_NO 없음, TITLE 있음) */
+      SELECT 
+        r.REPORT_IDX    AS IDX,
+        NULL            AS DOC_NO,
+        r.TITLE         AS TITLE,
+        'REPORT'        AS DOC_TYPE,
+        '관능/품질평가보고서'  AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', r.STATUS) AS STATUS_TXT
+      FROM lab_sense_quality_report r
+      WHERE r.DOC_OWNER = #{userId}
+      	and r.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* BUSINESS TRIP PLAN (DOC_NO 없음) */
+      SELECT 
+        bp.PLAN_IDX AS IDX,
+        NULL        AS DOC_NO,
+        bp.TITLE    AS TITLE,
+        'PLAN'      AS DOC_TYPE,
+        '출장계획보고서'     AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', bp.STATUS) AS STATUS_TXT
+      FROM lab_business_trip_plan bp
+      WHERE bp.DOC_OWNER = #{userId}
+        and bp.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* BUSINESS TRIP (DOC_NO 없음) */
+      SELECT 
+        bt.TRIP_IDX AS IDX,
+        NULL        AS DOC_NO,
+        bt.TITLE    AS TITLE,
+        'TRIP'      AS DOC_TYPE,
+        '출장결과보고서'     AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', bt.STATUS) AS STATUS_TXT
+      FROM lab_business_trip bt
+      WHERE bt.DOC_OWNER = #{userId}
+        and bt.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* MARKET RESEARCH (DOC_NO 없음) */
+      SELECT 
+        mr.RESEARCH_IDX AS IDX,
+        NULL            AS DOC_NO,
+        mr.TITLE        AS TITLE,
+        'RESEARCH'      AS DOC_TYPE,
+        '시장조사결과보고서'         AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', mr.STATUS) AS STATUS_TXT
+      FROM lab_market_research mr
+      WHERE mr.DOC_OWNER = #{userId}
+        and mr.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* NEW PRODUCT RESULT (DOC_NO 없음) */
+      SELECT 
+        nr.RESULT_IDX AS IDX,
+        NULL          AS DOC_NO,
+        nr.TITLE      AS TITLE,
+        'RESULT'      AS DOC_TYPE,
+        '메뉴품질점검결과보고서'       AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', nr.STATUS) AS STATUS_TXT
+      FROM lab_new_product_result nr
+      WHERE nr.DOC_OWNER = #{userId}
+        and nr.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* CHEMICAL TEST (DOC_NO 없음, TITLE 없으면 PRODUCT_NAME) */
+      SELECT 
+        ct.CHEMICAL_IDX                              AS IDX,
+        NULL                                         AS DOC_NO,
+         ct.PRODUCT_NAME					         AS TITLE,
+        'CHEMICAL'                                   AS DOC_TYPE,
+        '이화학검사의뢰서'                                  AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', ct.STATUS) AS STATUS_TXT
+      FROM lab_chemical_test ct
+      WHERE ct.DOC_OWNER = #{userId}
+        and ct.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* PACKAGE INFO (DOC_NO 있음, TITLE 없으면 PRODUCT_NAME) */
+      SELECT 
+        pk.PACKAGE_IDX                              AS IDX,
+        pk.DOC_NO                                   AS DOC_NO,
+        pk.PRODUCT_NAME         					AS TITLE,
+        'PACKAGE'                                   AS DOC_TYPE,
+        '표시사항기재양식'                                        AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', pk.STATUS) AS STATUS_TXT
+      FROM lab_package_info pk
+      WHERE pk.DOC_OWNER = #{userId}
+        and pk.IS_LAST = 'Y'
+        and pk.IS_DELETE = 'N'
+
+      UNION ALL
+      
+      /* RECIPE INFO */
+      SELECT 
+        rp.RECIPE_IDX                              AS IDX,
+        rp.DOC_NO                                   AS DOC_NO,
+        rp.PRODUCT_NAME         					AS TITLE,
+        'RECIPE'                                   AS DOC_TYPE,
+        '사전원가서'                                   AS TYPE_NAME,
+        FN_GET_CODE_NAME('DOC_STATUS', rp.STATUS) AS STATUS_TXT
+      FROM lab_recipe rp
+      WHERE rp.DOC_OWNER = #{userId}
+        and rp.IS_LAST = 'Y'
+        and rp.IS_DELETE = 'N'
+
+      UNION ALL
+
+      /* BOARD NOTICE (DOC_NO 없음) */
+      SELECT 
+        bn.BNOTICE_IDX AS IDX,
+        NULL           AS DOC_NO,
+        bn.TITLE       AS TITLE,
+        'NOTICE'       AS DOC_TYPE,
+        '공지사항'            AS TYPE_NAME,
+        case bn.TYPE
+        	when 'I' then '공지'
+        	when 'N' then '일반'
+        	else ''
+        end AS STATUS_TXT
+      FROM lab_board_notice bn
+      WHERE bn.REG_USER = #{userId}
+      	and bn.IS_DELETE = 'N'
+    ) U
+    ORDER BY DOC_TYPE, IDX
+  </select>
+  
+  <!-- ===========================================================
+       DOC_NO 기반 일괄 변경 (PROD, MENU, DESIGN, PACKAGE, RECIPE)
+       =========================================================== -->
+	<update id="updateOwnerByDocNoBulk" parameterType="map">
+	  <if test="prodDocNos != null and prodDocNos.size() > 0">
+	    UPDATE lab_product
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE DOC_NO IN
+	     <foreach collection="prodDocNos" item="n" open="(" separator="," close=")">#{n}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="menuDocNos != null and menuDocNos.size() > 0">
+	    UPDATE lab_menu
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE DOC_NO IN
+	     <foreach collection="menuDocNos" item="n" open="(" separator="," close=")">#{n}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="designDocNos != null and designDocNos.size() > 0">
+	    UPDATE lab_design
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE DOC_NO IN
+	     <foreach collection="designDocNos" item="n" open="(" separator="," close=")">#{n}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="packageDocNos != null and packageDocNos.size() > 0">
+	    UPDATE lab_package_info
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE DOC_NO IN
+	     <foreach collection="packageDocNos" item="n" open="(" separator="," close=")">#{n}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="recipeDocNos != null and recipeDocNos.size() > 0">
+	    UPDATE lab_recipe
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE DOC_NO IN
+	     <foreach collection="recipeDocNos" item="n" open="(" separator="," close=")">#{n}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	</update>
+
+  <!-- ===========================================================
+       IDX 기반 단건 변경 (REPORT, PLAN, TRIP, RESEARCH, RESULT, CHEMICAL, NOTICE)
+       =========================================================== -->
+  <update id="updateOwnerByIdxBulk" parameterType="map">
+	  <if test="reportIds != null and reportIds.size() > 0">
+	    UPDATE lab_sense_quality_report
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE REPORT_IDX IN
+	     <foreach collection="reportIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="planIds != null and planIds.size() > 0">
+	    UPDATE lab_business_trip_plan
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE PLAN_IDX IN
+	     <foreach collection="planIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="tripIds != null and tripIds.size() > 0">
+	    UPDATE lab_business_trip
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE TRIP_IDX IN
+	     <foreach collection="tripIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="researchIds != null and researchIds.size() > 0">
+	    UPDATE lab_market_research
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE RESEARCH_IDX IN
+	     <foreach collection="researchIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="resultIds != null and resultIds.size() > 0">
+	    UPDATE lab_new_product_result
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE RESULT_IDX IN
+	     <foreach collection="resultIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="chemicalIds != null and chemicalIds.size() > 0">
+	    UPDATE lab_chemical_test
+	       SET DOC_OWNER = #{targetUserId}
+	     WHERE CHEMICAL_IDX IN
+	     <foreach collection="chemicalIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	
+	  <if test="noticeIds != null and noticeIds.size() > 0">
+	    UPDATE lab_board_notice
+	       SET REG_USER = #{targetUserId}
+	     WHERE BNOTICE_IDX IN
+	     <foreach collection="noticeIds" item="id" open="(" separator="," close=")">#{id}</foreach>
+	     AND IS_DELETE = 'N';
+	  </if>
+	</update>
+
+  
+  <insert id="insertTransferHistory" parameterType="map">
+	  <!-- 다음 이관 IDX를 미리 생성하여 hist.transIdx 에 주입 -->
+	  <selectKey keyProperty="transIdx" resultType="long" order="BEFORE">
+	    SELECT FN_NEXTVAL('lab_doc_transfer_history_seq') AS transIdx
+	  </selectKey>
+	
+	  INSERT INTO lab_transfer_history
+	    ( TRANS_IDX, TRANS_FROM, TRANS_TO, TRANS_USER, TRANS_COMMNET, TRANS_DATE )
+	  VALUES
+	    (
+	      #{transIdx},
+	      #{transFrom},
+	      #{transTo},
+	      #{transUser},
+	      <choose>
+	        <when test="transComment != null and transComment != ''">#{transComment}</when>
+	        <otherwise>NULL</otherwise>
+	      </choose>,
+	      NOW()
+	    )
+	</insert>
+	
+	<insert id="insertTransferDocBulk" parameterType="map">
+	  INSERT INTO lab_transfer_doc
+	    ( TRANS_DOC_IDX, TRANS_IDX, DOC_IDX, DOC_TYPE, DOC_NO )
+	  VALUES
+	  <foreach collection="list" item="d" separator=",">
+	    (
+	      FN_NEXTVAL('lab_doc_transfer_seq'),
+	      #{transIdx},         -- 상위 파라미터
+	      #{d.docId},          -- docs 리스트의 필드
+	      #{d.typeCode},
+	      <choose>
+	        <when test="d.docNo != null and d.docNo != ''">#{d.docNo}</when>
+	        <otherwise>NULL</otherwise>
+	      </choose>
+	    )
+	  </foreach>
+	</insert>
+
+</mapper>

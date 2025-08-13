@@ -76,8 +76,8 @@
 				</colgroup>
 				<tbody>
 					<tr>
-						<th rowSpan="2">해당면</th>
-						<td colSpan="3">포장지 인쇄 표기사항</td>
+						<td rowSpan="2">해당면</td>
+						<th colSpan="3">포장지 인쇄 표기사항</th>
 					</tr>
 					<tr>						
 						<td >표기사항</td>
@@ -85,34 +85,34 @@
 						<td >&nbsp;</td>
 					</tr>
 					<tr>
-						<th  rowSpan="8">정면(주표시면)</th>
-						<td >제품명</td>
+						<td  rowSpan="8">정면(주표시면)</td>
+						<th >제품명</th>
 						<td >${packageInfoData.data.PRODUCT_NAME}</td>
-						<td >주표시면(14P이상)</td>
+						<th >주표시면(14P이상)</th>
 					</tr>
 					<tr>
-						<td >&nbsp;</td>
+						<th >&nbsp;</th>
 						<td class="value">${packageInfoData.data.ETC_INFO}</td>
-						<td rowSpan="6">주표시면 주원료 함량 표시시 원재료와 함량 표기 기재 요망</td>
+						<td rowSpan="6">주표시면 주원료 함량 표시시<br>원재료와 함량 표기 기재 요망</td>
 					</tr>
 					<tr>
-						<td >중량</td>
+						<th >중량</th>
 						<td class="value">${packageInfoData.data.WEIGHT}</td>
 					</tr>
 					<tr>
-						<td >포장단위</td>
+						<th >포장단위</th>
 						<td class="value">${packageInfoData.data.PACKAGE_UNIT_NAME}</td>
 					</tr>
 					<tr>
-						<td >낱개 중량</td>
+						<th >낱개 중량</th>
 						<td class="value">${packageInfoData.data.PIECE_WEIGHT}</td>
 					</tr>
 					<tr>
-						<td >박스단위</td>
+						<th >박스단위</th>
 						<td class="value">${packageInfoData.data.BOX_UNIT_NAME}</td>
 					</tr>
 					<tr>
-						<td >보관방법</td>
+						<th >보관방법</th>
 						<td class="value">
 							<c:choose>
 								<c:when test="${packageInfoData.data.KEEP_CONDITION == '999'}">
@@ -125,7 +125,7 @@
 						</td>
 					</tr>
 					<tr>
-						<td >마크</td>
+						<th >마크</th>
 						<td class="value" style="padding:0px; text-align:center;">
 							<c:set var="hasMarkImage" value="${not empty packageInfoData.data.MARK_FILE_PATH and not empty packageInfoData.data.MARK_FILE_NAME}" />
 							<p>
@@ -147,21 +147,21 @@
 						<td>&nbsp;</td>
 					</tr>
 					<tr>
-						<th rowSpan="16">후면 또는 측면<br>(정보표시면)</th>
-						<td colspan="3">
+						<td rowSpan="16">후면 또는 측면<br>(정보표시면)</td>
+						<th colspan="3">
 							(정보표시면)	후면 10p 이상(원산지는 12p 이상)<br>
 							장평 90%이상, 자간 -5이상 표시 의문<br>
 							(단, 정보표시면 면적이 100cm² 미만시 장평 50%이상, 자간 -5%이상 표시 가능)
-						</td>
+						</th>
 					</tr>
 					<tr>
-						<td>제품명</td>
+						<th>제품명</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.PRODUCT_NAME_BACK}
 						</td>
 					</tr>					
 					<tr>
-						<td>식품의 유형</td>
+						<th>식품의 유형</th>
 						<td class="value" colSpan="2">
 							<c:choose>
 								<c:when test="${packageInfoData.data.FOOD_TYPE == '999'}">
@@ -174,7 +174,7 @@
 						</td>
 					</tr>					
 					<tr>
-						<td>원재료명 및 함량</td>
+						<th>원재료명 및 함량</th>
 						<td class="value" ><p style="white-space: pre-line; text-align:left;">${packageInfoData.data.CONTAIN_QUANTITY}</p></td>
 						<td class="value" style="padding:0px; text-align:center;">
 							<c:set var="hasImage" value="${not empty packageInfoData.data.CONTAIN_QUANTITY_FILE_PATH and not empty packageInfoData.data.CONTAIN_QUANTITY_FILE_NAME}" />
@@ -196,55 +196,55 @@
 						</td>
 					</tr>					
 					<tr>
-						<td>알러지 유발물질</td>
+						<th>알러지 유발물질</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.ALLERGY_OBJECT}
 						</td>
 					</tr>					
 					<tr>
-						<td>품목보고번호</td>
+						<th>품목보고번호</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.MANUFACTURING_NO}
 						</td>
 					</tr>					
 					<tr>
-						<td>소비기한</td>
+						<th>소비기한</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.EXPIRED_DATE}
 						</td>
 					</tr>					
 					<tr>
-						<td>포장재질</td>
+						<th>포장재질</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.PACKAGE_OBJECT}
 						</td>
 					</tr>					
 					<tr>
-						<td>제조원</td>
+						<th>제조원</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.MAKER}
 						</td>
 					</tr>					
 					<tr>
-						<td>유통전문판매원</td>
+						<th>유통전문판매원</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.DISTRIBUTION}
 						</td>
 					</tr>					
 					<tr>
-						<td>반품 및 교환장소</td>
+						<th>반품 및 교환장소</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.RETURNED}
 						</td>
 					</tr>					
 					<tr>
-						<td>소비자상담실</td>
+						<th>소비자상담실</th>
 						<td class="value" colSpan="2">
 							${packageInfoData.data.CUSTOMER_COUNSEL}
 						</td>
 					</tr>										
 					<tr>
-						<td>기타사항</td>
+						<th>기타사항</th>
 						<td class="value" colSpan="2">
 							<c:forEach items="${addInfoList}" var="infoList" varStatus="status">
 								${infoList.INFO_TEXT}<br>								
@@ -252,7 +252,7 @@
 						</td>
 					</tr>										
 					<tr>
-						<td>분리배출 표시</td>
+						<th>분리배출 표시</th>
 						<td class="value" colSpan="2">
 							<c:choose>
 								<c:when test="${packageInfoData.data.SEPARATE_DISCHARGE == '999'}">
@@ -265,13 +265,13 @@
 						</td>
 					</tr>							
 					<tr>
-						<td>주의사항</td>
+						<th>주의사항</th>
 						<td class="value" colSpan="2">
 							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.SUGGESTIONS}</p>
 						</td>
 					</tr>					
 					<tr>
-						<td>조리방법</td>
+						<th>조리방법</th>
 						<td class="value" colSpan="2">
 							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.COOK_METHOD}</p>
 						</td>
