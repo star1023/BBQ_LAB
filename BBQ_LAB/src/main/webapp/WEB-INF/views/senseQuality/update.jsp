@@ -1134,11 +1134,11 @@ table{font-size: 12px}
 		<h2 style="position:relative">
 			<span class="title_s">Sense & Quality Test Report</span><span class="title">관능&품질평가 테스트 결과보고서</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">
@@ -1158,11 +1158,11 @@ table{font-size: 12px}
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">제목</th>
+							<th style="border-left: none;">제목<span class="mandatory">*</span></th>
 							<td colspan="3">
 								<input type="hidden" name="idx" id="idx" value="${senseQualityData.reportMap.REPORT_IDX}">
 								<input type="hidden" name="currentStatus" id="currentStatus" value="${senseQualityData.reportMap.STATUS}">								
-								<input type="text" name="title" id="title" style="width: 90%;" class="req" value="${senseQualityData.reportMap.TITLE}"/>
+								<input type="text" name="title" style="width: 90%;"  value="${senseQualityData.reportMap.TITLE}"/>
 							</td>
 						</tr>
 						<c:if test="${senseQualityData.reportMap.STATUS != null && senseQualityData.reportMap.STATUS != 'COND_APPR' }">
@@ -1181,19 +1181,19 @@ table{font-size: 12px}
 						</tr>
 						</c:if>
 						<tr>
-							<th style="border-left: none;">업체명</th>
+							<th style="border-left: none;">업체명<span class="mandatory">*</span></th>
 							<td colspan="3">
-								<input type="text"  style="width:200px; float: left" class="req" name="companyName" id="companyName" placeholder="업체명을 입력하세요." value="${senseQualityData.reportMap.COMPANY_NAME}"/>
+								<input type="text"  s:200px; float: left"  name="companyName" id="companyName" placeholder="업체명을 입력하세요." value="${senseQualityData.reportMap.COMPANY_NAME}"/>
 							</td>
 						</tr>
 						<tr>	
-							<th style="border-left: none;">제품명</th>
+							<th style="border-left: none;">제품명<span class="mandatory">*</span></th>
 							<td>
-								<input type="text"  style="width:90%; float: left" class="req" name="productName" id="productName" placeholder="제품명을 입력하세요." value="${senseQualityData.reportMap.PRODUCT_NAME}"/>
+								<input type="text" th:90%; float: left"  name="productName" id="productName" placeholder="제품명을 입력하세요." value="${senseQualityData.reportMap.PRODUCT_NAME}"/>
 							</td>
 							<th style="border-left: none;">ERP코드</th>
 							<td>
-								<input type="text"  style="width:200px; float: left" class="req" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
+								<input type="text"  style="width:200px; float: left"  name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 							</td>
@@ -1201,7 +1201,7 @@ table{font-size: 12px}
 						<tr>
 							<th style="border-left: none;">테스트 목적</th>
 							<td colspan="3">
-								<input type="text"  style="width:100%; float: left" class="req" name="testPurpose" id="testPurpose" value="${senseQualityData.reportMap.TEST_PURPOSE}"/>
+								<input type="text"  style="width:100%; float: left"  name="testPurpose" id="testPurpose" value="${senseQualityData.reportMap.TEST_PURPOSE}"/>
 							</td>
 						</tr>
 						
@@ -1604,7 +1604,7 @@ table{font-size: 12px}
 								<input type="checkbox" id="result_${status.count}"><label for="result_${status.count}"><span></span></label>
 							</td>
 							<td>
-								<input type="text"  style="width:99%; float: left" class="req" name="result" value="${infoResultList.INFO_TEXT}"/>
+								<input type="text"  style="width:99%; float: left"  name="result" value="${infoResultList.INFO_TEXT}"/>
 							</td>
 						</tr>
 					</c:forEach>
@@ -1614,7 +1614,7 @@ table{font-size: 12px}
 								<input type="checkbox" id="result_1"><label for="result_1}"><span></span></label>
 							</td>
 							<td>
-								<input type="text"  style="width:99%; float: left" class="req" name="result" placeholder="가."/>
+								<input type="text"  style="width:99%; float: left"  name="result" placeholder="가."/>
 							</td>
 						</tr>
 					</c:if>	
@@ -1625,7 +1625,7 @@ table{font-size: 12px}
 								<input type="checkbox" id="result_1"><label for="result_1"><span></span></label>
 							</td>
 							<td>
-								<input type="text"  style="width:99%; float: left" class="req" name="result"/>
+								<input type="text"  style="width:99%; float: left"  name="result"/>
 							</td>
 						</tr>
 					</tbody>
@@ -1660,7 +1660,7 @@ table{font-size: 12px}
 						<c:if test="${senseQualityData.reportMap.STATUS == 'TMP'}">
 						<button class="btn_admin_navi" onclick="fn_updateTmp()">임시저장</button>
 						</c:if>
-						<button class="btn_admin_sky" onclick="fn_update()">저장</button>
+						<button class="btn_admin_sky" onclick="fn_update()">결재</button>
 					</c:if>
 					<button class="btn_admin_gray" onclick="fn_goList()">취소</button>
 				</div>

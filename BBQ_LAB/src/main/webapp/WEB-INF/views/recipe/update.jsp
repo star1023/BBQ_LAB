@@ -1078,7 +1078,7 @@ li {
 		<h2 style="position: relative">
 			<span class="title_s">Cost Management</span><span class="title">사전원가서 수정</span>
 			<div class="top_btn_box">
-				<ul>
+				<%-- <ul>
 					<li>
 						<c:if test="${recipeData.STATUS == 'TMP' and recipeData.IS_LAST == 'Y'}">
 						<button class="btn_circle_wirte_dark" onclick="fn_updateTmp()">&nbsp;</button>
@@ -1092,7 +1092,7 @@ li {
 						<button class="btn_circle_bom" onclick="fn_erp()">&nbsp;</button>
 						</c:if>
 					</li>
-				</ul>
+				</ul> --%>
 			</div>
 		</h2>
 		<div class="group01 mt20">
@@ -1147,7 +1147,7 @@ li {
 							<tr>
 								<th style="border-left: none;">플랜트 <span class="mandatory">*</span></th>
 								<td colspan="3">
-									<div class="selectbox req" style="width:147px;">  
+									<div class="selectbox" style="width:147px;">  
 										<label for="plant" id="plant_label"> 선택</label> 
 										<select id="plant" id="plant">
 										</select>
@@ -1161,7 +1161,7 @@ li {
 								</td>
 								<th style="border-left: none;">제품단위</th>
 								<td>
-									<div class="selectbox req" style="width:147px;">  
+									<div class="selectbox" style="width:147px;">  
 										<label for="unit" id="unit_label"> 선택</label> 
 										<select id="unit" id="unit">
 										</select>
@@ -1353,7 +1353,7 @@ li {
 									<select id="itemCompUnit" name="itemCompUnit" style="width:100%;">
 										<option value="">선택</option>
 										<option value="ea" ${purchaseList.ITEM_UNIT == 'ea' or purchaseList.ITEM_UNIT == 'EA' ? 'selected' : ''}>개</option>
-											<option value="g" ${purchaseList.ITEM_UNIT == 'g' or purchaseList.ITEM_UNIT == 'G' ? 'selected' : ''}>그램</option>
+										<option value="g" ${purchaseList.ITEM_UNIT == 'g' or purchaseList.ITEM_UNIT == 'G' ? 'selected' : ''}>그램</option>
 									</select>
 								<!--</div>-->
 							</td>
@@ -1366,7 +1366,7 @@ li {
 									<select id="itemUseUnit" name="itemUseUnit" style="width:100%;">
 										<option value="">선택</option>
 										<option value="ea" ${purchaseList.USED_UNIT == 'ea' or purchaseList.USED_UNIT == 'EA' ? 'selected' : ''}>개</option>
-											<option value="g" ${purchaseList.USED_UNIT == 'g' or purchaseList.USED_UNIT == 'G' ? 'selected' : ''}>그램</option>
+										<option value="g" ${purchaseList.USED_UNIT == 'g' or purchaseList.USED_UNIT == 'G' ? 'selected' : ''}>그램</option>
 									</select>
 								<!--</div>-->
 							</td>

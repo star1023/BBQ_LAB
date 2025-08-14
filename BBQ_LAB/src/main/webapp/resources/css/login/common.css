@@ -1,0 +1,606 @@
+@charset "utf-8";
+
+/*
+ * Project		:	ePms Master
+ * File				:	common.css
+ * Author			:	YoungJae Lee
+ * Date			:	March. 2025
+ * Description	:	문서 초기화,웹폰트,글로벌 클래스 네임,플러그인스타일
+ */
+
+
+
+/* --
+	web reset
+---------------------------------------------------------- */
+html, body {height:100%; overflow:hidden;}
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,textarea,p,blockquote,th,td,input,select,textarea,button {margin:0; padding:0;}
+fieldset,img {border:none; vertical-align: middle;}
+dl,ul,ol,menu,li {list-style:none;}
+blockquote,q {quotes: none;}
+blockquote:before,blockquote:after,q:before,q:after {content:''; content:none;}
+input,select,textarea,button {vertical-align:middle;}
+button {border:0 none; background-color:transparent; cursor:pointer;}
+body,th,td,input,select,textarea,button {font-size: 13px; overflow-x: hidden; color: var(--he-gray-dark); font-weight: 500;
+font-family: Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;}
+a {color:inherit; text-decoration:none; cursor:pointer;}
+a:active,a:hover {text-decoration:none;} 
+address,caption,cite,code,dfn,em,var {font-style:normal; font-weight:normal;}
+iframe {border:none; width:100%; height:100%;}
+table {border-spacing:0; border-collapse:collapse;}
+caption {overflow:hidden; position:absolute; width:0; height:0; line-height:0; text-indent:-9999px;}
+
+*, ::after, ::before { -webkit-box-sizing: border-box; box-sizing: border-box;}
+
+
+
+/* --
+	font style
+---------------------------------------------------------- */
+/* :: 프리텐다드 */
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 900;
+	font-display: swap;
+	src: local('Pretendard Black'), url('/resources/font/pretendard/woff2/Pretendard-Black.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-Black.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 800;
+	font-display: swap;
+	src: local('Pretendard ExtraBold'), url('/resources/font/pretendard/woff2/Pretendard-ExtraBold.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-ExtraBold.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 700;
+	font-display: swap;
+	src: local('Pretendard Bold'), url('/resources/font/pretendard/woff2/Pretendard-Bold.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-Bold.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 600;
+	font-display: swap;
+	src: local('Pretendard SemiBold'), url('/resources/font/pretendard/woff2/Pretendard-SemiBold.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-SemiBold.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 500;
+	font-display: swap;
+	src: local('Pretendard Medium'), url('/resources/font/pretendard/woff2/Pretendard-Medium.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-Medium.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 400;
+	font-display: swap;
+	src: local('Pretendard Regular'), url('/resources/font/pretendard/woff2/Pretendard-Regular.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-Regular.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 300;
+	font-display: swap;
+	src: local('Pretendard Light'), url('/resources/font/pretendard/woff2/Pretendard-Light.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-Light.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 200;
+	font-display: swap;
+	src: local('Pretendard ExtraLight'), url('/resources/font/pretendard/woff2/Pretendard-ExtraLight.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-ExtraLight.woff') format('woff');
+}
+@font-face {
+	font-family: 'Pretendard';
+	font-weight: 100;
+	font-display: swap;
+	src: local('Pretendard Thin'), url('/resources/font/pretendard/woff2/Pretendard-Thin.woff2') format('woff2'), url('/resources/font/pretendard/woff/Pretendard-Thin.woff') format('woff');
+}
+
+
+/* :: 본고딕 */
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 100;
+	src: url('/resources/font/notokr/notokr-light.eot');
+	src: url('/resources/font/notokr/notokr-light.eot?#iefix') format('embedded-opentype'),
+		 url('/resources/font/notokr/notokr-light.woff2') format('woff2'),
+		 url('/resources/font/notokr/notokr-light.woff') format('woff');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 300;
+	src: url('/resources/font/notokr/notokr-regular.eot');
+	src: url('/resources/font/notokr/notokr-regular.eot?#iefix') format('embedded-opentype'),
+		 url('/resources/font/notokr/notokr-regular.woff2') format('woff2'),
+		 url('/resources/font/notokr/notokr-regular.woff') format('woff');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 500;
+	src: url('/resources/font/notokr/notokr-medium.eot');
+	src: url('/resources/font/notokr/notokr-medium.eot?#iefix') format('embedded-opentype'),
+		 url('/resources/font/notokr/notokr-medium.woff2') format('woff2'),
+		 url('/resources/font/notokr/notokr-medium.woff') format('woff');
+}
+@font-face {
+	font-family: 'Noto Sans KR';
+	font-style: normal;
+	font-weight: 700;
+	src: url('/resources/font/notokr/notokr-bold.eot');
+	src: url('/resources/font/notokr/notokr-bold.eot?#iefix') format('embedded-opentype'),
+		 url('/resources/font/notokr/notokr-bold.woff2') format('woff2'),
+		 url('/resources/font/notokr/notokr-bold.woff') format('woff');
+}
+
+/* :: 한나체 - 도장 사용 */
+@font-face {
+  font-family: 'Hanna';
+  font-style: normal;
+  font-weight: 400;
+  src: url(//fonts.gstatic.com/ea/hanna/v3/BM-HANNA.eot);
+  src: url(//fonts.gstatic.com/ea/hanna/v3/BM-HANNA.eot?#iefix) format('embedded-opentype'),
+       url(//fonts.gstatic.com/ea/hanna/v3/BM-HANNA.woff2) format('woff2'),
+       url(//fonts.gstatic.com/ea/hanna/v3/BM-HANNA.woff) format('woff'),
+       url(//fonts.gstatic.com/ea/hanna/v3/BM-HANNA.ttf) format('truetype');
+}
+
+/* 출처 – 이사만루 공폰트*/
+@font-face {
+    font-family: 'esamanru_Light';
+    src: url('/resources/font/esamanru/esamanru_Light.woff2') format('woff2');
+}
+.esamanru-light {font-family: 'esamanru_Light', sans-serif;}
+
+@font-face {
+    font-family: 'esamanru_Medium';
+    src: url('/resources/font/esamanru/esamanru_Medium.woff2') format('woff2');
+}
+.esamanru-medium {font-family: 'esamanru_Medium', sans-serif;}
+
+@font-face {
+    font-family: 'esamanru_Bold';
+    src: url('/resources/font/esamanru/esamanru_Bold.woff2') format('woff2');
+}
+.esamanru-bold {font-family: 'esamanru_Bold', sans-serif;}
+
+
+
+/* --
+	Global Classname
+---------------------------------------------------------- */
+/*  :: chrome input set */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {transition: background-color 5000s ease-in-out 0s !important; font-size: inherit !important;}
+
+::-webkit-input-placeholder,
+::-moz-placeholder,
+:-ms-input-placeholder,
+:-moz-placeholder {color: var(--he-gray-600); font-size:12px;}
+
+/* 텍스트 제공 타입 */
+.ir-pm {display: block; overflow: hidden; font-size: 0px; line-height: 0; text-indent: -9999px;} /* 사용된 이미지내 의미있는 텍스트의 대체텍스트를 제공할때 */
+.ir-wa {display: block; overflow: hidden; position: relative; z-index: -10; width: 100%; height: 100%;} /* 중요한 이미지 대체텍스트로 이미지off시에도 대체 텍스트를 보여주고자 할때 */
+.screen-out {overflow: hidden; position: absolute; width: 0; height: 0; line-height: 0; text-indent: -9999px;} /* 대체텍스트가 아닌 접근성을 위한 숨김텍스트를 제공할때 */
+.cancel {text-decoration: line-through; color: var(--he-gray-500);}
+.bold {font-weight: bold;}
+.txt-red {color:red;}
+.txt-green {color:#1fb5ac;}
+.txt-blue {color:#5689cc;}
+.font-blue {color: blue !important;}
+.font-red {color: red !important;}
+.font-dgray {color: #4c4c4c !important;}
+.font-18 {font-size: 18px !important;}
+.font-20 {font-size: 20px !important;}
+
+.bg-scarlet {background:#dd2424 !important;}
+
+/* :: useful */
+.skip {width: 1px; height: 1px; font-size: 0; line-height: 0; position: absolute; left: -999px; overflow: hidden; visibility: hidden;}
+.dimm {position: fixed; top: 0; left: 0; bottom: 0; right: 0; z-index: 95; background: rgba(0,0,0,.5);}
+.cl-b {clear: both;}
+.show {display: block;}
+.hide {display: none;}
+.clear-g {display: block; overflow: visible; width: auto; clear: both; *zoom: 1;}
+.clear-g:after {display: block; visibility: hidden; height: 0; font-size: 0; clear: both; content: '';}
+.t-l {text-align: left !important;}
+.t-r {text-align: right !important;}
+.t-c {text-align: center !important;}
+.t-j {text-align: justify !important;}
+.overflow {overflow: hidden !important;}
+.dis-inline {display: inline-block;}
+.basic-height {line-height: 32px; display: inline-block;}
+.scl {overflow-y:auto !important;}
+.scl-x {overflow-x:auto !important;}
+
+.cur-po {cursor: pointer !important;}
+
+/* :: 위치 속성 공통 클래스 */
+.f-l,
+.fl-box {float: left;}
+.f-r {float: right;}
+.rel {position: relative;}
+.ab {position: absolute; z-index: 1;}
+.ab-l {position: absolute; top: 0; left: 0;}
+.ab-r {position: absolute; top: 0; right: 0;}
+.static {position: static !important;}
+.btn-r {position: absolute; top: 0px; right: 1px;}
+.ab-n {position: inherit;}
+
+.flex {display: -webkit-box; display: -ms-flexbox; display: flex;}
+.flex.ver-cen {align-items:center;}
+.flex.hor-cen {justify-content: center;}
+.flex.spaceBet {justify-content: space-between;}
+.flex.spaceEnd {justify-content: flex-end;}
+.flex > .fixCol {flex-shrink: 0; width: auto;}
+.flex > .flexCol {flex-grow: 1;}
+
+.verFlex {display: flex; flex-direction: column; width: 100%; height: 100%;}
+.verFlex > .fixCol {flex-shrink: 0;}
+.verFlex > .flexCol {flex-grow: 1; min-height: 0;}
+
+
+
+/* --
+	jquery plugin style
+---------------------------------------------------------- */
+/* :: calendar */
+.yearText:after {content: '년';}
+.gldp-flatwhite {position: fixed; padding: 2px 3px 5px; background-color: var(--he-base); font-size: 12px; margin: 0 0 0 6px; min-width: 232px;
+    box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -webkit-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -ms-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+    -o-box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);}
+
+.gldp-flatwhite .prev-arrow {font-size: 16px;}
+.gldp-flatwhite .core {float: left; position: relative; background-color: var(--he-base); text-align: center;
+    box-sizing: border-box; -webkit-box-sizing: border-box; -moz-box-sizing: border-box;}
+
+.gldp-flatwhite .monyear,
+.gldp-flatwhite .monyear select {margin-top: 0px; background-color: var(--he-base); color: var(--he-gray-dark);}
+
+.gldp-flatwhite .monyear span {margin: 0 5px;}
+.gldp-flatwhite .prev-arrow,
+.gldp-flatwhite .next-arrow {text-shadow: none; font-size: 18px; width: 20px; height: 20px;}
+.gldp-flatwhite .prev-arrow,
+.gldp-flatwhite .next-arrow {display: block; overflow: hidden; font-size: 0px; line-height: 0; text-indent: -9999px;}
+.gldp-flatwhite .prev-arrow {background: url("/sys/images/_icon/icon_cal_prev.gif") no-repeat; background-size: 8px auto; background-position: top 10px right;}
+.gldp-flatwhite .next-arrow {background: url("/sys/images/_icon/icon_cal_next.gif") no-repeat; background-size: 8px auto; background-position: top 10px right;}
+.gldp-flatwhite .prev-arrow:hover,
+.gldp-flatwhite .prev-arrow:focus,
+.gldp-flatwhite .prev-arrow:active,
+.gldp-flatwhite .next-arrow:hover,
+.gldp-flatwhite .next-arrow:focus,
+.gldp-flatwhite .next-arrow:active {color: var(--he-base);}
+.gldp-flatwhite .prev-arrow-off,
+.gldp-flatwhite .next-arrow-off {color: var(--he-gray-400);}
+.gldp-flatwhite .dow {background-color: var(--he-gray-100); cursor: default; font-weight: bold;}
+.gldp-flatwhite .sat {color: var(--he-blue);}
+.gldp-flatwhite .sun {color: var(--he-red);}
+.gldp-flatwhite .outday {color: var(--he-gray-400)!important;}
+.gldp-flatwhite .mon,
+.gldp-flatwhite .tue,
+.gldp-flatwhite .wed,
+.gldp-flatwhite .thu,
+.gldp-flatwhite .fri,
+.gldp-flatwhite .sat,
+.gldp-flatwhite .sun,
+.gldp-flatwhite .selected {border: 2px solid var(--he-base);}
+
+.gldp-flatwhite .mon:hover,
+.gldp-flatwhite .tue:hover,
+.gldp-flatwhite .wed:hover,
+.gldp-flatwhite .thu:hover,
+.gldp-flatwhite .fri:hover,
+.gldp-flatwhite .sat:hover,
+.gldp-flatwhite .sun:hover {background-color: var(--he-gray-200);}
+.gldp-flatwhite .noday {color: var(--he-gray-100); cursor: wait !important}
+
+.gldp-flatwhite .selected,
+.gldp-flatwhite .selected:hover {font-weight: bold; color: var(--he-base); background-color: var(--he-main1);}
+
+.gldp-flatwhite .today {box-shadow: inset 0 -2px 0px var(--he-main1); color: var(--he-main1); font-weight: bold;}
+
+
+
+/*!
+ * Waves v0.7.6
+ * http://fian.my.id/Waves 
+ * 
+ * Copyright 2014-2018 Alfiana E. Sibuea and other contributors 
+ * Released under the MIT license 
+ * https://github.com/fians/Waves/blob/master/LICENSE */
+.waves-effect {position: relative; cursor: pointer; display: inline-block; overflow: hidden; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-tap-highlight-color: transparent;}
+.waves-effect .waves-ripple {position: absolute; border-radius: 50%; width: 100px; height: 100px; margin-top: -50px; margin-left: -50px; opacity: 0; background: rgba(0, 0, 0, .2); background: radial-gradient(rgba(0, 0, 0, .2) 0, rgba(0, 0, 0, .3) 40%, rgba(0, 0, 0, .4) 50%, rgba(0, 0, 0, .5) 60%, rgba(255, 255, 255, 0) 70%);
+													-webkit-transition: all .5s ease-out; transition: all .5s ease-out; -webkit-transition-property: -webkit-transform, opacity; -webkit-transition-property: opacity, -webkit-transform; pointer-events: none;
+													transition-property: opacity, -webkit-transform; transition-property: transform, opacity; transition-property: transform, opacity, -webkit-transform; -webkit-transform: scale(0) translate(0, 0); transform: scale(0) translate(0, 0);}
+.waves-effect.waves-light .waves-ripple {background: rgba(255, 255, 255, .4); background: radial-gradient(rgba(255, 255, 255, .2) 0, rgba(255, 255, 255, .3) 40%, rgba(255, 255, 255, .4) 50%, rgba(255, 255, 255, .5) 60%, rgba(255, 255, 255, 0) 70%);}
+.waves-effect.waves-classic .waves-ripple { background: rgba(0, 0, 0, .2);}
+.waves-effect.waves-classic.waves-light .waves-ripple {background: rgba(255, 255, 255, .4);}
+.waves-notransition {-webkit-transition: none !important; transition: none !important;}
+.waves-button,
+.waves-circle {-webkit-transform: translateZ(0); transform: translateZ(0); -webkit-mask-image: -webkit-radial-gradient(circle, var(--he-base) 100%, #000 100%);}
+.waves-button,
+.waves-button-input,
+.waves-button:hover,
+.waves-button:visited {white-space: nowrap; vertical-align: middle; cursor: pointer; border: none; outline: 0; color: inherit; background-color: rgba(0, 0, 0, 0); font-size: 1em; line-height: 1em; text-align: center; text-decoration: none; z-index: 1;}
+.waves-button {padding: .85em 1.1em; border-radius: .2em;}
+.waves-button-input {margin: 0; padding: .85em 1.1em;}
+.waves-input-wrapper {border-radius: .2em; vertical-align: bottom;}
+.waves-input-wrapper.waves-button {padding: 0;}
+.waves-input-wrapper .waves-button-input {position: relative; top: 0; left: 0; z-index: 1;}
+.waves-circle {text-align: center; width: 2.5em; height: 2.5em; line-height: 2.5em; border-radius: 50%;}
+.waves-float {-webkit-mask-image: none; -webkit-box-shadow: 0 1px 1.5px 1px rgba(0, 0, 0, .12); box-shadow: 0 1px 1.5px 1px rgba(0, 0, 0, .12); -webkit-transition: all .3s; transition: all .3s;}
+.waves-float:active {-webkit-box-shadow: 0 8px 20px 1px rgba(0, 0, 0, .3); box-shadow: 0 8px 20px 1px rgba(0, 0, 0, .3);}
+.waves-block {display: block;}
+.waves-effect.waves-light .waves-ripple {background-color: rgba(255, 255, 255, .4);}
+.waves-effect.waves-primary .waves-ripple {background-color: rgba(82, 92, 229, .4);}
+.waves-effect.waves-success .waves-ripple {background-color: rgba(35, 197, 143, .4);}
+.waves-effect.waves-info .waves-ripple {background-color: rgba(91, 164, 229, .4);}
+.waves-effect.waves-warning .waves-ripple {background-color: rgba(238, 177, 72, .4);}
+.waves-effect.waves-danger .waves-ripple {background-color: rgba(241, 78, 78, .4);}
+
+
+/**
+ * SimpleBar.css - v4.2.3
+ * Scrollbars, simpler.
+ * https://grsmto.github.io/simplebar/
+ *
+ * Made by Adrien Denat from a fork by Jonathan Nicol
+ * Under MIT License
+ */
+[data-simplebar] {position: relative; -webkit-box-orient: vertical; -webkit-box-direction: normal; -ms-flex-direction: column; flex-direction: column; -ms-flex-wrap: wrap; flex-wrap: wrap; -webkit-box-pack: start; -ms-flex-pack: start;
+								justify-content: flex-start; -ms-flex-line-pack: start; align-content: flex-start; -webkit-box-align: start; -ms-flex-align: start; align-items: flex-start;}
+.simplebar-wrapper {overflow: hidden; width: inherit; height: inherit; max-width: inherit; max-height: inherit;}
+.simplebar-mask {direction: inherit; position: absolute; overflow: hidden; padding: 0; margin: 0; left: 0; top: 0; bottom: 0; right: 0; width: auto !important; height: auto !important; z-index: 0;}
+.simplebar-offset {direction: inherit !important; -webkit-box-sizing: inherit !important; box-sizing: inherit !important; resize: none !important; position: absolute; top: 0; left: 0 !important; bottom: 0; right: 0 !important; padding: 0; margin: 0; -webkit-overflow-scrolling: touch;}
+
+.simplebar-content-wrapper {direction: inherit; -webkit-box-sizing: border-box !important; box-sizing: border-box !important; position: relative; display: block; height: 100%; width: auto; visibility: visible; overflow: auto;
+													max-width: 100%; max-height: 100%; scrollbar-width: none; padding: 0 !important;}
+.simplebar-content-wrapper::-webkit-scrollbar,
+.simplebar-hide-scrollbar::-webkit-scrollbar {display: none;}
+.simplebar-content:after,
+.simplebar-content:before {content: ' '; display: table;}
+.simplebar-placeholder {max-height: 100%; max-width: 100%; width: 100%; pointer-events: none;}
+.simplebar-height-auto-observer-wrapper {-webkit-box-sizing: inherit !important; box-sizing: inherit !important; height: 100%; width: 100%; max-width: 1px; position: relative; float: left; max-height: 1px; overflow: hidden; z-index: -1; padding: 0; margin: 0; pointer-events: none;
+																				-webkit-box-flex: inherit; -ms-flex-positive: inherit; flex-grow: inherit; -ms-flex-negative: 0; flex-shrink: 0; -ms-flex-preferred-size: 0; flex-basis: 0;}
+.simplebar-height-auto-observer {-webkit-box-sizing: inherit; box-sizing: inherit; display: block; opacity: 0; position: absolute; top: 0; left: 0; height: 1000%; width: 1000%; min-height: 1px; min-width: 1px; overflow: hidden; pointer-events: none; z-index: -1;}
+.simplebar-track {z-index: 1; position: absolute; right: 0; bottom: 0; pointer-events: none; overflow: hidden;}
+[data-simplebar].simplebar-dragging .simplebar-content {pointer-events: none; -moz-user-select: none; -ms-user-select: none; user-select: none; -webkit-user-select: none;}
+[data-simplebar].simplebar-dragging .simplebar-track {pointer-events: all;}
+.simplebar-scrollbar {position: absolute; right: 2px; width: 6px; min-height: 10px;}
+.simplebar-scrollbar:before {position: absolute; content: ''; background: var(--he-gray-500); border-radius: 7px; left: 0; right: 0; opacity: 0; -webkit-transition: opacity .2s linear; transition: opacity .2s linear;}
+.simplebar-scrollbar.simplebar-visible:before {opacity: .5; -webkit-transition: opacity 0s linear; transition: opacity 0s linear;}
+.simplebar-track.simplebar-vertical {top: 0; width: 11px;}
+.simplebar-track.simplebar-vertical .simplebar-scrollbar:before {top: 2px; bottom: 2px;}
+.simplebar-track.simplebar-horizontal {left: 0; height: 11px;}
+.simplebar-track.simplebar-horizontal .simplebar-scrollbar:before {height: 100%; left: 2px; right: 2px;}
+.simplebar-track.simplebar-horizontal .simplebar-scrollbar {right: auto; left: 0; top: 2px; height: 7px; min-height: 0; min-width: 10px; width: auto;}
+[data-simplebar-direction=rtl] .simplebar-track.simplebar-vertical {right: auto; left: 0;}
+.hs-dummy-scrollbar-size {direction: rtl; position: fixed; opacity: 0; visibility: hidden; height: 500px; width: 500px; overflow-y: hidden; overflow-x: scroll;}
+.simplebar-hide-scrollbar {position: fixed; left: 0; visibility: hidden; overflow-y: scroll; scrollbar-width: none; -ms-overflow-style: none;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*************************************************************
+ * ▼▼▼ 이 아래부터 OLD SOURCE (정리 또는 삭제 필요) ▼▼▼
+ *************************************************************/
+
+/* loading bar */
+#loading {position:fixed;_position:absolute;top:0px;left:0px;width: 00%;height:100%;filter:alpha(opacity=50);-moz-opacity:0.5;opacity:0.5;}
+.loading {background-color:transparent;z-index:199;}
+#loading_img{position:absolute;top:50%;left:50%;height:35px;margin-top:-75px;margin-left:-75px;z-index:200;}
+
+.loading-wrap {positon:relative; background: transparent;}
+.loading-wrap .displayLoadingImgBox {width:80px; height:auto; position:absolute; top:50%; left:50%; margin-top:-40px; margin-left:-40px;}
+
+#displayLoadingImgBox {position:fixed; top:40%; left:50%; margin-left:-30px; margin-top:-30px;}
+
+/* webkit-scroll bar custom (safari) */
+.nav::-webkit-scrollbar {width:0px}
+.nav::-webkit-scrollbar-track {background:transparent;}
+.nav::-webkit-scrollbar-thumb {-webkit-border-radius:0px;border-radius:0px;background:#ccc}
+.nav::-webkit-scrollbar-thumb:window-inactive {background:#ccc}
+
+.section::-webkit-scrollbar {width:0px}
+.section::-webkit-scrollbar-track {background:#f2f2f2;}
+.section::-webkit-scrollbar-thumb {-webkit-border-radius:0px;border-radius:0px;background:#f2f2f2}
+.section::-webkit-scrollbar-thumb:window-inactive {background:#f2f2f2}
+
+
+
+/******** jquery plugin style / file download ************************************************************************************************/
+.attachFile{display:block;height:22px;margin-bottom:5px}
+.jquery-filestyle {display:inline-block;padding:4px 20px;background:#fff;border:1px solid #3494f3;color:#3494f3 !important;font-size:12px;cursor:pointer}
+.jquery-filestyle label{padding:0 20px}
+.jquery-filestyle *{color:inherit !important;vertical-align:top;cursor:pointer}
+.fileDownLst .btnType01{margin-left:5px}
+.fileDownLst > .MultiFile-label{margin-top:5px}
+.fileDownLst > .MultiFile-label:first-child{margin-top:0}
+.MultiFile-label{font-size:12px; padding-bottom:5px;}
+.MultiFile-remove{float:left;display:inline-block;margin:1px 3px 0 0;}
+.icn_fileDel{display:inline-block;background:#dd2424;padding:5px;}
+.icn_fileDel img{}
+.MultiFile-export{display:inline-block;border-radius:50%;width:18px;height:18px;margin:0 2px 0 0;color:#fff;background:#ff7a57;text-align:center;vertical-align:middle}
+.MultiFile-export input{width:100%;padding-top:2px;line-height:1em;background:none;color:#4f525a;font-size:12px;font-weight:normal;text-align:right;outline:none}
+.MultiFile-title {display:inline-block; vertical-align:middle;}
+
+.fileLst02 > li{margin-top:3px}
+.fileLst02 > li:first-child{margin-top:0}
+.fileLstDown{display:inline-block;padding-left:12px;background:url(/images/com/web/icon_file_list.png) left 5px no-repeat;vertical-align:top}
+.fileLstDown:hover,
+.fileLstDown:focus{color:#fb6e52;text-decoration:underline}
+.btnAdd{position:absolute;top:15px;right:20px}
+
+.previewFileLst .MultiFile-export {}
+.previewFileLst.MultiFile-title {margin-top:0;}
+.previewFileLst > div {padding:5px; max-height:130px; overflow-x:hidden; overflow-y:auto !important; background:#fdfdfd; border:1px solid #d8d8d8;}
+
+.previewFile {}
+.tit-cont.preview {font-size:12px;}
+.previewFile ul {margin-top:5px; overflow-x:hidden; margin-bottom:20px; background:#fdfdfd; border:1px solid #d8d8d8;}
+.previewFile li {width:auto; border-top:1px dashed #adadad; padding:10px 10px;}
+.previewFile li:first-child {border-top:none;}
+.previewFile li p {font-size:12px; margin-top:8px;}
+.previewFile li p:before {content:'＊'; color:#ff618e;}
+.previewFile li img {width:50%; height:auto; cursor:pointer;}
+
+.imgFile, .docFile {position:relative;}
+.imgFile .attach-i, .docFile .attach-i {position:absolute;left:90px;top:4px;color:#2872bb;}
+.fileWrap {padding:3px 0 0;}
+.fileWrap.type-inline {position:relative;width:100%;height:30px;padding:0;}
+.fileWrap.type-inline .attachFile {position:absolute;top:6px;margin:0;display:inline-block;}
+.fileWrap.type-inline .fileList {position:absolute;left:90px;top:5px;margin:0;padding:0;display:inline-block;border:none;}
+.fileList, .imgFileList, .docFileList {box-sizing:border-box;padding:5px;overflow-y:auto;border:1px solid #e0e0e0;}
+.fileList {border:none; margin-top:0;}
+
+.btnFile{display:inline-block;position:relative;vertical-align:top}
+.btnFile a{display:inline-block;height:12px;line-height:12px;padding:4px 20px;border:1px solid #41515d;-moz-border-radius:5px;-webkit-border-radius:5px;border-radius:5px;color:#41515d !important;font-size:12px;vertical-align:top;z-index:10}
+.btnFile input{overflow:hidden;position:absolute;top:2px;left:2px;width:0;height:0;border:none;background:none}
+.btnAdd{position:absolute;top:15px;right:20px}
+
+/******** WINDOW POPUP ************************************************************************************************/
+.pop-header {position:fixed !important;background:#3c454f !important;border:none !important;letter-spacing:1px;}
+.pop-header h3 {margin:10px 15px;color:#fff;font-weight:bold;font-size:16px;}
+/* .pop-body {position:absolute;top:45px;left:0;overflow-y:auto;} */
+.pop-bottom {position:fixed;bottom:0;left:0;box-sizing:border-box;padding-top:9px;width:100%;height:48px;border-top:1px solid #e0e0e0;text-align:center;}
+
+/******** LAYER POPUP ************************************************************************************************/
+.popArea{display:none;position:fixed;top:0;left:0;right:0;bottom:0;z-index:100}
+.popDimm{display:block;position:fixed;top:0;left:0;right:0;bottom:0;background:#000000;opacity:0;z-index:110}
+.popWrap{position:fixed;top:50%;left:50%;width:280px;margin-left:-140px;z-index:120;
+perspective:600px;
+-webkit-perspective:600px;
+   -moz-perspective:600px;
+	-ms-perspective:600px;
+	 -o-perspective:600px;
+}
+.popWrap.type02{width:230px;margin-left:-115px;}
+.popFront,
+.popBack{position:absolute;top:0;left:0;right:0;bottom:0;-moz-border-radius:10px;-webkit-border-radius:10px;border-radius:10px;opacity:0;
+transform-style:preserve-3d;
+-webkit-transform-style:preserve-3d;
+   -moz-transform-style:preserve-3d;
+	-ms-transform-style:preserve-3d;
+	 -o-transform-style:preserve-3d;
+backface-visibility:hidden;
+-webkit-backface-visibility:hidden;
+   -moz-backface-visibility:hidden;
+	-ms-backface-visibility:hidden;
+	 -o-backface-visibility:hidden;
+}
+.popFront{background-color:#ffffff;opacity:0}
+.popBack{background-color:#fb6e52}
+.popArea.on{display:block}
+.popArea.on .popDimm{
+animation:popDimm 0.4s forwards;
+-webkit-animation:popDimm 0.4s forwards;
+   -moz-animation:popDimm 0.4s forwards;
+	-ms-animation:popDimm 0.4s forwards;
+	 -o-animation:popDimm 0.4s forwards;
+}
+.popArea.on .popFront{
+animation:popFront 1.2s ease-in-out forwards;
+-webkit-animation:popFront 1.2s ease-in-out forwards;
+   -moz-animation:popFront 1.2s ease-in-out forwards;
+	-ms-animation:popFront 1.2s ease-in-out forwards;
+	 -o-animation:popFront 1.2s ease-in-out forwards;
+}
+.popArea.on .popBack{
+animation:popBack 1.2s ease-in-out forwards;
+-webkit-animation:popBack 1.2s ease-in-out forwards;
+   -moz-animation:popBack 1.2s ease-in-out forwards;
+	-ms-animation:popBack 1.2s ease-in-out forwards;
+	 -o-animation:popBack 1.2s ease-in-out forwards;
+}
+.popArea.close{opacity:0}
+.popTit{position:absolute;top:0;left:0;right:0;padding:8px 15px;border-bottom:1px solid #e6e6ee;-moz-border-radius-topleft:10px;-moz-border-radius-topright:10px;-webkit-border-top-left-radius:10px;-webkit-border-top-right-radius:10px;border-top-left-radius:10px;border-top-right-radius:10px;background-color:#ffffff;color:#fb6e52;font-size:0.750rem;font-weight:bold;z-index:10}
+.popInner{overflow:hidden;position:relative;padding:48px 10px 12px}
+.popInner.type02{padding-top:64px}
+.popInner.type03{padding:25px;}
+.popArea .btnWrap{margin-top:20px}
+.popArea .btnWrap.type02{margin-top:30px;}
+.popArea .btnWrap.type02 a{margin:0 2px}
+.popCfm .txtCfm{text-align:center;font-size:20px;}
+.popCfm .accent{color:#fb6e52 !important}
+.popCfm .btnType01{display:inline-block;padding:0 50px;margin-left:52px !important;}
+
+.popArea.type02 .popFront,
+.popArea.type02 .popBack{
+animation:popOpen 0.4s forwards;
+-webkit-animation:popOpen 0.4s forwards;
+   -moz-animation:popOpen 0.4s forwards;
+	-ms-animation:popOpen 0.4s forwards;
+	 -o-animation:popOpen 0.4s forwards;
+transform-style:initial;
+-webkit-transform-style:initial;
+   -moz-transform-style:initial;
+	-ms-transform-style:initial;
+	 -o-transform-style:initial;
+backface-visibility:initial;
+-webkit-backface-visibility:initial;
+   -moz-backface-visibility:initial;
+	-ms-backface-visibility:initial;
+	 -o-backface-visibility:initial;
+
+}
+
+
+@-webkit-keyframes popDimm{
+	0%{opacity:0}
+	100%{opacity:0.5}
+}
+@-webkit-keyframes popOpen{
+	0%{opacity:0}
+	100%{opacity:1}
+}
+@-webkit-keyframes popFront{
+	0%{color:#ffffff;z-index:900;opacity:0;
+	-webkit-transform:rotateY(180deg) translate(0);
+	   -moz-transform:rotateY(180deg) translate(0)}
+	30%{opacity:0;
+	-webkit-transform:rotateY(180deg) translate(0);
+	   -moz-transform:rotateY(180deg) translate(0)}
+	70%{opacity:0;}
+	100%{opacity:1;z-index:1000;
+	-webkit-transform:rotateX(0deg) rotateY(0deg);
+	   -moz-transform:rotateX(0deg) rotateY(0deg)}
+}
+@-webkit-keyframes popBack{
+	0%{z-index:1000;opacity:0;
+	-webkit-transform:rotateX(0deg) rotateY(0deg) translate(-80px);
+	   -moz-transform:rotateX(0deg) rotateY(0deg) translate(-80px)}
+	30%{opacity:1;
+	-webkit-transform:rotateY(0deg) translate(0);
+	   -moz-transform:rotateY(0deg) translate(0)}
+	100%{opacity:1;z-index:900;
+	-webkit-transform:rotateY(-180deg);
+	   -moz-transform:rotateY(-180deg)}
+}
+
+/* 팝업  관련 CSS CLASS 추가  2016-10-06 */
+.print-container{padding: 10px 10px;margin-bottom: 20px;}
+.print-frm{padding: 5px;}
+.head-wrap{width: 100%;text-align: center;}
+.head-tit{display: inline-block;height: 25px;line-height: 25px;width:150px;border-radius: 10px;padding: 10px 10px;font-weight: bold;font-size: 25px;border:1px solid;font-family: '맑은 고딕',verdana,arial,helvetica,sans-serif;}
+.memo-cont{padding: 25px;font-size: 16px !important;font-family: '맑은 고딕',verdana,arial,helvetica,sans-serif;}
+
+

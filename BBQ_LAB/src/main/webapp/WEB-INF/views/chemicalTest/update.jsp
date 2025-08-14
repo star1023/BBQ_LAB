@@ -1806,7 +1806,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 										<label for="standard1_${status.index}"><span></span></label>
 									</td>
 									<td>
-										<inpxt" name="standard1"  style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
+										<input name="standard1"  style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
 									</td>
 								</tr>
 							</c:if>
@@ -1866,7 +1866,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 											<label for="standard2_${status.index}"><span></span></label>
 										</td>
 										<td>
-											<inpxt" name="standard2"  style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
+											<input name="standard2"  style="width:99%; float: left" value="${standardData.STANDARD_CONTENT}" />
 										</td>
 									</tr>
 								</c:if>

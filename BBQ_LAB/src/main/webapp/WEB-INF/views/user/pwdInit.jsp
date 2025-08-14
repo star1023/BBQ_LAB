@@ -1,17 +1,28 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" trimDirectiveWhitespaces="true"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ page session="false" %>
-<html>
+<html class="skin_red">
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-<meta http-equiv="Content-Type" content="text/html; charset=EUC-KR">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
 <title>BBQ세계식문화과학기술원</title>
-	<link href="/resources/css/common.css" rel="stylesheet" type="text/css" />
-	<link href="/resources/css/layout.css" rel="stylesheet" type="text/css" />
+	<!-- <link href="/resources/css/common.css" rel="stylesheet" type="text/css" />
+	<link href="/resources/css/layout.css" rel="stylesheet" type="text/css" /> -->
+	
+	<link rel="stylesheet" href="/resources/css/login/common.css" type="text/css" />
+	<link rel="stylesheet" href="/resources/css/login/component.css" type="text/css" />
+	<link rel="stylesheet" href="/resources/css/login/page.css" type="text/css" />
+	<link rel="stylesheet" href="/resources/css/login/skinSwitcher.css" type="text/css" />
+	<link rel="stylesheet" href="/resources/font/font-icon/icons.css" type="text/css" />
 		
 <script type="text/javascript" src="/resources/js/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="/resources/js/jquery.form.js"></script>
 <script type="text/javascript">
+$(document).ready(function(){
+	var winH = $(window).height();
+	$("#vWrapper").height(winH);
+});
 //로그인 처리
 function pwdInit(){
 	if( $("#newPassword").val() == '' ) {
@@ -123,12 +134,7 @@ function pwdInit(){
 	
 }
 </script>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-		<title>BBQ 연구소 시스템</title>
-	</head>	
-	<body bgcolor="#f1f1f1">
+	<%-- <body bgcolor="#f1f1f1">
  		<div class="login_wrap">
  			<div class="login_box login_ani">
 				<div class="login_txt">
@@ -156,6 +162,69 @@ function pwdInit(){
 			</div>
 		</footer>
 		</div>
+		<form name="form1" method="post">
+			<input type="hidden" id="userIdTemp" name="userIdTemp"/>
+		</form>
+	</body> --%>
+	
+	<body>
+		<form id="frmLogin" name="frmLogin" method="post" class="material">
+			
+			<div class="loginWrap bgGray" id="vWrapper">
+				<div class="loginForm">			
+					<div class="loginFormBox">
+						<div class="loginFormBox-border bgMainGra"></div>
+						<div class="loginHeader">
+							<div class="loginLogo"><img id="logo" src="/resources/images/bbq_logo.png" alt="(주)제너시스비비큐" ></div>
+							<div class="loginStc">BBQ세계식문화과학기술원</div>
+						</div>
+						
+						<div class="loginBody">
+							<ul class="loginInputLst">
+								<li class="id inputFocusOut flex">
+									<div class="loginInputIcon fixCol"><i class="mdi mdi-account-circle-outline"></i></div>
+									<div class="flexCol">
+										<input type="text" title="사용자ID" id="userId" name="userId" class="loginInput" value="${userId}" readonly>						
+									</div>
+								</li>
+								<li class="pw inputFocusOut flex">
+									<div class="loginInputIcon fixCol"><i class="mdi mdi-lock-outline"></i></div>
+									<div class="flexCol">
+										<input type="password" title="사용자ID" id="newPassword" name="newPassword" tabindex="1" class="loginInput" placeholder="신규 비밀번호를 입력해주세요." autofocus onKeyPress="if(window.event.keyCode == 13) { pwdInit();}">						
+									</div>
+								</li>
+								<li class="pw inputFocusOut flex">
+									<div class="loginInputIcon fixCol"><i class="mdi mdi-lock-outline"></i></div>
+									<div class="flexCol">
+										<input type="password" title="비밀번호" id="rePassword" name="rePassword" tabindex="2" onKeyPress="if(window.event.keyCode == 13) { loginProc();}" class="loginInput" placeholder="비밀번호 확인을 위해 다시한번 입력해주세요." onKeyPress="if(window.event.keyCode == 13) { pwdInit();}">
+									</div>
+								</li>
+							</ul>
+							
+							<!-- <div class="loginOptionArea">
+								<div class="rememberPw">
+									<span class="chk-wrap" id="cookie_save_yn_span">
+										<input type="checkbox" id="cookieSaveYn" name="cookieSaveYn" value="Y">
+										<label for="cookieSaveYn"><span></span>로그인 정보 저장</label>
+									</span>
+								</div>
+							</div> -->				
+						</div>
+										
+						<div class="loginFooter">
+							<button class="loginFooter-btn bgMainGra waves-effect"  id="btnLogin" type="button" onClick="javascript:pwdInit();">
+								<span>비밀번호 변경<i class="fas fa-chevron-right"></i></span>
+							</button>
+						</div>			
+					</div>
+				</div>	
+						
+				<div class="copy">
+					이 사이트는 Microsoft Edge, Chrome, Firefox에 최적화 되어 있습니다.<br>
+					서울특별시 송파구 중대로 64(문정동) (주)제너시스 <i> | </i> 대표이사 최영 <i> | </i> 정보보호 최고책임자 <br/>(c) GENESIS BBQ ALL Rights Reserved.
+				</div>
+			</div>
+		</form>
 		<form name="form1" method="post">
 			<input type="hidden" id="userIdTemp" name="userIdTemp"/>
 		</form>

@@ -1065,12 +1065,12 @@ li {
 		<h2 style="position: relative">
 			<span class="title_s">Cost Management</span><span class="title">사전원가서 개정</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_wirte_dark" onclick="fn_versionUpTmp()">&nbsp;</button>
 						<button class="btn_circle_version" onclick="fn_versionUp()">&nbsp;</button>						
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">
@@ -1123,7 +1123,7 @@ li {
 							<tr>
 								<th style="border-left: none;">플랜트 <span class="mandatory">*</span></th>
 								<td colspan="3">
-									<div class="selectbox req" style="width:147px;">  
+									<div class="selectbox" style="width:147px;">  
 										<label for="plant" id="plant_label"> 선택</label> 
 										<select id="plant" id="plant">
 										</select>
@@ -1137,7 +1137,7 @@ li {
 								</td>
 								<th style="border-left: none;">제품단위</th>
 								<td>
-									<div class="selectbox req" style="width:147px;">  
+									<div class="selectbox" style="width:147px;">  
 										<label for="unit" id="unit_label"> 선택</label> 
 										<select id="unit" id="unit">
 										</select>

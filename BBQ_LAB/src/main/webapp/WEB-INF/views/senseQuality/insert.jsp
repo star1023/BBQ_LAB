@@ -593,7 +593,7 @@ table{font-size: 12px}
 	function fn_closeErpMatRayer(){
 		$('#searchErpMatValue').val('')
 		$('#erpMatLayerBody').empty();
-		$('#erpMatLayerBody').append('<tr><td colspan="10">원료코드 혹은 원료코드명을 검색해주세요</td></tr>');
+		$('#erpMatLayerBody').append('<tr><td colspan="10">상품코드 혹은 상품명을 검색해주세요</td></tr>');
 		$('#erpMatCount').text(0);
 		closeDialog('dialog_erpMaterial');
 	}
@@ -870,11 +870,11 @@ table{font-size: 12px}
 		<h2 style="position:relative">
 			<span class="title_s">Sense & Quality Test Report</span><span class="title">관능&품질평가 테스트 결과보고서</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_save" onclick="fn_insert()">&nbsp;</button>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">
@@ -894,8 +894,8 @@ table{font-size: 12px}
 					</colgroup>
 					<tbody>
 						<tr>
-							<th style="border-left: none;">제목</th>
-							<td colspan="3"><input type="text" name="title" id="title" style="width: 90%;" class="req" /></td>
+							<th style="border-left: none;">제목<span class="mandatory">*</span></th>
+							<td colspan="3"><input type="text" name="title" id="title" style="width: 90%;"  /></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">결재라인</th>
@@ -911,27 +911,27 @@ table{font-size: 12px}
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">업체명</th>
+							<th style="border-left: none;">업체명<span class="mandatory">*</span></th>
 							<td colspan="3">
-								<input type="text"  style="width:200px; float: left" class="req" name="companyName" id="companyName" placeholder="업체명을 입력하세요."/>
+								<input type="text"  style="width:200px; float: left" name="companyName" id="companyName" placeholder="업체명을 입력하세요."/>
 							</td>
 						</tr>
 						<tr>	
 							<th style="border-left: none;">제품명</th>
 							<td>
-								<input type="text"  style="width:90%; float: left" class="req" name="productName" id="productName" placeholder="제품명을 입력하세요."/>
+								<input type="text"  style="width:90%; float: left" name="productName" id="productName" placeholder="제품명을 입력하세요."/>
 							</td>
 							<th style="border-left: none;">ERP코드</th>
 							<td>
-								<input type="text"  style="width:200px; float: left" class="req" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
+								<input type="text"  style="width:200px; float: left" name="sapCode" id="sapCode" placeholder="코드를 조회 하세요." readonly/>
 								<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								<button class="btn_small_search ml5" onclick="fn_initForm()" style="float: left">초기화</button>
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">테스트 목적</th>
+							<th style="border-left: none;">테스트 목적<span class="mandatory">*</span></th>
 							<td colspan="3">
-								<input type="text"  style="width:100%; float: left" class="req" name="testPurpose" id="testPurpose"/>
+								<input type="text"  style="width:100%; float: left" name="testPurpose" id="testPurpose"/>
 							</td>
 						</tr>					
 					</tbody>
@@ -1196,7 +1196,7 @@ table{font-size: 12px}
 								<input type="checkbox" id="result_1"><label for="result_1"><span></span></label>
 							</td>
 							<td>
-								<input type="text"  style="width:99%; float: left" class="req" name="result" placeholder="가."/>
+								<input type="text"  style="width:99%; float: left"  name="result" placeholder="가."/>
 							</td>
 						</tr>
 					</tbody>
@@ -1206,7 +1206,7 @@ table{font-size: 12px}
 								<input type="checkbox" id="result_1"><label for="result_1"><span></span></label>
 							</td>
 							<td>
-								<input type="text"  style="width:99%; float: left" class="req" name="result"/>
+								<input type="text"  style="width:99%; float: left"  name="result"/>
 							</td>
 						</tr>
 					</tbody>
@@ -1390,7 +1390,7 @@ table{font-size: 12px}
 	<input id="erpItemType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px ">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeErpMatRayer()"></button></li>
@@ -1433,7 +1433,7 @@ table{font-size: 12px}
 					<tbody id="erpMatLayerBody">
 						<input type="hidden" id="erpMatLayerPage" value="0"/>
 						<Tr>
-							<td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="9">성퓸코드 혹은 상품명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>

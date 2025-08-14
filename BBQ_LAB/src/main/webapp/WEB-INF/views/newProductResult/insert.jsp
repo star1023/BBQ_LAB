@@ -1663,7 +1663,7 @@ function fn_openPreview() {
 				<span class="txt">기본정보</span>
 				<div class="pr15">
 					<button id="prevBtn" class="btn_small_search" onclick="fn_copySearch()" >불러오기</button>
-					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()" style="display:none;">미리보기</button>
+					<button id="prevBtn" class="btn_small_search" onclick="fn_openPreview()">미리보기</button>
 				</div>
 			</div>
 			<div class="main_tbl">
