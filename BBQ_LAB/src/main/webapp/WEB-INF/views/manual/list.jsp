@@ -226,7 +226,7 @@
 				            html += "	</td>";
 
 				            html += "	<td>" + nvl(mainItem.MENU_CODE, '&nbsp;') + "</td>";
-				            html += "	<td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('" + mainItem.MANUAL_IDX + "')\">" + nvl(mainItem.NAME, '&nbsp;') + "</a></div></td>";
+				            html += "	<td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('" + mainItem.MENU_IDX + "')\">" + nvl(mainItem.NAME, '&nbsp;') + "</a></div></td>";
 				            html += "	<td>" + nvl(mainItem.VERSION_NO, '&nbsp;') + "</td>";
 				            html += "	<td><div class=\"ellipsis_txt tgnl\">";
 				            if (chkNull(mainItem.CATEGORY_NAME1)) {
@@ -245,11 +245,11 @@
 				            html += "	<td>";
 				            if (mainItem.REG_YN === 'N') {
 				                html += "		<li style=\"float:none; display:inline\">";
-				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_attachFileOpen('" + mainItem.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
+				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_attachFileOpen('" + mainItem.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
 				                html += "		</li>";
 				            } else {
 				                html += "		<li style=\"float:none; display:inline\">";
-				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewFile('" + mainItem.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
+				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewFile('" + mainItem.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
 				                html += "		</li>";
 				            }
 				            html += "	</td>";
@@ -264,7 +264,7 @@
 				            html += "<tr id=\"manual_" + item.DOC_NO + "_" + item.VERSION_NO + "\" class=\"m_version\" style=\"display: none\">";
 				            html += "  <td>&nbsp;</td>";
 				            html += "  <td>" + nvl(item.MENU_CODE, '&nbsp;') + "</td>";
-				            html += "  <td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('" + item.MANUAL_IDX + "')\">" + nvl(item.NAME, '&nbsp;') + "</a></div></td>";
+				            html += "  <td><div class=\"\"><a href=\"#\" onClick=\"fn_viewFile('" + item.MENU_IDX + "')\">" + nvl(item.NAME, '&nbsp;') + "</a></div></td>";
 				            html += "  <td>" + nvl(item.VERSION_NO, '&nbsp;') + "</td>";
 				            html += "  <td><div class=\"ellipsis_txt tgnl\">";
 				            if (chkNull(item.CATEGORY_NAME1)) html += item.CATEGORY_NAME1;
@@ -277,11 +277,11 @@
 
 				            if (item.REG_YN === 'N') {
 				                html += "    <li style=\"float:none; display:inline\">";
-				                html += "      <button class=\"btn_doc\" onclick=\"fn_attachFileOpen('" + item.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
+				                html += "      <button class=\"btn_doc\" onclick=\"fn_attachFileOpen('" + item.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
 				                html += "    </li>";
 				            } else {
 				                html += "    <li style=\"float:none; display:inline\">";
-				                html += "      <button class=\"btn_doc\" onclick=\"fn_viewFile('" + item.MANUAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
+				                html += "      <button class=\"btn_doc\" onclick=\"fn_viewFile('" + item.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
 				                html += "    </li>";
 				            }
 

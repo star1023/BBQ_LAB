@@ -995,13 +995,14 @@
 								<input type="text" name="title" id="title" style="width: 90%;" value="${planData.data.TITLE}"/>
 							</td>
 						</tr>
-						<c:if test="${planData.data.STATUS != null && planData.data.STATUS != 'COND_APPR' }">
 							<tr>
 								<th style="border-left: none;">결재라인<span class="mandatory">*</span></th>
 								<td colspan="3">
 									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-									<button class="btn_small_search ml5"
-										onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+									<c:if test="${planData.data.STATUS != null && planData.data.STATUS != 'COND_APPR' }">
+										<button class="btn_small_search ml5"
+											onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+									</c:if>
 								</td>
 							</tr>
 							<tr>
@@ -1010,7 +1011,6 @@
 									<div id="refTxtFull" name="refTxtFull"></div>
 								</td>
 							</tr>
-							</c:if>
 						<tr>
 							<th style="border-left: none;">출장구분<span class="mandatory">*</span></th>
 							<td colspan="3">

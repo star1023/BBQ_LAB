@@ -662,6 +662,28 @@
 						</li>
 					</ul>
 				</div>
+				<!-- ====================== 매뉴얼 (MANUAL) ====================== -->
+				<div class="title2 mb20" style="width:90%; margin-top: 30px;">
+				  <span class="txt">매뉴얼</span>
+				</div>
+				<div class="list_detail">
+				  <ul>
+				    <li>
+				      <dt style="width: 20%">매뉴얼</dt>
+				      <dd style="width: 80%;">
+				        <div class="add_file" id="add_file_manual" style="width:100%"></div>
+				        <div id="manualFileList" class="file_box_pop"
+				             style="height:120px; width:100%; border-top-left-radius:0; border-top-right-radius:0; border-top:1px solid #ddd; box-sizing:border-box;">
+				          <ul id="attach_file_manual" class="file_list">
+				            <c:forEach items="${menuData.manualFileList}" var="mfile" varStatus="status">
+				              <li>&nbsp;<a href="javascript:downloadFile('${mfile.FILE_IDX}')">${mfile.ORG_FILE_NAME}</a></li>
+				            </c:forEach>
+				          </ul>
+				        </div>
+				      </dd>
+				    </li>
+				  </ul>
+				</div>
 				<%-- <div class="con_file" style="">
 					<ul>
 						<li class="point_img" style="display:flex;">

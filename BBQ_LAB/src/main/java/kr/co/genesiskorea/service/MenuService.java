@@ -40,9 +40,9 @@ public interface MenuService {
 
 	int insertNewVersionCheck(Map<String, Object> param);
 
-	int insertNewVersionMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
+	int insertNewVersionMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFile) throws Exception;
 
-	int insertNewVersionMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
+	int insertNewVersionMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFile) throws Exception;
 
 	Map<String, Object> selectErpMaterialData(Map<String, Object> param);
 
@@ -52,9 +52,9 @@ public interface MenuService {
 
 	void deleteFileData(Map<String, Object> param) throws Exception;
 
-	void updateMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
+	void updateMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFiles) throws Exception;
 
-	void updateMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file) throws Exception;
+	void updateMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFiles) throws Exception;
 
 	int selectMyDataCheck(Map<String, Object> param);	
 

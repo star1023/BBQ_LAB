@@ -258,6 +258,13 @@ li {
 	var attatchFileTypeArr = [];
 	var attatchTempFileArr = [];
 	var attatchTempFileTypeArr = [];
+	
+	// === 매뉴얼 첨부 전역 배열 ===
+	var manualFileArr = [];
+	var manualFileTypeArr = [];
+	var manualTempFileArr = [];
+	var manualTempFileTypeArr = [];
+	
 	function callAddFileEvent(){
 		//$('#attatch_common').click();
 		$('#file3').click();
@@ -864,6 +871,17 @@ li {
 				formData.append('fileType', attatchFileTypeArr[i].fileType)			
 			}
 			
+			// === 매뉴얼 첨부 전송 ===
+			for (var i = 0; i < manualFileArr.length; i++) {
+			  formData.append('manualFile', manualFileArr[i]); // ★ 서버에서 manualFile[] 로 받기
+			}
+			for (var i = 0; i < manualFileTypeArr.length; i++) {
+			  formData.append('manualFileTypeText', manualFileTypeArr[i].fileTypeText || ''); // 선택적
+			}
+			for (var i = 0; i < manualFileTypeArr.length; i++) {
+			  formData.append('manualFileType', manualFileTypeArr[i].fileType || 'MAN'); // 선택적
+			}
+			
 			var docTypeArr = new Array();
 			var docTypeTextArr = new Array();
 			$('input:checkbox[name=docType]').each(function (index) {
@@ -959,8 +977,19 @@ li {
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
 			
+			// 콘솔 출력 (여기에 manualFile도 같이 찍힘)
+			for (var pair of formData.entries()) {
+				for (var pair of formData.entries()) {
+				    if (pair[1] instanceof File) {
+				        console.log(pair[0] + ':', pair[1].name);
+				    } else {
+				        console.log(pair[0] + ':', pair[1]);
+				    }
+				}
+			}
+			
 			URL = "../menu/insertTmpMenuAjax";
-
+			
 			$.ajax({
 				type:"POST",
 				url:URL,
@@ -1112,7 +1141,10 @@ li {
 					alert('신규원료를 체크하셨습니다. 신규원료를 입력해주세요.');
 					return;
 				}
-			}			
+			}
+			
+			if (!validateDocTypeSelected()) return;
+			
 			//기존 데이터 확인
 			var URL = "../menu/selectMenuCountAjax";
 			$.ajax({
@@ -1222,6 +1254,16 @@ li {
 						
 						for (var i = 0; i < attatchFileTypeArr.length; i++) {
 							formData.append('fileType', attatchFileTypeArr[i].fileType)			
+						}
+						
+						for (var i = 0; i < manualFileArr.length; i++) {
+						  formData.append('manualFile', manualFileArr[i]); // 서버에서 manualFile[] 로 받기
+						}
+						for (var i = 0; i < manualFileTypeArr.length; i++) {
+						  formData.append('manualFileTypeText', manualFileTypeArr[i].fileTypeText || '');
+						}
+						for (var i = 0; i < manualFileTypeArr.length; i++) {
+						  formData.append('manualFileType', manualFileTypeArr[i].fileType || '00');
 						}
 						
 						var docTypeArr = new Array();
@@ -1398,6 +1440,19 @@ li {
 		}
 	}
 
+	function validateDocTypeSelected() {
+	  const $checked = $('input[name=docType]:checked');
+	  if ($checked.length === 0) {
+	    alert("파일유형을 최소 1개 이상 선택해 주세요.");
+	    // 필요하면 탭 전환/스크롤/포커스
+	    if (typeof tabChange === 'function') tabChange('tab1');
+	    const first = document.querySelector('#checkbox_item1');
+	    if (first) { first.scrollIntoView({behavior:'smooth', block:'center'}); first.focus(); }
+	    return false;
+	  }
+	  return true;
+	}
+	
 	function fn_goList() {
 		location.href = '/menu/list';
 	}
@@ -2234,6 +2289,90 @@ li {
 	    document.getElementById("checkAll").checked = allChecked;
 	}
 	
+	
+	function addManualFile(element, fileType){
+		  var randomId = Math.random().toString(36).substr(2, 9);
+
+		  if($(element).val() == null || $(element).val() == ''){
+		    return alert('파일을 선택해주세요');
+		  }
+
+		  var file = document.getElementById($(element).prop("id")).files;
+		  var fileName = file[0].name;
+		  var fileTypeText = $(element).text();
+
+		  // 중복 체크
+		  var isDuple = false;
+		  manualTempFileArr.forEach(function(f){ if(f.name == fileName) isDuple = true; });
+		  manualFileArr.forEach(function(f){ if(f.name == fileName) isDuple = true; });
+
+		  if(isDuple){
+		    if(!confirm('같은 이름의 파일이 존재합니다. 계속 진행하시겠습니까?')){
+		      return;
+		    }
+		  }
+
+		  if( !checkFileName(fileName) ){
+		    return;
+		  }
+
+		  manualFileArr.push(file[0]);
+		  manualFileArr[manualFileArr.length-1].tempId = randomId;
+		  manualFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+
+		  $(element).val("");
+
+		  var childTag = '<li><a href="#none" onclick="removeManualFile(this, \''+
+		    manualFileTypeArr[manualFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+
+		    manualFileArr[manualFileArr.length-1].name+'</li>';
+		  $("#manual_attatch_file").append(childTag);
+		}
+
+		function addDropManualFile(file, fileType){
+		  var randomId = Math.random().toString(36).substr(2, 9);
+		  var fileName = file.name;
+		  var fileTypeText = (file.text && file.text()) || '';
+
+		  var isDuple = false;
+		  manualFileArr.forEach(function(f){ if(f.name == fileName) isDuple = true; });
+		  manualTempFileArr.forEach(function(f){ if(f.name == fileName) isDuple = true; });
+
+		  if(isDuple){
+		    if(!confirm('같은 이름의 파일이 존재합니다. 계속 진행하시겠습니까?')){
+		      return;
+		    }
+		  }
+
+		  if( !checkFileName(fileName) ){
+		    return;
+		  }
+
+		  manualFileArr.push(file);
+		  manualFileArr[manualFileArr.length-1].tempId = randomId;
+		  manualFileTypeArr.push({fileType: fileType, fileTypeText: fileTypeText, tempId: randomId});
+
+		  var childTag = '<li><a href="#none" onclick="removeManualFile(this, \''+
+		    manualFileTypeArr[manualFileTypeArr.length-1].tempId+'\')"><img src="/resources/images/icon_del_file.png"></a>'+
+		    manualFileArr[manualFileArr.length-1].name+'</li>';
+		  $("#manual_attatch_file").append(childTag);
+		}
+
+		function removeManualFile(element, tempId){
+		  $(element).parent().remove();
+		  manualFileArr = manualFileArr.filter(function(file){ if(file.tempId != tempId) return file; });
+		  manualFileTypeArr = manualFileTypeArr.filter(function(typeObj){ if(typeObj.tempId != tempId) return typeObj; });
+		}
+
+		// 드래그앤드롭 훅 (매뉴얼 영역용)
+		function dropManual(e) {
+		  e.preventDefault();
+		  var files = e.target.files || e.dataTransfer.files;
+		  for(var i=0; i<files.length; i++){
+		    addDropManualFile(files[i], 'MAN'); // fileType 구분값 (원하면 변경)
+		  }
+		  e.target.style.backgroundColor = "#fff";
+		  e.target.style.opacity  = "1";
+		}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -2573,7 +2712,6 @@ li {
 					</table>
 				</div>
 				
-				
 				<div class="title2 mt20"  style="width:90%;"><span class="txt">파일첨부 <span class="mandatory">*</span></span></div>
 				<div class="list_detail">
 					<ul style="">
@@ -2612,6 +2750,36 @@ li {
 						</li>
 					</ul>
 				</div>
+				
+				<!-- ========================= 매뉴얼 첨부 (새 섹션) ========================= -->
+				<div class="title2 mb20"  style="width:90%;"><span class="txt">매뉴얼 첨부</span></div>
+				<div class="list_detail">
+				  <ul>
+				    <li>
+				      <dt style="width: 20%">매뉴얼 파일</dt>
+				      <dd style="width: 80%;">
+				        <div class="add_file" style="width:100%">
+				          <span>
+				            <!-- 필요하면 버튼 2개도 가능, 여기선 1개 -->
+				            <span class="file_load" id="manualFileSpan">
+				              <input type="file" name="manualFiles" id="manual_file1"
+				                     onchange="addManualFile(this, 'MAN')" style="display:none">
+				              <label for="manual_file1">매뉴얼 등록 <img src="/resources/images/icon_add_file.png"></label>
+				            </span>
+				          </span>
+				        </div>
+				
+				        <div id="manualFileList"
+				             class="file_box_pop"
+				             style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid #ddd; box-sizing: border-box;"
+				             ondrop="dropManual(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
+				          <ul id="manual_attatch_file"></ul>
+				        </div>
+				      </dd>
+				    </li>
+				  </ul>
+				</div>
+				<!-- ======================= /매뉴얼 첨부 (새 섹션) ======================== -->
 				
 				<!-- <div class="title2 mt20" style="width:10%; display: inline-block;">
 					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">

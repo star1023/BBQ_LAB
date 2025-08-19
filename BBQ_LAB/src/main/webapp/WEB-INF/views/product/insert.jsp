@@ -1097,7 +1097,10 @@ li {
 					alert('신규원료를 체크하셨습니다. 신규원료를 입력해주세요.');
 					return;
 				}
-			}			
+			}
+			
+			if (!validateDocTypeSelected()) return;
+			
 			//기존 데이터 확인
 			$('#lab_loading').show();
 			var URL = "../product/selectProductCountAjax";
@@ -1357,6 +1360,19 @@ li {
 		}
 	}
 
+	function validateDocTypeSelected() {
+	  const $checked = $('input[name=docType]:checked');
+	  if ($checked.length === 0) {
+	    alert("파일유형을 최소 1개 이상 선택해 주세요.");
+	    // 필요하면 탭 전환/스크롤/포커스
+	    if (typeof tabChange === 'function') tabChange('tab1');
+	    const first = document.querySelector('#checkbox_item1');
+	    if (first) { first.scrollIntoView({behavior:'smooth', block:'center'}); first.focus(); }
+	    return false;
+	  }
+	  return true;
+	}
+	
 	function fn_goList() {
 		location.href = '/product/list';
 	}

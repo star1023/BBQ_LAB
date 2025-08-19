@@ -1263,7 +1263,10 @@ var selectedArr = new Array();
 					alert('신규원료를 입력해주세요.');
 					return;
 				}
-			}			
+			}	
+			
+			if (!validateDocTypeSelected()) return;
+			
 			//기존 데이터 확인
 			var formData = new FormData();
 			var contents = editor.getData();
@@ -1551,6 +1554,19 @@ var selectedArr = new Array();
 				}			
 			});
 		}
+	}
+	
+	function validateDocTypeSelected() {
+	  const $checked = $('input[name=docType]:checked');
+	  if ($checked.length === 0) {
+	    alert("파일유형을 최소 1개 이상 선택해 주세요.");
+	    // 필요하면 탭 전환/스크롤/포커스
+	    if (typeof tabChange === 'function') tabChange('tab1');
+	    const first = document.querySelector('#checkbox_item1');
+	    if (first) { first.scrollIntoView({behavior:'smooth', block:'center'}); first.focus(); }
+	    return false;
+	  }
+	  return true;
 	}
 
 	function fn_list() {
@@ -2761,13 +2777,14 @@ var selectedArr = new Array();
 									<button class="btn_small_search ml5" onclick="openDialog('dialog_erpMaterial')" style="float: left">조회</button>
 								</td>
 							</tr>
-							<c:if test="${productData.data.STATUS != null && productData.data.STATUS != 'COND_APPR' }">
 							<tr>
 								<th style="border-left: none;">결재라인</th>
 								<td colspan="3">
 									<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-									<button class="btn_small_search ml5"
-										onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+									<c:if test="${productData.data.STATUS != null && productData.data.STATUS != 'COND_APPR' }">
+										<button class="btn_small_search ml5"
+											onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+									</c:if>
 								</td>
 							</tr>
 							<tr>
@@ -2776,7 +2793,6 @@ var selectedArr = new Array();
 									<div id="refTxtFull" name="refTxtFull"></div>
 								</td>
 							</tr>
-							</c:if>
 							<tr>
 							    <th style="border-left: none;">공동 참여자</th>
 							    <td colspan="3">

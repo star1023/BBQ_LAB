@@ -572,7 +572,13 @@ function renderMyDocTable(docTypeParam) {
 
     var docType = docTypePathMap[docTypeKey]; // e.g., "/product"
     var url = endpointMap[docTypeKey];        // e.g., "selectProductListAjax"
-
+	var isSafeTeam = false;
+	var isRequestList = 'N';
+    
+    if (docTypeParam == "CHEMICAL") {
+    	isSafeTeam = ('${userUtil:getRoleCode(pageContext.request)}' == '6' || '${userUtil:getRoleCode(pageContext.request)}' == '7');
+    }
+    
     // 최종 AJAX 요청
     $.ajax({
         type: "POST",
@@ -580,7 +586,9 @@ function renderMyDocTable(docTypeParam) {
         data: {
             "docType": docTypeKey, // e.g., "PROD"
             "viewCount": 5,
-            "pageNo": 1
+            "pageNo": 1,
+            "isSafeTeam": isSafeTeam ? 'Y' : 'N',
+        	"isRequestList": isRequestList
         },
         dataType: "json",
         success: function (response) {

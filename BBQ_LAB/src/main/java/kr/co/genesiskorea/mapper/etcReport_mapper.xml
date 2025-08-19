@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="etcReport">
+	<sql id="whereEtcList">
+		<if test="searchTitle != null and searchTitle != '' ">
+			AND TITLE LIKE CONCAT('%',#{searchTitle},'%')								
+		</if>
+		<if test="searchFileTxt != null and searchFileTxt != '' ">
+			AND ETC_IDX IN (
+				SELECT 
+					distinct DOC_IDX 
+				FROM 
+					lab_file 
+				WHERE 1 = 1 
+					AND DOC_TYPE = 'ETC' 
+					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
+			)											
+		</if>
+		<if test="searchTeam != null and searchTeam != '' ">
+			<choose>
+				<when test="searchUser != null and searchUser != '' ">
+					AND DOC_OWNER = #{searchUser}
+				</when>
+				<otherwise>
+					AND DOC_OWNER IN (SELECT USER_ID FROM lab_user WHERE 1 = 1 AND EMSTAT = '1' AND ORGAID = #{searchTeam})
+				</otherwise>
+			</choose>	
+		</if>
+	</sql>
+	
+	<select id="selectEtcCount" parameterType="map" resultType="int">
+		/*	etcReport.selectEtcCount */
+		SELECT
+			COUNT(ETC_IDX) as cnt
+		FROM 	
+			lab_etc
+		WHERE 1 = 1
+			<choose>
+				<when test="listType != null and listType == 'my' "> 
+				AND DOC_OWNER = #{userId} 
+				</when>
+			    <when test="listType != null and listType == 'team'">
+			    AND DOC_OWNER IN (
+			    	SELECT USER_ID from lab_team_manager_view ltmv
+					WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+			    ) 
+			    </when>
+			    <when test="listType != null and listType == 'all'">			    
+			    </when>
+			    <when test="listType != null and listType == 'search'">			    
+			    </when>
+				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+			</choose>
+			AND IS_DELETE = 'N'
+			<include refid="etcReport.whereEtcList" />
+	</select>
+	
+	<select id="selectEtcList" parameterType="map" resultType="hashmap">
+		/*	etcReport.selectEtcList */
+		SELECT
+		ETC_IDX
+		, TITLE
+		, CONTENTS
+		, IS_DELETE
+		, STATUS
+		, REG_USER
+		, DOC_OWNER
+		, DOC_NO
+		, FN_GET_USER_NAME(le.DOC_OWNER) as DOC_OWNER_NAME
+	    , FN_GET_CODE_NAME('DOC_STATUS', le.STATUS) AS STATUS_TXT
+	FROM 	
+		lab_etc le
+	WHERE 1 = 1
+		AND DOC_NO in (
+			SELECT 
+				tmp.DOC_NO
+			FROM (
+				SELECT
+					row_number() over (order by  ETC_IDX DESC) as rnum
+					, DOC_NO
+				FROM lab_etc
+				WHERE 1 = 1
+					<choose>
+					<when test="listType != null and listType == 'my' "> 
+					AND DOC_OWNER = #{userId} 
+					</when>
+				    <when test="listType != null and listType == 'team'">
+				    AND DOC_OWNER IN (
+				    	SELECT USER_ID from lab_team_manager_view ltmv
+						WHERE ltmv.TEAM_MANAGER_ID = #{userId}
+				    ) 
+				    </when>
+				    <when test="listType != null and listType == 'all'">				    
+				    </when>
+				    <when test="listType != null and listType == 'search'">			    
+			    	</when>
+					<otherwise> AND DOC_OWNER = #{userId} </otherwise>
+				</choose>
+					AND IS_DELETE = 'N'
+					<include refid="etcReport.whereEtcList" />
+			) tmp
+			WHERE rnum between #{startRow} and #{endRow}
+		)
+	ORDER BY DOC_NO DESC, ETC_IDX DESC
+	</select>
+	
+	<select id="selectEtcSeq" resultType="int">
+		/*	etcReport.selectEtcSeq */
+		SELECT FN_NEXTVAL('lab_etc_seq') as seq
+	</select>
+	
+	<insert id="insertEtc" parameterType="map">
+		/*	etcReport.insertEtc */
+		INSERT INTO lab_etc(
+			ETC_IDX
+			, TITLE
+			, CONTENTS
+			, IS_DELETE
+			, STATUS
+			, REG_USER
+			, DOC_OWNER		
+			, DOC_NO		
+		)VALUES(
+			#{idx}
+			, #{title}
+			, #{contents}
+			, 'N'
+			, #{status}
+			, #{userId}
+			, #{userId}
+			, (SELECT ifnull(MAX(ld.DOC_NO),0)+1 FROM lab_etc ld WHERE 1 = 1)	
+		)
+	</insert>
+	
+	<select id="selectEtcData" parameterType="map" resultType="hashmap">
+		/*	etcReport.selectEtcData */
+		SELECT
+			ETC_IDX
+			, TITLE
+			, CONTENTS
+			, IS_DELETE
+			, STATUS
+			, REG_USER
+			, DOC_OWNER
+			, DOC_NO
+		FROM 
+			lab_etc
+		WHERE 1 = 1
+			AND ETC_IDX = #{idx}
+	</select>
+	
+	<update id="updateEtc" parameterType="map">
+	/*	etcReport.updateEtc */
+		UPDATE 
+			lab_etc
+		SET 
+			TITLE = #{title}
+			, CONTENTS = #{contents}
+			<if test="status != null and status != '' ">
+			, STATUS = #{status}
+			</if>
+		WHERE 1 = 1
+			AND ETC_IDX = #{idx}	
+	</update>
+	
+	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	/* etcReport.selectHistory */
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
+			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
+			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
+			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
+			END HISTORY_TYPE_TXT 
+		,<choose>
+			<when test="docType.equals('ETC')">
+			rt.TITLE
+			</when>
+		</choose>
+			AS TITLE
+		, lh.USER_ID 
+		, FN_GET_USER_NAME(lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+	<choose>
+		<when test="docType.equals('ETC')">
+		lab_etc rt
+		</when> 
+	</choose>	
+	WHERE 1 = 1
+		AND lh.DOC_IDX = #{idx}
+		AND lh.DOC_TYPE = #{docType}
+		<choose>
+			<when test="docType.equals('ETC')">
+			AND lh.DOC_IDX = rt.ETC_IDX 
+			</when> 
+		</choose>		
+	ORDER BY lh.REG_DATE ASC
+	</select>
+	
+	<select id="selectMyDataCheck" parameterType="map" resultType="int">
+		SELECT
+			COUNT(ETC_IDX) AS cnt
+		FROM
+			lab_etc	
+		WHERE 1 = 1
+			AND ETC_IDX = #{idx}
+			AND DOC_OWNER = #{userId}
+			AND IS_DELETE = 'N'
+	</select>
+	
+	<update id="deleteEtcReport" parameterType="map">
+		/* etcReport.deleteEtcReport */
+		UPDATE 
+			lab_etc
+		SET
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND ETC_IDX = #{idx}
+	</update>
+</mapper>

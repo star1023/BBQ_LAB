@@ -126,7 +126,7 @@ function fn_pdfDownload(idx) {
                 var url = window.URL.createObjectURL(blob);
                 var a = document.createElement("a");
                 a.href = url;
-                a.download = "${designData.data.TITLE}_메뉴완료보고서.pdf";
+                a.download = "${designData.data.TITLE}_상품설계변경보고서.pdf";
                 a.click();
                 window.URL.revokeObjectURL(url);
                 $('#lab_loading').hide();
@@ -326,7 +326,7 @@ function fn_pdfDownload(idx) {
 				</ul>
 			</div> --%>
 			
-			<div class="title2 mt20"  style="width:90%;"><span class="txt">기안문</span></div>
+			<div class="title2 mt20"  style="width:90%;"><span class="txt">비고</span></div>
 			<div>
 				<table class="insert_proc01">
 					<tr>

@@ -342,7 +342,7 @@ function downloadFile(idx){
 	</div>	
 	<div class="group01 mt5">
 		<div id="wrapper">
-		<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+		<div style="width:100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
 			<span>이화학 검사 의뢰서</span>
 		</div>
 		<div class="mainTable">

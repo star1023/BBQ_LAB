@@ -1165,12 +1165,13 @@ table{font-size: 12px}
 								<input type="text" name="title" id="title" style="width: 90%;" class="req" value="${senseQualityData.reportMap.TITLE}"/>
 							</td>
 						</tr>
-						<c:if test="${senseQualityData.reportMap.STATUS != null && senseQualityData.reportMap.STATUS != 'COND_APPR' }">
 						<tr>
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
 								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								<c:if test="${senseQualityData.reportMap.STATUS != null && senseQualityData.reportMap.STATUS != 'COND_APPR' }">
+									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								</c:if>
 							</td>
 						</tr>
 						<tr>
@@ -1179,7 +1180,6 @@ table{font-size: 12px}
 								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
-						</c:if>
 						<tr>
 							<th style="border-left: none;">업체명</th>
 							<td colspan="3">

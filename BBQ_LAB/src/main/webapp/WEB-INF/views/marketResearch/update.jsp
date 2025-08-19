@@ -928,7 +928,9 @@
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
 								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								<c:if test="${researchData.data.STATUS != null && researchData.data.STATUS != 'COND_APPR' }">
+									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								</c:if>
 							</td>
 						</tr>
 						<tr>

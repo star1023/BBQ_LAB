@@ -51,8 +51,7 @@
 		WITH MANUAL AS 
 		(
 		    SELECT
-		    	lcm.MANUAL_IDX
-		    	, lcm.REG_YN
+		    	lcm.REG_YN
 		    	, lm.* 
 		    FROM 
 		    	lab_cook_manual lcm
@@ -80,7 +79,7 @@
 				<include refid="manual.whereManualList" />
 		)
 		SELECT 
-			count(man.MANUAL_IDX) AS cnt
+			count(man.MENU_IDX) AS cnt
 		FROM 
 			MANUAL man
 		WHERE 1 = 1
@@ -92,8 +91,7 @@
 		WITH MANUAL AS 
 		(
 		    SELECT
-		    	lcm.MANUAL_IDX
-		    	, lcm.REG_YN
+		    	lcm.REG_YN
 		    	, lm.* 
 		    FROM 
 		    	lab_cook_manual lcm
@@ -155,7 +153,7 @@
 			REG_YN = 'Y'
 			, REG_DATE = sysdate()
 		WHERE 1 = 1 
-			AND MANUAL_IDX = #{idx}
+			AND MENU_IDX = #{idx}
 				
 	</update>
 	
@@ -179,12 +177,18 @@
 	
 	<insert id="insertManual" parameterType="map">
 		INSERT
-		INTO lab_cook_manual(MANUAL_IDX, MENU_IDX, REG_YN, REG_DATE)
+		INTO lab_cook_manual(MENU_IDX, REG_YN, REG_DATE)
 		VALUES(
-			FN_NEXTVAL('lab_manual_seq')
-			, #{docIdx}
-			, 'N'
+			#{docIdx}
+			, #{manualRegYn}
 			, sysdate()
 		)	
 	</insert>
+	
+	<select id="countManualFilesByMenu" parameterType="map" resultType="int">
+	  SELECT COUNT(1)
+	  FROM lab_file
+	  WHERE DOC_IDX = #{docIdx}
+	    AND DOC_TYPE = 'MANUAL'
+	</select>
 </mapper>

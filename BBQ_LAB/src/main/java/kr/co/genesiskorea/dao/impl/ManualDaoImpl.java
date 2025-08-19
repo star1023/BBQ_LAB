@@ -43,4 +43,10 @@ public class ManualDaoImpl implements ManualDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.insert("manual.insertManual", param);
 	}
+	
+	@Override
+	public int countManualFilesByMenu(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.insert("manual.countManualFilesByMenu", param);
+	}
 }

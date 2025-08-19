@@ -26,6 +26,7 @@ import kr.co.genesiskorea.service.BusinessTripService;
 import kr.co.genesiskorea.service.ChemicalTestService;
 import kr.co.genesiskorea.service.CodeManagementService;
 import kr.co.genesiskorea.service.DesignReportService;
+import kr.co.genesiskorea.service.EtcReportService;
 import kr.co.genesiskorea.service.MarketResearchService;
 import kr.co.genesiskorea.service.MenuService;
 import kr.co.genesiskorea.service.NewProductResultService;
@@ -78,6 +79,9 @@ public class ApprovalController {
 	
 	@Autowired
 	RecipeService recipeService;
+	
+	@Autowired
+	EtcReportService etcReportService;
 	
 	@RequestMapping("/searchUserAjax")
 	@ResponseBody
@@ -616,6 +620,34 @@ public class ApprovalController {
 		
 		return "/approval/recipePopup";
 	}
+	
+	@RequestMapping("/etcPopup")
+	public String etcPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
+		System.err.println(param);
+		//결재 정보 조회
+		param.put("userId", AuthUtil.getAuth(request).getUserId());
+		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
+		List<Map<String,Object>> apprItem = approvalService.selectApprItemList(param);
+		List<Map<String, Object>> refList = approvalService.selectReferenceList(param);
+		Map<String, Object> etcData = etcReportService.selectEtcData(param);
+		
+		//참조 문서를 조회하는 경우 참조 테이블의 IS_READ 데이터를 Y로 변경한다.
+		if( param != null && "myRefList".equals(param.get("viewType").toString())) {
+			try {
+				approvalService.updateRefIsRead(param);
+			} catch( Exception e ) {
+				
+			}
+		}
+		model.addAttribute("apprHeader", apprHeader);
+		model.addAttribute("apprItem", apprItem);
+		model.addAttribute("refList", refList);
+		model.addAttribute("etcData", etcData);
+		model.addAttribute("paramVO", param);
+		
+		return "/approval/etcPopup";
+	}
+	
 
 	@RequestMapping("/approvalSubmitAjax")
 	@ResponseBody

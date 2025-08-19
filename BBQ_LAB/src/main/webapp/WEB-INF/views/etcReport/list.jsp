@@ -3,59 +3,62 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
-<title>메뉴 품질 점검 결과 보고서</title>
-<script src="/resources/js/jquery.ui.monthpicker.js"></script>
+<title>상품설계변경보고서</title>
 <script type="text/javascript">
-$(document).ready(function () {
+$(document).ready(function(){
+	fn_loadTeam();
 	fn_loadList(1);
-	const startYear = new Date().getFullYear();
-
-	const options = {
-		dateFormat: 'yy-mm', // "02/2025" → "2025-02"로 바꾸기 위해 yy-mm 사용
-		showOn: 'button',
-		buttonImage: '/resources/images/btn_calendar.png',
-		buttonImageOnly: true,
-
-		monthNames: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-		monthNamesShort: ['1월','2월','3월','4월','5월','6월','7월','8월','9월','10월','11월','12월'],
-		yearRange: '1900:2999',
-		changeMonth: true,
-		changeYear: true
-	};
-
-	// searchType이 "searchDate"일 때만 monthpicker 적용
-	$('#searchType').change(function () {
-		const selected = $(this).val();
-		const $input = $('#searchValue');
-
-		$input.val(''); // 기존 값 초기화
-
-		if (selected === 'searchDate') {
-			$input.attr('readonly', true);
-			$input.monthpicker(options);
-		} else {
-			// 다른 옵션일 때 monthpicker 제거
-			if ($input.data('monthpicker')) {
-				$input.monthpicker('destroy');
-			}
-			$input.removeAttr('readonly');
-		}
-	});
-
-	// 트리거 이미지 버튼 위치 조정
-	$('.ui-monthpicker-trigger').css({
-		'margin-left': '8px',
-		'margin-top': '-5px',
-		'cursor': 'pointer'
-	});
-	
+	fn_loadSearchCategory(2,1);
 	//1.임원인(roleCode가 4, 5) 경우에만 탭 설정 상관없이 팀, 담당자 필드를 표시한다.
 	if( '${userUtil:getUserType(pageContext.request)}' == 'EXECUTIVE' ) {
 		$("#searchTeam_li").show();
 		$("#searchUser_li").show();
 	}
-
 });
+
+function fn_loadSearchCategory(pIdx, level) {
+	
+	if( level == 2 ) {
+		$("#searchCategory"+(level+1)).removeOption(/./);
+		$("#searchCategory"+(level+1)+"_div").hide();
+	}
+	
+	if( pIdx == '' ) {
+		$("#searchCategory"+level).removeOption(/./);
+		$("#searchCategory"+level+"_div").hide();
+		return;
+	}
+	
+	var URL = "../common/selectCategoryByPIdAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{
+			pIdx : pIdx
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			var list = data;
+			$("#searchCategory"+level).removeOption(/./);
+			$("#searchCategory"+level).addOption("", "전체", false);
+			$("#searchCategory"+level+"_label").html("전체");
+			if( list.length > 0 ) {
+				$("#searchCategory"+level+"_div").show();
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#searchCategory"+level).addOption(value.CATEGORY_IDX, value.CATEGORY_NAME, false);
+				});
+			}
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}			
+	});
+}
+
+function fn_changeCategory(obj,level){
+	fn_loadSearchCategory($(obj).selectedValues()[0], level);
+}
 
 function changeListType(listType){
 	$('input[name=listType]').val(listType);
@@ -154,8 +157,13 @@ function fn_loadTeam() {
 	});
 }
 
+function fn_search() {
+	fn_loadList(1);
+}
+
+
 function fn_loadList(pageNo) {
-	var URL = "../newProductResult/selectNewProductResultListAjax";
+	var URL = "../etcReport/selectEtcListAjax";
 	var viewCount = $("#viewCount").selectedValues()[0];
 	if( viewCount == '' ) {
 		viewCount = "10";
@@ -167,8 +175,7 @@ function fn_loadList(pageNo) {
 		type:"POST",
 		url:URL,
 		data:{
-			"searchType" : $("#searchType").selectedValues()[0]
-			, "searchValue" : $("#searchValue").val()
+			"searchTitle" : $("#searchTitle").val()
 			, "searchFileTxt" : $("#searchFileTxt").val()
 			, "listType":$('#listType').val()
 			, "searchTeam" : $("#searchTeam").selectedValues()[0]
@@ -183,42 +190,26 @@ function fn_loadList(pageNo) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
 					if( item.STATUS == 'APPR_RET' || item.STATUS == 'RET' ) {
-						html += "<tr class=\"m_visible\">";
+						html += "<tr id=\"etc_"+item.DOC_NO+"\" class=\"m_visible\">";
 					} else {
-						html += "<tr>";
+						html += "<tr id=\"etc_"+item.DOC_NO+"\">";
 					}
-					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">";
+
+					html += "	<td ></td>";
+					html += "	<td onclick=\"fn_view('"+item.ETC_IDX+"')\" style=\"cursor:pointer;\">";
 					html += "		<div class=\"ellipsis_txt tgnl\">" + nvl(item.TITLE,'&nbsp;') + "</div>";
 					html += "	</td>";
-
-					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer; text-align:center;\">" + nvl(item.EXCUTE_DATE,'&nbsp;') + "</td>";
-
-					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">";
-					var columnItems = item.COLUMN_STATE_TEXT && item.COLUMN_STATE_TEXT.trim() !== ""
-					      ? item.COLUMN_STATE_TEXT.split(',').filter(v => v && v.trim() !== "")
-					      : [];
-
-					if (columnItems.length === 0) {
-					  columnItems = ['업로드'];
-					}
-					for (var i = 0; i < columnItems.length; i++) {
-						html += columnItems[i] + "<br>";
-					}
-					html += "</td>";
-
-					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
-
-					html += "	<td onclick=\"fn_view('"+item.RESULT_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME,'&nbsp;') + "</td>";
-
+					html += "	<td onclick=\"fn_view('"+item.ETC_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT,'&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('"+item.ETC_IDX+"')\" style=\"cursor:pointer;\">" + nvl(item.DOC_OWNER_NAME,'&nbsp;') + "</td>";
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
-					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
+					html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewHistory('"+item.ETC_IDX+"')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
 					if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER && $('#listType').val() != 'search' ) {
-						if( item.STATUS == 'TMP' || item.STATUS == 'COND_APPR' || item.STATUS == 'RET' ) {
-							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+						if( item.STATUS == 'COND_APPR' || item.STATUS == 'TMP' || item.STATUS == 'RET') {
+							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.ETC_IDX+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 						}
 						if( item.STATUS == 'TMP' ) {
-							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.RESULT_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+							html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.ETC_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
 						}
 					}
 					html += "		</li>";
@@ -227,7 +218,7 @@ function fn_loadList(pageNo) {
 				});				
 			} else {
 				$("#list").html(html);
-				html += "<tr><td align='center' colspan='6'>데이터가 없습니다.</td></tr>";
+				html += "<tr><td align='center' colspan='5'>데이터가 없습니다.</td></tr>";
 			}			
 			$("#list").html(html);
 			$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
@@ -249,22 +240,26 @@ function fn_search() {
 }
 
 function fn_insertForm() {
-	window.location.href = "../newProductResult/insert";
+	window.location.href = "../etcReport/insert";
 }
 
 function fn_view(idx) {
 	if( $('#listType').val() != 'search' ) {
-		window.location.href = "../newProductResult/view?idx="+idx;
+		window.location.href = "../etcReport/view?idx="+idx;
 	}
 }
 
 function fn_update(idx) {
-	location.href = '/newProductResult/update?idx='+idx;
+	location.href = '/etcReport/update?idx='+idx;
+}
+
+function paging( pageNo ) {
+	fn_loadList(pageNo);
 }
 
 function fn_delete(idx) {
 	$('#lab_loading').show();
-	var URL = "../newProductResult/deleteNewProductAjax";
+	var URL = "../etcReport/deleteEtcReportAjax";
 	$.ajax({
 		type:"POST",
 		url:URL,
@@ -289,43 +284,14 @@ function fn_delete(idx) {
 	});
 }
 
-function fn_searchClear() {
-    // 키워드 검색 초기화
-    const searchTypeSelect = document.getElementById("searchType");
-    const searchTypeLabel = document.getElementById("searchType_label");
-    if (searchTypeSelect && searchTypeLabel) {
-        searchTypeSelect.value = "";
-        searchTypeLabel.textContent = "선택";
-    }
-
-    const searchValueInput = document.getElementById("searchValue");
-    if (searchValueInput) {
-        searchValueInput.value = "";
-    }
-
-    // 첨부내용 초기화
-    const searchFileTxtInput = document.getElementById("searchFileTxt");
-    if (searchFileTxtInput) {
-        searchFileTxtInput.value = "";
-    }
-
-    // 표시수 초기화
-    const viewCountSelect = document.getElementById("viewCount");
-    const viewCountLabel = document.getElementById("viewCount_label");
-    if (viewCountSelect && viewCountLabel) {
-        viewCountSelect.value = "";
-        viewCountLabel.textContent = "선택";
-    }
-}
-
 function fn_viewHistory(idx) {
-	var URL = "../newProductResult/selectHistoryAjax";
+	var URL = "../etcReport/selectHistoryAjax";
 	$.ajax({
 		type:"POST",
 		url:URL,
 		data:{
 			"idx" : idx
-			, "docType" : "RESULT"
+			, "docType" : "ETC"
 		},
 		dataType:"json",
 		async:false,
@@ -336,16 +302,12 @@ function fn_viewHistory(idx) {
 				html += item.TITLE+" 이(가)";
 				if( item.HISTORY_TYPE == 'I' ) {
 					html += " 생성되었습니다.";
-				} else if( item.HISTORY_TYPE == 'V' ) {
-					html += " 개정되었습니다.";
 				} else if( item.HISTORY_TYPE == 'D' ) {
 					html += " 삭제되었습니다.";
-				} else if( item.HISTORY_TYPE == 'T' ) {
-					html += " 임시 저장되었습니다.";
-				} else if( item.HISTORY_TYPE == 'U' ) {
-					html += " 수정되었습니다.";
 				} else if( item.HISTORY_TYPE == 'P' ) {
 					html += " PDF 다운로드 되었습니다.";
+				} else if( item.HISTORY_TYPE == 'U' ) {
+					html += " 수정되었습니다.";
 				} else if( item.HISTORY_TYPE == 'F' ) {
 					html += " 담당자 이관 되었습니다.<br>" + item.HISTORY_TYPE_TXT;
 				}
@@ -361,21 +323,38 @@ function fn_viewHistory(idx) {
 	});
 }
 
-function paging( pageNo ) {
-	fn_loadList(pageNo);
+function fn_searchClear() {
+    // 셀렉트박스 및 라벨 초기화
+    const selects = [
+        { id: 'searchTeam', labelId: 'searchTeam_label' },
+        { id: 'searchUser', labelId: 'searchUser_label' },
+        { id: 'viewCount', labelId: 'viewCount_label' }
+    ];
+
+    selects.forEach(item => {
+        const select = document.getElementById(item.id);
+        const label = document.getElementById(item.labelId);
+
+        if (select) select.selectedIndex = 0;
+        if (label) label.innerText = "선택";
+    });
+
+    // 텍스트 입력값 초기화
+    document.getElementById('searchTitle').value = '';
+    document.getElementById('searchFileTxt').value = '';
 }
 </script>
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
 <div class="wrap_in" id="fixNextTag">
-	<span class="path">메뉴 품질 점검 결과 보고서&nbsp;&nbsp;
+	<span class="path">기타 보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align:middle"/>&nbsp;&nbsp;
 		<a href="#">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 	<!-- 상세 페이지  start-->
-		<h2 style="position:relative"><span class="title_s">Menu Quality Test Report</span>
-			<span class="title">메뉴 품질 점검 결과 보고서</span>
+		<h2 style="position:relative"><span class="title_s">ETC Report</span>
+			<span class="title">기타 보고서</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -403,16 +382,16 @@ function paging( pageNo ) {
 				<ul class="tab">
 					<c:choose>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 품질점검결과보고서</li></a>
-							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 품질점검결과보고서</li></a>
-							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 품질점검결과보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 기타 보고서</li></a>
+							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 기타 보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 기타 보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 품질점검결과보고서</li></a>
-							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 품질점검결과보고서</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 기타 보고서</li></a>
+							<a href="javascript:changeListType('search')" id="search"><li class="change">전체 기타 보고서</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 품질점검결과보고서</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 기타 보고서</li></a>
 						</c:when>
 					</c:choose>	
 				</ul>
@@ -420,19 +399,31 @@ function paging( pageNo ) {
 			<div class="search_box" >
 				<ul style="border-top:none">
 					<li>
-						<dt>키워드</dt>
+						<dt>제목</dt>
+						<dd >
+							<input type="text" name="searchTitle" id="searchTitle" value="" style="width:180px;">
+						</dd>
+					</li>
+					<li id="searchTeam_li" style="display:none">
+						<dt>팀</dt>
 						<dd >
 							<!-- 초기값은 보통으로 -->
-							<div class="selectbox" style="width:100px;">  
-								<label for="searchType" id="searchType_label">선택</label> 
-								<select name="searchType" id="searchType">
-									<option value="">선택</option>
-									<option value="searchTitle">제목</option>
-									<option value="searchDate">시행월</option>
-									<option value="searchColumnState">문서양식</option>
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchTeam" id="searchTeam_label">선택</label> 
+								<select name="searchTeam" id="searchTeam" onChange="fn_loadUser()">
 								</select>
 							</div>
-							<input type="text" name="searchValue" id="searchValue" value="" style="width:180px; margin-left:5px;">
+						</dd>
+					</li>
+					<li id="searchUser_li" style="display:none">
+						<dt>담당자</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchUser" id="searchUser_label">선택</label> 
+								<select name="searchUser" id="searchUser">
+								</select>
+							</div>
 						</dd>
 					</li>
 					<li>
@@ -441,14 +432,6 @@ function paging( pageNo ) {
 							<input type="text" name="searchFileTxt" id="searchFileTxt" value="" style="width:180px;">
 						</dd>
 					</li>
-					<!--  
-					<li>
-						<dt>검색조건</dt>
-						<dd >
-
-						</dd>
-					</li>
-					--> 
 					<li>
 						<dt>표시수</dt>
 						<dd >
@@ -473,18 +456,16 @@ function paging( pageNo ) {
 			<div class="main_tbl">
 				<table class="tbl01">
 					<colgroup id="list_colgroup">
-						<col />
-						<col width="15%">
+						<col width="3%">
+						<col width="25%">
 						<col width="10%">
-						<col width="15%">
 						<col width="10%">						
 						<col width="15%">						
 					</colgroup>
 					<thead id="list_header">
 						<tr>
+							<th></th>
 							<th>제목</th>
-							<th>시행월</th>
-							<th>문서양식</th>
 							<th>문서상태</th>
 							<th>담당자</th>
 							<th></th>
@@ -497,7 +478,7 @@ function paging( pageNo ) {
 				</div>
 			</div>
 			<div class="btn_box_con"> 
-				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">메뉴 품질 점검 결과 보고서 생성</button>
+				<button class="btn_admin_red" onclick="javascript:fn_insertForm();">기타 보고서 생성</button>
 			</div>
 	 		<hr class="con_mode"/><!-- 신규 추가 꼭 데려갈것 !-->
 		</div>

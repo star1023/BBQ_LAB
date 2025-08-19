@@ -28,6 +28,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.genesiskorea.dao.CommonDao;
 import kr.co.genesiskorea.dao.MenuDao;
+import kr.co.genesiskorea.service.ManualService;
 import kr.co.genesiskorea.service.MenuService;
 import kr.co.genesiskorea.util.FileUtil;
 import kr.co.genesiskorea.util.PageNavigator;
@@ -39,6 +40,9 @@ public class MenuServiceImpl implements MenuService {
 	
 	@Autowired
 	MenuDao menuDao;
+	
+	@Autowired
+	ManualService manualService;
 	
 	@Autowired
 	CommonDao commonDao;
@@ -87,9 +91,12 @@ public class MenuServiceImpl implements MenuService {
 		param.put("docType", "MENU");
 		List<Map<String, String>> fileList = commonDao.selectFileList(param);
 		List<Map<String, String>> fileType = commonDao.selectFileType(param);
+		param.put("docType", "MANUAL");
+		List<Map<String, String>> manualFileList = commonDao.selectFileList(param);
 		map.put("data", data);
 		map.put("fileList", fileList);
 		map.put("fileType", fileType);
+		map.put("manualFileList", manualFileList);
 		return map;
 	}
 
@@ -210,6 +217,11 @@ public class MenuServiceImpl implements MenuService {
 			/*ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
 			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");*/
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
+			
+			// === MANUAL: 컨트롤러에서 listMap으로 전달된 매뉴얼 파라미터 받기 ===
+			List<String> manualFileType     = (List<String>) listMap.get("manualFileType");
+			List<String> manualFileTypeText = (List<String>) listMap.get("manualFileTypeText"); // 필요시
+			MultipartFile[] manualFiles     = (MultipartFile[]) listMap.get("manualFiles");
 			
 			JSONParser parser = new JSONParser();
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
@@ -470,6 +482,58 @@ public class MenuServiceImpl implements MenuService {
 					}					
 				}
 			}
+			
+	        // === MANUAL: 매뉴얼 파일 저장(매뉴얼 테이블) ===
+			if (manualFiles != null && manualFiles.length > 0) {
+			    Calendar cal = Calendar.getInstance();
+			    Date day = cal.getTime();
+			    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+			    String toDay = sdf.format(day);
+
+			    // 구성 키: upload.file.path.manual  (오타 없이 manual)
+			    String manualBasePath = config.getProperty("upload.file.path.manual");
+			    String manualPath = manualBasePath + "/" + toDay;
+
+			    int midx = 0;
+			    for (MultipartFile mfile : manualFiles) {
+			        System.err.println("===== MANUAL =====================");
+			        System.err.println("isEmpty : " + mfile.isEmpty());
+			        System.err.println("name : " + mfile.getName());
+			        System.err.println("originalFilename : " + mfile.getOriginalFilename());
+			        System.err.println("size : " + mfile.getSize());
+			        System.err.println("==================================");
+			        try {
+			            if (!mfile.isEmpty()) {
+			                String fileIdx = FileUtil.getUUID();
+			                String result  = FileUtil.upload3(mfile, manualPath, fileIdx);
+			                String content = FileUtil.getPdfContents(manualPath, result);
+
+			                // 수신된 fileType 우선, 없으면 "00" 기본
+			                String manType = (manualFileType != null && midx < manualFileType.size())
+			                        ? manualFileType.get(midx)
+			                        : "00";
+
+			                Map<String,Object> fileMap = new HashMap<>();
+			                fileMap.put("fileIdx",        fileIdx);
+			                fileMap.put("docIdx",         menuIdx);            // ★ 메뉴 IDX
+			                fileMap.put("docType",        "MANUAL");           // ★ MANUAL로 저장
+			                fileMap.put("fileType",       manType);            // 예: MAN
+			                fileMap.put("orgFileName",    mfile.getOriginalFilename());
+			                fileMap.put("filePath",       manualPath);
+			                fileMap.put("changeFileName", result);
+			                fileMap.put("content",        content);
+
+			                commonDao.insertFileInfo(fileMap);
+			                midx++;
+			            }
+			        } catch (Exception e) {
+			            // 필요시 로그만 남기고 다음 파일 계속
+			            logger.warn("manual file save error", e);
+			        }
+			    }
+			}
+			// === MANUAL 블록 끝 ===
+			
 			txManager.commit(status);
 			return menuIdx;
 		} catch( Exception e ) {
@@ -502,6 +566,11 @@ public class MenuServiceImpl implements MenuService {
 			/*ArrayList<String> docType = (ArrayList<String>)listMap.get("docType");
 			ArrayList<String> docTypeText = (ArrayList<String>)listMap.get("docTypeText");*/
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
+			
+			// === MANUAL: 컨트롤러에서 listMap으로 전달된 매뉴얼 파라미터 받기 ===
+			List<String> manualFileType     = (List<String>) listMap.get("manualFileType");
+			List<String> manualFileTypeText = (List<String>) listMap.get("manualFileTypeText"); // 필요시
+			MultipartFile[] manualFiles     = (MultipartFile[]) listMap.get("manualFiles");
 			
 			JSONParser parser = new JSONParser();
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
@@ -774,6 +843,57 @@ public class MenuServiceImpl implements MenuService {
 				}
 			}
 			
+			// === MANUAL: 매뉴얼 파일 저장(매뉴얼 테이블) ===
+			if (manualFiles != null && manualFiles.length > 0) {
+			    Calendar cal = Calendar.getInstance();
+			    Date day = cal.getTime();
+			    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+			    String toDay = sdf.format(day);
+
+			    // 구성 키: upload.file.path.manual  (오타 없이 manual)
+			    String manualBasePath = config.getProperty("upload.file.path.manual");
+			    String manualPath = manualBasePath + "/" + toDay;
+
+			    int midx = 0;
+			    for (MultipartFile mfile : manualFiles) {
+			        System.err.println("===== MANUAL =====================");
+			        System.err.println("isEmpty : " + mfile.isEmpty());
+			        System.err.println("name : " + mfile.getName());
+			        System.err.println("originalFilename : " + mfile.getOriginalFilename());
+			        System.err.println("size : " + mfile.getSize());
+			        System.err.println("==================================");
+			        try {
+			            if (!mfile.isEmpty()) {
+			                String fileIdx = FileUtil.getUUID();
+			                String result  = FileUtil.upload3(mfile, manualPath, fileIdx);
+			                String content = FileUtil.getPdfContents(manualPath, result);
+
+			                // 수신된 fileType 우선, 없으면 "00" 기본
+			                String manType = (manualFileType != null && midx < manualFileType.size())
+			                        ? manualFileType.get(midx)
+			                        : "00";
+
+			                Map<String,Object> fileMap = new HashMap<>();
+			                fileMap.put("fileIdx",        fileIdx);
+			                fileMap.put("docIdx",         menuIdx);            // ★ 메뉴 IDX
+			                fileMap.put("docType",        "MANUAL");           // ★ MANUAL로 저장
+			                fileMap.put("fileType",       manType);            // 예: 00
+			                fileMap.put("orgFileName",    mfile.getOriginalFilename());
+			                fileMap.put("filePath",       manualPath);
+			                fileMap.put("changeFileName", result);
+			                fileMap.put("content",        content);
+
+			                commonDao.insertFileInfo(fileMap);
+			                midx++;
+			            }
+			        } catch (Exception e) {
+			            // 필요시 로그만 남기고 다음 파일 계속
+			            logger.warn("manual file save error", e);
+			        }
+			    }
+			}
+			// === MANUAL 블록 끝 ===
+			
 			txManager.commit(status);
 			 return menuIdx;
 		} catch( Exception e ) {
@@ -800,7 +920,7 @@ public class MenuServiceImpl implements MenuService {
 
 	@Override
 	@Transactional
-	public int insertNewVersionMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file)
+	public int insertNewVersionMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFile)
 			throws Exception {
 		// TODO Auto-generated method stub
 		int menuIdx;
@@ -818,6 +938,7 @@ public class MenuServiceImpl implements MenuService {
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
+			ArrayList<String> manualTempFile = (ArrayList<String>) listMap.get("manualTempFile");
 			
 			JSONParser parser = new JSONParser();
 			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
@@ -1064,7 +1185,7 @@ public class MenuServiceImpl implements MenuService {
 	        Date day = cal.getTime();    //시간을 꺼낸다.
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 	        String toDay = sdf.format(day);
-	        path += ""+File.separator+toDay; 
+	        path += "/"+toDay; 
 	        
 	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
 			if( tempFile != null ) {
@@ -1140,6 +1261,75 @@ public class MenuServiceImpl implements MenuService {
 				}
 			}
 			
+			String yyyyMM = new SimpleDateFormat("yyyyMM").format(Calendar.getInstance().getTime());
+			
+			// MANUAL 첨부 저장 경로  ✅ 추가
+			String manualPath = config.getProperty("upload.file.path.manual") 
+			                    + "/" + yyyyMM;
+			
+			// ====================== MANUAL : 기존 매뉴얼 승계 복사 ======================
+			if (manualTempFile != null && !manualTempFile.isEmpty()) {
+			    List<Map<String, Object>> manualTempFileList = commonDao.selectTempFileList(manualTempFile);
+			    if (manualTempFileList != null && !manualTempFileList.isEmpty()) {
+			        for (Map<String, Object> tempFileData : manualTempFileList) {
+			            String orgFileName  = (String) tempFileData.get("ORG_FILE_NAME");
+			            String fileName     = (String) tempFileData.get("FILE_NAME");
+			            String filePath     = (String) tempFileData.get("FILE_PATH");
+			            String fileContents = (String) tempFileData.get("FILE_CONTENT");
+
+			            if (orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName)) {
+			                String srcFullPath = filePath + "/" + fileName;
+
+			                String newFileIdx  = FileUtil.getUUID();
+			                String newFileName = newFileIdx + "_" + orgFileName; // 기존 MENU 승계 로직과 동일 포맷
+
+			                File src  = new File(srcFullPath);
+			                File dest = new File(manualPath + "/" + newFileName);
+			                FileUtils.copyFile(src, dest);
+
+			                Map<String, Object> fileMap = new HashMap<>();
+			                fileMap.put("fileIdx",       newFileIdx);
+			                fileMap.put("docIdx",        menuIdx);
+			                fileMap.put("docType",       "MANUAL");   // ✅ 매뉴얼
+			                fileMap.put("fileType",      "00");      // 정책상 고정(필요시 원본 FILE_TYPE 사용 가능)
+			                fileMap.put("orgFileName",   orgFileName);
+			                fileMap.put("filePath",      manualPath);
+			                fileMap.put("changeFileName", newFileName);
+			                fileMap.put("content",       fileContents);
+
+			                commonDao.insertFileInfo(fileMap);
+			            }
+			        }
+			    }
+			}
+			
+			// ====================== MANUAL : 신규 업로드 저장 ======================
+			if (manualFile != null && manualFile.length > 0) {
+			    for (MultipartFile mf : manualFile) {
+			        if (mf == null || mf.isEmpty()) continue;
+
+			        try {
+			            String fileIdx = FileUtil.getUUID();
+			            String saved   = FileUtil.upload3(mf, manualPath, fileIdx);
+			            String content = FileUtil.getPdfContents(manualPath, saved);
+
+			            Map<String, Object> fileMap = new HashMap<>();
+			            fileMap.put("fileIdx",        fileIdx);
+			            fileMap.put("docIdx",         menuIdx);
+			            fileMap.put("docType",        "MANUAL");                 // ✅ 매뉴얼
+			            fileMap.put("fileType",       "00");                    // 정책상 고정
+			            fileMap.put("orgFileName",    mf.getOriginalFilename());
+			            fileMap.put("filePath",       manualPath);
+			            fileMap.put("changeFileName", saved);
+			            fileMap.put("content",        content);
+
+			            commonDao.insertFileInfo(fileMap);
+			        } catch (Exception ignore) {
+			            // 필요시 로깅
+			        }
+			    }
+			}
+			
 			txManager.commit(status);
 		} catch( Exception e ) {
 			txManager.rollback(status);
@@ -1152,7 +1342,7 @@ public class MenuServiceImpl implements MenuService {
 
 	@Override
 	@Transactional
-	public int insertNewVersionMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file)
+	public int insertNewVersionMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFile)
 			throws Exception {
 		// TODO Auto-generated method stub
 		int menuIdx;
@@ -1170,6 +1360,7 @@ public class MenuServiceImpl implements MenuService {
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
+			ArrayList<String> manualTempFile  = (ArrayList<String>) listMap.get("manualTempFile");
 			
 			JSONParser parser = new JSONParser();
 			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
@@ -1338,7 +1529,7 @@ public class MenuServiceImpl implements MenuService {
 				}
 				
 				try{
-					newMap.put("typCode", newItemTypeCodeArr.get(i));
+					newMap.put("typeCode", newItemTypeCodeArr.get(i));
 				} catch(Exception e) {
 					newMap.put("typeCode", "");
 				}
@@ -1418,7 +1609,7 @@ public class MenuServiceImpl implements MenuService {
 	        Date day = cal.getTime();    //시간을 꺼낸다.
 	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 	        String toDay = sdf.format(day);
-	        path += File.separator+toDay; 
+	        path += "/" + toDay; 
 	        
 	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
 			if( tempFile != null ) {
@@ -1433,12 +1624,12 @@ public class MenuServiceImpl implements MenuService {
 							String filePath = (String)tempFileData.get("FILE_PATH");
 							String fileContents = (String)tempFileData.get("FILE_CONTENT");
 							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
-								String currentFilePath = filePath+File.separator+fileName;
+								String currentFilePath = filePath+"/"+fileName;
 								String fileIdx = FileUtil.getUUID();
 								String newFilePath = path;
 								String newFileName = fileIdx+"_"+orgFileName;
 								File currentFile = new File(currentFilePath);						
-								File newFile = new File(newFilePath+File.separator+newFileName);
+								File newFile = new File(newFilePath+"/"+newFileName);
 								FileUtils.copyFile(currentFile, newFile);
 								
 								Map<String,Object> fileMap = new HashMap<String,Object>();
@@ -1494,6 +1685,62 @@ public class MenuServiceImpl implements MenuService {
 				}
 			}
 			
+			String yyyyMM = new SimpleDateFormat("yyyyMM").format(new Date());
+			String manualPath = config.getProperty("upload.file.path.manual") + "/" + yyyyMM;
+			
+			// ✅ 문서 복사 시 기존 매뉴얼 파일 승계
+			if (manualTempFile != null && manualTempFile.size() > 0) {
+			    List<Map<String, Object>> tempManualList = commonDao.selectTempFileList(manualTempFile);
+			    if (tempManualList != null && tempManualList.size() > 0) {
+			        for (Map<String, Object> tempFileData : tempManualList) {
+			            String orgFileName  = (String) tempFileData.get("ORG_FILE_NAME");
+			            String fileName     = (String) tempFileData.get("FILE_NAME");
+			            String filePath     = (String) tempFileData.get("FILE_PATH");
+			            String fileContents = (String) tempFileData.get("FILE_CONTENT");
+			            if (orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName)) {
+			                String currentFilePath = filePath + "/" + fileName;
+			                String fileIdx         = FileUtil.getUUID();
+			                String newFileName     = fileIdx + "_" + orgFileName;
+
+			                FileUtils.copyFile(new File(currentFilePath), new File(manualPath, newFileName));
+
+			                Map<String, Object> fileMap = new HashMap<>();
+			                fileMap.put("fileIdx",        fileIdx);
+			                fileMap.put("docIdx",         menuIdx);
+			                fileMap.put("docType",        "MANUAL"); // ✅ 중요
+			                fileMap.put("fileType",       "00");    // ✅ 고정 
+			                fileMap.put("orgFileName",    orgFileName);
+			                fileMap.put("filePath",       manualPath);
+			                fileMap.put("changeFileName", newFileName);
+			                fileMap.put("content",        fileContents);
+			                commonDao.insertFileInfo(fileMap);
+			            }
+			        }
+			    }
+			}
+			
+			// ✅ 새로 추가한 매뉴얼 파일 업로드
+			if (manualFile != null && manualFile.length > 0) {
+			    for (MultipartFile mf : manualFile) {
+			        if (!mf.isEmpty()) {
+			            String fileIdx  = FileUtil.getUUID();
+			            String result   = FileUtil.upload3(mf, manualPath, fileIdx);
+			            String content  = FileUtil.getPdfContents(manualPath, result);
+
+			            Map<String, Object> fileMap = new HashMap<>();
+			            fileMap.put("fileIdx",        fileIdx);
+			            fileMap.put("docIdx",         menuIdx);
+			            fileMap.put("docType",        "MANUAL"); // ✅ 중요
+			            fileMap.put("fileType",       "00");    // ✅ 고정
+			            fileMap.put("orgFileName",    mf.getOriginalFilename());
+			            fileMap.put("filePath",       manualPath);
+			            fileMap.put("changeFileName", result);
+			            fileMap.put("content",        content);
+			            commonDao.insertFileInfo(fileMap);
+			        }
+			    }
+			}
+			
 			txManager.commit(status);
 		} catch( Exception e ) {
 			txManager.rollback(status);
@@ -1537,7 +1784,7 @@ public class MenuServiceImpl implements MenuService {
 
 	@Override
 	@Transactional
-	public void updateMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file)
+	public void updateMenuTmp(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFiles)
 			throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -1591,6 +1838,24 @@ public class MenuServiceImpl implements MenuService {
 			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
 			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
 	
+			JSONArray manualDeletedFileIdArr = new JSONArray();
+			JSONArray manualDeletedFileArr = new JSONArray();
+			JSONArray manualDeletedFilePathArr = new JSONArray();
+
+			Object manualDelIdRaw   = param.get("manualDeletedFileIdArr");
+			Object manualDelNameRaw = param.get("manualDeletedFileArr");
+			Object manualDelPathRaw = param.get("manualDeletedFilePathArr");
+
+			if (manualDelIdRaw != null && !"".equals(String.valueOf(manualDelIdRaw).trim())) {
+			    manualDeletedFileIdArr = (JSONArray) parser.parse(String.valueOf(manualDelIdRaw));
+			}
+			if (manualDelNameRaw != null && !"".equals(String.valueOf(manualDelNameRaw).trim())) {
+			    manualDeletedFileArr = (JSONArray) parser.parse(String.valueOf(manualDelNameRaw));
+			}
+			if (manualDelPathRaw != null && !"".equals(String.valueOf(manualDelPathRaw).trim())) {
+			    manualDeletedFilePathArr = (JSONArray) parser.parse(String.valueOf(manualDelPathRaw));
+			}
+			
 			int menuIdx = Integer.parseInt((String)param.get("idx")); 	//key value 조회
 			param.put("menuIdx", menuIdx);
 			
@@ -1905,6 +2170,73 @@ public class MenuServiceImpl implements MenuService {
 				}
 			}
 			
+			// === MANUAL: 매뉴얼 파일 삭제(선택 삭제)
+			// 1) 기존에 파일이 있고 삭제버튼을 누른 경우 → 파일시스템 삭제 + DB 삭제
+			if (manualDeletedFileIdArr != null && manualDeletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < manualDeletedFileIdArr.size(); i++) {
+			        String fileIdx   = (String) manualDeletedFileIdArr.get(i);   // lab_file.FILE_IDX
+			        String fileName  = (String) manualDeletedFileArr.get(i);      // FILE_NAME
+			        String filePath  = (String) manualDeletedFilePathArr.get(i);  // FILE_PATH
+
+			        logger.error("삭제할 MANUAL 파일 이름: {}", fileName);
+			        logger.error("삭제할 MANUAL 파일 경로: {}", filePath);
+			        logger.error("삭제할 MANUAL 파일 IDX: {}", fileIdx);
+
+			        // 물리파일 삭제
+			        FileUtil.fileDelete(fileName, filePath);
+
+			        // DB 삭제 (기존에 사용하던 삭제 DAO 사용)
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        menuDao.deleteFileData(fileParam);
+			    }
+			}
+
+			// === MANUAL: 매뉴얼 신규 파일 업로드 & DB 저장
+			// 2) 신규 파일 등록(기존 파일 삭제 여부와 무관) → 업로드 + lab_file insert(DOC_TYPE='MANUAL', FILE_TYPE='00')
+			if (manualFiles != null && manualFiles.length > 0) {
+			    Calendar cal = Calendar.getInstance();
+			    Date day = cal.getTime();
+			    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+			    String toDay = sdf.format(day);
+
+			    // 저장 경로: upload.file.path.manual/yyyyMM
+			    String manualPath = config.getProperty("upload.file.path.manual");
+			    manualPath += "/" + toDay;
+
+			    for (MultipartFile mfile : manualFiles) {
+			        System.err.println("===== MANUAL =====================");
+			        System.err.println("isEmpty : " + mfile.isEmpty());
+			        System.err.println("name : " + mfile.getName());
+			        System.err.println("originalFilename : " + mfile.getOriginalFilename());
+			        System.err.println("size : " + mfile.getSize());
+			        System.err.println("==================================");
+
+			        try {
+			            if (!mfile.isEmpty()) {
+			                String fileIdx = FileUtil.getUUID();
+			                String result  = FileUtil.upload3(mfile, manualPath, fileIdx);          // 저장파일명
+			                String content = FileUtil.getPdfContents(manualPath, result);           // 텍스트 추출
+
+			                Map<String, Object> fileMap = new HashMap<>();
+			                fileMap.put("fileIdx",       fileIdx);
+			                fileMap.put("docIdx",        menuIdx);                                  // 메뉴IDX
+			                fileMap.put("docType",       "MANUAL");                                 // ★ MANUAL
+			                fileMap.put("fileType",      "00");                                    // 구분값(원하면 '00'로 통일 가능)
+			                fileMap.put("orgFileName",   mfile.getOriginalFilename());
+			                fileMap.put("filePath",      manualPath);
+			                fileMap.put("changeFileName", result);
+			                fileMap.put("content",       content);
+
+			                // DB insert
+			                commonDao.insertFileInfo(fileMap);
+			            }
+			        } catch (Exception e) {
+			            // 필요 시 로깅
+			        }
+			    }
+			}
+			
 			txManager.commit(status);
 			
 			if( param.get("currentStatus") != null && "COND_APPR".equals(param.get("currentStatus")) ) {
@@ -1920,7 +2252,7 @@ public class MenuServiceImpl implements MenuService {
 
 	@Override
 	@Transactional
-	public void updateMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file)
+	public void updateMenu(Map<String, Object> param, HashMap<String, Object> listMap, MultipartFile[] file, MultipartFile[] manualFiles)
 			throws Exception {
 		// TODO Auto-generated method stub
 		
@@ -1973,6 +2305,24 @@ public class MenuServiceImpl implements MenuService {
 			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
 			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
 			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			
+			JSONArray manualDeletedFileIdArr   = new JSONArray();
+			JSONArray manualDeletedFileArr     = new JSONArray();
+			JSONArray manualDeletedFilePathArr = new JSONArray();
+
+			Object manualDelIdRaw   = param.get("manualDeletedFileIdArr");
+			Object manualDelNameRaw = param.get("manualDeletedFileArr");
+			Object manualDelPathRaw = param.get("manualDeletedFilePathArr");
+
+			if (manualDelIdRaw != null && !"".equals(String.valueOf(manualDelIdRaw).trim())) {
+			    manualDeletedFileIdArr = (JSONArray) parser.parse(String.valueOf(manualDelIdRaw));
+			}
+			if (manualDelNameRaw != null && !"".equals(String.valueOf(manualDelNameRaw).trim())) {
+			    manualDeletedFileArr = (JSONArray) parser.parse(String.valueOf(manualDelNameRaw));
+			}
+			if (manualDelPathRaw != null && !"".equals(String.valueOf(manualDelPathRaw).trim())) {
+			    manualDeletedFilePathArr = (JSONArray) parser.parse(String.valueOf(manualDelPathRaw));
+			}
 			
 			int menuIdx = Integer.parseInt((String)param.get("idx")); 	//key value 조회
 			param.put("menuIdx", menuIdx);
@@ -2285,6 +2635,52 @@ public class MenuServiceImpl implements MenuService {
 						//throw e;
 					}					
 				}
+			}
+			
+			// === MANUAL: 삭제 처리 (기존 파일이 있고 삭제버튼을 누른 경우)
+			if (manualDeletedFileIdArr != null && manualDeletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < manualDeletedFileIdArr.size(); i++) {
+			        String fileIdx  = (String) manualDeletedFileIdArr.get(i);  // lab_file.FILE_IDX
+			        String fileName = (String) manualDeletedFileArr.get(i);     // FILE_NAME
+			        String filePath = (String) manualDeletedFilePathArr.get(i); // FILE_PATH
+
+			        FileUtil.fileDelete(fileName, filePath);
+
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        menuDao.deleteFileData(fileParam); // 기존 파일 삭제 DAO 그대로 재사용
+			    }
+			}
+
+			// === MANUAL: 신규 파일 등록 (삭제했든 아니든, 새로 올린게 있으면 저장)
+			if (manualFiles != null && manualFiles.length > 0) {
+			    Calendar cal = Calendar.getInstance();
+			    Date day = cal.getTime();
+			    SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+			    String toDay = sdf.format(day);
+
+			    String manualPath = config.getProperty("upload.file.path.manual");
+			    manualPath += "/" + toDay;
+
+			    for (MultipartFile mfile : manualFiles) {
+			        if (mfile != null && !mfile.isEmpty()) {
+			            String fileIdx = FileUtil.getUUID();
+			            String saved   = FileUtil.upload3(mfile, manualPath, fileIdx);
+			            String content = FileUtil.getPdfContents(manualPath, saved);
+
+			            Map<String, Object> fileMap = new HashMap<>();
+			            fileMap.put("fileIdx",       fileIdx);
+			            fileMap.put("docIdx",        menuIdx);
+			            fileMap.put("docType",       "MANUAL"); // ★ MANUAL
+			            fileMap.put("fileType",      "00");    // 필요시 '00'로 통일 가능
+			            fileMap.put("orgFileName",   mfile.getOriginalFilename());
+			            fileMap.put("filePath",      manualPath);
+			            fileMap.put("changeFileName", saved);
+			            fileMap.put("content",       content);
+
+			            commonDao.insertFileInfo(fileMap);
+			        }
+			    }
 			}
 			
 			txManager.commit(status);

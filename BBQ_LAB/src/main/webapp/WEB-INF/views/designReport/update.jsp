@@ -511,7 +511,7 @@
 			alert("제품명을 입력해 주세요.");
 			$("#productName").focus();
 			return;
-		} else if( $("#temp_attatch_file").children("li").length == 0 && attatchFileArr.length == 0 ) {
+		} else if( $("#tempFileList option").length == 0 && attatchFileArr.length == 0 ) {
 			alert("첨부파일을 등록해주세요.");		
 			return;
 		} else if( !chkNull($("#apprTxtFull").val()) ) {
@@ -1049,12 +1049,13 @@
 								<input type="hidden" name="currentStatus" id="currentStatus" value="${designData.data.STATUS}"/>
 							</td>
 						</tr>
-						<c:if test="${designData.data.STATUS != null && designData.data.STATUS != 'COND_APPR' }">
 						<tr>
 							<th style="border-left: none;">결재라인</th>
 							<td colspan="3">
 								<input class="" id="apprTxtFull" name="apprTxtFull" type="text" style="width: 450px; float: left" readonly>
-								<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								<c:if test="${designData.data.STATUS != null && designData.data.STATUS != 'COND_APPR' }">
+									<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
+								</c:if>
 							</td>
 						</tr>
 						<tr>
@@ -1063,7 +1064,6 @@
 								<div id="refTxtFull" name="refTxtFull"></div>								
 							</td>
 						</tr>
-						</c:if>
 						<tr>
 							<th style="border-left: none;">ERP코드</th>
 							<td>

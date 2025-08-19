@@ -25,6 +25,7 @@ import kr.co.genesiskorea.dao.BusinessTripDao;
 import kr.co.genesiskorea.dao.BusinessTripPlanDao;
 import kr.co.genesiskorea.dao.ChemicalTestDao;
 import kr.co.genesiskorea.dao.DesignReportDao;
+import kr.co.genesiskorea.dao.EtcReportDao;
 import kr.co.genesiskorea.dao.ManualDao;
 import kr.co.genesiskorea.dao.MarketResearchDao;
 import kr.co.genesiskorea.dao.MenuDao;
@@ -82,6 +83,9 @@ public class ApprovalServiceImpl implements ApprovalService {
 	
 	@Autowired
 	ChemicalTestDao chemicalTestDao;
+	
+	@Autowired
+	EtcReportDao etcDao;
 	
 	@Autowired
 	CommonService commonService;
@@ -596,6 +600,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 				docData = chemicalTestDao.selectChemicalTestData(param);
 			} else if(  param.get("docType") != null && "PACKAGE".equals(param.get("docType"))) {
 				docData = packageInfoDao.selectPackageInfoData(param);
+			} else if(  param.get("docType") != null && "ETC".equals(param.get("docType"))) {
+				docData = etcDao.selectEtcData(param);
 			}
 			//문서 상태가 승인중, 부분승인인 경우에만 결재가 가능하다.
 			System.err.println("docData : "+docData);
@@ -644,6 +650,15 @@ public class ApprovalServiceImpl implements ApprovalService {
 						
 						approvalDao.updateDocStatus(map);
 						if( (String)param.get("docType") != null && "MENU".equals((String)param.get("docType")) ) {
+							Map<String, Object> cntParam = new HashMap<>();
+							cntParam.put("docIdx", param.get("idx")); // 메뉴 IDX
+							int manualCnt = manualDao.countManualFilesByMenu(cntParam);
+
+							// 요구사항: 파일 개수가 0보다 크면 'N', 아니면 'Y'
+							String manualRegYn = (manualCnt > 0) ? "N" : "Y";
+							param.put("manualRegYn", manualRegYn);
+
+							// insertManual 파라미터에 manualRegYn 넘겨서 등록
 							manualDao.insertManual(param);
 						}
 						//완료 메일/알림을 상신자에게 보낸다.
@@ -728,6 +743,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 				docData = chemicalTestDao.selectChemicalTestData(param);
 			} else if(  param.get("docType") != null && "PACKAGE".equals(param.get("docType"))) {
 				docData = packageInfoDao.selectPackageInfoData(param);
+			} else if(  param.get("docType") != null && "ETC".equals(param.get("docType"))) {
+				docData = etcDao.selectEtcData(param);
 			}
 			//문서 상태가 승인중, 부분승인인 경우에만 결재가 가능하다.
 			System.err.println("docData : "+docData);
@@ -854,6 +871,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 				docData = chemicalTestDao.selectChemicalTestData(param);
 			} else if(  param.get("docType") != null && "PACKAGE".equals(param.get("docType"))) {
 				docData = packageInfoDao.selectPackageInfoData(param);
+			} else if(  param.get("docType") != null && "ETC".equals(param.get("docType"))) {
+				docData = etcDao.selectEtcData(param);
 			}
 			
 			//문서 상태가 승인중, 부분승인인 경우에만 반려가 가능하다.

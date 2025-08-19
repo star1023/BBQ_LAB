@@ -13,4 +13,6 @@ public interface ManualDao {
 	List<Map<String, Object>> selectManualFileList(Map<String, Object> param);
 
 	void insertManual(Map<String, Object> param);
+	
+	int countManualFilesByMenu(Map<String, Object> param);
 }

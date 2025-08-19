@@ -103,6 +103,8 @@
 				url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			} else if( docType == 'RECIPE' ) {
 				url = "/approval/recipePopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			} else if( docType == 'ETC' ) {
+				url = "/approval/etcPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			}
 		} else if( $("#listType").val() == 'myApprList' ) {
 			mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
@@ -126,6 +128,8 @@
 				url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			} else if( docType == 'RECIPE' ) {
 				url = "/approval/recipePopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			} else if( docType == 'ETC' ) {
+				url = "/approval/etcPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			}
 		} else if( $("#listType").val() == 'myCompList' ) {
 			mode = "width=1100, height=600, left=100, top=10, scrollbars=yes";
@@ -149,6 +153,8 @@
 				url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			} else if( docType == 'RECIPE' ) {
 				url = "/approval/recipePopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+			} else if( docType == 'ETC' ) {
+				url = "/approval/etcPopup?apprIdx="+apprIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 			}
 		}
 		
@@ -178,6 +184,8 @@
 			url = "/approval/chemicalTestPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		} else if( docType == 'RECIPE' ) {
 			url = "/approval/recipePopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
+		} else if( docType == 'ETC' ) {
+			url = "/approval/etcPopup?apprIdx="+apprIdx+"&refIdx="+refIdx+"&idx="+docIdx+"&viewType="+$("#listType").val();
 		}
 		window.open(url, "RefPopup", mode );
 	}

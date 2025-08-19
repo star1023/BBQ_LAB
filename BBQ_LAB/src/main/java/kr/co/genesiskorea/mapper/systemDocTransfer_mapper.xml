@@ -162,9 +162,10 @@
         and rp.IS_LAST = 'Y'
         and rp.IS_DELETE = 'N'
 
+	<!--
       UNION ALL
-
-      /* BOARD NOTICE (DOC_NO 없음) */
+      
+      /* BOARD NOTICE (DOC_NO 없음) */ 
       SELECT 
         bn.BNOTICE_IDX AS IDX,
         NULL           AS DOC_NO,
@@ -179,6 +180,7 @@
       FROM lab_board_notice bn
       WHERE bn.REG_USER = #{userId}
       	and bn.IS_DELETE = 'N'
+      	-->
     ) U
     ORDER BY DOC_TYPE, IDX
   </select>

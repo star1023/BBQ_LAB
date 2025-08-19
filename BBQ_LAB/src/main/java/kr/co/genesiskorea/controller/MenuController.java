@@ -163,6 +163,9 @@ public class MenuController {
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
 			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(value = "manualFile", required = false) MultipartFile[] manualFile
+	        , @RequestParam(value = "manualFileType", required = false) List<String> manualFileType
+	        , @RequestParam(value = "manualFileTypeText", required = false) List<String> manualFileTypeText
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -177,6 +180,11 @@ public class MenuController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("tempFile", tempFile);
+			
+			 // ★ 매뉴얼 묶어서 listMap으로 전달
+			listMap.put("manualFiles", manualFile);                 // MultipartFile[]  ← 이름 주의!
+			listMap.put("manualFileType", manualFileType);          // List<String>
+			listMap.put("manualFileTypeText", manualFileTypeText);  // List<String> (사용 안해도 put)
 			
 			System.err.println(param);
 			int menuIdx = menuService.insertTmpMenu(param, listMap, file);
@@ -201,6 +209,9 @@ public class MenuController {
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
 			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(value = "manualFile", required = false) MultipartFile[] manualFile
+	        , @RequestParam(value = "manualFileType", required = false) List<String> manualFileType
+	        , @RequestParam(value = "manualFileTypeText", required = false) List<String> manualFileTypeText
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -215,6 +226,11 @@ public class MenuController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("tempFile", tempFile);
+			 // ★ 매뉴얼 묶어서 listMap으로 전달
+			listMap.put("manualFiles", manualFile);                 // MultipartFile[]  ← 이름 주의!
+			listMap.put("manualFileType", manualFileType);          // List<String>
+			listMap.put("manualFileTypeText", manualFileTypeText);  // List<String> (사용 안해도 put)
+			
 			int menuIdx = menuService.insertMenu(param, listMap, file);
 			returnMap.put("IDX", menuIdx);
 			returnMap.put("RESULT", "S");			
@@ -285,6 +301,8 @@ public class MenuController {
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
 			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(value = "manualTempFile", required = false) List<String> manualTempFile
+			, @RequestParam(value = "manualFile",   required = false) MultipartFile[] manualFile
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -299,7 +317,9 @@ public class MenuController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("tempFile", tempFile);
-			int menuIdx = menuService.insertNewVersionMenuTmp(param, listMap, file);
+			listMap.put("manualTempFile", manualTempFile);
+			
+			int menuIdx = menuService.insertNewVersionMenuTmp(param, listMap, file, manualFile);
 			returnMap.put("IDX", menuIdx);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -320,6 +340,8 @@ public class MenuController {
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
 			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(value="manualTempFile", required=false) List<String> manualTempFile
+			, @RequestParam(value="manualFile", required=false) MultipartFile[] manualFile   
 			, @RequestParam(required=false) MultipartFile... file) throws Exception {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
@@ -335,7 +357,9 @@ public class MenuController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("tempFile", tempFile);
-			int menuIdx = menuService.insertNewVersionMenu(param, listMap, file);
+			listMap.put("manualTempFile", manualTempFile);
+			
+			int menuIdx = menuService.insertNewVersionMenu(param, listMap, file, manualFile);
 			returnMap.put("IDX", menuIdx);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -465,6 +489,12 @@ public class MenuController {
 			, @RequestParam(value = "menuType", required = false) List<String> menuType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
+	        // ★ 매뉴얼 신규 파일
+	        , @RequestParam(value = "manualFile", required = false) MultipartFile[] manualFiles
+	        // ★ 매뉴얼 삭제 배열(JSON 문자열)
+	        , @RequestParam(value = "manualDeletedFileIdArr", required = false) String manualDeletedFileIdArrJson
+	        , @RequestParam(value = "manualDeletedFileArr", required = false) String manualDeletedFileArrJson
+	        , @RequestParam(value = "manualDeletedFilePathArr", required = false) String manualDeletedFilePathArrJson
 			/*, @RequestParam(value = "docType", required = false) List<String> docType
 			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
 			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
@@ -482,11 +512,17 @@ public class MenuController {
 			listMap.put("menuType", menuType);
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
+			
+			// ★ 매뉴얼 삭제 배열 전달(서비스에서 JSON 파싱)
+	        listMap.put("manualDeletedFileIdArrJson", manualDeletedFileIdArrJson);
+	        listMap.put("manualDeletedFileArrJson", manualDeletedFileArrJson);
+	        listMap.put("manualDeletedFilePathArrJson", manualDeletedFilePathArrJson);
+	        
 			/*listMap.put("docType", docType);
 			listMap.put("docTypeText", docTypeText);
 			listMap.put("deleteFileArr", deleteFileArr);
 			listMap.put("deleteFilePathArr", deleteFilePathArr);*/
-			menuService.updateMenuTmp(param, listMap, file);
+			menuService.updateMenuTmp(param, listMap, file, manualFiles);
 			System.err.println(param);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
@@ -506,6 +542,7 @@ public class MenuController {
 			, @RequestParam(value = "menuType", required = false) List<String> menuType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
+			, @RequestParam(value = "manualFile", required = false) MultipartFile[] manualFiles
 			/*, @RequestParam(value = "docType", required = false) List<String> docType
 			, @RequestParam(value = "docTypeText", required = false) List<String> docTypeText
 			, @RequestParam(value = "deleteFileArr", required = false) List<String> deleteFileArr
@@ -526,7 +563,7 @@ public class MenuController {
 			listMap.put("docTypeText", docTypeText);
 			listMap.put("deleteFileArr", deleteFileArr);
 			listMap.put("deleteFilePathArr", deleteFilePathArr);*/
-			menuService.updateMenu(param, listMap, file);
+			menuService.updateMenu(param, listMap, file, manualFiles);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));

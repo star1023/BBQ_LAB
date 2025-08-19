@@ -1096,6 +1096,8 @@ var selectedArr = new Array();
 			/* deletedFileArr.forEach(val => formData.append("deleteFileArr", val));
 			deletedFilePathArr.forEach(val => formData.append("deleteFilePathArr", val)); */
 			
+			appendManualPayload(formData);
+			
 			URL = "../menu/updateTmpMenuAjax";
 			$.ajax({
 				type:"POST",
@@ -1287,7 +1289,10 @@ var selectedArr = new Array();
 					alert('신규원료를 입력해주세요.');
 					return;
 				}
-			}			
+			}
+			
+			if (!validateDocTypeSelected()) return;
+			
 			//기존 데이터 확인
 			var formData = new FormData();
 			var contents = editor.getData();
@@ -1520,6 +1525,8 @@ var selectedArr = new Array();
 			/* deletedFileArr.forEach(val => formData.append("deleteFileArr", val));
 			deletedFilePathArr.forEach(val => formData.append("deleteFilePathArr", val)); */
 			
+			appendManualPayload(formData);
+			
 			$('#lab_loading').show();
 			var URL = "../menu/updateMenuAjax";
 			$.ajax({
@@ -1595,6 +1602,19 @@ var selectedArr = new Array();
 				}			
 			});
 		}
+	}
+	
+	function validateDocTypeSelected() {
+	  const $checked = $('input[name=docType]:checked');
+	  if ($checked.length === 0) {
+	    alert("파일유형을 최소 1개 이상 선택해 주세요.");
+	    // 필요하면 탭 전환/스크롤/포커스
+	    if (typeof tabChange === 'function') tabChange('tab1');
+	    const first = document.querySelector('#checkbox_item1');
+	    if (first) { first.scrollIntoView({behavior:'smooth', block:'center'}); first.focus(); }
+	    return false;
+	  }
+	  return true;
 	}
 
 	function fn_list() {
@@ -2182,7 +2202,86 @@ var selectedArr = new Array();
 	    const allChecked = [...checkboxes].every(cb => cb.checked);
 	    document.getElementById("checkAll").checked = allChecked;
 	}
+	
+	  // 전역 배열이 없으면 초기화 (insert.jsp에서 이미 쓰는 네이밍 유지)
+	  window.manualFileArr = window.manualFileArr || [];                // 새로 추가한 매뉴얼 파일들
+	  window.manualFileTypeArr = window.manualFileTypeArr || [];
+	  window.manualDeletedFileIdArr = window.manualDeletedFileIdArr || [];
+	  window.manualDeletedFileArr = window.manualDeletedFileArr || [];
+	  window.manualDeletedFilePathArr = window.manualDeletedFilePathArr || [];
+
+	  // 매뉴얼 파일 추가: 화면 리스트/배열 둘 다 반영
+	  function addManualFile(input) {
+	    var files = input.files;
+	    if (!files || !files.length) return;
+
+	    for (var i = 0; i < files.length; i++) {
+	      var f = files[i];
+	      manualFileArr.push(f);
+	      // 저장 시 fileType = 'MAN' 으로 넣을 예정
+	      manualFileTypeArr.push({ fileType: '00', fileTypeText: 'MANUAL' });
+
+	      // 화면 표시
+	      var $li = $('<li/>').text(f.name);
+	      // 새로 추가한 파일은 바로 삭제 가능하게 (temp가 아니라 클라이언트 배열에서 제거)
+	      var $del = $('<a href="#none"><img src="/resources/images/icon_del_file.png"></a>');
+	      $del.on('click', function() {
+	        // 클릭된 li의 파일명을 기준으로 배열에서 1건 제거
+	        var name = $(this).parent().text();
+	        for (var j = manualFileArr.length - 1; j >= 0; j--) {
+	          if (manualFileArr[j].name === name) {
+	            manualFileArr.splice(j, 1);
+	            manualFileTypeArr.splice(j, 1);
+	            break;
+	          }
+	        }
+	        $(this).parent().remove();
+	      });
+	      $li.prepend($del);
+	      $('#attach_file_manual').append($li);
+	    }
+	    // 같은 파일을 다시 선택할 수 있도록 초기화
+	    input.value = '';
+	  }
+
+	  // 드래그&드롭으로 매뉴얼 추가
+	  function manualDrop(e) {
+	    e.preventDefault();
+	    var files = (e.originalEvent ? e.originalEvent.dataTransfer.files : e.dataTransfer.files);
+	    if (!files || !files.length) return;
+
+	    // input 없이도 재사용 가능하게 가짜 input 객체 형태로 전달
+	    var fakeInput = { files: files, value: '' };
+	    addManualFile(fakeInput);
+	    try { drogEnd(e); } catch (err) {} // 기존 스타일 리셋 함수가 있으면 호출
+	  }
+
+	  // 기존(서버 저장된) 매뉴얼 1건 제거: hidden select에서 제거 + 화면 li 제거
+		function fn_removeManualTempFile(anchor, fileIdx) {
+		  const $li = $(anchor).closest('li');
+		  // 삭제 메타 적재 (서비스에서 실제 삭제용)
+		  manualDeletedFileIdArr.push(String(fileIdx));
+		  manualDeletedFileArr.push(String($li.data('name') || ''));
+		  manualDeletedFilePathArr.push(String($li.data('path') || ''));
 		
+		  // hidden select에 남겨두는 방식은 안 써도 OK. 이미 삭제 의사 전달됨.
+		  $('#manualTempFileList option[value="' + fileIdx + '"]').remove();
+		
+		  // 화면에서 제거
+		  $li.remove();
+		}
+	
+		function appendManualPayload(formData) {
+		  // 새로 추가한 매뉴얼 파일 전송
+		  for (var i = 0; i < manualFileArr.length; i++) {
+		    formData.append('manualFile', manualFileArr[i]); // 컨트롤러 @RequestParam("manualFile")
+		  }
+
+		  // 삭제 목록 전송 (JSON 문자열)
+		  formData.append('manualDeletedFileIdArr', JSON.stringify(manualDeletedFileIdArr));
+		  formData.append('manualDeletedFileArr', JSON.stringify(manualDeletedFileArr));
+		  formData.append('manualDeletedFilePathArr', JSON.stringify(manualDeletedFilePathArr));
+		}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -2826,7 +2925,44 @@ var selectedArr = new Array();
 						</li>
 					</ul>
 				</div>
+				<!-- ====================== 매뉴얼 (MANUAL) ====================== -->
+				<div class="title2 mb20" style="width:90%;"><span class="txt">매뉴얼</span></div>
+				<div class="list_detail">
+				  <ul>
+				    <li>
+				      <dt style="width: 20%">매뉴얼 파일</dt>
+				      <dd style="width: 80%;">
+				        <!-- 업로드 버튼 (MENU와 id/name 절대 충돌 X) -->
+				        <div class="add_file" id="add_file_manual_up" style="width:100%">
+				          <span class="file_load">
+				            <!-- 컨트롤러 파라미터와 일치시키기 위해 name="manualFile" 로 사용 -->
+				            <input type="file" name="manualFile" id="manualFileInput" multiple
+				                   onchange="addManualFile(this)" style="display:none">
+				            <label for="manualFileInput">매뉴얼 등록 <img src="/resources/images/icon_add_file.png"></label>
+				          </span>
+				        </div>
 				
+				        <!-- 드래그&드롭 영역 (MENU와 id 충돌 X) -->
+				        <div id="manualFileListBox" class="file_box_pop"
+				             style="height:120px; width:100%; border-top-left-radius:0; border-top-right-radius:0; border-top:1px solid #ddd; box-sizing:border-box;"
+				             ondrop="manualDrop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
+				          <ul id="attach_file_manual" class="file_list">
+				            <c:forEach items="${menuData.manualFileList}" var="mfile" varStatus="status">
+				              <li data-path="${mfile.FILE_PATH}" data-name="${mfile.FILE_NAME}"><a href="#none" onclick="fn_removeManualTempFile(this, '${mfile.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${mfile.ORG_FILE_NAME}</li>
+				            </c:forEach>
+				          </ul>
+				        </div>
+				
+				        <!-- 기존 매뉴얼 유지용 hidden select (첨부파일의 tempFileList와 완전 분리) -->
+				        <select id="manualTempFileList" name="manualTempFileList" multiple style="display:none">
+				          <c:forEach items="${menuData.manualFileList}" var="mfile">
+				            <option value="${mfile.FILE_IDX}" selected>${mfile.ORG_FILE_NAME}</option>
+				          </c:forEach>
+				        </select>
+				      </dd>
+				    </li>
+				  </ul>
+				</div>
 				
 				<%-- <div class="title2 mt20" style="width:10%; display: inline-block;">
 					<button class="btn_con_search" onClick="openDialog('dialog_attatch')">

@@ -136,6 +136,55 @@
 	    $(function(){
 	      rebuildRightTree();
 	    });
+	    
+		/* 포커스 시 현재 값을 저장해 둔다 (취소 시 복구용) */
+		$(document).on('focus', '#searchTeam1', function(){
+		  prevTeam1 = getSelectedOne('#searchTeam1') || "";
+		});
+		$(document).on('focus', '#searchUser1', function(){
+		  prevUser1 = getSelectedOne('#searchUser1') || "";
+		});
+
+		/* 왼쪽 팀 변경 */
+		$(document).off('change', '#searchTeam1');
+		$(document).on('change', '#searchTeam1', function(){
+		  // 오른쪽에 이미 담긴 문서가 있으면 경고
+		  if (rightDocs.length > 0) {
+		    if (!confirm("보내는 팀/담당자를 변경하면 오른쪽 선택이 초기화됩니다.\n계속할까요?")) {
+		      // 취소 → 원래 값 복구
+		      setSelectValue('#searchTeam1', prevTeam1);
+		      return;
+		    }
+		    resetRightTree(); // 오른쪽 초기화
+		  }
+
+		  // 팀이 바뀌면 담당자 목록 재로딩 + 선택 초기화
+		  fn_loadUser1();
+		  setSelectValue('#searchUser1', "");
+		  // 왼쪽 문서 트리는 담당자 선택 후 fetchUserDocs에서 다시 그림
+		  fn_createJSTree1([]); // 팀만 바꿨고 담당자 미선택이면 좌측 비움
+		});
+
+		/* 왼쪽 담당자 변경 */
+		$(document).off('change', '#searchUser1');
+		$(document).on('change', '#searchUser1', function(){
+		  var userId = getSelectedOne('#searchUser1') || "";
+		  if (rightDocs.length > 0) {
+		    if (!confirm("보내는 팀/담당자를 변경하면 오른쪽 선택이 초기화됩니다.\n계속할까요?")) {
+		      // 취소 → 원래 값 복구
+		      setSelectValue('#searchUser1', prevUser1);
+		      return;
+		    }
+		    resetRightTree(); // 오른쪽 초기화
+		  }
+		  if (userId) {
+		    fetchUserDocs(userId);      // 좌측 트리 재조회
+		    $('#sourceUserId').val(userId);
+		  } else {
+		    fn_createJSTree1([]);       // 담당자 비우면 좌측 트리 비움
+		    $('#sourceUserId').val('');
+		  }
+		});
 	});
 
 	function fn_loadTeam1() {
@@ -726,6 +775,26 @@
 		  } else {
 		    fn_createJSTree1([]);          // 선택이 비어있으면 좌측 비움
 		  }
+		}
+		
+		/* ===== 왼쪽 선택 변경 시, 오른쪽에 문서가 있으면 확인/초기화 ===== */
+		var prevTeam1 = "", prevUser1 = "";
+
+		/* 공통: select 값 설정 + label 텍스트 동기화 */
+		function setSelectValue(selector, val){
+		  var $el = $(selector);
+		  try {
+		    if ($el.selectedValues && typeof $el.selectedValues === 'function') {
+		      $el.selectedValues([val]);      // 커스텀 플러그인 대응
+		    } else {
+		      $el.val(val);
+		    }
+		  } catch(e){}
+		  // label 갱신 (label id 규칙: searchTeam_label1 / searchUser_label1)
+		  var id = selector.replace('#','');
+		  var labelId = id === 'searchTeam1' ? '#searchTeam_label1'
+		             : id === 'searchUser1' ? '#searchUser_label1' : '';
+		  if (labelId) $(labelId).text($("#"+id+" option:selected").text() || "선택");
 		}
 </script>
 <input type="hidden" name="selectedRoleIdx" id="selectedRoleIdx">

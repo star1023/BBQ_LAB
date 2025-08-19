@@ -359,7 +359,7 @@ function fn_changeDate() {
 </div>	
 <div class="group01 mt5">
 	<div id="wrapper">
-	<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+	<div style="width:100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
 		<span>출장계획보고서</span>
 	</div>
 	<div class="mainTable">

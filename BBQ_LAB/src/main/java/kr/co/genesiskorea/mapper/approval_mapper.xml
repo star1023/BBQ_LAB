@@ -631,6 +631,9 @@
       		<when test="docType.equals('RECIPE')">
       		lab_recipe
       		</when>
+      		<when test="docType.equals('ETC')">
+      		lab_etc
+      		</when>
       	</choose>
 		WHERE 1 = 1
 			AND IS_DELETE = 'N'
@@ -667,6 +670,9 @@
 	      		</when>
 	      		<when test="docType.equals('RECIPE')">
 	      		AND RECIPE_IDX = #{docIdx}
+	      		</when>
+	      		<when test="docType.equals('ETC')">
+	      		AND ETC_IDX = #{docIdx}
 	      		</when>
 	      	</choose>
 	</select>
@@ -719,6 +725,9 @@
       		<when test="docType.equals('RECIPE')">
       		lab_recipe
       		</when>
+      		<when test="docType.equals('ETC')">
+      		lab_etc
+      		</when>
       	</choose>
 		SET
 			STATUS = #{docStatus}
@@ -756,6 +765,9 @@
       		</when>
       		<when test="docType.equals('RECIPE')">
       		AND RECIPE_IDX = #{docIdx}
+      		</when>
+      		<when test="docType.equals('ETC')">
+      		AND ETC_IDX = #{docIdx}
       		</when>
       	</choose>
 	</update>
