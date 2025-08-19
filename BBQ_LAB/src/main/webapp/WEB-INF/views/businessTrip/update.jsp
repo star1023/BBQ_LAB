@@ -929,11 +929,11 @@
 		<h2 style="position:relative">
 			<span class="title_s">Design Change Report</span><span class="title">출장결과보고서</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- <ul>
 					<li>
 						<button class="btn_circle_save" onclick="fn_update()">&nbsp;</button>
 					</li>
-				</ul>
+				</ul> -->
 			</div>
 		</h2>
 		<div class="group01 mt20">

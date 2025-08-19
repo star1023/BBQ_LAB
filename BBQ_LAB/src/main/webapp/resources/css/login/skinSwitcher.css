@@ -1,0 +1,145 @@
+@charset "utf-8";
+
+/*
+ * Project		:	eAccounting Color Skin Switcher
+ * File			:	skinSwitcher.css
+ * Author		:	YoungJae Lee
+ * Date			:	Jan. 2023
+ * Description	:	색상 관련 스타일
+ */
+
+
+
+/* --
+	스킨 변경 버튼
+---------------------------------------------------------- */
+.vHeader-skinPanel .skin_pink .color-base {background: #fff;}
+.vHeader-skinPanel .skin_pink .color-point {background: #ff7795;}
+.vHeader-skinPanel .skin_pink.color-tab.active .color-checked  {color: #ff7795;}
+
+.vHeader-skinPanel .skin_blue .color-base {background: #fff;}
+.vHeader-skinPanel .skin_blue .color-point {background: #5860c9;}
+.vHeader-skinPanel .skin_blue.color-tab.active .color-checked  {color: #5860c9;}
+
+.vHeader-skinPanel .skin_navy .color-base {background: #fff;}
+.vHeader-skinPanel .skin_navy .color-point {background: #0f3e8e;}
+.vHeader-skinPanel .skin_navy.color-tab.active .color-checked  {color: #0f3e8e;}
+
+.vHeader-skinPanel .skin_red .color-base {background: #fff;}
+.vHeader-skinPanel .skin_red .color-point {background: #d1232a;}
+.vHeader-skinPanel .skin_red.color-tab.active .color-checked  {color: #d1232a;}
+
+
+/* --
+	기본 컬러 변수 선언
+---------------------------------------------------------- */
+:root {	
+	--he-base: #ffffff;
+	--he-base-rgb: 255, 255, 255;
+	--he-black: #000000;
+	--he-black-rgb: 0, 0, 0;
+	--he-blue: #276baa;
+	--he-red: #e4211d;
+	--he-red-dark: #dd2424;
+	--he-gray-dark: #333;
+	--he-gray-100: #f5f7fa;
+	--he-gray-200: #edf0f5;
+	--he-gray-300: #dde3ed;
+	--he-gray-400: #ced4da;
+	--he-gray-400-rgb: 206, 212, 218;
+	--he-gray-500: #adb5bd;
+	--he-gray-600: #74788d;
+}
+
+
+
+/* --
+	skin_pink
+---------------------------------------------------------- */
+.skin_pink:root {
+	--he-main1: #ff7795;
+	--he-main1-hover: #e6546d;
+	--he-main1-rgb: 255, 119, 149;
+	--he-main2: #FC7662;	
+	--he-gradient: radial-gradient(circle at 10% 20%, #ff5f82 45%, #ff9068 90%);
+	--he-tree-header: #464b61;	   	
+}
+
+
+
+/* --
+	skin_bluw
+---------------------------------------------------------- */
+.skin_blue:root {
+	--he-main1: #5860c9;
+	--he-main1-hover: #454ca7;
+	--he-main1-rgb: 102, 108, 197;
+	--he-main2: #95d2d1;	
+	--he-gradient: linear-gradient(125deg, rgb(74, 66, 176) 35%, rgba(85,207,199,1) 100%);
+	--he-tree-header: #3d3f58;	   	
+}
+
+
+
+/* --
+	skin_navy
+---------------------------------------------------------- */
+.skin_navy:root {
+	--he-main1: #0f3e8e;
+	--he-main1-hover: #002859;
+	--he-main1-rgb: 15, 62, 142;
+	--he-main2: #74c2b3;		
+	--he-gradient: linear-gradient(125deg, #002c77 35%, #74c2b3 100%);
+	--he-tree-header: #424957;
+}
+
+
+
+/* --
+	skin_red
+---------------------------------------------------------- */
+.skin_red:root {
+	--he-main1: #d1232a;
+	--he-main1-hover: #a71c21;
+	--he-main1-rgb: 209, 35, 42;
+	--he-main2: #3a393e;
+	--he-gradient: linear-gradient(109.6deg, rgb(209 35 42) 60%, rgb(255 226 175) 105%);
+	--he-gradient2:  linear-gradient(to right, #ff8f4e, #df2f53);
+	--he-gradient3: linear-gradient(135deg, #191919 1%,#474747 100%);
+	--he-tree-header: #555555;
+}
+
+.skin_red .loginInputIcon i {color: var(--he-main1);}
+
+
+
+
+
+
+
+/* --
+	컬러 공통 클래스 선언
+---------------------------------------------------------- */
+
+.colorMain {color: var(--he-main1);}
+.colorWhite {color: #fff !important;}
+.colorBlue {color: var(--he-blue);}
+.txt-red,
+.colorRed {color: var(--he-red);}
+.colorGray {color: var(--he-gray-600); font-size:11px;}
+
+.bgMain {background-color: var(--he-main1) !important; color: #fff !important;}
+.bgWhite {background-color: #fff !important;}
+.bgGray {background-color: var(--he-gray-100) !important;}
+
+.bgMainGra {position: relative; background: var(--he-gradient); z-index: 1; color: #fff !important;}
+.bgMainGra.st02 {background: var(--he-gradient2);}
+.bgMainGra.st03 {background: var(--he-gradient3);}
+.bgMainGra:before {content:''; position: absolute; top:0; left:0; right:0; bottom: 0; background: url(/resources/images/login/bg_graphic.png) no-repeat; background-size: 300% auto; background-position: center center; z-index: -1;
+										-webkit-mask-image: linear-gradient(125deg, rgba(0,0,0,.6) 35%, rgba(0,0,0,1) 100%); mask-image: linear-gradient(125deg, rgba(0,0,0,.6) 35%, rgba(0,0,0,1) 100%);}
+
+
+
+
+
+

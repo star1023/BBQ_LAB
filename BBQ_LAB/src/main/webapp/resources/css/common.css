@@ -166,7 +166,7 @@ background: #f2f3fe;
 		.main_menu li a {
 			display: block;			/* 영역을 만듦 */
 			font-family:'맑은고딕',Malgun Gothic;
-			 width:135px; text-align:center; /* 1차메뉴 넓이값 */
+			 width:130px; text-align:center; /* 1차메뉴 넓이값 */
 			font-size: 15px;
 			color: #ffffff;
 			text-decoration: none;

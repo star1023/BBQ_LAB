@@ -1146,7 +1146,7 @@ li {
 							<tr>
 								<th style="border-left: none;">플랜트 <span class="mandatory">*</span></th>
 								<td colspan="3">
-									<div class="selectbox req" style="width:147px;">  
+									<div class="selectbox" style="width:147px;">  
 										<label for="plant" id="plant_label"> 선택</label> 
 										<select id="plant" id="plant">
 										</select>
@@ -1160,7 +1160,7 @@ li {
 								</td>
 								<th style="border-left: none;">제품단위</th>
 								<td>
-									<div class="selectbox req" style="width:147px;">  
+									<div class="selectbox" style="width:147px;">  
 										<label for="unit" id="unit_label"> 선택</label> 
 										<select id="unit" id="unit">
 										</select>
