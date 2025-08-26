@@ -115,7 +115,7 @@ public class BatchServiceImpl implements BatchService {
 				String roleCode = "";
 				String userType = "RESEARCHER";		//RESEARCHER:연구원, LEADER:팀장, EXECUTIVE: 임원
 				//소속이 세과원인 경우
-				if( orgId != null && "10000752".equals(orgId) ) {		//나중에 10000752 로 변경		
+				if( orgId != null && "10000713".equals(orgId) ) {		//나중에 10000713 로 변경		
 					if( titleCode != null && "e10".equals(titleCode) ) {	//e10 은 사장
 						roleCode = "5";
 						userType = "EXECUTIVE";
@@ -126,7 +126,7 @@ public class BatchServiceImpl implements BatchService {
 				}
 				
 				//BBQ상품개발팀일 경우
-				if( "".equals(roleCode) && orgId != null && "10001219".equals(orgId) ) {	//나중에 10001219 로 변경	
+				if( "".equals(roleCode) && orgId != null && "10001204".equals(orgId) ) {	//나중에 10001204 로 변경	
 					if( respCode != null && "906".equals(respCode) ) {
 						roleCode = "9";
 						userType = "LEADER";
@@ -137,7 +137,7 @@ public class BatchServiceImpl implements BatchService {
 				}
 				
 				//식품 안전팀일 경우
-				if( "".equals(roleCode) && orgId != null && "10001220".equals(orgId) ) {	//나중에 10001220 로 변경	
+				if( "".equals(roleCode) && orgId != null && "10001205".equals(orgId) ) {	//나중에 10001205 로 변경	
 					if( respCode != null && "906".equals(respCode) ) {
 						roleCode = "7";
 						userType = "LEADER";

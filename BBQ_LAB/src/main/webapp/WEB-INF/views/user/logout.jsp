@@ -9,6 +9,7 @@
 <title>BBQ세계식문화과학기술원</title>
 <!-- <link href="/resources/css/common.css" rel="stylesheet" type="text/css" />
 <link href="/resources/css/layout.css" rel="stylesheet" type="text/css" />	 -->
+<link rel="shortcut icon" href="/resources/images/favicon.ico"/>
 <link rel="stylesheet" href="/resources/css/login/common.css" type="text/css" />
 <link rel="stylesheet" href="/resources/css/login/component.css" type="text/css" />
 <link rel="stylesheet" href="/resources/css/login/page.css" type="text/css" />

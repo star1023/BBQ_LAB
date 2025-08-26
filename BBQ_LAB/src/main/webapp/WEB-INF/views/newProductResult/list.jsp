@@ -135,7 +135,7 @@ function fn_loadTeam() {
 		type:"POST",
 		url:URL,
 		data:{
-			"pTeamId" : "10000752"
+			"pTeamId" : "10000713"
 		},
 		dataType:"json",
 		async:false,
