@@ -581,7 +581,7 @@
 						, hr1010.BUKRS
 						, 1 as level
 					FROM lab_interface_hr1010 hr1010
-					WHERE hr1010.OBJTID = '10000752'
+					WHERE hr1010.OBJTID = '10000713'
 					UNION ALL
 					SELECT 
 						hr1010_tmp.OBJTID
