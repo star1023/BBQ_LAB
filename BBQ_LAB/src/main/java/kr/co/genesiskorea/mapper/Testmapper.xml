@@ -206,14 +206,14 @@
 			lu.USER_ID AS userId
 		    , lu.USER_NAME AS userName
 		    , lu.USER_GRAD AS userGrade
-		    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
+		    , FN_GET_CODE_NAME('GRADE',lu.USER_GRAD) AS userGradeName
 		    , lu.REG_DATE AS regDate
 		    , lu.USER_CODE AS userCode
 		    , lu.EMAIL AS email
 		    , lu.DEPT_CODE AS deptCode
-		    , getCodeName('DEPT',lu.DEPT_CODE) AS deptCodeName
+		    , FN_GET_CODE_NAME('DEPT',lu.DEPT_CODE) AS deptCodeName
 		    , lu.TEAM_CODE AS teamCode
-		    , getCodeName('TEAM',lu.TEAM_CODE) AS teamCodeName	
+		    , FN_GET_CODE_NAME('TEAM',lu.TEAM_CODE) AS teamCodeName	
 		    , lu.TITLE_CODE AS titleCode
 		    , lu.USER_TYPE AS userType
 		    , lu.IS_ADMIN AS isAdmin

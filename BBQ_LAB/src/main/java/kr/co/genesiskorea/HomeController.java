@@ -36,4 +36,10 @@ public class HomeController {
 		return "home";
 	}
 	
+    // 루트("/")로 들어오면 "/user/login" 으로 리다이렉트
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public String redirectRoot() {
+        return "redirect:/user/login";
+    }
+	
 }
