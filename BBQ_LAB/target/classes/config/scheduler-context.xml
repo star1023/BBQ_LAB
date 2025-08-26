@@ -18,4 +18,9 @@
 		<task:scheduled ref="LabSchedule" method="hrUserSync" cron="0 40 0 * * * ?"/>
 	</task:scheduled-tasks>
 	-->
+	
+	<bean id="LabSchedule" class="kr.co.genesiskorea.schedule.LabSchedule" />
+	<task:scheduled-tasks>
+		<task:scheduled ref="LabSchedule" method="hrUserMaster" cron="0 0 17 * * * ?"/>		
+	</task:scheduled-tasks>
 </beans>
