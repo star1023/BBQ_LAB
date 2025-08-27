@@ -20,13 +20,13 @@ public class LabSchedule {
 		System.err.println(cal.get(Calendar.YEAR)+"-"+cal.get(Calendar.MONTH)+"-"+cal.get(Calendar.DATE)+"  "+cal.get(Calendar.HOUR)+":"+cal.get(Calendar.MINUTE)+":"+cal.get(Calendar.SECOND)+" : �����췯~~~~~~");
 	}
 	
-	@Scheduled(cron = "0 0 1 * * * ?")
+	@Scheduled(cron = "0 0 1 * * ?")
 	public void erpMaterial() throws Exception{
 		batchService.erpMaterial();
 	}
 	
 	
-	@Scheduled(cron = "0 1 0 1 * * ?")
+	@Scheduled(cron = "0 1 0 1 * ?")
 	public void initSeq() {
 		batchService.initSeq();
 	}
