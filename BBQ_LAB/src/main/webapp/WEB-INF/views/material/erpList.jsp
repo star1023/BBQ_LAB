@@ -33,7 +33,7 @@ function fn_loadList(pageNo) {
 	if( viewCount == '' ) {
 		viewCount = "10";
 	}
-	$("#list").html("<tr><td align='center' colspan='7'>조회중입니다.</td></tr>");
+	$("#list").html("<tr><td align='center' colspan='8'>조회중입니다.</td></tr>");
 	$('.page_navi').html("");
 	$.ajax({
 		type:"POST",
@@ -50,15 +50,16 @@ function fn_loadList(pageNo) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
 					html += "<tr>";
-					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.SAP_CODE, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.COM_NAME, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.SAP_CODE, '&nbsp;') + "</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.NAME, '&nbsp;') + "</div></td>";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.NAME, '&nbsp;') + "</div></td>";
 
-					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + item.UNIT + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + item.UNIT + "</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.KEEP_CONDITION_TXT, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.KEEP_CONDITION_TXT, '&nbsp;') + "</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">";
 					if (item.TOTAL_WEIGHT != "") {
 						html += nvl(item.TOTAL_WEIGHT, '&nbsp;');
 						if (item.TOTAL_WEIGHT_UNIT != "") {
@@ -67,15 +68,15 @@ function fn_loadList(pageNo) {
 					}
 					html += "	</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.STANDARD, '&nbsp;') + "</div></td>";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.STANDARD, '&nbsp;') + "</div></td>";
 
-					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.EXPIRATION_DATE, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.EXPIRATION_DATE, '&nbsp;') + "</td>";
 
 					html += "</tr>"					
 				});				
 			} else {
 				$("#list").html(html);
-				html += "<tr><td align='center' colspan='7'>데이터가 없습니다.</td></tr>";
+				html += "<tr><td align='center' colspan='8'>데이터가 없습니다.</td></tr>";
 			}			
 			$("#list").html(html);
 			$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
@@ -84,7 +85,7 @@ function fn_loadList(pageNo) {
 		error:function(request, status, errorThrown){
 			var html = "";
 			$("#list").html(html);
-			html += "<tr><td align='center' colspan='7'>오류가 발생하였습니다.</td></tr>";
+			html += "<tr><td align='center' colspan='8'>오류가 발생하였습니다.</td></tr>";
 			$("#list").html(html);
 			$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
 			$('#pageNo').val(data.navi.pageNo);
@@ -100,13 +101,14 @@ function paging(pageNo) {
 	fn_loadList(pageNo);
 }
 
-function fn_view(sapCode) {
+function fn_view(comCode, sapCode) {
 	var URL = "../material/selectErpMaterialDataAjax";
 	$.ajax({
 		type:"POST",
 		url:URL,
 		data:{
-			"sapCode" : sapCode
+			"comCode" : comCode
+			,"sapCode" : sapCode
 		},
 		dataType:"json",
 		async:false,
@@ -243,16 +245,18 @@ function fn_update() {
 			<div class="main_tbl">
 				<table class="tbl01">
 					<colgroup id="list_colgroup">
+						<col width="8%">
 						<col width="10%">
 						<col />
 						<col width="15%">
-						<col width="10%">
-						<col width="10%">
+						<col width="8%">
+						<col width="8%">
 						<col width="22%">
-						<col width="15%">
+						<col width="10%">
 					</colgroup>
 					<thead id="list_header">
 						<tr>
+							<th>플랜트</th>
 							<th>상품코드</th>
 							<th>싱픔명</th>
 							<th>품목단위</th>

@@ -42,7 +42,7 @@
 	<select id="selectMaterialList" parameterType="map" resultType="hashmap">		
 	select 
 		lm.*
-		, (SELECT UNIT_NAME FROM lab_unit WHERE 1 = 1 AND UNIT_CODE = lm.UNIT) as UNIT_NAME
+		, FN_GET_CODE_NAME('UNIT', lm.UNIT) AS UNIT_NAME
 		, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lm.MATERIAL_TYPE1) as CATEGORY_NAME1
 		, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lm.MATERIAL_TYPE2) as CATEGORY_NAME2
 		, (SELECT CATEGORY_NAME FROM lab_system_category WHERE 1 = 1 AND CATEGORY_IDX = lm.MATERIAL_TYPE3) as CATEGORY_NAME3
@@ -259,6 +259,7 @@
 	<select id="selectErpMaterialList" parameterType="map" resultType="hashmap">
 		SELECT 
 			tmp.*
+			, FN_GET_CODE_NAME('COMPANY', tmp.COM_CODE) AS COM_NAME
 			, CASE
 				WHEN MAT_TYPE = 'NLA2' THEN '메장 메뉴'
 				ELSE '원,부재료'
@@ -340,6 +341,7 @@
 	<select id="selectErpMaterialData" parameterType="map" resultType="hashmap">
 		SELECT
 			COM_CODE
+			, FN_GET_CODE_NAME('COMPANY', COM_CODE) AS COM_NAME
 			, SAP_CODE
 			, NAME
 			, MAT_TYPE
@@ -377,7 +379,11 @@
 		FROM
 			lab_erp_material3
 		WHERE 1 = 1
+		<if test="comCode != '' ">
+			AND COM_CODE = #{comCode}
+		</if>	
 			AND SAP_CODE = #{sapCode}
+		LIMIT 1	
 		
 		<!-- 
 		SELECT

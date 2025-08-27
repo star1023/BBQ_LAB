@@ -72,7 +72,7 @@
 	/* product.selectMaterialList */
 		SELECT 
 			tmp.*
-			, (SELECT UNIT_NAME FROM lab_unit WHERE 1 = 1 AND UNIT_CODE = UNIT) as UNIT_NAME			
+			, FN_GET_CODE_NAME('UNIT', UNIT) AS UNIT_NAME
 		FROM (
 			SELECT 
 				row_number() over (order by  MATERIAL_IDX DESC) as rnum
