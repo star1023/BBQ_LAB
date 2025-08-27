@@ -9,6 +9,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 //import org.slf4j.Logger;
 //import org.slf4j.LoggerFactory;
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,6 +31,7 @@ import kr.co.genesiskorea.service.impl.BatchServiceImpl;
 import kr.co.genesiskorea.service.impl.CommonServiceImpl;
 import kr.co.genesiskorea.service.impl.TestServiceImpl;
 import kr.co.genesiskorea.util.SecurityUtil;
+import kr.co.genesiskorea.util.StringUtil;
 
 /**
  * Handles requests for the application home page.
@@ -236,5 +239,17 @@ public class TestController {
 	public String hrUserSyncAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		batchService.hrUserSync();
 		return "테스트";
+	}
+	
+	@RequestMapping(value = "/erpMateriallist")
+	public String erpMateriallist( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
+		try {
+			logger.debug("param : {} ",param.toString());
+			model.addAttribute("erpList", testServiceImpl.selectErpMaterial(param));
+			return "test2";
+		} catch( Exception e ) {
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 	}
 }

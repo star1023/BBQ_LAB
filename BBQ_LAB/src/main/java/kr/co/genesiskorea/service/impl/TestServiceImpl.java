@@ -1,5 +1,7 @@
 package kr.co.genesiskorea.service.impl;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -98,6 +100,11 @@ public class TestServiceImpl implements TestService {
 	public void insertHrUser(Map<String, Object> param) {
 		// TODO Auto-generated method stub
 		testDao.insertHrUser(param);
+	}
+	
+	public List<Map<String, Object>> selectErpMaterial(Map<String, Object> param) {
+		Map<String, Object> importParams = new HashMap<String, Object>();
+        return testDao.selectMaterial(importParams);
 	}
 
 }
