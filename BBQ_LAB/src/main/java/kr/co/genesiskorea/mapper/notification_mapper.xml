@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="notification">
+
+	<sql id="pagenation_notification">
+		WHERE rnum between #{startRow} and #{endRow}
+	</sql>
+	
+	<sql id="whereList">
+		<if test="searchType != null and searchType != '' ">
+		<choose>
+			<when test="searchType == 'searchUser'">
+			AND ( tmp.REG_USER_NAME LIKE CONCAT('%',#{searchValue},'%') OR tmp.REG_USER LIKE CONCAT('%',#{searchValue},'%') )
+			</when>
+			<when test="searchType == 'searchContent'">
+			AND MESSAGE LIKE CONCAT('%',#{searchValue},'%')
+			</when>
+      	</choose>
+		</if>
+		<if test="searchNotiType != null and searchNotiType != '' ">
+			AND tmp.TYPE = #{searchNotiType}
+		</if>
+		<if test="searchStartDate != null and searchStartDate != '' and searchEndDate != null and searchEndDate != ''">
+		    AND DATE(tmp.REG_DATE) BETWEEN #{searchStartDate} AND #{searchEndDate}
+		</if>
+	</sql>
+	
+	<select id="selectListCount" resultType="int">
+		/* notification.selectListCount */
+		SELECT 
+			COUNT(tmp.NOTI_IDX) as CNT			
+		FROM 
+			(SELECT 
+				 NOTI_IDX 
+				, TARGET_USER 
+				, TYPE 
+				, TYPE_TXT 
+				, MESSAGE 
+				, IS_READ 
+				, REG_USER
+				, FN_GET_USER_NAME(REG_USER) as REG_USER_NAME
+				, DATE_FORMAT(REG_DATE, '%Y-%m-%d %H:%i:%S') AS REG_DATE
+				, DOC_IDX 
+				, DOC_TYPE 
+			FROM 
+				lab_notification_history
+			WHERE 1 = 1
+				AND TARGET_USER = #{userId}				
+			)tmp
+		WHERE 1 = 1	
+			<include refid="notification.whereList"/>		  	
+	</select>
+	
+	<select id="selectList" parameterType="map" resultType="map">
+	/* notification.selectList */
+		SELECT * FROM 
+			(SELECT 
+				row_number() over (order by  NOTI_IDX DESC) as rnum
+				, tmp.*
+			FROM 
+				(select 
+					 noti.NOTI_IDX 
+					, noti.TARGET_USER 
+					, noti.TYPE 
+					, noti.TYPE_TXT 
+					, noti.MESSAGE 
+					, noti.IS_READ 
+					, noti.REG_USER
+					, FN_GET_USER_NAME(noti.REG_USER) as REG_USER_NAME
+					, DATE_FORMAT(noti.REG_DATE, '%Y-%m-%d %H:%i:%S') AS REG_DATE
+					, noti.DOC_IDX 
+					, noti.DOC_TYPE
+					, doc_view.TITLE
+					, FN_GET_CODE_NAME('DOC_TYPE', noti.DOC_TYPE) as DOC_NAME 
+				from 
+					lab_notification_history noti
+					left outer join lab_doc_total_view doc_view
+					on noti.DOC_IDX = doc_view.IDX
+					and noti.DOC_TYPE = doc_view.DOC_TYPE
+				where 1 = 1
+					and noti.TARGET_USER = #{userId}		
+					)tmp
+			WHERE 1 = 1	
+				<include refid="notification.whereList"/>
+			)a
+		<include refid="pagenation_notification"/>
+	</select>	
+</mapper>

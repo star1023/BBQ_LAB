@@ -667,7 +667,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 						notiMap.put("type", "APPR_COMP");
 						notiMap.put("typeTxt", "결재완료");
 						notiMap.put("message", "결재가 완료되었습니다.");
-						notiMap.put("userId", "");
+						notiMap.put("userId", "admin");
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
 						commonService.notification(notiMap);
@@ -778,7 +778,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 						notiMap.put("type", "COND_APPR");
 						notiMap.put("typeTxt", "부분승인");
 						notiMap.put("message", "요청하신 결재가 부분승인 되었습니다.");
-						notiMap.put("userId", "");
+						notiMap.put("userId", "admin");
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
 						commonService.notification(notiMap);
@@ -797,7 +797,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 						notiMap.put("type", "APPR_COMP");
 						notiMap.put("typeTxt", "승인완료");
 						notiMap.put("message", "요청하신 결재가 승인완료 되었습니다.");
-						notiMap.put("userId", "");
+						notiMap.put("userId", "admin");
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
 						commonService.notification(notiMap);
@@ -907,7 +907,7 @@ public class ApprovalServiceImpl implements ApprovalService {
 					notiMap.put("type", "APPR_RET");
 					notiMap.put("typeTxt", "반려");
 					notiMap.put("message", "요청하신 결재가 반려 되었습니다.");
-					notiMap.put("userId", "");
+					notiMap.put("userId", "admin");
 					notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 					notiMap.put("docType", apprHeader.get("DOC_TYPE"));
 					commonService.notification(notiMap);

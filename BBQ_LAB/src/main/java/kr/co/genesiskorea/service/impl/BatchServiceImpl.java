@@ -26,7 +26,8 @@ import kr.co.genesiskorea.dao.BatchDao;
 @Service
 public class BatchServiceImpl implements BatchService {
 	private Logger logger = LogManager.getLogger(BatchServiceImpl.class);
-	@Autowired 
+	
+	@Autowired(required=false)
 	BatchDao batchDao;
 	
 	/*@Override
