@@ -13,51 +13,45 @@
 <title>Insert title here</title>
 <script type="text/javascript" src="../resources/js/jquery-3.3.1.js"></script>
 <script type="text/javascript">
-	$(document).ready(function(){
-		const eventSource = new EventSource('/subscribe/<%=userId%>');
-        eventSource.addEventListener("sse", function (event) {
-            console.log(event.data);
-			/*
-            const data = JSON.parse(event.data);
-
-            (async () => {
-                // 브라우저 알림
-                const showNotification = () => {
-                    
-                    const notification = new Notification('코드 봐줘', {
-                        body: data.content
-                    });
-                    
-                    setTimeout(() => {
-                        notification.close();
-                    }, 10 * 1000);
-                    
-                    notification.addEventListener('click', () => {
-                        window.open(data.url, '_blank');
-                    });
-                }
-
-                // 브라우저 알림 허용 권한
-                let granted = false;
-
-                if (Notification.permission === 'granted') {
-                    granted = true;
-                } else if (Notification.permission !== 'denied') {
-                    let permission = await Notification.requestPermission();
-                    granted = permission === 'granted';
-                }
-
-                // 알림 보여주기
-                if (granted) {
-                    showNotification();
-                }
-            })();            
-            */
-        })
-	});
+	
 </script>
 </head>
 <body>
-	<%=userId%>
+	<table>
+		<c:forEach items="${erpList}" var="erpList" varStatus="status">
+		<tr>
+			<td>${erpList.BUKRS}</td>
+			<td>${erpList.MATNR}</td>
+			<td>${erpList.MAKTX}</td>
+			<td>${erpList.MTART}</td>
+			<td>${erpList.STOR_COND}</td>
+			<td>${erpList.MATKL}</td>
+			<td>${erpList.WGBEZ}</td>
+			<td>${erpList.MEINS}</td>
+			<td>${erpList.LRMEI}</td>
+			<td>${erpList.UMREZ}</td>
+			<td>${erpList.RCMEI}</td>
+			<td>${erpList.UMREN}</td>
+			<td>${erpList.HORIZONTAL}</td>
+			<td>${erpList.HORIZONTAL_MEINS}</td>
+			<td>${erpList.VERTICAL}</td>
+			<td>${erpList.VERTICAL_MEINS}</td>
+			<td>${erpList.HEIGHT}</td>
+			<td>${erpList.HEIGHT_MEINS}</td>
+			<td>${erpList.WEIGHT}</td>
+			<td>${erpList.WEIGHT_MEINS}</td>
+			<td>${erpList.SIZE_DIM}</td>
+			<td>${erpList.ORIG_MAT}</td>
+			<td>${erpList.LEADTIMES}</td>
+			<td>${erpList.SAFETY_STOCK_DAY}</td>
+			<td>${erpList.BOX_STOCK}</td>
+			<td>${erpList.PALLET_STOCK}</td>
+			<td>${erpList.MWSKZ}</td>
+			<td>${erpList.EXP_DATE}</td>
+			<td>${erpList.USE_YN}</td>
+			<td>${erpList.MOQ}</td>
+		</tr>
+		</c:forEach>
+	</table>
 </body>
 </html>
