@@ -3,8 +3,7 @@
 <mapper namespace="batch">
 	<insert id="insertMaterial" parameterType="list">
 		INSERT INTO lab_erp_material3 ( 
-			COM_CODE
-			, SAP_CODE
+			SAP_CODE
 			, NAME
 			, MAT_TYPE
 			, KEEP_CONDITION
@@ -36,8 +35,7 @@
 		) VALUES 
 		<foreach collection = "list" item = "item" separator = ","> 
 	    (	
-	    	#{item.BUKRS}
-			, #{item.MATNR}
+	    	#{item.MATNR}
 			, #{item.MAKTX}
 			, #{item.MTART}
 			, #{item.STOR_COND}
@@ -243,7 +241,7 @@
 			, POGUBN
 			, TITLCD
 			, LEVLCD
-			, RESPCD
+			, ISNULL(RESPCD, '') AS RESPCD
 			, JOBOID
 			, EMAIL
 			, MOBILE
@@ -382,7 +380,7 @@
 		, POGUBN = VALUES(POGUBN)
 		, TITLCD = VALUES(TITLCD)
 		, LEVLCD = VALUES(LEVLCD)
-		, RESPCD = VALUES(JOBOID)
+		, RESPCD = VALUES(RESPCD)
 		, JOBOID = VALUES(JOBOID)
 		, EMAIL = VALUES(EMAIL)
 		, MOBILE = VALUES(MOBILE)

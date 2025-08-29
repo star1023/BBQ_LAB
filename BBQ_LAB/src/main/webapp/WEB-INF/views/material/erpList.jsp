@@ -50,16 +50,15 @@ function fn_loadList(pageNo) {
 				$("#list").html(html);
 				data.list.forEach(function (item) {
 					html += "<tr>";
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.COM_NAME, '&nbsp;') + "</td>";
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.SAP_CODE, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.SAP_CODE, '&nbsp;') + "</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.NAME, '&nbsp;') + "</div></td>";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.NAME, '&nbsp;') + "</div></td>";
 
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + item.UNIT + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + item.UNIT + "</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.KEEP_CONDITION_TXT, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.KEEP_CONDITION_TXT, '&nbsp;') + "</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">";
 					if (item.TOTAL_WEIGHT != "") {
 						html += nvl(item.TOTAL_WEIGHT, '&nbsp;');
 						if (item.TOTAL_WEIGHT_UNIT != "") {
@@ -68,9 +67,9 @@ function fn_loadList(pageNo) {
 					}
 					html += "	</td>";
 
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.STANDARD, '&nbsp;') + "</div></td>";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.STANDARD, '&nbsp;') + "</div></td>";
 
-					html += "	<td onclick=\"fn_view('" + item.COM_CODE + "', '" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.EXPIRATION_DATE, '&nbsp;') + "</td>";
+					html += "	<td onclick=\"fn_view('" + item.SAP_CODE + "')\" style=\"cursor:pointer;\">" + nvl(item.EXPIRATION_DATE, '&nbsp;') + "</td>";
 
 					html += "</tr>"					
 				});				
@@ -101,14 +100,13 @@ function paging(pageNo) {
 	fn_loadList(pageNo);
 }
 
-function fn_view(comCode, sapCode) {
+function fn_view(sapCode) {
 	var URL = "../material/selectErpMaterialDataAjax";
 	$.ajax({
 		type:"POST",
 		url:URL,
 		data:{
-			"comCode" : comCode
-			,"sapCode" : sapCode
+			"sapCode" : sapCode
 		},
 		dataType:"json",
 		async:false,
@@ -245,18 +243,16 @@ function fn_update() {
 			<div class="main_tbl">
 				<table class="tbl01">
 					<colgroup id="list_colgroup">
-						<col width="8%">
 						<col width="10%">
 						<col />
 						<col width="15%">
 						<col width="8%">
-						<col width="8%">
+						<col width="12%">
 						<col width="22%">
 						<col width="10%">
 					</colgroup>
 					<thead id="list_header">
 						<tr>
-							<th>플랜트</th>
 							<th>상품코드</th>
 							<th>싱픔명</th>
 							<th>품목단위</th>

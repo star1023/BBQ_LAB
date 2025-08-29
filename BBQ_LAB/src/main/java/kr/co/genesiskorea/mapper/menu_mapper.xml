@@ -552,8 +552,7 @@
 	<select id="checkErpMaterial" parameterType="map" resultType="hashmap">
 	/* menu.checkErpMaterial */
 		SELECT 
-			COM_CODE
-			, SAP_CODE
+			SAP_CODE
 			, NAME
 			, MAT_TYPE
 			, CASE
@@ -626,8 +625,7 @@
 	<select id="selectErpMaterialData" parameterType="map" resultType="hashmap">
 	/* menu.selectErpMaterialData */
 		SELECT 
-			COM_CODE
-			, SAP_CODE
+			SAP_CODE
 			, NAME
 			, MAT_TYPE
 			, CASE

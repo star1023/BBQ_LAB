@@ -259,8 +259,7 @@
 	<select id="selectErpMaterialList" parameterType="map" resultType="hashmap">
 		SELECT 
 			tmp.*
-			, FN_GET_CODE_NAME('COMPANY', tmp.COM_CODE) AS COM_NAME
-			, CASE
+			,CASE
 				WHEN MAT_TYPE = 'NLA2' THEN '메장 메뉴'
 				ELSE '원,부재료'
 				END AS MAT_TYPE_TXT
@@ -268,7 +267,6 @@
 		FROM (
 			SELECT 
 				row_number() over (order by  SAP_CODE ASC) as rnum
-				, COM_CODE
 				, SAP_CODE
 				, NAME
 				, MAT_TYPE
@@ -340,9 +338,7 @@
 	
 	<select id="selectErpMaterialData" parameterType="map" resultType="hashmap">
 		SELECT
-			COM_CODE
-			, FN_GET_CODE_NAME('COMPANY', COM_CODE) AS COM_NAME
-			, SAP_CODE
+			SAP_CODE
 			, NAME
 			, MAT_TYPE
 			, CASE
@@ -379,9 +375,6 @@
 		FROM
 			lab_erp_material3
 		WHERE 1 = 1
-		<if test="comCode != '' ">
-			AND COM_CODE = #{comCode}
-		</if>	
 			AND SAP_CODE = #{sapCode}
 		LIMIT 1	
 		
