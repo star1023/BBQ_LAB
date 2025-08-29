@@ -49,16 +49,12 @@
 	
 	    <!-- 루트 컨텍스트에서 Service/DAO/스케줄 컴포넌트 스캔 (Controller는 제외) -->
 	<context:component-scan base-package="kr.co.genesiskorea" />
-	<context:component-scan base-package="kr.co.genesiskorea.controller" />
+	<!-- <context:component-scan base-package="kr.co.genesiskorea.controller" /> -->
 	<context:component-scan base-package="kr.co.genesiskorea.dao" />
 	<context:component-scan base-package="kr.co.genesiskorea.service" />
 
     <!-- 스케줄러 활성화 -->
+    <task:scheduler id="taskScheduler" pool-size="10" />
     <task:annotation-driven scheduler="taskScheduler"/>
 
-    <!-- 스케줄러(스레드풀) -->
-    <bean id="taskScheduler" class="org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler">
-        <property name="poolSize" value="2"/>
-        <property name="threadNamePrefix" value="sched-"/>
-    </bean> 
 </beans>
