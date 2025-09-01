@@ -140,47 +140,59 @@ public class RecipeServiceImpl implements RecipeService {
 			
 			ArrayList<HashMap<String,Object>> newList = new ArrayList<HashMap<String,Object>>();
 			if( newItemName != null && newItemName.size() > 0 ) {
-				for( int i = 0 ; i < newItemName.size() ; i++ ) {
-					HashMap<String,Object> newData = new HashMap<String,Object>();
-					newData.put("idx", recipeIdx);
-					newData.put("no", (i*10)+10);
-					try{
-						newData.put("name", newItemName.get(i));
-					} catch(Exception e) {
-						newData.put("name", "");
-					}
-					try{
-						newData.put("compCount", newItemCompCount.get(i));
-					} catch(Exception e) {
-						newData.put("compCount", "");
-					}
-					try{
-						newData.put("compUnit", newItemCompUnit.get(i));
-					} catch(Exception e) {
-						newData.put("compUnit", "");
-					}
-					try{
-						newData.put("useCount", newItemUseCount.get(i));
-					} catch(Exception e) {
-						newData.put("useCount", "");
-					}
-					try{
-						newData.put("useUnit", newItemUseUnit.get(i));
-					} catch(Exception e) {
-						newData.put("useUnit", "");
-					}
-					try{
-						newData.put("price", newItemPrice.get(i));
-					} catch(Exception e) {
-						newData.put("price", "");
-					}
-					try{
-						newData.put("desc", newItemDesc.get(i));
-					} catch(Exception e) {
-						newData.put("desc", "");
-					}
-					newList.add(newData);
-				}
+			    for( int i = 0 ; i < newItemName.size() ; i++ ) {
+			        HashMap<String,Object> newData = new HashMap<String,Object>();
+			        newData.put("idx", recipeIdx);
+			        newData.put("no", (i*10)+10);
+			        try{
+			            newData.put("name", newItemName.get(i));
+			        } catch(Exception e) {
+			            newData.put("name", "");
+			        }
+			        try{
+			            newData.put("compCount", newItemCompCount.get(i));
+			        } catch(Exception e) {
+			            newData.put("compCount", "");
+			        }
+			        try{
+			            newData.put("compUnit", newItemCompUnit.get(i));
+			        } catch(Exception e) {
+			            newData.put("compUnit", "");
+			        }
+			        try{
+			            newData.put("useCount", newItemUseCount.get(i));
+			        } catch(Exception e) {
+			            newData.put("useCount", "");
+			        }
+			        try{
+			            newData.put("useUnit", newItemUseUnit.get(i));
+			        } catch(Exception e) {
+			            newData.put("useUnit", "");
+			        }
+			        try{
+			            newData.put("price", newItemPrice.get(i));
+			        } catch(Exception e) {
+			            newData.put("price", "");
+			        }
+			        try{
+			            newData.put("desc", newItemDesc.get(i));
+			        } catch(Exception e) {
+			            newData.put("desc", "");
+			        }
+
+			        // ✅ 추가된 부분: 모든 값이 ""(빈값)이면 스킵
+			        if ("".equals(newData.get("name"))
+			            && "".equals(newData.get("compCount"))
+			            && "".equals(newData.get("compUnit"))
+			            && "".equals(newData.get("useCount"))
+			            && "".equals(newData.get("useUnit"))
+			            && "".equals(newData.get("price"))
+			            && "".equals(newData.get("desc"))) {
+			            continue;
+			        }
+
+			        newList.add(newData);
+			    }
 			}
 			
 			if( newList != null && newList.size() > 0 ) {
@@ -1063,6 +1075,46 @@ public class RecipeServiceImpl implements RecipeService {
 		recipeDao.updateStatus(paramMap);
 		
 		return returnMap;
+	}
+	
+	@Override
+	public Map<String, Object> selectRecipeErpMaterialList(Map<String, Object> param) throws Exception{
+		// TODO Auto-generated method stub
+		int totalCount = recipeDao.selectRecipeErpMaterialCount(param);
+		
+		int viewCount = 0;
+		try {
+			viewCount = Integer.parseInt(param.get("viewCount").toString());
+		} catch( Exception e ) {
+			viewCount = 10;
+		}
+		
+		int pageNo = 1;
+		try {
+			pageNo = Integer.parseInt((String)param.get("pageNo"));
+		} catch( Exception e ) {
+			System.err.println(e.getMessage());
+			pageNo = 1;
+		}
+		
+		//int startRow = (pageNo-1)*viewCount+1;
+		//int endRow = pageNo*viewCount;
+		
+		//param.put("startRow", startRow);
+		//param.put("endRow", endRow);
+		
+		// 페이징: 페이징 정보 SET
+		PageNavigator navi = new PageNavigator(param, viewCount, totalCount);
+		
+		List<Map<String, Object>> materialList = recipeDao.selectRecipeErpMaterialList(param);
+		
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("pageNo", pageNo);
+		map.put("totalCount", totalCount);
+		map.put("list", materialList);		
+		map.put("navi", navi);
+		
+		return map;
 	}
 
 }

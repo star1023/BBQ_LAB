@@ -190,5 +190,15 @@ public class RecipeDaoImpl extends RfcCommonMapper implements RecipeDao {
 		sqlSessionTemplate.update("recipe.updateStatus", param);
 	}
 
-	
+	@Override
+	public int selectRecipeErpMaterialCount(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectOne("recipe.selectRecipeErpMaterialCount", param);
+	}
+
+	@Override
+	public List<Map<String, Object>> selectRecipeErpMaterialList(Map<String, Object> param) {
+		// TODO Auto-generated method stub
+		return sqlSessionTemplate.selectList("recipe.selectRecipeErpMaterialList", param);
+	}
 }

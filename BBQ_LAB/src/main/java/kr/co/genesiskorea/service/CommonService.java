@@ -34,6 +34,8 @@ public interface CommonService {
 	
 	List<HashMap<String, Object>> selectNotification(Map<String, Object> param) throws Exception;
 
+	void deleteNotification(List<HashMap<String, Object>> notiList) throws Exception;
+	
 	List<Map<String, Object>> getCodeList(Map<String, Object> param);
 
 	void notificationAll();

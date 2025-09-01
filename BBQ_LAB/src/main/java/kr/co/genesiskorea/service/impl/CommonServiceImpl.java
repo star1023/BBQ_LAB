@@ -153,11 +153,17 @@ public class CommonServiceImpl implements CommonService {
 		// TODO Auto-generated method stub
 		//1. lab_notificaton에 데이터를 조회한다.
 		List<HashMap<String, Object>> notiList = commonDao.selectNotification(param);
+
+		return notiList;
+	}
+	
+	@Override
+	public void deleteNotification(List<HashMap<String, Object>> notiList) throws Exception {
+		// TODO Auto-generated method stub
 		//2. 조회한 lab_notificaton 데이터를 삭제한다.
 		if( notiList != null && !notiList.isEmpty() ) {
 			commonDao.deleteNotification(notiList);
 		}
-		return notiList;
 	}
 
 	@Override

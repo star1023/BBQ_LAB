@@ -32,6 +32,7 @@ import kr.co.genesiskorea.dao.MenuDao;
 import kr.co.genesiskorea.dao.NewProductResultDao;
 import kr.co.genesiskorea.dao.PackageInfoDao;
 import kr.co.genesiskorea.dao.ProductDao;
+import kr.co.genesiskorea.dao.RecipeDao;
 import kr.co.genesiskorea.dao.SenseQualityDao;
 import kr.co.genesiskorea.service.ApprovalService;
 import kr.co.genesiskorea.service.BusinessTripPlanService;
@@ -86,6 +87,9 @@ public class ApprovalServiceImpl implements ApprovalService {
 	
 	@Autowired
 	EtcReportDao etcDao;
+	
+	@Autowired
+	RecipeDao recipeDao;
 	
 	@Autowired
 	CommonService commonService;
@@ -602,7 +606,10 @@ public class ApprovalServiceImpl implements ApprovalService {
 				docData = packageInfoDao.selectPackageInfoData(param);
 			} else if(  param.get("docType") != null && "ETC".equals(param.get("docType"))) {
 				docData = etcDao.selectEtcData(param);
+			} else if(  param.get("docType") != null && "RECIPE".equals(param.get("docType"))) {
+				docData = recipeDao.selectRecipeData(param);
 			}
+			
 			//문서 상태가 승인중, 부분승인인 경우에만 결재가 가능하다.
 			System.err.println("docData : "+docData);
 			if( docData.get("STATUS") != null && ("APPR".equals(docData.get("STATUS")) || "COND_APPR".equals(docData.get("STATUS")) )  ) {
@@ -745,6 +752,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 				docData = packageInfoDao.selectPackageInfoData(param);
 			} else if(  param.get("docType") != null && "ETC".equals(param.get("docType"))) {
 				docData = etcDao.selectEtcData(param);
+			} else if(  param.get("docType") != null && "RECIPE".equals(param.get("docType"))) {
+				docData = recipeDao.selectRecipeData(param);
 			}
 			//문서 상태가 승인중, 부분승인인 경우에만 결재가 가능하다.
 			System.err.println("docData : "+docData);
@@ -873,6 +882,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 				docData = packageInfoDao.selectPackageInfoData(param);
 			} else if(  param.get("docType") != null && "ETC".equals(param.get("docType"))) {
 				docData = etcDao.selectEtcData(param);
+			} else if(  param.get("docType") != null && "RECIPE".equals(param.get("docType"))) {
+				docData = recipeDao.selectRecipeData(param);
 			}
 			
 			//문서 상태가 승인중, 부분승인인 경우에만 반려가 가능하다.

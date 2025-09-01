@@ -340,4 +340,11 @@ public class RecipeController {
 			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return recipeService.selectHistory(param);
 	}
+	
+	@RequestMapping("/selectRecipeErpMaterialListAjax")
+	@ResponseBody
+	public Map<String, Object> selectErpMaterialListAjax(HttpServletRequest request, HttpServletResponse response
+			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
+		return recipeService.selectRecipeErpMaterialList(param);
+	}
 }

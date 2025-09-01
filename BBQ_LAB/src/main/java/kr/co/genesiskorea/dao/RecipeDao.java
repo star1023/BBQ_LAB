@@ -44,5 +44,9 @@ public interface RecipeDao {
 	Map<String, Object> applyErp(List<Map<String, Object>> erpItemList) throws Exception;
 
 	void updateStatus(HashMap<String, Object> paramMap);
+	
+	int selectRecipeErpMaterialCount(Map<String, Object> param);
+
+	List<Map<String, Object>> selectRecipeErpMaterialList(Map<String, Object> param);
 
 }

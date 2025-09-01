@@ -126,7 +126,15 @@ public class CommonController {
 	@ResponseBody
 	public List<HashMap<String, Object>> readNotificationAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
-		return commonService.selectNotification(param);
+		
+		List<HashMap<String, Object>> notiList = commonService.selectNotification(param);
+		
+		//2. 조회한 lab_notificaton 데이터를 삭제한다.
+		if( notiList != null && !notiList.isEmpty() ) {
+			commonService.deleteNotification(notiList);
+		}
+		
+		return notiList;
 	}
 	
 	@RequestMapping(value = "/teamListAjax", method = RequestMethod.POST)

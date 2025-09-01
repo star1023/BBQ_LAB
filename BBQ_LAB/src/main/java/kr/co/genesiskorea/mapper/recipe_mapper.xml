@@ -368,4 +368,121 @@
 		WHERE 1 = 1
 			AND RECIPE_IDX = #{idx}
 	</update>
+	
+	<sql id="whereRecipeErpMaterialList">
+		<choose>
+			<when test = "searchType != null and searchType != ''">
+				<if test="searchType == 'searchName' ">
+				AND NAME LIKE CONCAT('%',#{searchValue},'%')
+				</if>
+				<if test="searchType == 'searchSapCode' ">
+				AND SAP_CODE LIKE CONCAT('%',#{searchValue},'%')
+				</if>
+			</when>
+			<otherwise>
+				<if test="searchValue != null and searchValue != '' ">
+				AND ( SAP_CODE LIKE CONCAT('%',#{searchValue},'%') OR NAME LIKE CONCAT('%',#{searchValue},'%') )
+				</if>
+			</otherwise>
+		</choose>
+		<choose>
+			<when test= "isNla2 != null and isNla2 != 0">
+				AND MAT_TYPE = 'NLA2'
+			</when>
+			<otherwise>
+				AND MAT_TYPE != 'NLA2'
+			</otherwise>
+		</choose>
+	</sql>
+	
+	<select id="selectRecipeErpMaterialCount" parameterType="map" resultType="int">
+		SELECT 
+			COUNT(SAP_CODE) 
+		FROM
+			lab_erp_material3
+			<!-- lab_erp_material2 -->
+		WHERE 1 = 1 
+			<!-- AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%') -->
+		<include refid="recipe.whereRecipeErpMaterialList" />
+	</select>
+	
+	<select id="selectRecipeErpMaterialList" parameterType="map" resultType="hashmap">
+		SELECT 
+			tmp.*
+			,CASE
+				WHEN MAT_TYPE = 'NLA2' THEN '메장 메뉴'
+				ELSE '원,부재료'
+				END AS MAT_TYPE_TXT
+			, FN_GET_CODE_NAME('KEEP_CONDITION', tmp.KEEP_CONDITION) AS KEEP_CONDITION_TXT  
+		FROM (
+			SELECT 
+				row_number() over (order by  SAP_CODE ASC) as rnum
+				, SAP_CODE
+				, NAME
+				, MAT_TYPE
+				, KEEP_CONDITION
+				, MAT_GROUP
+				, MAT_GROUP_NAME
+				, UNIT
+				, CHANGE_UNIT
+				, CHANGE_COUNT
+				, RECIPE_UNIT
+				, RECIPE_AMOUNT
+				, WIDTH
+				, WIDTH_UNIT
+				, LENGTH
+				, LENGTH_UNIT
+				, HEIGHT
+				, HEIGHT_UNIT
+				, TOTAL_WEIGHT
+				, TOTAL_WEIGHT_UNIT
+				, STANDARD
+				, ORIGIN
+				, LEAD_TIME
+				, SAFETY_STOCK_DAY
+				, BOX_AMOUNT
+				, PALLET_AMOUNT
+				, CD_ACCT
+				, EXPIRATION_DATE
+				, USE_YN
+				, MIN_ORDER_AMOUNT
+			FROM
+				lab_erp_material3
+			WHERE 1 = 1 
+			<!--			
+			SELECT 
+				row_number() over (order by  SAP_CODE ASC) as rnum
+				, SAP_CODE
+				, NAME
+				, KEEP_CONDITION
+				, FN_GET_CODE_NAME('KEEP_CONDITION', KEEP_CONDITION) AS KEEP_CONDITION_TXT 
+				, WIDTH
+				, WIDTH_UNIT
+				, LENGTH
+				, LENGTH_UNIT
+				, HEIGHT
+				, HEIGHT_UNIT
+				, TOTAL_WEIGHT
+				, TOTAL_WEIGHT_UNIT
+				, UNIT
+				, CHANGE_COUNT
+				, CHANGE_UNIT
+				, STANDARD
+				, ORIGIN
+				, EXPIRATION_DATE
+				, BOX_AMOUNT
+				, MIN_ORDER_AMOUNT
+				, LEAD_TIME
+				, PALLET_WIDTH_COUNT
+				, PALLET_LENGTH_COUNT
+				, CD_ACCT
+				, PALLET_AMOUNT				
+			FROM
+				lab_erp_material2
+			WHERE 1 = 1 
+			-->
+			<!--  	AND (SAP_CODE LIKE '3%' OR SAP_CODE LIKE '4%' OR SAP_CODE LIKE '5%') -->
+			<include refid="recipe.whereRecipeErpMaterialList" />
+		)tmp WHERE rnum between #{startRow} and #{endRow}	
+	</select>
 </mapper>

@@ -111,12 +111,13 @@ li {
 		$('#lab_loading').show();
 		
 		$.ajax({
-			url: '/material/selectErpMaterialListAjax',
+			url: '/recipe/selectRecipeErpMaterialListAjax',
 			type: 'post',
 			dataType: 'json',
 			data: {
 				searchValue: $('#searchErpMatValue').val(),
-				pageNo: $('#erpMatLayerPage').val()
+				pageNo: $('#erpMatLayerPage').val(),
+				isNla2 : 1
 			},
 			success: function(data){
 				var jsonData = {};
@@ -296,7 +297,7 @@ li {
 		$('#lab_loading').show();
 		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
-		var URL = '/material/selectErpMaterialListAjax';
+		var URL = '/recipe/selectRecipeErpMaterialListAjax';
 		
 		$.ajax({
 			url: URL,
@@ -304,7 +305,8 @@ li {
 			dataType: 'json',
 			data: {
 				"searchValue": $('#searchMatValue').val(),
-				"pageNo": $('#matLayerPage').val()
+				"pageNo": $('#matLayerPage').val(),
+				"isNla2" : 0
 			},
 			success: function(data){
 				var jsonData = {};

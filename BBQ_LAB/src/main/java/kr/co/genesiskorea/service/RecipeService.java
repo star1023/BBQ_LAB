@@ -33,4 +33,6 @@ public interface RecipeService {
 
 	Map<String, Object> applyErp(Map<String, Object> param);	
 
+	Map<String, Object> selectRecipeErpMaterialList(Map<String, Object> param) throws Exception;
+	
 }

@@ -102,12 +102,13 @@ li {
 		$('#lab_loading').show();
 		
 		$.ajax({
-			url: '/material/selectErpMaterialListAjax',
+			url: '/recipe/selectRecipeErpMaterialListAjax',
 			type: 'post',
 			dataType: 'json',
 			data: {
 				searchValue: $('#searchErpMatValue').val(),
-				pageNo: $('#erpMatLayerPage').val()
+				pageNo: $('#erpMatLayerPage').val(),
+				isNla2 : 1
 			},
 			success: function(data){
 				var jsonData = {};
@@ -287,7 +288,7 @@ li {
 		$('#lab_loading').show();
 		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
-		var URL = '/material/selectErpMaterialListAjax';
+		var URL = '/recipe/selectRecipeErpMaterialListAjax';
 		
 		$.ajax({
 			url: URL,
@@ -295,7 +296,8 @@ li {
 			dataType: 'json',
 			data: {
 				"searchValue": $('#searchMatValue').val(),
-				"pageNo": $('#matLayerPage').val()
+				"pageNo": $('#matLayerPage').val(),
+				"isNla2" : 0
 			},
 			success: function(data){
 				var jsonData = {};
@@ -1221,7 +1223,7 @@ li {
 									<input type="text" name="itemName" style="width: 95%" readonly="readonly" class="read_only" />
 								</td>
 								<td>
-									<input type="text" name="itemCompCount" style="width: 100%; text-align:right;" class="" onkeyup="clearNoNum(this)"/>
+									<input type="number" name="itemCompCount" style="width: 100%; text-align:right;" class="" onkeyup="clearNoNum(this)"/>
 								</td>
 								<td>
 									<!-- <div class="selectbox req" style="width:100%;">  
@@ -1234,7 +1236,7 @@ li {
 									<!--  </div> -->	
 								</td>
 								<td>
-									<input type="text" name="itemUseCount" style="width: 100%; text-align:right;" onkeyup="clearNoNum(this)"/>
+									<input type="number" name="itemUseCount" style="width: 100%; text-align:right;" onkeyup="clearNoNum(this)"/>
 								</td>
 								<td>
 									<!--<div class="selectbox req" style="width:100%;">  
@@ -1263,7 +1265,7 @@ li {
 									<input type="text" name="itemName" style="width: 95%" readonly="readonly" class="read_only" />
 								</td>
 								<td>
-									<input type="text" name="itemCompCount" style="width: 100%; text-align:right;" class="" onkeyup="clearNoNum(this)"/>
+									<input type="number" name="itemCompCount" style="width: 100%; text-align:right;" class="" onkeyup="clearNoNum(this)"/>
 								</td>
 								<td>
 									<!--<div class="selectbox req" style="width:100%;">  
@@ -1276,7 +1278,7 @@ li {
 									</div>	
 								</td>
 								<td>
-									<input type="text" name="itemUseCount" style="width: 100%; text-align:right;" onkeyup="clearNoNum(this)"/>
+									<input type="number" name="itemUseCount" style="width: 100%; text-align:right;" onkeyup="clearNoNum(this)"/>
 								</td>
 								<td>
 									<!--<div class="selectbox req" style="width:100%;">  
@@ -1341,7 +1343,7 @@ li {
 								<input type="text" name="itemName" style="width: 100%;" class="code_tbl" />
 							</td>
 							<td>
-								<input type="text" name="itemCompCount" style="width: 100%; text-align:right;" onkeyup="clearNoNum(this)"/>
+								<input type="number" name="itemCompCount" style="width: 100%; text-align:right;" onkeyup="clearNoNum(this)"/>
 							</td>
 							<td>
 								<!--<div class="selectbox req" style="width:100%;">  
@@ -1354,7 +1356,7 @@ li {
 								<!--</div>-->
 							</td>
 							<td>
-								<input type="text" name="itemUseCount" style="width: 100%; text-align:right;" class="" onkeyup="clearNoNum(this)"/>
+								<input type="number" name="itemUseCount" style="width: 100%; text-align:right;" class="" onkeyup="clearNoNum(this)"/>
 							</td>
 							<td>
 								<!--<div class="selectbox req" style="width:100%;">  
