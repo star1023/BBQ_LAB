@@ -66,37 +66,6 @@ function fn_loadCode(codeId,selectBoxId) {
 	});
 }
 
-function fn_loadUnit() {
-	var URL = "../common/unitListAjax";
-	$.ajax({
-		type:"POST",
-		url:URL,
-		data:{
-			
-		},
-		dataType:"json",
-		async:false,
-		success:function(data) {
-			var list = data;
-			$("#unit").removeOption(/./);
-			$("#unit").addOption("", "전체", false);
-			$.each(list, function( index, value ){ //배열-> index, value
-				if( '${materialData.data.UNIT}' == value ) {
-					$("#unit").addOption(value.unitCode, value.unitName, true);
-				} else {
-					$("#unit").addOption(value.unitCode, value.unitName, false);	
-				}
-				
-			});
-		},
-		error:function(request, status, errorThrown){
-				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-		}			
-	});
-	$("#unit").val('${materialData.data.UNIT}').prop("selected", true);
-	$("#unit_label").html($("#unit option:checked").text());
-}
-
 function fn_loadCategory() {
 	var URL = "../common/categoryListAjax";
 	$.ajax({
