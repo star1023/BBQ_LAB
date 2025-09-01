@@ -7,16 +7,17 @@
 		lu.USER_ID AS userId
 	    , lu.USER_NAME AS userName
 	    , lu.USER_GRAD AS userGrade
-	    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
+	    , FN_GET_CODE_NAME('GRADE',lu.USER_GRAD) AS userGradeName
 	    , lu.REG_DATE AS regDate
 	    , lu.USER_CODE AS userCode
 	    , lu.EMAIL AS email
 	    , lu.DEPT_CODE AS deptCode
-	    , getCodeName('DEPT',lu.DEPT_CODE) AS deptCodeName
+	    , FN_GET_CODE_NAME('DEPT',lu.DEPT_CODE) AS deptCodeName
 	    , lu.TEAM_CODE AS teamCode
-	    , getCodeName('TEAM',lu.TEAM_CODE) AS teamCodeName	
+	    , FN_GET_CODE_NAME('TEAM',lu.TEAM_CODE) AS teamCodeName	
 	    , lu.TITLE_CODE AS titleCode
 	    , lu.USER_TYPE AS userType
+	    , FN_GET_CODE_NAME('USER_TYPE', lu.USER_TYPE) AS userTypeName
 	    , lu.IS_ADMIN AS isAdmin
 	    , lu.IS_DELETE AS isDelete
 	    , lu.THEME AS theme
@@ -50,16 +51,17 @@
 		lu.USER_ID AS userId
 		, lu.USER_NAME AS userName
 	    , lu.USER_GRAD AS userGrade
-	    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
+	    , FN_GET_CODE_NAME('GRADE',lu.USER_GRAD) AS userGradeName
 	    , lu.REG_DATE AS regDate
 	    , lu.USER_CODE AS userCode
 	    , lu.EMAIL AS email
 	    , lu.DEPT_CODE AS deptCode
-	    , getCodeName('DEPT',lu.DEPT_CODE) AS deptCodeName
+	    , FN_GET_CODE_NAME('DEPT',lu.DEPT_CODE) AS deptCodeName
 	    , lu.TEAM_CODE AS teamCode
-	    , getCodeName('TEAM',lu.TEAM_CODE) AS teamCodeName	
+	    , FN_GET_CODE_NAME('TEAM',lu.TEAM_CODE) AS teamCodeName	
 	    , lu.TITLE_CODE AS titleCode
 	    , lu.USER_TYPE AS userType
+	    , FN_GET_CODE_NAME('USER_TYPE', lu.USER_TYPE) AS userTypeName
 	    , lu.IS_ADMIN AS isAdmin
 	    , lu.IS_DELETE AS isDelete
 	    , lu.THEME AS theme
@@ -95,23 +97,22 @@
 			FROM	lab_user	
 			WHERE 1=1
 				<!--  AND EMSTAT = 1  -->
-			<if test="searchValue != null and searchValue != '' ">
-				AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
+			<if test="searchName != null and searchName != '' ">
+				AND (USER_NAME like  concat('%',#{searchName},'%') OR USER_ID like  concat('%',#{searchName},'%')  OR EMAIL like  concat('%',#{searchName},'%') )
 			</if>
-			<if test="deptCode != null and deptCode != '' ">
-				AND DEPT_CODE = #{deptCode}
+			<if test="searchTeam != null and searchTeam != '' ">
+				AND ORGAID = #{searchTeam}
 			</if>
-			<if test="teamCode != null and teamCode != '' ">
-				AND TEAM_CODE = #{teamCode}
+			<if test="searchRole != null and searchRole != '' ">
+				AND ROLE_CODE = #{searchRole}
 			</if>
-			<if test="userGrade != null and userGrade != '' ">
-				AND USER_GRAD = #{userGrade}
-			</if>
+				AND USER_ID != '199509004'
 	</select>
 	
 	<select id="userList" parameterType="map" resultType="hashmap">
 		/* user.userList 리스트 */
 			SELECT		t.*
+			, FN_GET_CODE_NAME('USER_TYPE', t.userType) AS userTypeName
 			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = t.ORGAID ) as OBJTTX 
 			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = t.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
 			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = t.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
@@ -125,14 +126,14 @@
 					      ,USER_PWD AS userPwd
 					      ,USER_NAME AS userName
 					      ,USER_GRAD AS userGrade
-					      ,getCodeName('GRADE',USER_GRAD) AS userGradeName
+					      ,FN_GET_CODE_NAME('GRADE',USER_GRAD) AS userGradeName
 					      ,DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS regDate
 					      ,USER_CODE AS userCode
 					      ,EMAIL AS email
 					      ,DEPT_CODE AS deptCode
-					      ,getCodeName('DEPT',DEPT_CODE) AS deptCodeName
+					      ,FN_GET_CODE_NAME('DEPT',DEPT_CODE) AS deptCodeName
 					      ,TEAM_CODE AS teamCode
-					      ,getCodeName('TEAM',TEAM_CODE) AS teamCodeName					      
+					      ,FN_GET_CODE_NAME('TEAM',TEAM_CODE) AS teamCodeName					      
 					      ,TITLE_CODE AS titleCode
 					      ,USER_TYPE AS userType
 					      ,IS_ADMIN AS isAdmin	
@@ -147,18 +148,16 @@
 						FROM	lab_user	
 						WHERE 1=1
 							<!--  AND EMSTAT = 1  -->
-						<if test="searchValue != null and searchValue != '' ">
-							AND (USER_NAME like  concat('%',#{searchValue},'%') OR USER_ID like  concat('%',#{searchValue},'%')  OR EMAIL like  concat('%',#{searchValue},'%') )
+						<if test="searchName != null and searchName != '' ">
+							AND (USER_NAME like  concat('%',#{searchName},'%') OR USER_ID like  concat('%',#{searchName},'%')  OR EMAIL like  concat('%',#{searchName},'%') )
 						</if>
-						<if test="deptCode != null and deptCode != '' ">
-							AND DEPT_CODE = #{deptCode}
+						<if test="searchTeam != null and searchTeam != '' ">
+							AND ORGAID = #{searchTeam}
 						</if>
-						<if test="teamCode != null and teamCode != '' ">
-							AND TEAM_CODE = #{teamCode}
+						<if test="searchRole != null and searchRole != '' ">
+							AND ROLE_CODE = #{searchRole}
 						</if>
-						<if test="userGrade != null and userGrade != '' ">
-							AND USER_GRAD = #{userGrade}
-						</if>
+						AND USER_ID != '199509004'
 					) t WHERE rnum between #{startRow} and #{endRow}
 		<![CDATA[
 			ORDER BY t.userId desc
@@ -214,6 +213,7 @@
 		, lu.TEAM_CODE AS teamCode
 		, lu.TITLE_CODE AS titleCode
 		, lu.USER_TYPE AS userType
+		, FN_GET_CODE_NAME('USER_TYPE', USER_TYPE) AS userTypeName
 		, lu.IS_ADMIN AS isAdmin
 		, lu.IS_DELETE AS isDelete
 		, lu.ORGAID
@@ -361,7 +361,7 @@
 			, USER_NAME AS userName
 			, getUserDeptName(USER_ID) AS deptCodeName
 			, getUserTeamName(USER_ID) AS teamCodeName
-			, getCodeName('GRADE',USER_GRAD) AS userGradeName
+			, FN_GET_CODE_NAME('GRADE',USER_GRAD) AS userGradeName
 			, EMAIL
 			FROM	lab_user
 			WHERE	1 = 1 
@@ -527,16 +527,17 @@
 		lu.USER_ID AS userId
 	    , lu.USER_NAME AS userName
 	    , lu.USER_GRAD AS userGrade
-	    , getCodeName('GRADE',lu.USER_GRAD) AS userGradeName
+	    , FN_GET_CODE_NAME('GRADE',lu.USER_GRAD) AS userGradeName
 	    , DATE_FORMAT(lu.REG_DATE,'%Y-%m-%d') AS regDate
 	    , lu.USER_CODE AS userCode
 	    , lu.EMAIL AS email
 	    , lu.DEPT_CODE AS deptCode
-	    , getCodeName('DEPT',lu.DEPT_CODE) AS deptCodeName
+	    , FN_GET_CODE_NAME('DEPT',lu.DEPT_CODE) AS deptCodeName
 	    , lu.TEAM_CODE AS teamCode
-	    , getCodeName('TEAM',lu.TEAM_CODE) AS teamCodeName	
+	    , FN_GET_CODE_NAME('TEAM',lu.TEAM_CODE) AS teamCodeName	
 	    , lu.TITLE_CODE AS titleCode
 	    , lu.USER_TYPE AS userType
+	    , FN_GET_CODE_NAME('USER_TYPE', lu.USER_TYPE) AS userTypeName
 	    , lu.IS_ADMIN AS isAdmin
 	    , lu.IS_DELETE AS isDelete
 	    , lu.THEME AS theme
@@ -600,6 +601,7 @@
     	UPDATE lab_user 
 		SET 
 	      	ROLE_CODE =  #{userRole}
+	      	, USER_TYPE =  #{userType}
 		WHERE	1 = 1
 			AND USER_ID = #{userId}
     </update>

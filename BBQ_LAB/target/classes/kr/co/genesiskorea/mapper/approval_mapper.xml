@@ -40,6 +40,7 @@
 			lab_user lu
 		WHERE 1 = 1
 			AND (lu.USER_ID LIKE CONCAT('%',#{keyword},'%') OR lu.USER_NAME LIKE CONCAT('%',#{keyword},'%'))
+			AND lu.USER_ID != '199509004'
 	</select>
 	
 	<select id="selectLineSeq" resultType="int">
@@ -162,6 +163,22 @@
 			, #{status}
 		)	
 	</insert>
+	
+	<update id="updateApprHeader" parameterType="map">
+		/*	approval.updateApprHeader */
+		UPDATE 
+			lab_approval_header
+		SET
+			TOTAL_STEP = #{totalStep}
+			, CURRENT_STEP = #{currentStep}
+			, CURRENT_USER_ID = #{currentUser}
+			, COMMENT = #{apprComment}
+			, REG_DATE = sysdate()
+			, LAST_STATUS = #{status}
+		WHERE 1 = 1
+			AND APPR_IDX = #{apprIdx}
+	</update>
+	
 	<insert id="insertApprItem" parameterType="map">
 		/*	approval.insertApprItem */
 		INSERT 
@@ -184,9 +201,11 @@
 			, APPR_IDX
 			, TARGET_USER_ID
 			, IS_READ
+			, REF_START_DATE
+			, REF_END_DATE
 		)values
 		<foreach collection="refLine" item="item" index="index"  separator=",">
-		( FN_NEXTVAL('approval_line_reference_seq'), #{apprIdx}, #{item}, 'N' )
+		( FN_NEXTVAL('approval_line_reference_seq'), #{apprIdx}, #{item}, 'N', DATE_FORMAT(sysdate(), "%Y-%m-%d"), '9999-12-31' )
 		</foreach>
 	</insert>
 	
@@ -200,6 +219,40 @@
 			AND PRODUCT_IDX = #{docIdx}
 	</update>
 	
+	<sql id="whereApprovalList">
+		<if test='searchType != null and searchType != "" '>
+		<choose>
+			<when test='searchType == "U" '>
+				AND CURRENT_USER_ID IN (
+					SELECT USER_ID FROM lab_user WHERE 1 = 1 AND ( USER_ID LIKE CONCAT('%',#{searchValue},'%') OR USER_NAME LIKE CONCAT('%',#{searchValue},'%') )
+				)
+			</when>
+      		<when test='searchType == "K" '>
+      			AND ( TITLE LIKE CONCAT('%',#{searchValue},'%') OR COMMENT LIKE CONCAT('%',#{searchValue},'%') )
+      		</when>
+      	</choose>
+		</if>
+		<if test='searchStatus != null and searchStatus != "" '>
+			<choose>
+				<when test='searchStatus == "A" '>
+					AND LAST_STATUS IN ('N','A','C')
+				</when>
+				<when test='searchStatus == "CA" '>
+	      			AND LAST_STATUS = 'CA'
+	      		</when>
+	      		<when test='searchStatus == "C" '>
+	      			AND LAST_STATUS = 'Y'
+	      		</when>
+	      		<when test='searchStatus == "R" '>
+	      			AND LAST_STATUS = 'R'
+	      		</when>
+	      		<otherwise>
+
+	      		</otherwise>
+	      	</choose>
+		</if>
+	</sql>
+	
 	<select id="selectTotalCount" parameterType="map" resultType="int">
 		/*	approval.selectTotalCount */
 		SELECT 
@@ -208,6 +261,7 @@
 			lab_approval_header
 		WHERE 1 = 1
 			AND REG_USER = #{userId}
+			<include refid="approval.whereApprovalList" />
 	</select>
 	
 	<select id="selectApprovalList" parameterType="map" resultType="hashmap">
@@ -251,9 +305,25 @@
 			FROM lab_approval_header
 			WHERE 1 = 1
 				AND REG_USER = #{userId}
+				<include refid="approval.whereApprovalList" />
 		)tmp 
 		WHERE rnum between #{startRow} AND #{endRow}
 	</select>
+	
+	<sql id="whereApprovalList2">
+		<if test='searchType != null and searchType != "" '>
+		<choose>
+			<when test='searchType == "U" '>
+				AND CURRENT_USER_ID IN (
+					SELECT USER_ID FROM lab_user WHERE 1 = 1 AND ( USER_ID LIKE CONCAT('%',#{searchValue},'%') OR USER_NAME LIKE CONCAT('%',#{searchValue},'%') )
+				)
+			</when>
+      		<when test='searchType == "K" '>
+      			AND ( TITLE LIKE CONCAT('%',#{searchValue},'%') OR COMMENT LIKE CONCAT('%',#{searchValue},'%') )
+      		</when>
+      	</choose>
+		</if>
+	</sql>
 	
 	<select id="selectMyApprTotalCount" parameterType="map" resultType="int">
 		/*	approval.selectMyApprTotalCount */
@@ -278,6 +348,7 @@
 			WHERE 1 = 1
 				AND CURRENT_USER_ID = #{userId}
 				AND LAST_STATUS != 'CA'
+				<include refid="approval.whereApprovalList2" />
 			)tmp
 		WHERE 1 = 1
 			AND tmp.STATUS = 'APPR'
@@ -342,6 +413,7 @@
 				WHERE 1 = 1
 					AND CURRENT_USER_ID = #{userId}
 					AND LAST_STATUS != 'CA'
+					<include refid="approval.whereApprovalList2" />
 				)itmp
 			WHERE 1 = 1
 				AND itmp.STATUS = 'APPR'
@@ -359,7 +431,9 @@
 		WHERE 1 = 1
 			AND laf.TARGET_USER_ID = #{userId}
 			and laf.APPR_IDX = lah.APPR_IDX 
-			and lah.LAST_STATUS = 'Y'	
+			and lah.LAST_STATUS = 'Y'
+			<![CDATA[and laf.REF_START_DATE <= DATE_FORMAT(sysdate(), "%Y-%m-%d") and DATE_FORMAT(sysdate(), "%Y-%m-%d") <= laf.REF_END_DATE ]]>
+			<include refid="approval.whereApprovalList2" />
 	</select>
 	
 	<select id="selectMyRefList" parameterType="map" resultType="hashmap">
@@ -411,6 +485,8 @@
 				AND laf.TARGET_USER_ID = #{userId}
 				and laf.APPR_IDX = lah.APPR_IDX 
 				and lah.LAST_STATUS = 'Y'
+				<![CDATA[and laf.REF_START_DATE <= DATE_FORMAT(sysdate(), "%Y-%m-%d") and DATE_FORMAT(sysdate(), "%Y-%m-%d") <= laf.REF_END_DATE ]]>
+				<include refid="approval.whereApprovalList2" />
 		)tmp
 		WHERE rnum between #{startRow} AND #{endRow}		
 	</select>
@@ -426,6 +502,7 @@
 			AND APPR_IDX IN ( 
 				SELECT APPR_IDX FROM lab_approval_item WHERE 1 = 1 AND TARGET_USER_ID = #{userId} 
 			)
+			<include refid="approval.whereApprovalList2" />
 	</select>
 	
 	<select id="selectMyCompList" parameterType="map" resultType="hashmap">
@@ -469,7 +546,8 @@
 			FROM lab_approval_header
 			WHERE 1 = 1
 				AND LAST_STATUS = 'Y'
-				AND APPR_IDX IN ( SELECT APPR_IDX FROM lab_approval_item WHERE 1 = 1 AND TARGET_USER_ID = #{userId} ) 
+				AND APPR_IDX IN ( SELECT APPR_IDX FROM lab_approval_item WHERE 1 = 1 AND TARGET_USER_ID = #{userId} )
+				<include refid="approval.whereApprovalList2" /> 
 		)tmp 
 		WHERE rnum between #{startRow} AND #{endRow}
 	</select>
@@ -551,6 +629,12 @@
       		<when test="docType.equals('CHEMICAL')">
       		lab_chemical_test
       		</when>
+      		<when test="docType.equals('RECIPE')">
+      		lab_recipe
+      		</when>
+      		<when test="docType.equals('ETC')">
+      		lab_etc
+      		</when>
       	</choose>
 		WHERE 1 = 1
 			AND IS_DELETE = 'N'
@@ -584,6 +668,12 @@
 	      		</when>
 	      		<when test="docType.equals('CHEMICAL')">
 	      		AND CHEMICAL_IDX = #{docIdx}
+	      		</when>
+	      		<when test="docType.equals('RECIPE')">
+	      		AND RECIPE_IDX = #{docIdx}
+	      		</when>
+	      		<when test="docType.equals('ETC')">
+	      		AND ETC_IDX = #{docIdx}
 	      		</when>
 	      	</choose>
 	</select>
@@ -633,6 +723,12 @@
       		<when test="docType.equals('CHEMICAL')">
       		lab_chemical_test
       		</when>
+      		<when test="docType.equals('RECIPE')">
+      		lab_recipe
+      		</when>
+      		<when test="docType.equals('ETC')">
+      		lab_etc
+      		</when>
       	</choose>
 		SET
 			STATUS = #{docStatus}
@@ -668,6 +764,12 @@
       		<when test="docType.equals('CHEMICAL')">
       		AND CHEMICAL_IDX = #{docIdx}
       		</when>
+      		<when test="docType.equals('RECIPE')">
+      		AND RECIPE_IDX = #{docIdx}
+      		</when>
+      		<when test="docType.equals('ETC')">
+      		AND ETC_IDX = #{docIdx}
+      		</when>
       	</choose>
 	</update>
 	
@@ -675,22 +777,28 @@
 	<select id="selectApprItemList" parameterType="map" resultType="hashmap">
 	/*	approval.selectApprItemList */
 		SELECT
-			ITEM_IDX
-			, APPR_IDX
-			, APPR_NO
-			, TARGET_USER_ID
-			, FN_GET_USER_NAME(TARGET_USER_ID) as TARGET_USER_NAME
-			, STATUS
-			, CASE WHEN STATUS = 'N' OR STATUS = '' OR STATUS IS NULL THEN '미결'
-				   WHEN STATUS = 'Y' THEN '결재완료'
-				   WHEN STATUS = 'R' THEN '반려'
-				   WHEN STATUS = 'C' THEN '부분승인' 
+			lai.ITEM_IDX
+			, lai.APPR_IDX
+			, lai.APPR_NO
+			, lai.TARGET_USER_ID
+			, FN_GET_USER_NAME(lai.TARGET_USER_ID) as TARGET_USER_NAME
+			, lai.STATUS
+			, CASE WHEN lai.STATUS = 'N' OR STATUS = '' OR STATUS IS NULL THEN '미결'
+				   WHEN lai.STATUS = 'Y' THEN '결재완료'
+				   WHEN lai.STATUS = 'R' THEN '반려'
+				   WHEN lai.STATUS = 'C' THEN '부분승인' 
 				  END STATUS_TXT
-			, COMMENT
-			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE
-			, DATE_FORMAT(REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
+			, lai.COMMENT
+			, DATE_FORMAT(lai.REG_DATE,'%Y-%m-%d') AS REG_DATE
+			, DATE_FORMAT(lai.REG_DATE,'%Y-%m-%d') AS REG_DATE_TXT
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
 		FROM 
-			lab_approval_item
+			lab_approval_item lai
+			left outer join lab_user lu
+			on lai.TARGET_USER_ID = lu.USER_ID 
 		WHERE 1 = 1
 			AND APPR_IDX = #{apprIdx}
 		ORDER BY APPR_NO ASC	
@@ -704,8 +812,14 @@
 			, APPR_IDX
 			, TARGET_USER_ID
 			, FN_GET_USER_NAME(TARGET_USER_ID) as TARGET_USER_NAME
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.LEVLCD and hr9001.CDTYPE = 'LEVLCD') as LEVEL_TXT
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.RESPCD and hr9001.CDTYPE = 'RESPCD') as RESP_TXT
 		FROM
-			lab_approval_reference
+			lab_approval_reference lar
+			left outer join lab_user lu
+			on lar.TARGET_USER_ID = lu.USER_ID 
 		WHERE 1 = 1
 			AND APPR_IDX = #{apprIdx}		
 	</select>
@@ -814,4 +928,130 @@
 		WHERE 1 = 1
 			AND REF_IDX = #{refIdx}		
 	</update>
+	
+	<insert id="addReference" parameterType="list">
+		/*	approval.insertReference */
+		INSERT
+		INTO lab_approval_reference(
+			REF_IDX
+			, APPR_IDX
+			, TARGET_USER_ID
+			, IS_READ
+			, REF_START_DATE
+			, REF_END_DATE
+		)values
+		<foreach collection="list" item="item" index="index"  separator=",">
+		( 
+			FN_NEXTVAL('approval_line_reference_seq')
+			, #{item.apprIdx}
+			, #{item.userId}
+			, 'N'
+			<choose>
+			<when test='item.startDate != null and item.startDate != "" '>
+			, #{item.startDate}
+			</when>
+			<otherwise>
+			, DATE_FORMAT(sysdate(), "%Y-%m-%d")
+			</otherwise>
+			</choose>
+			<choose>
+			<when test='item.endDate != null and item.endDate != "" '>
+			, #{item.endDate}
+			</when>
+			<otherwise>
+			, '9999-12-31' 
+			</otherwise>
+			</choose>
+		)
+		</foreach>
+		ON DUPLICATE KEY UPDATE 
+		REF_IDX = VALUES(REF_IDX)
+		, IS_READ = VALUES(IS_READ)
+		, REF_START_DATE = VALUES(REF_START_DATE)
+		, REF_END_DATE = VALUES(REF_END_DATE)
+	</insert>
+	
+	<select id="selectRefInfoList" parameterType="map" resultType="hashmap">
+	/*	approval.selectRefInfoList */	
+		SELECT 
+			lar.REF_IDX
+			, lar.APPR_IDX
+			, lar.TARGET_USER_ID
+			, lar.IS_READ
+			, CASE WHEN lar.IS_READ = 'Y' THEN '' 
+				ELSE ''
+				end  IS_READ_TXT
+			, lar.REF_START_DATE
+			, lar.REF_END_DATE 
+			, FN_GET_USER_NAME(lar.TARGET_USER_ID) as USER_NAME
+			, (select OBJTTX from lab_interface_hr1010 hr1010 where hr1010.OBJTID = lu.ORGAID ) as OBJTTX 
+			, (select CDTEXT from lab_interface_hr9001 hr9001 where hr9001.CDVALU = lu.TITLCD and hr9001.CDTYPE = 'TITLCD') as TITL_TXT
+		FROM 
+			lab_approval_reference lar
+			left outer join lab_user lu
+			on lar.TARGET_USER_ID = lu.USER_ID 
+		WHERE 1 = 1
+			AND lar.APPR_IDX = #{apprIdx}	
+		
+	</select>
+	
+	<insert id="insertArrpHeaderHistory" parameterType="map">
+	/*	approval.insertArrpHeaderHistory */
+		INSERT 
+		INTO lab_approval_header_history(
+			APPR_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, TOTAL_STEP
+			, CURRENT_STEP
+			, CURRENT_USER_ID
+			, TITLE
+			, REG_USER
+			, REG_DATE
+			, COMMENT
+			, LAST_STATUS
+		)
+		SELECT  
+			APPR_IDX
+			, DOC_IDX
+			, DOC_TYPE
+			, TOTAL_STEP
+			, CURRENT_STEP
+			, CURRENT_USER_ID
+			, TITLE
+			, REG_USER
+			, REG_DATE
+			, COMMENT
+			, LAST_STATUS
+		FROM 
+			lab_approval_header
+		WHERE 1 = 1
+			AND APPR_IDX = #{apprIdx}	
+	</insert>
+	
+	<insert id="insertArrpItemHistory" parameterType="map">
+	/*	approval.insertArrpItemHistory */	
+		INSERT 
+    	INTO lab_approval_item_history(
+			ITEM_IDX
+			, APPR_IDX
+			, APPR_NO
+			, TARGET_USER_ID
+			, STATUS
+			, COMMENT
+			, REG_DATE
+		)
+		SELECT  
+			ITEM_IDX
+			, APPR_IDX
+			, APPR_NO
+			, TARGET_USER_ID
+			, STATUS
+			, COMMENT
+			, REG_DATE
+		FROM 
+			lab_approval_item
+		WHERE 1 = 1
+			AND APPR_IDX = #{apprIdx}
+	</insert>
 </mapper>
