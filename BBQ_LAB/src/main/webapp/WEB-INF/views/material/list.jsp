@@ -234,52 +234,12 @@ function fn_goViewHistory(idx, docNo) {
 }
 
 function fn_insert() {
-	$("#name").val("");
-	$("#sapCode").val("");
-	$("company").removeOption(/./);
-	//loadCompany('company');
-	$("company").selectOptions("");
-	$("plant").removeOption(/./);
-	$("plant").selectOptions("");
-	$("#price").val("");
-	fn_loadUnit();
-	$("#unit").selectOptions("");
-	//$("#selectTxtFull").html("");
-	$("#selectTxtFull").val("");
-	$("#fileData").html("");
-	$("#create").show();
-	$("#update").hide();
-	
 	location.href = '/material/insert';
 }
 
 function fn_goVersionUp(idx) {
 	console.log(idx);
 	location.href = '/material/versionUp?idx='+idx;
-}
-
-function fn_loadUnit() {
-	var URL = "../common/unitListAjax";
-	$.ajax({
-		type:"POST",
-		url:URL,
-		data:{
-			
-		},
-		dataType:"json",
-		async:false,
-		success:function(data) {
-			var list = data;
-			$("#unit").removeOption(/./);
-			$("#unit").addOption("", "전체", false);
-			$.each(list, function( index, value ){ //배열-> index, value
-				$("#unit").addOption(value.unitCode, value.unitName, false);
-			});
-		},
-		error:function(request, status, errorThrown){
-				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-		}			
-	});
 }
 
 function fn_loadCategory() {

@@ -106,6 +106,7 @@
 			<if test="searchRole != null and searchRole != '' ">
 				AND ROLE_CODE = #{searchRole}
 			</if>
+				AND USER_ID != '199509004'
 	</select>
 	
 	<select id="userList" parameterType="map" resultType="hashmap">
@@ -156,6 +157,7 @@
 						<if test="searchRole != null and searchRole != '' ">
 							AND ROLE_CODE = #{searchRole}
 						</if>
+						AND USER_ID != '199509004'
 					) t WHERE rnum between #{startRow} and #{endRow}
 		<![CDATA[
 			ORDER BY t.userId desc
