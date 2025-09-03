@@ -88,6 +88,7 @@
 	WHERE	1 = 1
 		AND lu.USER_ID = #{userId}
 		AND lu.USER_PWD = #{encPwd}
+		AND lu.EMSTAT != '3'
 
     </select>
     

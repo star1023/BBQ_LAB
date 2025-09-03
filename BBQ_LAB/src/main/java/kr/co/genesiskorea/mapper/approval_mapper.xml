@@ -41,6 +41,7 @@
 		WHERE 1 = 1
 			AND (lu.USER_ID LIKE CONCAT('%',#{keyword},'%') OR lu.USER_NAME LIKE CONCAT('%',#{keyword},'%'))
 			AND lu.USER_ID != '199509004'
+			AND lu.EMSTAT != '3'
 	</select>
 	
 	<select id="selectLineSeq" resultType="int">
