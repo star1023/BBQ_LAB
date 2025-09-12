@@ -431,7 +431,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	

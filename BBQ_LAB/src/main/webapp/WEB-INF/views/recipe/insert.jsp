@@ -78,7 +78,6 @@ li {
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -152,7 +151,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('상품검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -252,7 +250,6 @@ li {
 		openDialog('dialog_material');
 		
 		var matCode = $(element).prev().val();
-		console.log("matCode : "+matCode);
 		$('#searchMatValue').val(matCode);
 		$('#itemType').val(itemType);
 		$('#searchType').val(type);
@@ -286,7 +283,6 @@ li {
 		}
 			
 		$('#lab_loading').show();
-		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
 		var URL = '/recipe/selectRecipeErpMaterialListAjax';
 		
@@ -341,7 +337,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('자재검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -373,7 +368,6 @@ li {
 			$('#'+parentRowId + ' input[name=itemSapCode]').val(itemSAPCode);
 			$('#'+parentRowId + ' input[name=itemName]').val(itemName);
 			$('#'+parentRowId + ' input[name=itemCompCount]').val(itemRecipeAmount);
-			console.log(itemUnit);
 			$('#'+parentRowId + ' select[name=itemCompUnit]').val(itemRecipeUnit.toLowerCase());
 			$('#'+parentRowId + ' select[name=itemUseUnit]').val(itemRecipeUnit.toLowerCase());
 			//$("#itemCompUnit").selectOptions(UNIT);
@@ -477,7 +471,6 @@ li {
 			$('tr[id^=new_tr]').toArray().forEach(function(newRow){
 				if(newValid) {
 					var rowId = $(newRow).attr('id');
-					console.log(rowId);
 					var itemName = $('#'+ rowId + ' input[name=itemName]').val();
 					var itemCompCount = $('#'+ rowId + ' input[name=itemCompCount]').val();
 					var itemCompUnit = $('#'+ rowId + ' select[name=itemCompUnit]').selectedValues()[0];
@@ -515,7 +508,6 @@ li {
 					newItemUseUnitArr.push(itemUseUnit);
 					newItemPriceArr.push(itemPrice);
 					newItemDescArr.push(itemDesc);
-					console.log(itemDesc);					
 				}
 			});
 			
@@ -543,7 +535,6 @@ li {
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {
 						if( result.IDX > 0 ) {
 							if( $("#apprLine option").length > 0 ) {
@@ -709,7 +700,6 @@ li {
 			$('tr[id^=new_tr]').toArray().forEach(function(newRow){
 				if(newValid) {
 					var rowId = $(newRow).attr('id');
-					console.log(rowId);
 					var itemName = $('#'+ rowId + ' input[name=itemName]').val();
 					var itemCompCount = $('#'+ rowId + ' input[name=itemCompCount]').val();
 					var itemCompUnit = $('#'+ rowId + ' select[name=itemCompUnit]').selectedValues()[0];
@@ -747,7 +737,6 @@ li {
 					newItemUseUnitArr.push(itemUseUnit);
 					newItemPriceArr.push(itemPrice);
 					newItemDescArr.push(itemDesc);
-					console.log(newValid);
 				}
 			});
 			
@@ -775,7 +764,6 @@ li {
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {
 						if( result.IDX > 0 ) {							
 							if( $("#apprLine option").length > 0 ) {
@@ -972,7 +960,6 @@ li {
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}

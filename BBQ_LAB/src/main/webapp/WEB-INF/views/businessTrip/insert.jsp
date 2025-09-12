@@ -58,7 +58,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor1 = editor;
-    		console.log( editor1 );
     	}).catch( error => {
     		console.error( error );
     	});
@@ -68,7 +67,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor2 = editor;
-    		console.log( editor2 );
     	}).catch( error => {
     		console.error( error );
     	});
@@ -83,7 +81,6 @@
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -226,7 +223,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function allowDrop(e) {
@@ -288,8 +284,6 @@
 	function fn_insertTmp() {
 		var tripContents = editor1.getData();
 		var tripCost = editor2.getData();
-		console.log(editor1.getData());
-		console.log(editor2.getData());
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
 			$("#title").focus();
@@ -580,7 +574,6 @@
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {
 						if( result.IDX > 0 ) {
 							if( $("#apprLine option").length > 0 ) {
@@ -654,7 +647,6 @@
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
@@ -701,7 +693,6 @@
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				var jsonData = {};
 				jsonData = result;
 				$('#searchLayerBody').empty();
@@ -746,7 +737,6 @@
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				$("#planIdx").val(result.planData.data.PLAN_IDX);
 				$("#title").val(result.planData.data.TITLE);
 				$("#tripType").selectOptions(result.planData.data.TRIP_TYPE);
@@ -884,7 +874,6 @@
 			});
 		};
 		config.select = function(event,ui){
-			console.log(ui);
 			jQuery('#addDeptName').val('');
 			jQuery('#addDeptName').val(ui.item.deptName);
 			
@@ -982,8 +971,6 @@
 	    // 출장기간
 	    const startDate = document.getElementById("tripStartDate").value.trim();
 	    const endDate = document.getElementById("tripEndDate").value.trim();
-	    console.log(startDate);
-	    console.log(endDate);
 	    let tripDateText = "";
 	    if (startDate && endDate) tripDateText = startDate + " ~ " + endDate;
 	    else if (startDate) tripDateText = startDate;
@@ -1004,7 +991,6 @@
 		    	tripDateText += "   출장기간(1일)"
 		    }
 		}
-	    console.log(tripDateText);
 	    $doc.querySelector("#prev_trip_date").innerText = tripDateText;
 
 	    // 출장지, 경유지

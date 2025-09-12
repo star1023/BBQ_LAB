@@ -58,7 +58,6 @@ public class ManualServiceImpl implements ManualService {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 			pageNo = 1;
 		}
@@ -99,12 +98,6 @@ public class ManualServiceImpl implements ManualService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();

@@ -46,7 +46,6 @@ public class SystemRoleController {
 		Map<String, String> returnMap = new HashMap<String,String>();
 		try {
 			Map<String, Object> roleData = roleService.selectRoleData(param);
-			System.err.println(roleData);
 			if( roleData != null && roleData.get("ROLE_ID") != null && !"".equals(roleData.get("ROLE_ID")) ) {
 				returnMap.put("RESULT", "F");
 				returnMap.put("MESSAGE","동일한 권한이 등록되어있습니다.");

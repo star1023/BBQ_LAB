@@ -78,7 +78,6 @@ public class SystemCategoryController {
 	public Map<String, String> updateCategoryAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		Map<String, String> returnMap = new HashMap<String,String>();
 		try {
-			System.err.println(param);
 			categoryService.updateCategory(param);
 			returnMap.put("RESULT", "S");
 		} catch( Exception e ) {

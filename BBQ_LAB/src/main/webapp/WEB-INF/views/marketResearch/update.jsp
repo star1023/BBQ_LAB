@@ -155,7 +155,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function fn_removeTempFile(el, fileIdx) {
@@ -586,7 +585,6 @@
 	function fn_loadAppr() {
 		var apprTxtFull = "";
 		$("#apprLine").selectedTexts().forEach(function( item, index ){
-			console.log(item);
 			if( apprTxtFull != "" ) {
 				apprTxtFull += " > ";
 			}
@@ -628,7 +626,6 @@
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				//productLayerBody
 				var jsonData = {};
 				jsonData = result;
@@ -674,7 +671,6 @@
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				$("#tripType").selectOptions(result.TRIP_TYPE);
 				$("#tripType_label").html($("#tripType").selectedTexts());
 				$("#tripStartDate").val(result.TRIP_START_DATE);

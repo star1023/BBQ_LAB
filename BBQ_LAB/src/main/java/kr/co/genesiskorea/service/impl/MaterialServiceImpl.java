@@ -114,7 +114,6 @@ public class MaterialServiceImpl implements MaterialService {
 					param.put("materialType"+(i+1), materialType.get(i));
 				}
 			}
-			System.err.println(param);
 			materialDao.insertMaterial(param);
 			
 			//첨부파일 유형 저장
@@ -150,12 +149,6 @@ public class MaterialServiceImpl implements MaterialService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -176,7 +169,6 @@ public class MaterialServiceImpl implements MaterialService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -226,7 +218,6 @@ public class MaterialServiceImpl implements MaterialService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
@@ -281,7 +272,6 @@ public class MaterialServiceImpl implements MaterialService {
 			}
 			
 			param.put("versionNo", Integer.parseInt((String)param.get("currentVersionNo"))+1);
-			System.err.println(param);
 			materialDao.insertNewVersion(param);
 			
 			//첨부파일 유형 저장
@@ -345,7 +335,6 @@ public class MaterialServiceImpl implements MaterialService {
 								fileMap.put("filePath", path);
 								fileMap.put("changeFileName", newFileName);
 								fileMap.put("content", fileContents);
-								System.err.println(fileMap);
 								//파일정보 저장
 								commonDao.insertFileInfo(fileMap);
 							}
@@ -357,12 +346,6 @@ public class MaterialServiceImpl implements MaterialService {
 			if( file != null && file.length > 0 ) {
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -383,7 +366,6 @@ public class MaterialServiceImpl implements MaterialService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -446,10 +428,8 @@ public class MaterialServiceImpl implements MaterialService {
 		// TODO Auto-generated method stub
 		Map<String, Object> resultMap = new HashMap<String, Object>();
 		//1.RFC를 호출해서 해당일의 원료 데이터를 조회한다.
-		System.err.println("param : "+param);
 		Map<String, Object> importParams = new HashMap<String, Object>();
 		String selectDate = (String)param.get("selectDate");
-		System.err.println("selectDate : "+selectDate);
 		if( selectDate != null && !"".equals(selectDate) ) {
 			try {
 				String inputFormat = "yyyy-MM-dd";
@@ -472,18 +452,14 @@ public class MaterialServiceImpl implements MaterialService {
 	        String toDay = sdf.format(cal.getTime());
 	        importParams.put("I_DATUM", toDay);
 		}
-		System.err.println("importParams : "+importParams);
 		List<Map<String, Object>> erpMaterialList = batchDao.selectMaterial(importParams);
 		int totalCount = erpMaterialList.size();
-		System.err.println("erpMaterialList : "+erpMaterialList);
-		System.err.println("totalCount : "+totalCount);
 		//2.조회한 데이터를 INSERT/UPDATE 한다.
 		int resultCount = 0;
 		if( totalCount > 0 ) {
 			resultCount = batchDao.insertMaterial(erpMaterialList);
 		}
 		//3.처리 결과를 반환한다.
-		System.err.println("resultCount : "+resultCount);
 		
 		resultMap.put("totalCount", totalCount);
 		resultMap.put("resultCount", resultCount);

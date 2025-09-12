@@ -592,7 +592,6 @@ function renderMyDocTable(docTypeParam) {
         },
         dataType: "json",
         success: function (response) {
-            console.log("데이터 수신 성공", response);
             renderMyDocTableRow(response, docType, docTypeKey);
         },
         error: function (request, status, error) {
@@ -603,7 +602,6 @@ function renderMyDocTable(docTypeParam) {
 
 function renderMyDocTableRow(data, docType, docTypeKey) {
     var list = data.list || [];
-    console.log(docTypeKey);
     var hasVersioningDoc = 
         docTypeKey === 'PROD' || docTypeKey === 'MENU' || docTypeKey === 'PACKAGE';
     
@@ -624,7 +622,6 @@ function renderMyDocTableRow(data, docType, docTypeKey) {
 	var idxText = docTypeKey == 'SENSE_QUALITY' ? "REPORT_IDX" : docTypeKey+'_IDX';
 	idxText = docTypeKey == 'PROD' ? "PRODUCT_IDX" : docTypeKey+'_IDX';
 	
-	console.log(idxText);	
     list.forEach(function(item, i) {
         var viewUrl = docType + "/view?idx=" + item[idxText];
         var id = docTypeKey + '_' + item.DOC_NO + '_' + i; 

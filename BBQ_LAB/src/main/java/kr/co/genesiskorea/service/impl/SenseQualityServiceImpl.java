@@ -66,14 +66,12 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
 		try {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 		}
 		
@@ -570,7 +568,7 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 					addInfoList.add(resultData);
 				}				
 			}
-			System.err.println("addInfoList : "+addInfoList);
+
 			reportDao.deleteSenseQualityAddInfo(param);
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {
@@ -761,7 +759,7 @@ public class SenseQualityServiceImpl implements SenseQualityService {
 					addInfoList.add(resultData);
 				}				
 			}
-			System.err.println("addInfoList : "+addInfoList);
+
 			reportDao.deleteSenseQualityAddInfo(param);
 			
 			if( addInfoList != null && addInfoList.size() > 0 ) {

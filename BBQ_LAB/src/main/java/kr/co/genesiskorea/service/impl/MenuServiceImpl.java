@@ -64,7 +64,6 @@ public class MenuServiceImpl implements MenuService {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 			pageNo = 1;
 		}
@@ -163,7 +162,6 @@ public class MenuServiceImpl implements MenuService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
@@ -452,12 +450,6 @@ public class MenuServiceImpl implements MenuService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -472,7 +464,6 @@ public class MenuServiceImpl implements MenuService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -496,12 +487,6 @@ public class MenuServiceImpl implements MenuService {
 
 			    int midx = 0;
 			    for (MultipartFile mfile : manualFiles) {
-			        System.err.println("===== MANUAL =====================");
-			        System.err.println("isEmpty : " + mfile.isEmpty());
-			        System.err.println("name : " + mfile.getName());
-			        System.err.println("originalFilename : " + mfile.getOriginalFilename());
-			        System.err.println("size : " + mfile.getSize());
-			        System.err.println("==================================");
 			        try {
 			            if (!mfile.isEmpty()) {
 			                String fileIdx = FileUtil.getUUID();
@@ -812,12 +797,6 @@ public class MenuServiceImpl implements MenuService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -832,7 +811,6 @@ public class MenuServiceImpl implements MenuService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -856,12 +834,6 @@ public class MenuServiceImpl implements MenuService {
 
 			    int midx = 0;
 			    for (MultipartFile mfile : manualFiles) {
-			        System.err.println("===== MANUAL =====================");
-			        System.err.println("isEmpty : " + mfile.isEmpty());
-			        System.err.println("name : " + mfile.getName());
-			        System.err.println("originalFilename : " + mfile.getOriginalFilename());
-			        System.err.println("size : " + mfile.getSize());
-			        System.err.println("==================================");
 			        try {
 			            if (!mfile.isEmpty()) {
 			                String fileIdx = FileUtil.getUUID();
@@ -1217,7 +1189,6 @@ public class MenuServiceImpl implements MenuService {
 								fileMap.put("filePath", path);
 								fileMap.put("changeFileName", newFileName);
 								fileMap.put("content", fileContents);
-								System.err.println(fileMap);
 								//파일정보 저장
 								commonDao.insertFileInfo(fileMap);
 							}
@@ -1230,12 +1201,6 @@ public class MenuServiceImpl implements MenuService {
 			if( file != null && file.length > 0 ) {
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -1250,7 +1215,6 @@ public class MenuServiceImpl implements MenuService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -1641,7 +1605,6 @@ public class MenuServiceImpl implements MenuService {
 								fileMap.put("filePath", path);
 								fileMap.put("changeFileName", newFileName);
 								fileMap.put("content", fileContents);
-								System.err.println(fileMap);
 								//파일정보 저장
 								commonDao.insertFileInfo(fileMap);
 							}
@@ -1654,12 +1617,6 @@ public class MenuServiceImpl implements MenuService {
 			if( file != null && file.length > 0 ) {
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -1674,7 +1631,6 @@ public class MenuServiceImpl implements MenuService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -2139,12 +2095,6 @@ public class MenuServiceImpl implements MenuService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -2159,7 +2109,6 @@ public class MenuServiceImpl implements MenuService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -2205,12 +2154,6 @@ public class MenuServiceImpl implements MenuService {
 			    manualPath += "/" + toDay;
 
 			    for (MultipartFile mfile : manualFiles) {
-			        System.err.println("===== MANUAL =====================");
-			        System.err.println("isEmpty : " + mfile.isEmpty());
-			        System.err.println("name : " + mfile.getName());
-			        System.err.println("originalFilename : " + mfile.getOriginalFilename());
-			        System.err.println("size : " + mfile.getSize());
-			        System.err.println("==================================");
 
 			        try {
 			            if (!mfile.isEmpty()) {
@@ -2606,12 +2549,6 @@ public class MenuServiceImpl implements MenuService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -2626,7 +2563,6 @@ public class MenuServiceImpl implements MenuService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;

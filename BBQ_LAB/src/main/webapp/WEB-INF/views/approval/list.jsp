@@ -237,7 +237,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				console.log(data);
 				var html = "";
 				if( data.totalCount > 0 ) {
 					$("#list").html(html);
@@ -342,7 +341,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				console.log(data);
 				var html = "";
 				if( data.totalCount > 0 ) {
 					$("#list").html(html);
@@ -425,7 +423,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				console.log(data);
 				var html = "";
 				if( data.totalCount > 0 ) {
 					$("#list").html(html);
@@ -500,7 +497,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				console.log(data);
 				var html = "";
 				if( data.totalCount > 0 ) {
 					$("#list").html(html);
@@ -756,7 +752,6 @@
 			var startDateArr = new Array();
 			var endDateArr = new Array();
 			$("#refLineList").children().each(function(){
-				console.log($(this).children('input[name=userIds]').val());
 				userIdArr.push($(this).children('input[name=userIds]').val());
 				startDateArr.push($(this).children('input[name=refStartDates]').val());
 				endDateArr.push($(this).children('input[name=refEndDates]').val());
@@ -805,7 +800,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				console.log(data);
 				var html = "";
 				$("#refUserListBody").empty();
 				if( data.length > 0 ) {

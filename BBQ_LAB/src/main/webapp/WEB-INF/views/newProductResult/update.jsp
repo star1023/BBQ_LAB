@@ -69,7 +69,6 @@ $(document).ready(function(){
 	    dataType: "json",
 	    success: function (data) {
 	        _multiSelectCache.column = data.RESULT;
-	        console.log(_multiSelectCache);
 	        initDynamicTable();
 	        const hasData = (resultItemList && resultItemList.length > 0) || 
             (resultImageList && resultImageList.length > 0);
@@ -129,7 +128,6 @@ function fn_apprSubmit(){
 function fn_loadAppr() {
 	var apprTxtFull = "";
 	$("#apprLine").selectedTexts().forEach(function( item, index ){
-		console.log(item);
 		if( apprTxtFull != "" ) {
 			apprTxtFull += " > ";
 		}
@@ -265,12 +263,6 @@ function fn_tmp_update() {
     }
 
     formData.append("status", "TMP");
-
-    // ✅ 디버깅 로그
-    console.log("🔄 [UPDATE] FormData Preview:");
-    for (var pair of formData.entries()) {
-        console.log(pair[0] + ":", pair[1]);
-    }
     
     $('#lab_loading').show();
     $.ajax({
@@ -463,12 +455,6 @@ function fn_update() {
     }
 
     formData.append("status", "REG");
-
-    // ✅ 디버깅 로그
-    console.log("🔄 [UPDATE] FormData Preview:");
-    for (var pair of formData.entries()) {
-        console.log(pair[0] + ":", pair[1]);
-    }
     
     $('#lab_loading').show();
     $.ajax({
@@ -1284,7 +1270,6 @@ function removeFile(element, tempId){
 		$("#docTypeTemp").removeOption(/./);
 		$("#docTypeTxt").html("");
 	}
-	//console.log($("#attatch_file").children().length);
 }
 
 function fn_removeTempFile(el, fileIdx) {

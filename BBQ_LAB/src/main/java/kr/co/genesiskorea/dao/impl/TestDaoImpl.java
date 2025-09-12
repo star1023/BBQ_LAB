@@ -95,7 +95,6 @@ public class TestDaoImpl extends RfcCommonMapper implements TestDao {
 		try {
 			JCoDestination dest = RfcManager.getDestination();
 			JCoFunction function = getFunction(dest, "ZASMM_PDM_MATERIAL_SEND");
-			System.err.println("function  :  "+function);
 			execute(function,importParams);
 			
 			returnList = RfcDataHandler.getTableData(function,"T_MATERIAL",new HashMap<String, String>() {

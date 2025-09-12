@@ -16,7 +16,6 @@
 	    increaseHitsAndThen(function() {
 	        // 조회수 증가 후 원하는 작업 실행
 	        // 예: 수정 버튼 비활성화 해제 등
-	        console.log("조회수 증가 후 추가 작업 실행 가능");
 	        // fn_update('${noticeData.data.BNOTICE_IDX}'); // 자동 호출 원할 경우
 	    });
 	});
@@ -40,7 +39,6 @@
 	        type: 'POST',
 	        data: { idx: idx },
 	        success: function(res) {
-	            console.log('조회수 업데이트 완료');
 	            if (typeof callback === 'function') callback(); // 모든 처리 후 실행할 콜백
 	        },
 	        error: function(xhr, status, error) {

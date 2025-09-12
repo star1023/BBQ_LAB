@@ -69,8 +69,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 			}
 		});
 		
-		console.log(IS_SAFE_TEAM);
-		
 		ClassicEditor
 	    .create(document.getElementById("resultContent"), {
 	        language: 'ko'
@@ -142,14 +140,12 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 		}<c:if test="${!status.last}">,</c:if>
 		</c:forEach>
 	];
-	console.log(itemList);
 	function CreateEditor(editorId) {
 	    ClassicEditor
 	        .create(document.getElementById(editorId), {
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -273,7 +269,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function fn_removeTempFile(el, fileIdx) {
@@ -457,10 +452,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 			var imageFile = document.getElementById('fileImageInput').files[0];
 			if (imageFile) {
 			  formData.append("imageFile", imageFile); // name="imageFile"
-			}
-			
-			for (let pair of formData.entries()) {
-				console.log(pair[0] + ':', pair[1]);
 			}
 			
 			$('#lab_loading').show();
@@ -670,10 +661,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 			  formData.append("imageFile", imageFile); // name="imageFile"
 			}
 			
-			for (let pair of formData.entries()) {
-				console.log(pair[0] + ':', pair[1]);
-			}
-			
 			$('#lab_loading').show();
 			var URL = "../chemicalTest/updateChemicalTestAjax";
 			$.ajax({
@@ -757,7 +744,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
@@ -797,7 +783,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				//productLayerBody
 				var jsonData = {};
 				jsonData = result;
@@ -835,7 +820,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 		openDialog('dialog_material');
 		
 		var matCode = $(element).prev().val();
-		console.log("matCode : "+matCode);
 		$('#searchMatValue').val(matCode);
 		$('#itemType').val(itemType);
 		$('#searchType').val(type);
@@ -869,7 +853,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 		}
 			
 		$('#lab_loading').show();
-		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
 		var URL = '/menu/selectMaterialAjax';
 		if( searchType == 'mat' ) {
@@ -927,7 +910,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('자재검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -946,7 +928,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -1019,7 +1000,6 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){

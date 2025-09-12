@@ -94,13 +94,6 @@ public class ChemicalTestController {
 			
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			System.err.println(param);
-			System.err.println(typeCodeArr);
-			System.err.println(itemContentArr);
-			System.err.println(standard1Arr);
-			System.err.println(standard2Arr);
-			System.err.println(file);
-			System.err.println(imageFile);
 			
 			HashMap<String, Object> listMap = new HashMap<String, Object>();			
 			
@@ -222,13 +215,6 @@ public class ChemicalTestController {
 			
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			System.err.println(param);
-			System.err.println(typeCodeArr);
-			System.err.println(itemContentArr);
-			System.err.println(standard1Arr);
-			System.err.println(standard2Arr);
-			System.err.println(file);
-			System.err.println(imageFile);
 			
 			HashMap<String, Object> listMap = new HashMap<String, Object>();			
 			

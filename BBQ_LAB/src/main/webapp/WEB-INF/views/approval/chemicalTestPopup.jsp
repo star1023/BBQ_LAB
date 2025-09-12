@@ -64,7 +64,6 @@ $(document).ready(function() {
 });
 
 function fn_approvalSubmit() {
-	console.log($("#apprIdx").val());
 	if(confirm("승인하시겠습니까?")) {
 		var URL = "../approval/approvalSubmitAjax";
 		$('#lab_loading').show();
@@ -112,7 +111,6 @@ function fn_approvalSubmit() {
 }
 
 function fn_approvalCondSubmit() {
-	console.log($("#apprIdx").val());
 	if( !chkNull($("#comment").val()) ) {
 		alert("결재 의견을 입력해주세요.");
 		$("#comment").focus();
@@ -166,7 +164,6 @@ function fn_approvalCondSubmit() {
 }
 
 function fn_approvalReject() {
-	console.log($("#apprIdx").val());
 	if( !chkNull($("#comment").val()) ) {
 		alert("결재 의견을 입력해주세요.");
 		$("#comment").focus();

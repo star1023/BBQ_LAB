@@ -470,7 +470,6 @@ public class StringUtil {
 		for (int j = 0; (j = str.indexOf(rep, i)) > -1; i = j + rep.length()) {
 			retStr = retStr + str.substring(i, j) + tok;
 		}
-		System.err.println("str : "+str);
 		return retStr + str.substring(str.lastIndexOf(rep) + rep.length(), str.length());*/
 		return str.replaceAll(rep, tok);
 	}
@@ -512,7 +511,6 @@ public class StringUtil {
 	public static String getDoubleToNumber( double data ) {
 		//NumberFormat nf = NumberFormat.getInstance();
 		//nf.setGroupingUsed(false);
-		//System.err.println("format : data"+nf.format(data));
 		//return nf.format(data);
 		DecimalFormat df = new DecimalFormat("#.######################");
 		String str = df.format(data);

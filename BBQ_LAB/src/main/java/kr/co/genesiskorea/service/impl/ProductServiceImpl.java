@@ -76,7 +76,6 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Map<String, Object> selectMaterialList(Map<String, Object> param) {
 		// TODO Auto-generated method stub
-		System.err.println(param);
 		int totalCount = productDao.selectMaterialCount(param);
 		
 		int viewCount = 10;
@@ -85,7 +84,6 @@ public class ProductServiceImpl implements ProductService {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 			pageNo = 1;
 		}
@@ -376,7 +374,6 @@ public class ProductServiceImpl implements ProductService {
 								fileMap.put("filePath", path);
 								fileMap.put("changeFileName", newFileName);
 								fileMap.put("content", fileContents);
-								System.err.println(fileMap);
 								//파일정보 저장
 								commonDao.insertFileInfo(fileMap);
 							}
@@ -410,12 +407,6 @@ public class ProductServiceImpl implements ProductService {
 				
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -430,7 +421,6 @@ public class ProductServiceImpl implements ProductService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -714,7 +704,6 @@ public class ProductServiceImpl implements ProductService {
 								fileMap.put("filePath", path);
 								fileMap.put("changeFileName", newFileName);
 								fileMap.put("content", fileContents);
-								System.err.println(fileMap);
 								//파일정보 저장
 								commonDao.insertFileInfo(fileMap);
 							}
@@ -738,12 +727,6 @@ public class ProductServiceImpl implements ProductService {
 			if( file != null && file.length > 0 ) {				 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -758,7 +741,6 @@ public class ProductServiceImpl implements ProductService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -790,7 +772,6 @@ public class ProductServiceImpl implements ProductService {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 			pageNo = 1;
 		}
@@ -1139,7 +1120,6 @@ public class ProductServiceImpl implements ProductService {
 								fileMap.put("filePath", path);
 								fileMap.put("changeFileName", newFileName);
 								fileMap.put("content", fileContents);
-								System.err.println(fileMap);
 								//파일정보 저장
 								commonDao.insertFileInfo(fileMap);
 							}
@@ -1152,12 +1132,6 @@ public class ProductServiceImpl implements ProductService {
 			if( file != null && file.length > 0 ) {
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -1172,7 +1146,6 @@ public class ProductServiceImpl implements ProductService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -1259,7 +1232,6 @@ public class ProductServiceImpl implements ProductService {
 					param.put("productType"+(i+1), productType.get(i));
 				}
 			}
-			System.err.println(param);
 			productDao.insertNewVersionProduct(param);
 			
 			//개선목적
@@ -1484,7 +1456,6 @@ public class ProductServiceImpl implements ProductService {
 								fileMap.put("filePath", path);
 								fileMap.put("changeFileName", newFileName);
 								fileMap.put("content", fileContents);
-								System.err.println(fileMap);
 								//파일정보 저장
 								commonDao.insertFileInfo(fileMap);
 							}
@@ -1497,12 +1468,6 @@ public class ProductServiceImpl implements ProductService {
 			if( file != null && file.length > 0 ) {
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -1517,7 +1482,6 @@ public class ProductServiceImpl implements ProductService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -1909,12 +1873,6 @@ public class ProductServiceImpl implements ProductService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -1929,7 +1887,6 @@ public class ProductServiceImpl implements ProductService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -2291,12 +2248,6 @@ public class ProductServiceImpl implements ProductService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -2311,7 +2262,7 @@ public class ProductServiceImpl implements ProductService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
+
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;

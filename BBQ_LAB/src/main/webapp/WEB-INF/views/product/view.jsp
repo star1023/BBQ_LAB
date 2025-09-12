@@ -201,7 +201,6 @@
 	
 	function fn_pdfDownload(idx) {
 		/* var url = "/preview/productViewPopup?idx="+idx;
-		console.log(idx);
 		// 팝업 창 열기
 		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes"); */
 		$('#lab_loading').show();

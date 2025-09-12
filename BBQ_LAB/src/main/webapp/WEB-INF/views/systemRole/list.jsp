@@ -92,7 +92,6 @@ function fn_insert(){
 		},
 		dataType:"json",
 		success:function(result) {
-			console.log(result);
 			if( result.RESULT == 'S' ) {
 				alert("등록되었습니다.");
 				fn_clearDialog();
@@ -123,7 +122,6 @@ function fn_updateForm(roleIdx) {
 		},
 		dataType:"json",
 		success:function(data) {
-			console.log(data);
 			if( data.ROLE_IDX == '' || data.ROLE_IDX == null ) {
 				alert("삭제된 권한입니다.");					
 			} else {
@@ -178,7 +176,6 @@ function fn_update(){
 		},
 		dataType:"json",
 		success:function(result) {
-			console.log(result);
 			if( result.RESULT == 'S' ) {
 				alert("수정되었습니다.");
 				fn_clearDialog();
@@ -209,7 +206,6 @@ function fn_delete(roleIdx) {
 		dataType:"json",
 		async:false,
 		success:function(result) {
-			console.log(result);
 			if( result.RESULT == 'S' ) {
 				alert("삭제되었습니다.");
 				fn_loadList(1);

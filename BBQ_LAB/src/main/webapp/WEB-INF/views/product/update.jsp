@@ -99,7 +99,6 @@ var selectedArr = new Array();
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -172,7 +171,6 @@ var selectedArr = new Array();
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -228,27 +226,20 @@ var selectedArr = new Array();
 			 $(this).jstree("open_all");
 		}).on("select_node.jstree",function(e,data){
 			selectedArr = new Array();
-			console.log(e);
-			console.log("data : "+data);
 			var selectTxtFull = "";
 			var parents = data.node.parents;
 			var selectTxt = data.node.text;
 			var selectId = data.node.id;
-			console.log("parents : "+parents);
-			console.log("selectTxt : "+selectTxt);
 			selectedArr.push(selectId);
 			selectTxtFull += selectTxt;
 			
 			$.each(parents, function( index, value ){ //배열-> index, value
 				if( value != '#' ) { 
-					//console.log($.jstree.reference('#jsTree').get_node(value).text);
-					//console.log($(this).jstree(true).get_node(value).text);					
 					selectedArr.push(value);
 					//selectTxtFull = $(this).jstree(true).get_node(value).text + ">" +selectTxtFull
 					selectTxtFull = $.jstree.reference('#jsTree').get_node(value).text + ">" +selectTxtFull
 				}
 			});
-			console.log(selectedArr);
 			//$("#selectTxtFull").html(selectTxtFull);
 			$("#selectTxtFull").val(selectTxtFull);
 			closeDialog('dialog_product');
@@ -391,7 +382,6 @@ var selectedArr = new Array();
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function allowDrop(e) {
@@ -615,7 +605,6 @@ var selectedArr = new Array();
 		
 		//var userSapCode = e.target.value;
 		var userMatCode = e.target.value;
-		console.log(userMatCode);
 		var rowId = $(element).parent().parent().attr('id');
 		var URL = '/product/checkMaterialAjax';
 		if( type == 'mat' ) {
@@ -661,7 +650,6 @@ var selectedArr = new Array();
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c)
 				alert('갱신 실패[2] - 시스템 담당자에게 문의하세요.');
 			}
 		})
@@ -673,7 +661,6 @@ var selectedArr = new Array();
 		openDialog('dialog_material');
 		
 		var matCode = $(element).prev().val();
-		console.log("matCode : "+matCode);
 		$('#searchMatValue').val(matCode);
 		$('#itemType').val(itemType);
 		$('#searchType').val(type);
@@ -707,7 +694,6 @@ var selectedArr = new Array();
 		}
 			
 		$('#lab_loading').show();
-		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
 		var URL = '/product/selectMaterialAjax';
 		if( searchType == 'mat' ) {
@@ -765,7 +751,6 @@ var selectedArr = new Array();
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('자재검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -836,7 +821,6 @@ var selectedArr = new Array();
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -1010,7 +994,6 @@ var selectedArr = new Array();
 					var itemKeepExp = $('#'+ rowId + ' input[name=itemKeepExp]').val();
 					var itemUnitPrice = $('#'+ rowId + ' input[name=itemUnitPrice]').val();
 					var itemDesc = $('#'+ rowId + ' input[name=itemDesc]').val();
-					console.log("newMatRow : "+itemSapCode);
 					if( itemSapCode != '' ) {
 						rowIdArr.push(rowId);
 						itemTypeArr.push(itemType);
@@ -1037,7 +1020,6 @@ var selectedArr = new Array();
 				var itemKeepExp = $('#'+ rowId + ' input[name=itemKeepExp]').val();
 				var itemUnitPrice = $('#'+ rowId + ' input[name=itemUnitPrice]').val();
 				var itemDesc = $('#'+ rowId + ' input[name=itemDesc]').val();
-				console.log("matRow : "+itemSapCode);
 				if( itemSapCode != '' ) {
 					rowIdArr.push(rowId);
 					itemTypeArr.push(itemType);
@@ -1894,7 +1876,6 @@ var selectedArr = new Array();
 			/*
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
@@ -1951,7 +1932,6 @@ var selectedArr = new Array();
 	    var version = '${productData.data.VERSION_NO}';
 	    if (version === '1') {
 	    	togglePreviewRows('1', $doc);  // ← tr 표시 제어
-	    	console.log("진입");
 	    	// 개발 목적
 	    	let purposeHTML = "";
 	    	document.querySelectorAll('tr[id^=purpose_tr]').forEach(function (row) {
@@ -1967,7 +1947,6 @@ var selectedArr = new Array();
 	    		if (val.trim()) featureHTML += val + "<br/>";
 	    	});
 	    	$doc.getElementById("prev_feature").innerHTML = featureHTML;
-	    	console.log("종료");
 	    } else {
 	    	togglePreviewRows('2', $doc);  // ← tr 표시 제어
 

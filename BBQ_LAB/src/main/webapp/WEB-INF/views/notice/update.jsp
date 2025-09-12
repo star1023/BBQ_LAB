@@ -195,7 +195,6 @@ function removeFile(element, tempId){
 		$("#docTypeTemp").removeOption(/./);
 		$("#docTypeTxt").html("");
 	}
-	//console.log($("#attatch_file").children().length);
 }
 
 function removeTempFile(fileIdx, element) {
@@ -340,11 +339,6 @@ function fn_update() {
     $("#deletedFileList option:selected").each(function () {
         formData.append("deletedFileList", $(this).val());
     });
-
-    // 디버깅 로그
-    for (let pair of formData.entries()) {
-        console.log(pair[0] + ":", pair[1]);
-    }
 
     // 전송
     $('#lab_loading').show();

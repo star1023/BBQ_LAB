@@ -232,7 +232,6 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 				    }
 				});
 				eventSource.addEventListener("sse", function (event) {
-			    	console.log(event.data);
 			    	if( event.data == '<%=userId%>' ) {
 			    		var URL = "../common/readNotificationAjax";
 						$.ajax({
@@ -243,7 +242,6 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 							},
 							dataType:"json",
 							success:function(data) {
-								console.log(data);
 								if( data.length > 0 ) {
 									var html = "";
 									data.forEach(function (item) {
@@ -271,7 +269,6 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 							},
 							dataType:"json",
 							success:function(data) {
-								console.log(data);
 								if( data.length > 0 ) {
 									var html = "";
 									html += "<ul>";

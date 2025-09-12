@@ -58,14 +58,12 @@ private Logger logger = LogManager.getLogger(EtcReportServiceImpl.class);
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
 		try {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 		}
 		
@@ -124,12 +122,6 @@ private Logger logger = LogManager.getLogger(EtcReportServiceImpl.class);
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -144,7 +136,6 @@ private Logger logger = LogManager.getLogger(EtcReportServiceImpl.class);
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -206,12 +197,6 @@ private Logger logger = LogManager.getLogger(EtcReportServiceImpl.class);
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -226,7 +211,6 @@ private Logger logger = LogManager.getLogger(EtcReportServiceImpl.class);
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -318,12 +302,6 @@ private Logger logger = LogManager.getLogger(EtcReportServiceImpl.class);
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -338,7 +316,6 @@ private Logger logger = LogManager.getLogger(EtcReportServiceImpl.class);
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;

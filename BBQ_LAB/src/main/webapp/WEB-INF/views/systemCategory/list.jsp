@@ -50,7 +50,6 @@
 					, 'check_callback': function (operation, node, parentNode, renameNodeText, more) {
 		                // operation can be 'create_node', 'rename_node', 'delete_node', 'move_node' or 'copy_node'
 		                // in case of 'rename_node' node_position is filled with the new node name
-		                //console.log("operation : "+operation);
 		                
 		                switch (operation) {
 		                    case 'create_node':
@@ -62,35 +61,20 @@
 				                var id = node.id;
 				                var categoryName = renameNodeText;
 				                var level = node.parents.length;
-				                //console.log("pId : "+pId);
-				                //console.log("id : "+id);
-				                //console.log("categoryName : "+categoryName);
-				                //console.log("level : "+level);
 				                fn_insertCategory( pId, id, categoryName, level );
 				                break;
 		                    case 'delete_node':
-		                    	//console.log("operation : "+operation);
-				                //console.log(node);
-				                //console.log(parentNode);
-				                //console.log("renameNodeText : "+renameNodeText);
-				                //console.log("more : "+more);
 				                var id = node.id;
 				                var pId = node.parent;
 				                fn_deleteCategory(id, pId);
 				                break;
 		                    case 'move_node' :
 		                    	if( more.ref === undefined ) {
-		                  			//console.log("operation : "+operation);
-				                	//console.log(node);
-				                	//console.log(parentNode);
-				                	//console.log("renameNodeText : "+renameNodeText);
-				                	//console.log(more);
 				                	if(parentNode.id == '#'){ 
 				                		//location.reload(true);
 				                		fn_loadAllCategory();
 				                		break;
 				                	}
-				                	//console.log("여기를 호출할까?");
 				                	var id = node.id;
 				                	var pId = parentNode.id;
 				                	var level = node.parents.length;
@@ -158,8 +142,6 @@
 		                        "action": function (data) {
 		                        	var inst = $.jstree.reference(data.reference),
 	                                obj = inst.get_node(data.reference);
-		                        	//console.log(inst);
-		                        	//console.log(obj);
 		                        	var id = obj.id;
 		                        	var pId = obj.parent;
 		                        	var text = obj.text;
@@ -176,8 +158,6 @@
 		                        "action": function (data) {
 		                        	var inst = $.jstree.reference(data.reference),
 	                                obj = inst.get_node(data.reference);
-		                        	//console.log(inst);
-		                        	//console.log(obj);
 		                        	var id = obj.id;
 		                        	var pId = obj.parent;
 		                        	var text = obj.text;
@@ -212,7 +192,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				//console.log(data);
 				if( data.RESULT != 'S' ) {
 					alert("오류가 발생했습니다.\n다시 등록해주세요.");
 					//location.reload(true);					
@@ -240,7 +219,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				//console.log(data);
 				if( data.RESULT != 'S' ) {
 					alert("오류가 발생했습니다.\n다시 등록해주세요.");
 					//location.reload(true);					
@@ -270,7 +248,6 @@
 			},
 			dataType:"json",
 			success:function(data) {
-				//console.log(data);
 				if( data.RESULT != 'S' ) {
 					alert("오류가 발생했습니다.\n다시 등록해주세요.");
 					//location.reload(true);					
@@ -304,7 +281,6 @@
 				},
 				dataType:"json",
 				success:function(data) {
-					console.log(data);
 					if( data.RESULT != 'S' ) {
 						alert("오류가 발생했습니다.\n다시 등록해주세요.");
 					} else {

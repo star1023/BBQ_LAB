@@ -147,7 +147,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	
@@ -217,7 +216,6 @@
 			var formData = new FormData();
 			formData.append("planIdx",$("#planIdx").val());
 			formData.append("title",$("#title").val());
-			console.log($("#tripType").selectedValues()[0]);
 			formData.append("tripType",$("#tripType").selectedValues()[0]);
 			
 			var marketNameArr = new Array();
@@ -373,7 +371,6 @@
 			var formData = new FormData();
 			formData.append("planIdx",$("#planIdx").val());
 			formData.append("title",$("#title").val());
-			console.log($("#tripType").selectedValues()[0]);
 			formData.append("tripType",$("#tripType").selectedValues()[0]);
 			
 			var marketNameArr = new Array();
@@ -551,7 +548,6 @@
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
@@ -637,7 +633,6 @@
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				$("#planIdx").val(result.planData.data.PLAN_IDX);
 				$("#tripType").selectOptions(result.planData.data.TRIP_TYPE);
 				$("#tripType_label").html($("#tripType").selectedTexts());
@@ -736,7 +731,6 @@
 			});
 		};
 		config.select = function(event,ui){
-			console.log(ui);
 			jQuery('#addDeptName').val('');
 			jQuery('#addDeptName').val(ui.item.deptName);
 			

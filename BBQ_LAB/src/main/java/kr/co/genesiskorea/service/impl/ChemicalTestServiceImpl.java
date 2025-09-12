@@ -69,14 +69,12 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
 		try {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 		}
 		
@@ -208,12 +206,6 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 				path = config.getProperty("upload.file.path.chemical");
 				path += "/"+toDay; 
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -228,7 +220,6 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 						}
@@ -448,14 +439,14 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 			        	    if (deleteFile.exists()) {
 			        	        boolean deleted = deleteFile.delete();
 			        	        if (!deleted) {
-			        	            System.err.println("파일 삭제 실패: " + filePath + File.separator + fileName);
+
 			        	        }
 			        	    }
 			        	}
 			        	commonDao.deleteFileData(fileIdx);
 
 			        } catch (NumberFormatException e) {
-			            System.err.println("FILE_IDX 파싱 실패: " + item);
+
 			        }
 			    }
 			}*/
@@ -479,12 +470,6 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 				path = config.getProperty("upload.file.path.chemical");
 				path += "/"+toDay; 
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -499,7 +484,6 @@ public class ChemicalTestServiceImpl implements ChemicalTestService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							

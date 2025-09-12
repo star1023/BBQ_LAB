@@ -238,7 +238,6 @@ function fn_insert() {
 }
 
 function fn_goVersionUp(idx) {
-	console.log(idx);
 	location.href = '/material/versionUp?idx='+idx;
 }
 
@@ -317,25 +316,19 @@ function fn_createJSTree(data) {
 		 //$(this).jstree("open_all");
 	}).on("select_node.jstree",function(e,data){
 		selectedArr = new Array();
-		//console.log(e);
-		console.log(data);
 		var selectTxtFull = "";
 		var parents = data.node.parents;
 		var selectTxt = data.node.text;
 		var selectId = data.node.id;
-		console.log(parents);
-		console.log(selectTxt);
 		selectedArr.push(selectId);
 		selectTxtFull += selectTxt;
 		
 		$.each(parents, function( index, value ){ //배열-> index, value
 			if( value != '#' ) { 
-				console.log($(this).jstree(true).get_node(value).text);
 				selectedArr.push(value);
 				selectTxtFull = $(this).jstree(true).get_node(value).text + ">" +selectTxtFull
 			}
 		});
-		//console.log(selectedArr.reverse());
 		//$("#selectTxtFull").html(selectTxtFull);
 		$("#selectTxtFull").val(selectTxtFull);
 		closeDialog('open2');
@@ -468,7 +461,6 @@ function removeFile(element, tempId){
 		if(typeObj.tempId != tempId) 
 			return typeObj;
 	});
-	//console.log(attatchFileArr);
 }
 
 
@@ -579,8 +571,6 @@ function goInsert(){
 					formData.append("price",$("#price").val());
 					formData.append("unit",$("#unit").selectedValues()[0]);
 					formData.append("materialType",selectedArr.reverse());
-					console.log(attatchFileArr);
-					console.log(attatchFileTypeArr);
 					for (var i = 0; i < attatchFileArr.length; i++) {
 						formData.append('file', attatchFileArr[i])
 					}

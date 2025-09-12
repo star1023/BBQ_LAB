@@ -76,7 +76,6 @@ input:disabled {
 			language: 'ko',
         }).then( editor => {
         	editor1 = editor;
-    		console.log( editor1 );
     	}).catch( error => {
     		console.error( error );
     	});
@@ -87,7 +86,6 @@ input:disabled {
 			language: 'ko',
         }).then( editor => {
         	editor2 = editor;
-    		console.log( editor2 );
     	}).catch( error => {
     		console.error( error );
     	});
@@ -117,7 +115,6 @@ input:disabled {
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -239,7 +236,6 @@ input:disabled {
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	
@@ -396,10 +392,6 @@ input:disabled {
 			var imageFile = document.getElementById('fileImageInput').files[0];
 			if (imageFile) {
 			  formData.append("imageFile", imageFile); // name="imageFile"
-			}
-			
-			for (let pair of formData.entries()) {
-				console.log(pair[0] + ':', pair[1]);
 			}
 			
 			$('#lab_loading').show();
@@ -593,10 +585,6 @@ input:disabled {
 			  formData.append("imageFile", imageFile); // name="imageFile"
 			}
 			
-			for (let pair of formData.entries()) {
-				console.log(pair[0] + ':', pair[1]);
-			}
-			
 			$('#lab_loading').show();
 			var URL = "../chemicalTest/insertChemicalTestAjax";
 			$.ajax({
@@ -680,7 +668,6 @@ input:disabled {
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
@@ -720,7 +707,6 @@ input:disabled {
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				//productLayerBody
 				var jsonData = {};
 				jsonData = result;
@@ -773,7 +759,6 @@ input:disabled {
 		openDialog('dialog_material');
 		
 		var matCode = $(element).prev().val();
-		console.log("matCode : "+matCode);
 		$('#searchMatValue').val(matCode);
 		$('#itemType').val(itemType);
 		$('#searchType').val(type);
@@ -807,7 +792,6 @@ input:disabled {
 		}
 			
 		$('#lab_loading').show();
-		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
 		var URL = '/menu/selectMaterialAjax';
 		if( searchType == 'mat' ) {
@@ -865,7 +849,6 @@ input:disabled {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('자재검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -884,7 +867,6 @@ input:disabled {
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -957,7 +939,6 @@ input:disabled {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){

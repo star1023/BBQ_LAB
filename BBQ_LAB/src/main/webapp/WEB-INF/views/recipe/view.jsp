@@ -59,7 +59,6 @@ li {
 			dataType:"json",
 			async:false,
 			success:function(result) {
-				console.log(result);
 				if( result.RESULT == 'S' ) {
 					alert("ERP에 정상적으로 등록되었습니다.");
 					$('#lab_loading').hide();
@@ -120,7 +119,6 @@ li {
 	
 	function fn_pdfDownload(idx) {
 		/*var url = "/preview/recipeViewPopup?idx="+idx;
-		console.log(idx);
 		// 팝업 창 열기
 		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");*/
 		$('#lab_loading').show();
@@ -189,9 +187,8 @@ li {
 		<h2 style="position: relative">
 			<span class="title_s">Cost Management</span><span class="title">사전원가서 상세</span>
 			<div class="top_btn_box">
-				<ul>
+				<!-- ul>
 					<li>
-						
 						<c:if test="${recipeData.DOC_OWNER == userUtil:getUserId(pageContext.request) }">
 							<c:if test="${recipeData.STATUS == 'TMP' and recipeData.IS_LAST == 'Y'}">
 							<button class="btn_circle_modifiy" onclick="fn_update('${recipeData.RECIPE_IDX}')">&nbsp;</button>
@@ -207,7 +204,7 @@ li {
 							</c:if>
 						</c:if>	
 					</li>
-				</ul>
+				</ul-->
 			</div>
 		</h2>
 		<div class="group01 mt20">

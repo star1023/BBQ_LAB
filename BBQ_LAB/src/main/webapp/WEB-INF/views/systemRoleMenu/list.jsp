@@ -105,7 +105,6 @@
 					},
 					dataType:"json",
 					success:function(data) {
-						console.log(data);
 						data.forEach(function (item) {
 							if( item.IS_ROOT == 'N' ) {
 								$("#jsTree").jstree(true).select_node(""+item.MENU_IDX);
@@ -117,7 +116,6 @@
 				});
 			}
 			//$(this).jstree(true).select_node("4");
-			//console.log($("#selectedRoleIdx").val());
 		});
 	}
 	
@@ -141,10 +139,8 @@
 		
 		const selectedMenu = [];
 		var arrSelected = $("#jsTree").jstree('get_selected',null,true);
-		console.log(arrSelected);
 		$.each(arrSelected, function() {
 			var parent = $("#jsTree").jstree('get_parent', this);
-			console.log("parent : "+parent);
 			if( parent != '#' ) {
 				selectedMenu.push(this.toString());
 				//if( !selectMenu.includes(parent.toString()) ) {
@@ -173,7 +169,6 @@
 			traditional: true,
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				if( result.RESULT == 'S' ) {
 					alert("수정되었습니다.");
 				} else {

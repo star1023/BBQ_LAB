@@ -170,7 +170,6 @@ table{font-size: 12px}
 				originalFileArr.push(originalFile.value);
 			}
 			
-			console.log(originalFileArr);
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
 			contentsDivArr.forEach(function(item, index){
@@ -191,13 +190,6 @@ table{font-size: 12px}
 				}
 			});
 
-			console.log("=== 컨텐츠 인덱스 ===");
-			console.log(contentsIdxArr);
-			console.log("=== 컨텐츠 삭제 대상 ===");
-			console.log(deleteContentIdxList);
-			console.log("=== 컨텐츠 제외 대상 ===");
-			console.log(nullIdxArr);			
-			
 			//if( inputCheckCnt > 0 ) {
 			//	alert("세부내용은 구분, 사진, 결과를 입력하여야 합니다.");
 			//	return;
@@ -234,18 +226,6 @@ table{font-size: 12px}
 			}
 			imageIndexMap = adjustedImageIndexArr;
 
-			console.log("=== contentsDivArr ===");
-			console.log(contentsDivArr);
-			console.log("=== fileArr ===");
-			console.log(fileArr);
-			console.log("=== contentsResultArr ===");
-			console.log(contentsResultArr);
-			console.log("=== originalFileArr ===");
-			console.log(originalFileArr);
-			console.log("=== contentsIdxArr ===");
-			console.log(contentsIdxArr);
-			
-			
 			formData.append("contentsDivArr",JSON.stringify(contentsDivArr));
 			//formData.append("file",fileArr);
 			formData.append("contentsResultArr",JSON.stringify(contentsResultArr));
@@ -287,11 +267,6 @@ table{font-size: 12px}
 			formData.append("displayOrderArr",displayOrderArr);
 			formData.append("contentsIdxArr",contentsIdxArr);
 			formData.append("dataStatusArr",dataStatusArr);
-			
-			console.log("=== 최종 FormData 내용 ===");
-			for (var pair of formData.entries()) {
-			    console.log(pair[0], pair[1]);
-			}
 			
 			$('#lab_loading').show();
 			var URL = "../senseQuality/updateSenseQualityTmpAjax";
@@ -489,7 +464,6 @@ table{font-size: 12px}
 				originalFileArr.push(originalFile.value);
 			}
 			
-			console.log(originalFileArr);
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
 
@@ -516,13 +490,6 @@ table{font-size: 12px}
 			    }
 			});
 
-			console.log("=== 컨텐츠 인덱스 ===");
-			console.log(contentsIdxArr);
-			console.log("=== 컨텐츠 삭제 대상 ===");
-			console.log(deleteContentIdxList);
-			console.log("=== 컨텐츠 제외 대상 ===");
-			console.log(nullIdxArr);		
-			
 			/* var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
 			contentsDivArr.forEach(function(item, index){
@@ -573,17 +540,6 @@ table{font-size: 12px}
 			    }
 			}
 			imageIndexMap = adjustedImageIndexArr;
-
-			console.log("=== contentsDivArr ===");
-			console.log(contentsDivArr);
-			console.log("=== fileArr ===");
-			console.log(fileArr);
-			console.log("=== contentsResultArr ===");
-			console.log(contentsResultArr);
-			console.log("=== originalFileArr ===");
-			console.log(originalFileArr);
-			console.log("=== contentsIdxArr ===");
-			console.log(contentsIdxArr);
 			
 			formData.append("contentsDivArr",JSON.stringify(contentsDivArr));
 			//formData.append("file",fileArr);
@@ -625,12 +581,6 @@ table{font-size: 12px}
 			formData.append("displayOrderArr",displayOrderArr);
 			formData.append("contentsIdxArr",contentsIdxArr);
 			formData.append("dataStatusArr",dataStatusArr);
-			
-			
-			console.log("=== 최종 FormData 내용 ===");
-			for (var pair of formData.entries()) {
-			    console.log(pair[0], pair[1]);
-			}
 			
 			$('#lab_loading').show();
 			var URL = "../senseQuality/updateSenseQualityAjax";
@@ -726,7 +676,6 @@ table{font-size: 12px}
 	function fn_loadAppr(){
 		var apprTxtFull = "";
 		$("#apprLine").selectedTexts().forEach(function( item, index ){
-			console.log(item);
 			if( apprTxtFull != "" ) {
 				apprTxtFull += " > ";
 			}
@@ -819,7 +768,6 @@ table{font-size: 12px}
 	    if (contentsIdx && !deleteImageIdxList.includes(contentsIdx)) {
 	        deleteImageIdxList.push(contentsIdx);
 	    }
-	    console.log(contentsIdx);
 	}
 
 	
@@ -833,7 +781,6 @@ table{font-size: 12px}
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -906,7 +853,6 @@ table{font-size: 12px}
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -979,7 +925,7 @@ table{font-size: 12px}
 
 		  const containerDivs = Array.from(document.querySelectorAll("div[id^='contents_div_']"))
         .filter(div => div.offsetParent !== null);
-			console.log(containerDivs);
+
 		  containerDivs.forEach((div, idx) => {
 		    const isFirst = (idx === 0);
 

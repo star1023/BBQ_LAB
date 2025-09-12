@@ -72,7 +72,6 @@ function loginProc(){
 			dataType:"json",
 			async:false,
 			success:function(data) {
-				console.log(data);
 				if(data.RESULT == 'S'){
 					location.href = '../main/main';			
 		        } else if( data.RESULT == 'E'){

@@ -316,9 +316,6 @@ public class DesignReportController {
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			
-			System.err.println(param);
-			System.err.println(tempFile);
 
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
 			listMap.put("fileType", fileType);
@@ -347,9 +344,6 @@ public class DesignReportController {
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			
-			System.err.println(param);
-			System.err.println(tempFile);
 
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
 			listMap.put("fileType", fileType);

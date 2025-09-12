@@ -209,7 +209,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 				param.put("currentStep", 1);
 				param.put("currentUser", apprLine.get(0));
 				
-				System.err.println(param);
 				//6. appr header를 저장한다.
 				approvalDao.insertApprHeader(param);
 				//7. appr item을 저장한다.
@@ -301,7 +300,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 				param.put("currentStep", 1);
 				param.put("currentUser", apprLine.get(0));
 				
-				System.err.println(param);
 				//6. appr header를 저장한다.
 				approvalDao.insertApprHeader(param);
 				//7. appr item을 저장한다.
@@ -347,7 +345,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 			pageNo = 1;
 		}
@@ -368,7 +365,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 	@Override
 	public Map<String, Object> selectMyApprList(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		System.err.println(param);
 		int totalCount = approvalDao.selectMyApprTotalCount(param);
 		
 		int viewCount = 10;
@@ -377,7 +373,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 			viewCount = 10;
 		}
@@ -398,7 +393,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 	@Override
 	public Map<String, Object> selectMyRefList(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		System.err.println(param);
 		int totalCount = approvalDao.selectMyRefTotalCount(param);
 		
 		int viewCount = 10;
@@ -407,7 +401,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 			viewCount = 10;
 		}
@@ -428,7 +421,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 	@Override
 	public Map<String, Object> selectMyCompList(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		System.err.println(param);
 		int totalCount = approvalDao.selectMyCompTotalCount(param);
 		
 		int viewCount = 10;
@@ -437,7 +429,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 			viewCount = 10;
 		}
@@ -611,17 +602,14 @@ public class ApprovalServiceImpl implements ApprovalService {
 			}
 			
 			//문서 상태가 승인중, 부분승인인 경우에만 결재가 가능하다.
-			System.err.println("docData : "+docData);
 			if( docData.get("STATUS") != null && ("APPR".equals(docData.get("STATUS")) || "COND_APPR".equals(docData.get("STATUS")) )  ) {
 				Map<String, Object> apprHeader = approvalDao.selectApprHeaderData(param);
-				System.err.println("apprHeader : "+apprHeader);
 				//결재상태가 상신, 결재중인 경우에만 결재가 가능하다.
 				if( apprHeader.get("LAST_STATUS") != null && ("N".equals(apprHeader.get("LAST_STATUS")) || "A".equals(apprHeader.get("LAST_STATUS"))) ) {
 					//2.정상적인 문서의 경우 결재처리한다. approval item 데이터를 업데이트한다.
 					approvalDao.approvalSubmitItem(param);
 					//3.전체 결재가 완료 된 경우 문서의 결재 상태를 변경한다.				
 					Map<String, Object> itemData = approvalDao.selectNextApprItem(param);	//다음 결재 데이터를 조회한다.
-					System.err.println("itemData : "+itemData);
 					Map<String, Object> map = new HashMap<String, Object>();
 					if( itemData != null && !"".equals((String)itemData.get("TARGET_USER_ID")) ) {
 					//if( Integer.parseInt((String)param.get("totalStep")) == Integer.parseInt((String)param.get("currentStep")) ) {					
@@ -756,17 +744,14 @@ public class ApprovalServiceImpl implements ApprovalService {
 				docData = recipeDao.selectRecipeData(param);
 			}
 			//문서 상태가 승인중, 부분승인인 경우에만 결재가 가능하다.
-			System.err.println("docData : "+docData);
 			if( docData.get("STATUS") != null && ("APPR".equals(docData.get("STATUS")) || "COND_APPR".equals(docData.get("STATUS")) )  ) {
 				Map<String, Object> apprHeader = approvalDao.selectApprHeaderData(param);
-				System.err.println("apprHeader : "+apprHeader);
 				//결재상태가 상신, 결재중인 경우에만 결재가 가능하다.
 				if( apprHeader.get("LAST_STATUS") != null && ("N".equals(apprHeader.get("LAST_STATUS")) || "A".equals(apprHeader.get("LAST_STATUS"))) ) {
 					//2.정상적인 문서의 경우 결재처리한다. approval item 데이터를 업데이트한다.
 					approvalDao.approvalSubmitItem(param);
 					//3.전체 결재가 완료 된 경우 문서의 결재 상태를 변경한다.				
 					Map<String, Object> itemData = approvalDao.selectNextApprItem(param);	//다음 결재 데이터를 조회한다.
-					System.err.println("itemData : "+itemData);
 					Map<String, Object> map = new HashMap<String, Object>();
 					if( itemData != null && !"".equals((String)itemData.get("TARGET_USER_ID")) ) {
 					//if( Integer.parseInt((String)param.get("totalStep")) == Integer.parseInt((String)param.get("currentStep")) ) {					
@@ -887,10 +872,8 @@ public class ApprovalServiceImpl implements ApprovalService {
 			}
 			
 			//문서 상태가 승인중, 부분승인인 경우에만 반려가 가능하다.
-			System.err.println("docData : "+docData);
 			if( docData.get("STATUS") != null && ("APPR".equals(docData.get("STATUS")) || "COND_APPR".equals(docData.get("STATUS")) )  ) {
 				Map<String, Object> apprHeader = approvalDao.selectApprHeaderData(param);
-				System.err.println("apprHeader : "+apprHeader);
 				//결재상태가 상신, 결재중인 경우에만 반려가 가능하다.
 				if( apprHeader.get("LAST_STATUS") != null && ("N".equals(apprHeader.get("LAST_STATUS")) || "A".equals(apprHeader.get("LAST_STATUS"))) ) {
 					//2.정상적인 문서의 경우 반려처리한다. approval item 데이터를 업데이트한다.
@@ -965,10 +948,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 			JSONArray startDateArr = (JSONArray) parser.parse((String)param.get("startDateArr"));
 			JSONArray endDateArr = (JSONArray) parser.parse((String)param.get("endDateArr"));
 			
-			System.err.println(userIdArr);
-			System.err.println(startDateArr);
-			System.err.println(endDateArr);
-			
 			ArrayList<HashMap<String,Object>> refInfoList = new ArrayList<HashMap<String,Object>>();
 			for( int i = 0 ; i < userIdArr.size() ; i++ ) {
 				HashMap<String,Object> refInfoMap = new HashMap<String,Object>();
@@ -994,7 +973,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 				refInfoList.add(refInfoMap);
 			}
 			
-			System.err.println(refInfoList);
 			if( refInfoList.size() > 0 ) {
 				approvalDao.addReference(refInfoList);
 			}

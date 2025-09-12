@@ -33,7 +33,6 @@
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -163,7 +162,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function fn_removeTempFile(el, fileIdx) {
@@ -281,7 +279,6 @@
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {
 						if( $("#apprLine option").length > 0 ) {
 							var apprFormData = new FormData();
@@ -394,7 +391,6 @@
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {						
 						<c:choose>
 					      <c:when test="${etcData.data.STATUS != null && etcData.data.STATUS != 'COND_APPR' }">

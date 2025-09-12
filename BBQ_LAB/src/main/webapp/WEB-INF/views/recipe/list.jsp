@@ -145,7 +145,6 @@
 			dataType:"json",
 			async:false,
 			success:function(data) {
-				console.log(data);
 				$('#lab_loading').hide();
 			},
 			error:function(request, status, errorThrown){
@@ -169,29 +168,31 @@
 			success:function(data) {
 				var html = "";
 				data.forEach(function (item) {
-					html += "<li>";
-					if( item.NAME != '' ) {
-						html += item.PRODUCT_NAME;
+					if( item.HISTORY_TYPE != 'P' ) {
+						html += "<li>";
+						if( item.NAME != '' ) {
+							html += item.PRODUCT_NAME;
+						}
+						if( item.PRODUCT_CODE != '' ) {
+							html += "("+item.PRODUCT_CODE+")이(가)";
+						}
+						
+						if( item.HISTORY_TYPE == 'I' ) {
+							html += " 생성되었습니다.(버전 : "+item.VERSION_NO+")";
+						} else if( item.HISTORY_TYPE == 'V' ) {
+							html += " 개정되었습니다.(버전 : "+item.VERSION_NO+")";
+						} else if( item.HISTORY_TYPE == 'D' ) {
+							html += " 삭제되었습니다.";
+						} else if( item.HISTORY_TYPE == 'U' ) {
+							html += " 수정되었습니다.";
+						} else if( item.HISTORY_TYPE == 'T' ) {
+							html += " 임시저장 되었습니다.";
+						} else if( item.HISTORY_TYPE == 'F' ) {
+							html += " 담당자 이관 되었습니다.<br>" + item.HISTORY_TYPE_TXT;
+						} 
+						html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
+						html += "</li>"; 
 					}
-					if( item.PRODUCT_CODE != '' ) {
-						html += "("+item.PRODUCT_CODE+")이(가)";
-					}
-					
-					if( item.HISTORY_TYPE == 'I' ) {
-						html += " 생성되었습니다.(버전 : "+item.VERSION_NO+")";
-					} else if( item.HISTORY_TYPE == 'V' ) {
-						html += " 개정되었습니다.(버전 : "+item.VERSION_NO+")";
-					} else if( item.HISTORY_TYPE == 'D' ) {
-						html += " 삭제되었습니다.";
-					} else if( item.HISTORY_TYPE == 'U' ) {
-						html += " 수정되었습니다.";
-					} else if( item.HISTORY_TYPE == 'T' ) {
-						html += " 임시저장 되었습니다.";
-					} else if( item.HISTORY_TYPE == 'F' ) {
-						html += " 담당자 이관 되었습니다.<br>" + item.HISTORY_TYPE_TXT;
-					}
-					html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
-					html += "</li>"; 
 				});
 				$("#historyDiv").html(html);
 				openDialog('dialog_history');

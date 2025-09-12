@@ -168,7 +168,7 @@ public class TestController {
 			HashMap<String,Object> userData = (HashMap<String,Object>)userList.get(i);
 			String userId = (String)userData.get("userId");
 			String encPwd = SecurityUtil.getEncrypt(userId, userId);
-//			System.err.println(userId +"  :  "+ encPwd);
+
 			param.put("userId", userId);
 			param.put("encPwd", encPwd);
 			param.put("pwdInit", "Y");
@@ -186,7 +186,7 @@ public class TestController {
 			HashMap<String,Object> userData = (HashMap<String,Object>)userList.get(i);
 			String userId = (String)userData.get("userId");
 			String encPwd = SecurityUtil.getEncrypt(userId, userId);
-//			System.err.println(userId +"  :  "+ encPwd);
+
 			param.put("userId", userId);
 			param.put("encPwd", encPwd);
 			param.put("pwdInit", "Y");

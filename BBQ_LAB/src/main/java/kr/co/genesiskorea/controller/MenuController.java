@@ -142,7 +142,6 @@ public class MenuController {
 	@ResponseBody
 	public Map<String, Object> selectMaterialListAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
-		System.err.println(param);
 		return menuService.selectMaterialList(param);
 	}
 	
@@ -186,7 +185,6 @@ public class MenuController {
 			listMap.put("manualFileType", manualFileType);          // List<String>
 			listMap.put("manualFileTypeText", manualFileTypeText);  // List<String> (사용 안해도 put)
 			
-			System.err.println(param);
 			int menuIdx = menuService.insertTmpMenu(param, listMap, file);
 			returnMap.put("IDX", menuIdx);
 			returnMap.put("RESULT", "S");
@@ -348,7 +346,6 @@ public class MenuController {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			Collections.reverse(menuType);
-			System.err.println(menuType);
 
 			HashMap<String, Object> listMap = new HashMap<String, Object>();
 			listMap.put("usageArr", usageArr);
@@ -382,7 +379,6 @@ public class MenuController {
 	public Map<String, Object> selectSearchMenuAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		Auth auth = AuthUtil.getAuth(request);
 		param.put("userId", auth.getUserId());
-		System.err.println(param);
 		Map<String, Object> returnMap = menuService.selectSearchMenu(param);
 		return returnMap;
 	}
@@ -460,7 +456,6 @@ public class MenuController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			Map<String, Object> fileData = menuService.selectFileData(param);
-			System.err.println("파일 데이터 : "+fileData);
 			String path = (String)fileData.get("FILE_PATH");
 			String fileName = (String)fileData.get("FILE_NAME");
 
@@ -468,7 +463,6 @@ public class MenuController {
 			File file = new File(fullPath);
 			if(file.exists() == true){		
 				file.delete();				// 해당 경로의 파일이 존재하면 파일 삭제
-				System.err.println("파일삭제");
 			}
 			menuService.deleteFileData(param);
 			map.put("RESULT", "S");
@@ -523,7 +517,6 @@ public class MenuController {
 			listMap.put("deleteFileArr", deleteFileArr);
 			listMap.put("deleteFilePathArr", deleteFilePathArr);*/
 			menuService.updateMenuTmp(param, listMap, file, manualFiles);
-			System.err.println(param);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));

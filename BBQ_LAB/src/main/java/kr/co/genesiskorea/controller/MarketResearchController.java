@@ -209,8 +209,6 @@ private Logger logger = LogManager.getLogger(MarketResearchController.class);
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			System.err.println(param);
-			System.err.println(file);
 
 			reportService.updateMarketResearch(param, file);
 			returnMap.put("RESULT", "S");			

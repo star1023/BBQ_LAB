@@ -134,9 +134,7 @@ public class RecipeDaoImpl extends RfcCommonMapper implements RecipeDao {
 			JCoDestination dest = RfcManager.getDestination();
 			JCoFunction function = getFunction(dest, "ZASMM_PDM_RECIPE_REC");
 			//JCoFunction function = getFunction(dest, "ZASMM_WMS_MATERIAL_SEND");
-			System.err.println("function : "+function);
 			JCoTable table = function.getTableParameterList().getTable("T_RECIPE");
-			System.err.println("table : "+table);
 			
 			
 			for (Map<String, Object> bomItem : erpItemList) {
@@ -164,8 +162,7 @@ public class RecipeDaoImpl extends RfcCommonMapper implements RecipeDao {
 			exportParamNames.add("E_STAT");
 			exportParamNames.add("E_MESSAGE");
 			Map<String, Object> exportParamMap = RfcDataHandler.getExportData(function, exportParamNames);
-			
-			System.err.println("exportParamMap : "+exportParamMap);
+
 			String statut = (String)exportParamMap.get("E_STAT");
 			String message = (String)exportParamMap.get("E_MESSAGE");
 			

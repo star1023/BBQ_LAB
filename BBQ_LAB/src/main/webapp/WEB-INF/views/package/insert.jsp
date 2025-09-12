@@ -33,7 +33,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor1 = editor;
-    		console.log( editor1 );
     	}).catch( error => {
     		console.error( error );
     	}); */
@@ -43,7 +42,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor2 = editor;
-    		console.log( editor2 );
     	}).catch( error => {
     		console.error( error );
     	});	
@@ -53,7 +51,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor3 = editor;
-    		console.log( editor3 );
     	}).catch( error => {
     		console.error( error );
     	});	
@@ -93,7 +90,6 @@
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -166,7 +162,6 @@
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -307,7 +302,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function allowDrop(e) {
@@ -372,7 +366,6 @@
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -618,7 +611,6 @@
 			//$("#refLine").removeOption(/./); 
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}

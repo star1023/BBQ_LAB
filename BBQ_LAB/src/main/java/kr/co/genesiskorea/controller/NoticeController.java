@@ -83,8 +83,6 @@ public class NoticeController {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 	        logger.error("[insertNoticeAjax] : ", param.toString());
-	        System.err.println("[insertNoticeAjax] : " + param.toString());
-	        System.err.println("[file]: {}" + file.toString());
 
 	        // 실제 저장 처리 호출
 	        noticeService.insertNotice(param, file);
@@ -130,7 +128,6 @@ public class NoticeController {
 	        return result;
 
 	    } catch (Exception e) {
-	        System.err.println("[updateNoticeAjax] 예외 발생:");
 	        e.printStackTrace(); // 콘솔 출력
 	        throw e;
 	    }

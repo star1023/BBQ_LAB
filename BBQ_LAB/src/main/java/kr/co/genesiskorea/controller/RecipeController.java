@@ -71,7 +71,6 @@ public class RecipeController {
 	@ResponseBody
 	public Map<String, Object> insertTmpRecipeAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) {
-		System.err.println(param);
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
@@ -92,7 +91,6 @@ public class RecipeController {
 	@ResponseBody
 	public Map<String, Object> insertRecipeAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) {
-		System.err.println(param);
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
@@ -192,7 +190,6 @@ public class RecipeController {
 	@ResponseBody
 	public Map<String, Object> updateTmpRecipeAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) {
-		System.err.println(param);
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
@@ -212,7 +209,6 @@ public class RecipeController {
 	@ResponseBody
 	public Map<String, Object> updateRecipeAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) {
-		System.err.println(param);
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
@@ -232,7 +228,6 @@ public class RecipeController {
 	@ResponseBody
 	public Map<String, Object> insertErpAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) {
-		System.err.println(param);
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
@@ -285,7 +280,6 @@ public class RecipeController {
 	@ResponseBody
 	public Map<String, Object> versionUpTmpRecipeAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) {
-		System.err.println(param);
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
@@ -306,7 +300,6 @@ public class RecipeController {
 	@ResponseBody
 	public Map<String, Object> versionUpRecipeAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) {
-		System.err.println(param);
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);

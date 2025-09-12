@@ -273,7 +273,6 @@ public class ApprovalController {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
 			logger.debug("param {}", param);
-			System.err.println(param);
 			param.put("userId", AuthUtil.getAuth(request).getUserId());
 			returnMap = approvalService.cancelAppr(param);
 		} catch( Exception e ) {
@@ -290,7 +289,6 @@ public class ApprovalController {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
 			logger.debug("param {}", param);
-			System.err.println(param);
 			param.put("userId", AuthUtil.getAuth(request).getUserId());
 			returnMap = approvalService.reAppr(param);
 		} catch( Exception e ) {
@@ -362,7 +360,6 @@ public class ApprovalController {
 	
 	@RequestMapping("/designPopup")
 	public String designPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		System.err.println(param);
 		//결재 정보 조회
 		param.put("userId", AuthUtil.getAuth(request).getUserId());
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
@@ -397,7 +394,6 @@ public class ApprovalController {
 	
 	@RequestMapping("/businessTripPlanPopup")
 	public String businessTripPlanPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		System.err.println(param);
 		//결재 정보 조회
 		param.put("userId", AuthUtil.getAuth(request).getUserId());
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
@@ -468,7 +464,6 @@ public class ApprovalController {
 	
 	@RequestMapping("/marketResearchPopup")
 	public String marketResearchPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		System.err.println(param);
 		//결재 정보 조회
 		param.put("userId", AuthUtil.getAuth(request).getUserId());
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
@@ -527,7 +522,6 @@ public class ApprovalController {
 	
 	@RequestMapping("/chemicalTestPopup")
 	public String chemicalTestPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		System.err.println(param);
 		//결재 정보 조회
 		param.put("userId", AuthUtil.getAuth(request).getUserId());
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
@@ -557,7 +551,6 @@ public class ApprovalController {
 	
 	@RequestMapping("/newProductResultPopup")
 	public String newProductResultPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		System.err.println(param);
 		//결재 정보 조회
 		param.put("userId", AuthUtil.getAuth(request).getUserId());
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
@@ -591,7 +584,6 @@ public class ApprovalController {
 	
 	@RequestMapping("/recipePopup")
 	public String recipePopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		System.err.println(param);
 		//결재 정보 조회
 		param.put("userId", AuthUtil.getAuth(request).getUserId());
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
@@ -623,7 +615,6 @@ public class ApprovalController {
 	
 	@RequestMapping("/etcPopup")
 	public String etcPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
-		System.err.println(param);
 		//결재 정보 조회
 		param.put("userId", AuthUtil.getAuth(request).getUserId());
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
@@ -654,7 +645,6 @@ public class ApprovalController {
 	public Map<String, String> approvalSubmitAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
-			System.err.println(param);
 			param.put("userId", AuthUtil.getAuth(request).getUserId());
 			
 			returnMap = approvalService.approvalSubmit(param);
@@ -672,7 +662,6 @@ public class ApprovalController {
 	public Map<String, String> approvalCondSubmitAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
-			System.err.println(param);
 			param.put("userId", AuthUtil.getAuth(request).getUserId());
 			
 			returnMap = approvalService.approvalCondSubmit(param);
@@ -690,7 +679,6 @@ public class ApprovalController {
 	public Map<String, String> approvalRejectAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		Map<String, String> returnMap = new HashMap<String, String>();
 		try {
-			System.err.println(param);
 			param.put("userId", AuthUtil.getAuth(request).getUserId());
 			
 			returnMap = approvalService.approvalReject(param);

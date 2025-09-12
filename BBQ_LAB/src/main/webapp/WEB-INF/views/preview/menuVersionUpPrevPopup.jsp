@@ -17,8 +17,7 @@
   <title>프린트 미리보기</title>
   <script type="text/javascript">
   function fn_printPreview() {
-	  console.log("dd");
-    var printContent = document.getElementById("wrapper").outerHTML;
+	var printContent = document.getElementById("wrapper").outerHTML;
 
     var iframe = document.createElement("iframe");
     iframe.style.position = "fixed";

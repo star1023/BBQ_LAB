@@ -61,7 +61,6 @@ public class NoticeServiceImpl implements NoticeService {
             viewCount = Integer.parseInt(String.valueOf(param.get("viewCount")));
             pageNo = Integer.parseInt(String.valueOf(param.get("pageNo")));
         } catch (Exception e) {
-            System.err.println("페이징 파라미터 오류: " + e.getMessage());
             viewCount = 10;
             pageNo = 1;
         }
@@ -114,13 +113,6 @@ public class NoticeServiceImpl implements NoticeService {
 	        // 2. 첨부파일 저장
 	        if (file != null && file.length > 0) {
 	            for (MultipartFile multipartFile : file) {
-	                System.err.println("===============================");
-	                System.err.println("isEmpty : " + multipartFile.isEmpty());
-	                System.err.println("name : " + multipartFile.getName());
-	                System.err.println("originalFilename : " + multipartFile.getOriginalFilename());
-	                System.err.println("size : " + multipartFile.getSize());
-	                System.err.println("===============================");
-
 	                try {
 	                    if (!multipartFile.isEmpty()) {
 	                        String fileIdx = FileUtil.getUUID();
@@ -210,7 +202,6 @@ public class NoticeServiceImpl implements NoticeService {
 	                Map<String, String> fileData = commonDao.selectFileData(fileParam);
 
 	                if (fileData == null) {
-	                    System.err.println("❌ 삭제할 파일 데이터 없음 (FILE_IDX=" + fileIdx + ")");
 	                    continue;
 	                }
 
@@ -219,17 +210,13 @@ public class NoticeServiceImpl implements NoticeService {
 
 	                if (filePath != null && fileName != null) {
 	                    File fileToDelete = new File(filePath + File.separator + fileName);
-	                    System.err.println("🧾 삭제 대상: " + fileToDelete.getAbsolutePath());
 
 	                    if (fileToDelete.exists()) {
 	                        boolean deleted = fileToDelete.delete();
 	                        if (deleted) {
-	                            System.err.println("✅ 삭제 성공");
 	                        } else {
-	                            System.err.println("❌ 삭제 실패 (파일 존재함)");
 	                        }
 	                    } else {
-	                        System.err.println("❌ 파일 존재하지 않음");
 	                    }
 	                }
 
@@ -303,12 +290,9 @@ public class NoticeServiceImpl implements NoticeService {
 		            if (fileToDelete.exists()) {
 		                boolean deleted = fileToDelete.delete();
 		                if (deleted) {
-		                    System.out.println("✅ 파일 삭제 성공: " + fileToDelete.getAbsolutePath());
 		                } else {
-		                    System.err.println("❌ 파일 삭제 실패: " + fileToDelete.getAbsolutePath());
 		                }
 		            } else {
-		                System.err.println("❌ 파일 없음: " + fileToDelete.getAbsolutePath());
 		            }
 		        }
 

@@ -185,7 +185,6 @@ function fn_loadList(pageNo) {
 		},
 		dataType:"json",
 		success:function(data) {
-			console.log(data);
 			var html = "";
 			if( data.totalCount > 0 ) {
 				$("#list").html(html);

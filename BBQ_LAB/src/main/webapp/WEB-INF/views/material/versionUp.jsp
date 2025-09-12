@@ -23,7 +23,6 @@ $(document).ready(function(){
 	if( '${materialData.data.MATERIAL_TYPE1}' != '' ) {
 		selectedArr.push('${materialData.data.MATERIAL_TYPE1}');
 	}
-	console.log(selectedArr);
 	
 	$("#unit").val('${materialData.data.UNIT}').prop("selected", true);
 	$("#unit_label").html($("#unit option:checked").text());
@@ -97,25 +96,19 @@ function fn_createJSTree(data) {
 		 //$(this).jstree("open_all");
 	}).on("select_node.jstree",function(e,data){
 		selectedArr = new Array();
-		//console.log(e);
-		console.log(data);
 		var selectTxtFull = "";
 		var parents = data.node.parents;
 		var selectTxt = data.node.text;
 		var selectId = data.node.id;
-		console.log(parents);
-		console.log(selectTxt);
 		selectedArr.push(selectId);
 		selectTxtFull += selectTxt;
 		
 		$.each(parents, function( index, value ){ //배열-> index, value
 			if( value != '#' ) { 
-				console.log($(this).jstree(true).get_node(value).text);
 				selectedArr.push(value);
 				selectTxtFull = $(this).jstree(true).get_node(value).text + ">" +selectTxtFull
 			}
 		});
-		console.log(selectedArr);
 		//$("#selectTxtFull").html(selectTxtFull);
 		$("#selectTxtFull").val(selectTxtFull);
 		closeDialog('open2');
@@ -279,7 +272,6 @@ function removeFile(element, tempId){
 		if(typeObj.tempId != tempId) 
 			return typeObj;
 	});
-	//console.log(attatchFileArr);
 }
 
 function fn_removeTempFile(el, fileIdx) {
@@ -465,7 +457,6 @@ function fn_closeMatRayer(){
 
 function fn_searchErpMaterial(pageType) {
 	var pageType = pageType;
-	console.log(pageType);
 	if(!pageType)
 		$('#matLayerPage').val(1);
 	
@@ -538,7 +529,6 @@ function fn_searchErpMaterial(pageType) {
 			}
 		},
 		error: function(a,b,c){
-			//console.log(a,b,c);
 			alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 		},
 		complete: function(){

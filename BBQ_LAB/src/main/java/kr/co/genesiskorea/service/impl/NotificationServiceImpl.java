@@ -28,7 +28,6 @@ public class NotificationServiceImpl implements NotificationService {
             viewCount = Integer.parseInt(String.valueOf(param.get("viewCount")));
             pageNo = Integer.parseInt(String.valueOf(param.get("pageNo")));
         } catch (Exception e) {
-            System.err.println("페이징 파라미터 오류: " + e.getMessage());
             viewCount = 10;
             pageNo = 1;
         }

@@ -18,7 +18,6 @@
 
             eventSource = new EventSource("/subscribe/" + userId);
             eventSource.addEventListener("sse", function (event) {
-                console.log("SSE 받은 이벤트:", event.data);
 
                 // 부모 페이지에 이벤트 전달
                 if (window.parent && window.parent.mainFrame && window.parent.mainFrame.readNotification) {

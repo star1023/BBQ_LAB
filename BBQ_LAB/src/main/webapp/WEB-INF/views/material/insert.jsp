@@ -99,27 +99,19 @@ function fn_createJSTree(data) {
 		 //$(this).jstree("open_all");
 	}).on("select_node.jstree",function(e,data){
 		selectedArr = new Array();
-		//console.log(e);
-		console.log(data);
 		var selectTxtFull = "";
 		var parents = data.node.parents;
 		var selectTxt = data.node.text;
 		var selectId = data.node.id;
-		console.log(parents);
-		console.log(selectTxt);
 		selectedArr.push(selectId);
 		selectTxtFull += selectTxt;
 		
 		$.each(parents, function( index, value ){ //배열-> index, value
 			if( value != '#' ) { 
-				console.log($(this));
-				console.log($(this).jstree(true));
-				console.log($(this).jstree(true).get_node(value).text);
 				selectedArr.push(value);
 				selectTxtFull = $(this).jstree(true).get_node(value).text + ">" +selectTxtFull
 			}
 		});
-		console.log(selectedArr);
 		//$("#selectTxtFull").html(selectTxtFull);
 		$("#selectTxtFull").val(selectTxtFull);
 		closeDialog('open2');
@@ -295,7 +287,6 @@ function removeFile(element, tempId){
 		if(typeObj.tempId != tempId) 
 			return typeObj;
 	});
-	//console.log(attatchFileArr);
 }
 
 function allowDrop(e) {
@@ -400,7 +391,6 @@ function fn_insert(){
 				},
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					count = result.COUNT;
 				},
 				error:function(request, status, errorThrown){
@@ -500,14 +490,13 @@ function fn_goList() {
 function fn_closeMatRayer(){
 	$('#searchMatValue').val('')
 	$('#matLayerBody').empty();
-	$('#matLayerBody').append('<tr><td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td></tr>');
+	$('#matLayerBody').append('<tr><td colspan="9">상품코드 혹은 상품명을 검색해주세요</td></tr>');
 	$('#matCount').text(0);
 	closeDialog('dialog_material');
 }
 
 function fn_searchErpMaterial(pageType) {
 	var pageType = pageType;
-	console.log(pageType);
 	if(!pageType)
 		$('#matLayerPage').val(1);
 	
@@ -580,7 +569,6 @@ function fn_searchErpMaterial(pageType) {
 			}
 		},
 		error: function(a,b,c){
-			//console.log(a,b,c);
 			alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 		},
 		complete: function(){
@@ -597,8 +585,6 @@ function bindDialogEnter(e){
 function fn_setMaterialPopupData(SAP_CODE, NAME, UNIT, KEEP_CONDITION, WIDTH, LENGTH, HEIGHT, TOTAL_WEIGHT, STANDARD, ORIGIN, EXPIRATION_DATE) {
 	$("#name").val(NAME);
 	$("#sapCode").val(SAP_CODE);
-	console.log(UNIT);
-	console.log(UNIT.toUpperCase());
 	$("#unit").selectOptions(UNIT.toUpperCase());
 	$("#unit_label").html($("#unit").selectedTexts());
 	$("#isSample").val("N");
@@ -622,7 +608,6 @@ function fn_initalCode() {
 
 /*
 function selectNewCode() {
-	console.log("새 코드를 조회한다.");
 	var URL = "../test/selectNewCodeAjax";
 	$.ajax({
 		type:"POST",
@@ -826,7 +811,7 @@ function syncCheckAll() {
 	<input id="itemType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -455px; margin-top: -250px ">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeMatRayer()"></button></li>
@@ -869,7 +854,7 @@ function syncCheckAll() {
 					<tbody id="matLayerBody">
 						<input type="hidden" id="matLayerPage" value="0"/>
 						<Tr>
-							<td colspan="9">원료코드 혹은 원료코드명을 검색해주세요</td>
+							<td colspan="9">상품코드 혹은 상품코드명을 검색해주세요</td>
 						</Tr>
 					</tbody>
 				</table>

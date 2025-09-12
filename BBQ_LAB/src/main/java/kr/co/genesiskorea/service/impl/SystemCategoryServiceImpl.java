@@ -64,7 +64,7 @@ public class SystemCategoryServiceImpl implements SystemCategoryService {
 		//이웃 카테고리를 조회 한다.
 		Map<String, String> returnMap = new HashMap<String, String>();
 		Map<String, Object> npCategory = categoryDao.selectNPCategory(param);
-		//System.err.println("npCategory  :  "+npCategory);
+
 		if( npCategory != null && npCategory.get("CATEGORY_IDX") != null && !"".equals(npCategory.get("CATEGORY_IDX")) ) {
 			Map<String, Object> paramMap = new HashMap<String, Object>();
 			paramMap.put("id", npCategory.get("CATEGORY_IDX"));

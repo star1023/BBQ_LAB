@@ -145,9 +145,7 @@ apprClass.approvalAddLine = function(obj){
 apprClass.approvalRemoveLine = function(obj){
 	var	popupId = apprClass.getPopupId(obj);
 	var apprtype = $(obj).data("apprtype");
-	console.log(apprtype);
 	if( apprtype == 'A' ) {
-		console.log("ID : "+$(obj).parent().children("input").val());
 		$("#apprLine").removeOption($(obj).parent().children("input").val());
 		$(obj).parent().remove();
 		$("#apprLineList").children("li").toArray().forEach(function(item,index) { 
@@ -162,7 +160,6 @@ apprClass.approvalRemoveLine = function(obj){
 apprClass.changeApprLine = function(obj){
 	var	popupId = apprClass.getPopupId(obj);
 	var successFn = function(data){
-		console.log(data);
 		$("#apprLine").removeOption(/./);
 		$("#apprLineList").html("");
 		data.forEach(function(item){

@@ -52,11 +52,6 @@ public class FileUtil {
 	      TimeUnit.MILLISECONDS.sleep(5);
 	      // 서버에서 저장 할 파일 이름
 	      String saveFileName = System.currentTimeMillis()+extName;
-	       
-	      System.err.println("originFilename : " + originFilename);
-	      System.err.println("extensionName : " + extName);
-	      System.err.println("size : " + size);
-	      System.err.println("saveFileName : " + saveFileName);
 
 	      String uploadPath = path + "/";
 		  File dir = new File(uploadPath);
@@ -87,11 +82,6 @@ public class FileUtil {
 	      TimeUnit.MILLISECONDS.sleep(5);
 	      // 서버에서 저장 할 파일 이름
 //	      String saveFileName = System.currentTimeMillis()+extName;
-//	       
-//	      System.err.println("originFilename : " + originFilename);
-//	      System.err.println("extensionName : " + extName);
-//	      System.err.println("size : " + size);
-//	      System.err.println("saveFileName : " + saveFileName);
 
 	      String uploadPath = path + File.separator+tbType+File.separator+nowDate.substring(0, 7).replaceAll("-", "");
 		  File dir = new File(uploadPath);
@@ -115,8 +105,6 @@ public class FileUtil {
 		File file = new File(fileFullPath);
 		
 		try {
-			System.err.println("file.isFile :: "+file.isFile());
-
 			if(file.isFile()){
 				if (!file.delete()) {
 					result = false;
@@ -142,11 +130,9 @@ public class FileUtil {
 	    		return false;
 	    	}
 	    } catch (ImageProcessingException e) {
-	        System.err.println("Product Image Upload Error1: " + e);
 	        return false;
 	    } catch (IOException e) {
-            System.err.println("Product Image Upload Error2: " + e);
-	        return false;
+            return false;
         }
 	}
 	

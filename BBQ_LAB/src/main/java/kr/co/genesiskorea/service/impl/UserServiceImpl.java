@@ -90,7 +90,6 @@ public class UserServiceImpl implements UserService {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 			pageNo = 1;
 		}

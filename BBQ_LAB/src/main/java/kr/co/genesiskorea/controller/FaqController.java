@@ -124,7 +124,6 @@ public class FaqController {
 	        return result;
 
 	    } catch (Exception e) {
-	        System.err.println("[updateFaqAjax] 예외 발생:");
 	        e.printStackTrace(); // 콘솔 출력
 	        throw e;
 	    }

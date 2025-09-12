@@ -29,7 +29,6 @@
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -151,7 +150,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function allowDrop(e) {
@@ -355,7 +353,6 @@
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {
 						if( result.IDX > 0 ) {
 							//alert($("#productName").val()+"("+$("#productCode").val()+")"+"가 정상적으로 생성되었습니다.");
@@ -429,7 +426,6 @@
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}

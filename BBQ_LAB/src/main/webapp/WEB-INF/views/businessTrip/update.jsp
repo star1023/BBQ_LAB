@@ -59,7 +59,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor1 = editor;
-    		console.log( editor1 );
     	}).catch( error => {
     		console.error( error );
     	});
@@ -69,7 +68,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor2 = editor;
-    		console.log( editor2 );
     	}).catch( error => {
     		console.error( error );
     	});
@@ -89,7 +87,6 @@
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -235,7 +232,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function fn_removeTempFile(el, fileIdx) {
@@ -314,8 +310,6 @@
 	function fn_updateTmp() {
 		var tripContents = editor1.getData();
 		var tripCost = editor2.getData();
-		console.log(editor1.getData());
-		console.log(editor2.getData());
 		if( !chkNull($("#title").val()) ) {
 			alert("제목을 입력해 주세요.");
 			$("#title").focus();
@@ -619,7 +613,6 @@
 		        cache: false,
 				dataType:"json",
 				success:function(result) {
-					console.log(result);
 					if( result.RESULT == 'S' ) {
 						if( $("#apprLine option").length > 0 ) {
 							var apprFormData = new FormData();
@@ -724,7 +717,6 @@
 	function fn_loadAppr() {
 		var apprTxtFull = "";
 		$("#apprLine").selectedTexts().forEach(function( item, index ){
-			console.log(item);
 			if( apprTxtFull != "" ) {
 				apprTxtFull += " > ";
 			}

@@ -87,12 +87,6 @@ public class SenseQualityController {
 			
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			System.err.println(param);
-			System.err.println(contentsDivArr);
-			System.err.println(contentsResultArr);
-			System.err.println(contentsNoteArr);
-			System.err.println(resultArr);
-			System.err.println(file);
 			
 			HashMap<String, Object> listMap = new HashMap<String, Object>();			
 			
@@ -132,12 +126,6 @@ public class SenseQualityController {
 			
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			System.err.println(param);
-			System.err.println(contentsDivArr);
-			System.err.println(contentsResultArr);
-			System.err.println(contentsNoteArr);
-			System.err.println(resultArr);
-			System.err.println(file);
 			
 			HashMap<String, Object> listMap = new HashMap<String, Object>();			
 			
@@ -344,7 +332,6 @@ public class SenseQualityController {
 	        logger.error(StringUtil.getStackTrace(e, this.getClass()));
 	        returnMap.put("RESULT", "E");
 	        returnMap.put("MESSAGE", e.getMessage());
-	        System.err.println("❌ [예외 발생] " + e.getMessage());
 	    }
 
 	    return returnMap;

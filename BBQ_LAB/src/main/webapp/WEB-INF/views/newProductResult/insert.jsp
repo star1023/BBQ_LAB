@@ -201,7 +201,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	
@@ -349,13 +348,7 @@
 	    formData.append("itemImageArr", JSON.stringify(itemImageArr));
 	    formData.append("status", "TMP");
 	    
-	      // ✅ 디버깅용 출력
-	      console.log("🔎 FormData Preview:");
-	      for (let [key, val] of formData.entries()) {
-	        console.log(key, ":", val);
-	      }
-		
-		$('#lab_loading').show();
+	  	$('#lab_loading').show();
 	    $.ajax({
 	        type: "POST",
 	        url: "../newProductResult/insertNewProductResultAjax",
@@ -520,12 +513,6 @@
 	    formData.append("itemImageArr", JSON.stringify(itemImageArr));
 	    formData.append("status", "REG");
 	    
-	      // ✅ 디버깅용 출력
-	      console.log("🔎 FormData Preview:");
-	      for (let [key, val] of formData.entries()) {
-	        console.log(key, ":", val);
-	      }
-		
 		$('#lab_loading').show();
 	    $.ajax({
 	        type: "POST",
@@ -600,7 +587,6 @@
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
@@ -644,7 +630,6 @@
 			},
 			dataType:"json",
 			success:function(result) {
-				console.log(result);
 				//productLayerBody
 				var jsonData = {};
 				jsonData = result;

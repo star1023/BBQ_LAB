@@ -60,26 +60,14 @@
 				                var id = node.id;
 				                var menuName = renameNodeText;
 				                var level = node.parents.length;
-				                console.log(pId);
-				                console.log(id);
 				                fn_insertMenu( pId, id, menuName, level );
 		                        break;
 		                    case 'delete_node':
-		                    	//console.log("operation : "+operation);
-				                //console.log(node);
-				                //console.log(parentNode);
-				                //console.log("renameNodeText : "+renameNodeText);
-				                //console.log("more : "+more);
 				                var id = node.id;
 				                fn_delete(id);
 				                break;
 		                    case 'move_node' :
 		                  		if( more.ref === undefined ) {
-		                  			//console.log("operation : "+operation);
-				                	//console.log(node);
-				                	//console.log(parentNode);
-				                	//console.log("renameNodeText : "+renameNodeText);
-				                	//console.log(more);
 				                	var id = node.id;
 				                	var pId = parentNode.id;
 				                	var level = node.parents.length;

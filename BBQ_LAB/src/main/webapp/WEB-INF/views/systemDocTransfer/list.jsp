@@ -619,9 +619,6 @@
 		    })
 		  };
 		
-		  console.log("[fn_update] payload object =", payload);
-		  console.log("[fn_update] payload JSON   =", JSON.stringify(payload));
-		
 		  $.ajax({
 			  type: "POST",
 			  url: "../systemDocTransfer/transferDocsAjax",

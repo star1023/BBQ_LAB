@@ -151,7 +151,6 @@ table{font-size: 12px}
 			var inputCheckCnt = 0;
 			var nullIdxArr = new Array();
 			contentsDivArr.forEach(function(item, index){
-				console.log(fileArr[index] == '');
 				if( item == '' && fileArr[index] == '' && contentsResultArr[index] == '' ) {
 					nullIdxArr.push(index);
 				} else if( item == '' || fileArr[index] == '' || contentsResultArr[index] == '' ) {
@@ -198,10 +197,6 @@ table{font-size: 12px}
 			formData.append("contentsNoteArr",JSON.stringify(contentsNoteArr));
 			formData.append("resultArr",JSON.stringify(resultArr));
 			formData.append("imageIndexMap", JSON.stringify(imageIndexMap));
-			
-		    for (const [key, value] of formData.entries()) {
-		        console.log(key+ " : " + value);
-		      }
 			
 			var URL = "../senseQuality/insertSenseQualityTmpAjax";
 			$.ajax({
@@ -506,7 +501,6 @@ table{font-size: 12px}
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}
@@ -600,7 +594,6 @@ table{font-size: 12px}
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -673,7 +666,6 @@ table{font-size: 12px}
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -715,7 +707,7 @@ table{font-size: 12px}
 
 		  const containerDivs = Array.from(document.querySelectorAll("div[id^='contents_div_']"))
       .filter(div => div.offsetParent !== null);
-			console.log(containerDivs);
+
 		  containerDivs.forEach((div, idx) => {
 		    const isFirst = (idx === 0);
 

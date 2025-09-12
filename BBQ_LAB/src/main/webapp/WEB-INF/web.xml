@@ -28,9 +28,14 @@
   
 	<!-- The definition of the Root Spring Container shared by all Servlets and Filters -->
 	<context-param>
+   	<param-name>spring.profiles.active</param-name>
+	   <param-value>prd</param-value>
+	</context-param>
+	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>/WEB-INF/classes/config/*-context.xml</param-value>
 	</context-param>
+	
 	<!-- Spring profiles -->
 
 	

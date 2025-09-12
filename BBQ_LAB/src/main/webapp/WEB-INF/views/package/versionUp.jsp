@@ -30,7 +30,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor1 = editor;
-    		console.log( editor1 );
     	}).catch( error => {
     		console.error( error );
     	}); */
@@ -40,7 +39,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor2 = editor;
-    		console.log( editor2 );
     	}).catch( error => {
     		console.error( error );
     	});	
@@ -50,7 +48,6 @@
 			language: 'ko',
         }).then( editor => {
         	editor3 = editor;
-    		console.log( editor3 );
     	}).catch( error => {
     		console.error( error );
     	});	
@@ -93,7 +90,6 @@
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -213,7 +209,6 @@
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function fn_removeTempFile(el, fileIdx) {
@@ -534,7 +529,6 @@
 		} else {
 			var apprTxtFull = "";
 			$("#apprLine").selectedTexts().forEach(function( item, index ){
-				console.log(item);
 				if( apprTxtFull != "" ) {
 					apprTxtFull += " > ";
 				}

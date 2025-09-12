@@ -377,7 +377,6 @@ li {
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function allowDrop(e) {
@@ -1643,7 +1642,6 @@ li {
 				$("#docTypeTxt").html(fileTypeTxt); */
 				
 				
-				console.log(fileType);
 				fileType.forEach(function(item,index){
 					$("#docTypeTemp").addOption(item.FILE_TYPE, item.FILE_TEXT, true);
 					$('input[type="checkbox"][value="' + item.FILE_TYPE + '"]').prop('checked', true);

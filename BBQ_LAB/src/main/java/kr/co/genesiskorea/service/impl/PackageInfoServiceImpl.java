@@ -60,7 +60,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
@@ -162,12 +161,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -182,7 +175,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -287,12 +279,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -307,7 +293,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -517,14 +502,13 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			        	    if (deleteFile.exists()) {
 			        	        boolean deleted = deleteFile.delete();
 			        	        if (!deleted) {
-			        	            System.err.println("파일 삭제 실패: " + filePath + File.separator + fileName);
+
 			        	        }
 			        	    }
 			        	}
 			        	commonDao.deleteFileData(fileIdx);
 	
 			        } catch (NumberFormatException e) {
-			            System.err.println("FILE_IDX 파싱 실패: " + item);
 			        }
 			    }
 			}*/
@@ -549,12 +533,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -569,7 +547,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -756,14 +733,14 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			        	    if (deleteFile.exists()) {
 			        	        boolean deleted = deleteFile.delete();
 			        	        if (!deleted) {
-			        	            System.err.println("파일 삭제 실패: " + filePath + File.separator + fileName);
+
 			        	        }
 			        	    }
 			        	}
 			        	commonDao.deleteFileData(fileIdx);
 	
 			        } catch (NumberFormatException e) {
-			            System.err.println("FILE_IDX 파싱 실패: " + item);
+
 			        }
 			    }
 			}*/
@@ -788,12 +765,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -808,7 +779,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -984,7 +954,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", newFileName);
 							fileMap.put("content", fileContents);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 						}
@@ -998,12 +967,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -1018,7 +981,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;
@@ -1196,7 +1158,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", newFileName);
 							fileMap.put("content", fileContents);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 						}
@@ -1210,12 +1171,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 				path += "/"+toDay; 
 				int idx = 0;
 				for( MultipartFile multipartFile : file ) {
-					System.err.println("=================================");
-					System.err.println("isEmpty : "+multipartFile.isEmpty());
-					System.err.println("name : " + multipartFile.getName());
-					System.err.println("originalFilename : " + multipartFile.getOriginalFilename());		
-					System.err.println("size : " + multipartFile.getSize());				
-					System.err.println("=================================");
 					try {
 						if( !multipartFile.isEmpty() ) {
 							String fileIdx = FileUtil.getUUID();
@@ -1230,7 +1185,6 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 							fileMap.put("filePath", path);
 							fileMap.put("changeFileName", result);
 							fileMap.put("content", content);
-							System.err.println(fileMap);
 							//파일정보 저장
 							commonDao.insertFileInfo(fileMap);
 							idx++;

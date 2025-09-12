@@ -111,7 +111,6 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
 					html += "			<button class=\"btn_doc\" onclick=\"fn_viewHistory('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-					console.log(item.DOC_OWNER);
 					if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
 						if (item.STATUS == 'TMP') {
 							html += "			<button class=\"btn_doc\" onclick=\"fn_update('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";

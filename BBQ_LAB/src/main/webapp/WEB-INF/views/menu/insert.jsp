@@ -108,7 +108,6 @@ li {
 			
 			$.each(parents, function( index, value ){ //배열-> index, value
 				if( value != '#' ) { 
-					//console.log($(this).jstree(true).get_node(value).text);					
 					selectedArr.push(value);
 					//selectTxtFull = $(this).jstree(true).get_node(value).text + ">" +selectTxtFull
 					selectTxtFull = $.jstree.reference('#jsTree').get_node(value).text + ">" +selectTxtFull
@@ -205,7 +204,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -375,8 +373,7 @@ li {
 		if( $("#attatch_file").children().length == 0 ) {
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
-		}
-		//console.log($("#attatch_file").children().length);
+		}		
 	}
 	
 	function allowDrop(e) {
@@ -609,7 +606,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c)
 				alert('갱신 실패[2] - 시스템 담당자에게 문의하세요.');
 			}
 		})
@@ -712,7 +708,6 @@ li {
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('자재검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -976,17 +971,6 @@ li {
 			formData.append("itemKeepExpArr", JSON.stringify(itemKeepExpArr));
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
-			
-			// 콘솔 출력 (여기에 manualFile도 같이 찍힘)
-			for (var pair of formData.entries()) {
-				for (var pair of formData.entries()) {
-				    if (pair[1] instanceof File) {
-				        console.log(pair[0] + ':', pair[1].name);
-				    } else {
-				        console.log(pair[0] + ':', pair[1]);
-				    }
-				}
-			}
 			
 			URL = "../menu/insertTmpMenuAjax";
 			

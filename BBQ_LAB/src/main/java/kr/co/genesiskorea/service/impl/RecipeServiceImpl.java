@@ -47,7 +47,6 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
@@ -1042,8 +1041,6 @@ public class RecipeServiceImpl implements RecipeService {
 			erpItemList.add(erpDataMap);
 		}
 		
-		System.err.println(erpItemList);
-		
 		HashMap<String, Object> paramMap = new HashMap<String, Object>();
 		paramMap.put("idx", recipeData.get("RECIPE_IDX"));
 		if( erpItemList.size() > 0 ) {
@@ -1059,7 +1056,6 @@ public class RecipeServiceImpl implements RecipeService {
 					paramMap.put("message", returnMap.get("MESSAGE"));
 				}				
 			} catch( Exception e ) {
-				System.err.println(e.getMessage());
 				returnMap.put("RESULT", "E");
 				returnMap.put("MESSAGE", "ERP 반영 오류가 발생했습니다.");
 				paramMap.put("status", "BOM_ERROR");
@@ -1093,7 +1089,6 @@ public class RecipeServiceImpl implements RecipeService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		

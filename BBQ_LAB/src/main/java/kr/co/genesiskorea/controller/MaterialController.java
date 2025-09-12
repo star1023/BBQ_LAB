@@ -84,11 +84,7 @@ public class MaterialController {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
 			param.put("matCode", matCode);
-			System.err.println(param);
-			System.err.println(fileType);
-			System.err.println(fileTypeText);
-			/*System.err.println(docType);
-			System.err.println(docTypeText);*/
+			
 			materialService.insertMaterial(param, materialType, fileType, fileTypeText, file);
 			returnMap.put("MATERIAL_CODE", matCode);
 			returnMap.put("RESULT", "S");			

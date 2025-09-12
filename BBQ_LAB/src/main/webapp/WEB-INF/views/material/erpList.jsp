@@ -166,7 +166,6 @@ function fn_update() {
 				dataType:"json",
 				async:false,
 				success:function(data) {
-					console.log(data);
 					alert("전체 : "+data.totalCount+"건\n"+"처리건수 : "+data.resultCount+"건 업데이트.");
 					fn_loadList(1);
 					$('#lab_loading').hide();

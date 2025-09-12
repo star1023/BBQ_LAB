@@ -105,7 +105,6 @@ public class BatchServiceImpl implements BatchService {
 		try {
 			//1.세과원 사용자 리스트를 조회 한다.
 			List<Map<String,Object>> userList = batchDao.selectResearchUserList();
-			System.err.println("사용자 수 : "+userList.size());
 			//2.암호화 된 초기 비밀번호를 설정한다.
 			List<Map<String,Object>> userDataList = new ArrayList<Map<String,Object>>();
 			for( int i = 0 ; i < userList.size() ; i++ ) {
@@ -164,13 +163,11 @@ public class BatchServiceImpl implements BatchService {
 				userData.put("ENCPWD", encPwd);
 				//userList.add(i, userData);
 				userDataList.add(userData);
-				
-				System.err.println(i+"번째 사용자 : "+userData);
 			}
 			//3.lab_user 테이블에 저장한다.
 			batchDao.insertHrUser(userDataList);
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
+
 		}
 	}
 }

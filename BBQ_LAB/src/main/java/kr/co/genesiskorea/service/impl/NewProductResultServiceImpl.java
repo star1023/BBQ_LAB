@@ -62,14 +62,12 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 		try {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			pageNo = 1;
 		}
 		
 		try {
 			viewCount = Integer.parseInt((String)param.get("viewCount"));
 		} catch( Exception e ) {
-			System.err.println(e.getMessage());
 			viewCount = 10;
 		}
 		
@@ -191,7 +189,6 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	                    try {
 	                        content = FileUtil.getPdfContents(fileBasePath, fileName);
 	                    } catch (Exception e) {
-	                        System.err.println("[WARN] PDF 내용 추출 실패: " + orgFileName);
 	                    }
 	                    Map<String, Object> fileMap = new HashMap<String, Object>();
 	                    fileMap.put("fileIdx", fileIdx);
@@ -366,10 +363,8 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 		         if (imagefile.exists()) {
 		             boolean deleted = imagefile.delete();
 		             if (!deleted) {
-		                 System.err.println("❌ 이미지 삭제 실패: " + path);
 		             }
 		         } else {
-		             System.err.println("⚠️ 이미지 파일이 존재하지 않음: " + path);
 		         }
 		     }
 	
@@ -412,10 +407,8 @@ public class NewProductResultServiceImpl implements NewProductResultService {
                 	    if (deleteFile.exists()) {
                 	        boolean deleted = deleteFile.delete();
                 	        if (!deleted) {
-                	            System.err.println("파일 삭제 실패: " + deleteFile.getAbsolutePath());
                 	        }
                 	    } else {
-                	        System.err.println("삭제 대상 파일이 존재하지 않음: " + deleteFile.getAbsolutePath());
                 	    }
                 	}
 	                	
@@ -439,7 +432,6 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 	                    try {
 	                        content = FileUtil.getPdfContents(fileBasePath, fileName);
 	                    } catch (Exception e) {
-	                        System.err.println("⚠️ PDF 텍스트 추출 실패: " + orgFileName);
 	                    }
 	                    Map<String, Object> fileMap = new HashMap<String, Object>();
 	                    fileMap.put("fileIdx", fileIdx);

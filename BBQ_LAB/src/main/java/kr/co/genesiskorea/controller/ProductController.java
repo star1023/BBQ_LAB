@@ -153,7 +153,6 @@ public class ProductController {
 	@ResponseBody
 	public Map<String, Object> selectMaterialListAjax(HttpServletRequest request, HttpServletResponse response
 			, @RequestParam(required=false) Map<String, Object> param) throws Exception {
-		System.err.println(param);
 		return productService.selectMaterialList(param);
 	}
 	
@@ -420,7 +419,6 @@ public class ProductController {
 	public Map<String, Object> selectSearchProductAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		Auth auth = AuthUtil.getAuth(request);
 		param.put("userId", auth.getUserId());
-		System.err.println(param);
 		Map<String, Object> returnMap = productService.selectSearchProduct(param);
 		return returnMap;
 	}
@@ -498,7 +496,6 @@ public class ProductController {
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
 			Map<String, Object> fileData = productService.selectFileData(param);
-			System.err.println("파일 데이터 : "+fileData);
 			String path = (String)fileData.get("FILE_PATH");
 			String fileName = (String)fileData.get("FILE_NAME");
 
@@ -506,7 +503,6 @@ public class ProductController {
 			File file = new File(fullPath);
 			if(file.exists() == true){		
 				file.delete();				// 해당 경로의 파일이 존재하면 파일 삭제
-				System.err.println("파일삭제");
 			}
 			productService.deleteFileData(param);
 			map.put("RESULT", "S");
@@ -543,7 +539,6 @@ public class ProductController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			
-			System.err.println(param);
 			//productService.updateProductTmp(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {

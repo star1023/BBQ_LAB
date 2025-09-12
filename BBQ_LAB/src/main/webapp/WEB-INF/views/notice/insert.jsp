@@ -188,7 +188,6 @@ function removeFile(element, tempId){
 		$("#docTypeTemp").removeOption(/./);
 		$("#docTypeTxt").html("");
 	}
-	//console.log($("#attatch_file").children().length);
 }
 
 
@@ -334,8 +333,7 @@ function fn_insert() {
     formData.append("popEndDate", popEndDate);
     formData.append("contents", contents);
 
-    console.log(attatchFileArr);
-    
+   
     // 첨부파일들 추가
 	for (var i = 0; i < attatchFileArr.length; i++) {
 		formData.append('file', attatchFileArr[i])

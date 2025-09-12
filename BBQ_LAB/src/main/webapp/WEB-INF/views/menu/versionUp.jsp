@@ -116,7 +116,6 @@ var selectedArr = new Array();
 
 	function fn_searchErpMaterial(pageType) {
 		var pageType = pageType;
-		console.log(pageType);
 		if(!pageType)
 			$('#erpMatLayerPage').val(1);
 		
@@ -189,7 +188,6 @@ var selectedArr = new Array();
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('원료검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -245,27 +243,20 @@ var selectedArr = new Array();
 			 $(this).jstree("open_all");
 		}).on("select_node.jstree",function(e,data){
 			selectedArr = new Array();
-			console.log(e);
-			console.log("data : "+data);
 			var selectTxtFull = "";
 			var parents = data.node.parents;
 			var selectTxt = data.node.text;
 			var selectId = data.node.id;
-			console.log("parents : "+parents);
-			console.log("selectTxt : "+selectTxt);
 			selectedArr.push(selectId);
 			selectTxtFull += selectTxt;
 			
 			$.each(parents, function( index, value ){ //배열-> index, value
 				if( value != '#' ) { 
-					//console.log($.jstree.reference('#jsTree').get_node(value).text);
-					//console.log($(this).jstree(true).get_node(value).text);					
 					selectedArr.push(value);
 					//selectTxtFull = $(this).jstree(true).get_node(value).text + ">" +selectTxtFull
 					selectTxtFull = $.jstree.reference('#jsTree').get_node(value).text + ">" +selectTxtFull
 				}
 			});
-			console.log(selectedArr);
 			//$("#selectTxtFull").html(selectTxtFull);
 			$("#selectTxtFull").val(selectTxtFull);
 			closeDialog('dialog_menu');
@@ -404,7 +395,6 @@ var selectedArr = new Array();
 			$("#docTypeTemp").removeOption(/./);
 			$("#docTypeTxt").html("");
 		}
-		//console.log($("#attatch_file").children().length);
 	}
 	
 	function allowDrop(e) {
@@ -625,7 +615,6 @@ var selectedArr = new Array();
 		
 		//var userSapCode = e.target.value;
 		var userMatCode = e.target.value;
-		console.log(userMatCode);
 		var rowId = $(element).parent().parent().attr('id');
 		var URL = '/menu/checkMaterialAjax';
 		if( type == 'mat' ) {
@@ -671,7 +660,6 @@ var selectedArr = new Array();
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c)
 				alert('갱신 실패[2] - 시스템 담당자에게 문의하세요.');
 			}
 		})
@@ -683,7 +671,6 @@ var selectedArr = new Array();
 		openDialog('dialog_material');
 		
 		var matCode = $(element).prev().val();
-		console.log("matCode : "+matCode);
 		$('#searchMatValue').val(matCode);
 		$('#itemType').val(itemType);
 		$('#searchType').val(type);
@@ -717,7 +704,6 @@ var selectedArr = new Array();
 		}
 			
 		$('#lab_loading').show();
-		console.log("searchMatValue  :  "+$('#searchMatValue').val());
 		
 		var URL = '/menu/selectMaterialAjax';
 		if( searchType == 'mat' ) {
@@ -775,7 +761,6 @@ var selectedArr = new Array();
 				}
 			},
 			error: function(a,b,c){
-				//console.log(a,b,c);
 				alert('자재검색 실패[2] - 시스템 담당자에게 문의하세요');
 			},
 			complete: function(){
@@ -828,7 +813,6 @@ var selectedArr = new Array();
 				language: 'ko',
 	        }).then( editor => {
 	        	window.editor = editor;
-	    		console.log( editor );
 	    	}).catch( error => {
 	    		console.error( error );
 	    	});
@@ -1047,9 +1031,6 @@ var selectedArr = new Array();
 		    }
 			
 			URL = "../menu/insertNewVersionCheckAjax";
-			for (let pair of formData.entries()) {
-			    console.log(pair[0] + ' : ' + pair[1]);
-			}
 			
 			$.ajax({
 				type:"POST",
@@ -1586,7 +1567,6 @@ var selectedArr = new Array();
 	function fn_loadAppr() {
 		var apprTxtFull = "";
 		$("#apprLine").selectedTexts().forEach(function( item, index ){
-			console.log(item);
 			if( apprTxtFull != "" ) {
 				apprTxtFull += " > ";
 			}

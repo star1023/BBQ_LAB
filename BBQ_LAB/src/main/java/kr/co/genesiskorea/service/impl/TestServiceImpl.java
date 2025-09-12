@@ -59,7 +59,6 @@ public class TestServiceImpl implements TestService {
 			
 			//txManager.commit(status);
 		} catch( Exception e ) {
-			System.err.println(StringUtil.getStackTrace(e, this.getClass()));
 			//txManager.rollback(status);
 			throw new RuntimeException("강제 예외");
 		}		
