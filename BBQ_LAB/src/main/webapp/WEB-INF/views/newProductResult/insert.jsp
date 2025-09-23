@@ -280,9 +280,11 @@
 		const columnSelects = document.querySelectorAll('#columnHeaderRow select');
 		const hasUnselectedColumn = Array.from(columnSelects).some(select => select.value === "");
 
-		if (hasUnselectedColumn) {
-			const proceed = confirm("컬럼 헤더가 선택되지 않은 컬럼은 저장되지 않습니다.\n그래도 진행하시겠습니까?");
-			if (!proceed) return;
+		if (inputMode !== 'upload') {
+			if (hasUnselectedColumn) {
+				const proceed = confirm("컬럼 헤더가 선택되지 않은 컬럼은 저장되지 않습니다.\n그래도 진행하시겠습니까?");
+				if (!proceed) return;
+			}			
 		}
 		
 	    var formData = new FormData();
@@ -379,19 +381,17 @@
 	                        cache: false,
 	                        success: function(data) {
 	                            if (data.RESULT === 'S') {
-	                                alert("결재상신이 완료되었습니다.");
-	                                $('#lab_loading').hide();
-	                                fn_goList();
+	                            	alert(title + "가 정상적으로 생성되었습니다.");
+	        	                    $('#lab_loading').hide();
+	        	                    fn_goList();
 	                            } else {
-	                                alert("결재선 상신 오류가 발생하였습니다." + data.MESSAGE);
-	                                $('#lab_loading').hide();
-	                                fn_goList();
+	                            	alert("저장 중 오류가 발생하였습니다.\n" + result.MESSAGE);
+	            	                $('#lab_loading').hide();
 	                            }
 	                        },
 	                        error: function() {
-	                            alert("결재 요청 중 오류가 발생하였습니다.");
-	                            $('#lab_loading').hide();
-	                            fn_goList();
+	                        	alert("저장 중 오류가 발생하였습니다.\n" + result.MESSAGE);
+	        	                $('#lab_loading').hide();
 	                        }
 	                    });
 	                } else {
@@ -675,6 +675,11 @@
 			    // ✅ 1. 제목 및 시행월
 			    document.getElementById("title").value = data.TITLE || "";
 			    document.getElementById("excuteDate").value = data.EXCUTE_DATE || "";
+			    
+			    if( columnState.length > 0 ) {
+	                $("#manual").prop("checked", true); 
+	                toggleInputMode("manual");
+	             }
 
 			    // ✅ 2. 컬럼 초기화 후 재생성
 			    const headerRow = document.getElementById('columnHeaderRow');
@@ -918,7 +923,7 @@
 // ---------------------------------------- STORE POP -----------------------------------------
 // 동적 테이블 관련 함수 시작
 let columnCount = 0; // 현재 컬럼 수
-const MAX_COLUMNS = 8;
+const MAX_COLUMNS = 6;
 const MAX_ROWS = 20;
 
 function createColumn() {
@@ -926,7 +931,7 @@ function createColumn() {
 	  const maxAvailableColumns = columnOptions.length;
 
 	  if (columnCount >= MAX_COLUMNS) {
-	    alert("최대 8개의 컬럼까지만 추가할 수 있습니다.");
+	    alert("최대 6개의 컬럼까지만 추가할 수 있습니다.");
 	    return;
 	  }
 

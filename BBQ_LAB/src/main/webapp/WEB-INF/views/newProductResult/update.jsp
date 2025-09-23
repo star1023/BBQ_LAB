@@ -954,8 +954,8 @@ function createColumn() {
 	  }
 
 	  // 최대 8개 제한도 병행
-	  if (totalColumnSelects >= 8) {
-	    alert("최대 8개의 컬럼까지만 추가할 수 있습니다.");
+	  if (totalColumnSelects >= 6) {
+	    alert("최대 6개의 컬럼까지만 추가할 수 있습니다.");
 	    return;
 	  }
 

@@ -1551,7 +1551,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 	    // 이미지 엘리먼트 생성
 	    var img = $doc.createElement("img");
 	    img.style.width = "98%";
-	    img.style.maxWidth = "220px";
+	    img.style.maxWidth = "400px";
 	    img.style.height = "auto";
 	    img.style.border = "1px solid #e1e1e1";
 	    img.style.borderRadius = "5px";
@@ -1681,7 +1681,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 							</td>
 							<th style="border-left: none;" class="contentBlock">시료수량 (EA)<span class="mandatory">*</span></th>
 							<td>
-								<input type="text" id="pr name="productCount"  value="${chemicalTestData.data.PRODUCT_COUNT}"/>
+								<input type="text" id="productCount" name="productCount"  value="${chemicalTestData.data.PRODUCT_COUNT}"/>
 							</td>
 							<th style="border-left: none;" class="contentBlock">보관방법</th>
 							<!-- 

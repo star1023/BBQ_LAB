@@ -500,13 +500,13 @@ function downloadFile(idx){
 								<c:when test="${not empty chemicalTestData.data.FILE_NAME}">
 									<img id="preview"
 										src="/images${chemicalTestData.data.FILE_PATH}/${chemicalTestData.data.FILE_NAME}"
-										style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
+										style="border:1px solid #e1e1e1; border-radius:5px; max-width:400px; height:auto; object-fit: contain;">
 								</c:when>
 								<c:otherwise>
 									<img id="preview"
 										src="/resources/images/img_noimg3.png"
 										alt="이미지 없음"
-										style="border:1px solid #e1e1e1; border-radius:5px; width:400px; height:300px; object-fit: contain;">
+										style="border:1px solid #e1e1e1; border-radius:5px; max-width:400px; height:auto; object-fit: contain;">
 								</c:otherwise>
 							</c:choose>
 						</td>

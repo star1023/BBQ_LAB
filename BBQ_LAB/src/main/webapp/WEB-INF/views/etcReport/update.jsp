@@ -347,9 +347,6 @@
 			alert("제목을 입력해 주세요.");
 			$("#title").focus();
 			return;
-		} else if( $("#tempFileList option").length == 0 && attatchFileArr.length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
-			return;
 		} else if( !chkNull($("#apprTxtFull").val()) ) {
 			alert("결재라인을 등록해주세요.");
 			return;
@@ -594,7 +591,7 @@
 			<div class="list_detail">
 				<ul style="">
 					<li>
-						<dt style="width: 20%">첨부파일 <span class="mandatory">*</span>
+						<dt style="width: 20%">첨부파일
 							<select id="tempFileList" name="tempFileList" multiple style="display: none">
 							<c:forEach items="${etcData.fileList}" var="fileList" varStatus="status">
 								<option value="${fileList.FILE_IDX}" selected>${fileList.ORG_FILE_NAME}</option>

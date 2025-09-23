@@ -318,9 +318,6 @@
 			alert("제목을 입력해 주세요.");
 			$("#title").focus();
 			return;
-		} else if( attatchFileArr.length == 0 ) {
-			alert("첨부파일을 등록해주세요.");		
-			return;			
 		} else if( !chkNull($("#apprTxtFull").val()) ) {
 			alert("결재라인을 등록해주세요.");
 			return;
@@ -543,7 +540,7 @@
 			<div class="list_detail">
 				<ul >
 					<li>
-						<dt style="width: 20%">첨부파일 <span class="mandatory">*</span></dt>
+						<dt style="width: 20%">첨부파일</dt>
 						<dd style="width: 80%;">
 							<div class="add_file" id="add_file2" style="width:100%">
 								<span id="upFile">
