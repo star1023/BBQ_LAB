@@ -1,4 +1,15 @@
 package kr.co.genesiskorea.controller;
+/**
+* @packageName    	: kr.co.genesiskorea.controller
+* @fileName        	: BusinessTripPlanController
+* @author        	: ssung
+* @date            	: 2025.04
+* @description      : 출장계획 보고서 Controller 클래스
+* ===========================================================
+* DATE              AUTHOR             NOTE
+* -----------------------------------------------------------
+* 2025.04        	ssung       	최초 생성
+*/
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,11 +50,31 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 	@Autowired
 	ApprovalService approvalService;
 	
+	/**
+	 * 출장계획 보고서 리스트 화면
+	* @methodName    : businessTripPlanList
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	 */
 	@RequestMapping(value = "/list")
 	public String businessTripPlanList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) {
 		return "/businessTripPlan/list";
 	}
 	
+	/**
+	 * 출장계획 보고서 리스트 조회 Ajax
+	* @methodName    : selectBusinessTripPlanListAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectBusinessTripPlanListAjax")
 	@ResponseBody
 	public Map<String, Object> selectBusinessTripPlanListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
@@ -53,11 +84,32 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return returnMap;
 	}
 	
+	/**
+	 * 출장계획 보고서 등록 화면
+	* @methodName    : insert
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	 */
 	@RequestMapping(value = "/insert")
 	public String insert( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) {
 		return "/businessTripPlan/insert";
 	}
 	
+	/**
+	 * 출장계획 보고서 임시저장 Ajax
+	* @methodName    : insertBusinessTripPlanTmpAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertBusinessTripPlanTmpAjax")
 	@ResponseBody
 	public Map<String, Object> insertBusinessTripPlanTmpAjax(HttpServletRequest request, HttpServletResponse response
@@ -80,6 +132,17 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return returnMap;
 	}
 	
+	/**
+	 * 출장계획 보고서 저장 Ajax
+	* @methodName    : insertBusinessTripPlanAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertBusinessTripPlanAjax")
 	@ResponseBody
 	public Map<String, Object> insertBusinessTripPlanAjax(HttpServletRequest request, HttpServletResponse response
@@ -101,6 +164,18 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return returnMap;
 	}
 	
+	/**
+	 * 출장계획보고서 상세 화면
+	* @methodName    : view
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/view")
 	public String view( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		Auth auth = AuthUtil.getAuth(request);
@@ -137,6 +212,18 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return "/businessTripPlan/view";
 	}
 	
+	/**
+	 * 출장계획 보고서 수정 화면
+	* @methodName    : update
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/update")
 	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		try {
@@ -185,6 +272,17 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		
 	}
 	
+	/**
+	 * 출장계획 보고서 수정 임시저장 Ajax
+	* @methodName    : updateBusinessTripPlanTmpAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/updateBusinessTripPlanTmpAjax")
 	@ResponseBody
 	public Map<String, Object> updateBusinessTripPlanTmpAjax(HttpServletRequest request, HttpServletResponse response
@@ -205,6 +303,17 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return returnMap;
 	}
 	
+	/**
+	 * 출장계획 보고서 수정 Ajax
+	* @methodName    : updateBusinessTripPlanAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/updateBusinessTripPlanAjax")
 	@ResponseBody
 	public Map<String, Object> updateBusinessTripPlanAjax(HttpServletRequest request, HttpServletResponse response
@@ -225,6 +334,16 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return returnMap;
 	}
 	
+	/**
+	 * 출장계획 보고서 검색 Ajax
+	* @methodName    : searchBusinessTripPlanListAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/searchBusinessTripPlanListAjax")
 	@ResponseBody
 	public List<Map<String, Object>> searchBusinessTripPlanListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
@@ -234,6 +353,16 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return returnList;
 	}
 	
+	/**
+	 * 출장계획 보고서 데이터 조회 Ajax
+	* @methodName    : selectBusinessTripPlanDataAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectBusinessTripPlanDataAjax")
 	@ResponseBody
 	public Map<String, Object> selectBusinessTripPlanDataAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
@@ -255,12 +384,32 @@ private Logger logger = LogManager.getLogger(BusinessTripPlanController.class);
 		return returnMap;
 	}
 	
+	/**
+	 * 이력조회 Ajax
+	* @methodName    : selectHistoryAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectHistoryAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectHistoryAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return reportService.selectHistory(param);
 	}
 	
+	/**
+	 * 출장계획 보고서 삭제 Ajax
+	* @methodName    : deletePlanAjax
+	* @date        : 2025.09.16
+	* @param respose
+	* @param request
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/deletePlanAjax")
 	@ResponseBody
 	public Map<String, Object> deletePlanAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{

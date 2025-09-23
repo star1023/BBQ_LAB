@@ -1,5 +1,15 @@
 package kr.co.genesiskorea.controller;
-
+/**
+* @packageName    	: kr.co.genesiskorea.controller
+* @fileName        	: ApprovalController
+* @author        	: ssung
+* @date            	: 2025.04
+* @description      : 결재 Controller 클래스
+* ===========================================================
+* DATE              AUTHOR             NOTE
+* -----------------------------------------------------------
+* 2025.04        	ssung       	최초 생성
+*/
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +93,18 @@ public class ApprovalController {
 	@Autowired
 	EtcReportService etcReportService;
 	
+	/**
+ 	* 사용자 조회 Ajax 
+	* @methodName   : searchUserAjax
+	* @date        	: 2025.04.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/searchUserAjax")
 	@ResponseBody
 	public List<Map<String, Object>> searchUserAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
@@ -91,6 +113,19 @@ public class ApprovalController {
 		return list;
 	}
 	
+	/**
+	* 결재라인 등록 Ajax
+	* @methodName    : insertApprLineAjax
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param apprLine
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertApprLineAjax")
 	@ResponseBody
 	public Map<String, String> insertApprLineAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response
@@ -112,6 +147,18 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 사용자가 저장한 결재라인 정보 조회 Ajax
+	* @methodName    : selectApprovalLineAjax
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectApprovalLineAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectApprovalLineAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
@@ -122,6 +169,18 @@ public class ApprovalController {
 		return list;
 	}
 	
+	/**
+	 * 사용자가 저장한 결재라인 결재자 정보 조회 Ajax
+	* @methodName    : selectApprovalLineItemAjax
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectApprovalLineItemAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectApprovalLineItemAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
@@ -130,6 +189,18 @@ public class ApprovalController {
 		return list;
 	}
 	
+	/**
+	 * 결재라인 삭제 Ajax
+	* @methodName    : deleteApprLineAjax
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/deleteApprLineAjax")
 	@ResponseBody
 	public Map<String, String> deleteApprLineAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
@@ -182,6 +253,20 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 결재라인 저장.
+	* @methodName    : insertApprAjax
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param apprLine
+	* @param refLine
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertApprAjax")
 	@ResponseBody
 	public Map<String, String> insertApprAjax(HttpSession session,HttpServletRequest request, HttpServletResponse response
@@ -206,11 +291,33 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 결재 리스트 화면
+	* @methodName    : list
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/list")
 	public String list(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		return "/approval/list";
 	}
 	
+	/**
+	 * 결재 리스트 조회 Ajax
+	* @methodName    : selectListAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectListAjax")
 	@ResponseBody
 	public Map<String, Object> selectListAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -225,6 +332,17 @@ public class ApprovalController {
 		}
 	}
 	
+	/**
+	 * 내가 결재할 문서 리스트 조회 Ajax
+	* @methodName    : selectMyApprListAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectMyApprListAjax")
 	@ResponseBody
 	public Map<String, Object> selectMyApprListAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -239,6 +357,17 @@ public class ApprovalController {
 		}
 	}
 	
+	/**
+	 * 참조리스트 조회 Ajax
+	* @methodName    : selectMyRefListAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectMyRefListAjax")
 	@ResponseBody
 	public Map<String, Object> selectMyRefListAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -253,6 +382,17 @@ public class ApprovalController {
 		}
 	}
 	
+	/**
+	 * 결재완료 리스트 조회 Ajax
+	* @methodName    : selectMyCompListAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectMyCompListAjax")
 	@ResponseBody
 	public Map<String, Object> selectMyCompListAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -267,6 +407,17 @@ public class ApprovalController {
 		}
 	}
 	
+	/**
+	 * 상신취소 Ajax
+	* @methodName    : cancelApprAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/cancelApprAjax")
 	@ResponseBody
 	public Map<String, String> cancelApprAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -283,6 +434,17 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 재상신 Ajax
+	* @methodName    : reApprAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/reApprAjax")
 	@ResponseBody
 	public Map<String, String> reApprAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -299,6 +461,17 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 제품완료 보고서 팝업
+	* @methodName    : productPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/productPopup")
 	public String productPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -329,6 +502,17 @@ public class ApprovalController {
 		return "/approval/productPopup";
 	}
 	
+	/**
+	 * 메뉴완료보고서 팝업
+	* @methodName    : menuPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/menuPopup")
 	public String menuPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -358,6 +542,17 @@ public class ApprovalController {
 		return "/approval/menuPopup";
 	}
 	
+	/**
+	 * 상품설계변경 보고서 팝업
+	* @methodName    : designPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/designPopup")
 	public String designPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -392,6 +587,17 @@ public class ApprovalController {
 		return "/approval/designPopup";
 	}
 	
+	/**
+	 * 출장계획보고서 팝업
+	* @methodName    : businessTripPlanPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/businessTripPlanPopup")
 	public String businessTripPlanPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -427,6 +633,17 @@ public class ApprovalController {
 		return "/approval/businessTripPlanPopup";
 	}
 	
+	/**
+	 * 출장결과보고서 팝업
+	* @methodName    : businessTripPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/businessTripPopup")
 	public String businessTripPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -462,6 +679,17 @@ public class ApprovalController {
 		return "/approval/businessTripPopup";
 	}
 	
+	/**
+	 * 시장조사결과보고서 팝업
+	* @methodName    : marketResearchPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/marketResearchPopup")
 	public String marketResearchPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -494,6 +722,17 @@ public class ApprovalController {
 		return "/approval/marketResearchPopup";
 	}
 	
+	/**
+	 * 관능&품질평가보고서 팝업
+	* @methodName    : senseQualityReportPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/senseQualityReportPopup")
 	public String senseQualityReportPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -520,6 +759,17 @@ public class ApprovalController {
 		return "/approval/senseQualityReportPopup";
 	}
 	
+	/**
+	 * 이화학검사의뢰서 팝업
+	* @methodName    : chemicalTestPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/chemicalTestPopup")
 	public String chemicalTestPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -549,6 +799,17 @@ public class ApprovalController {
 		return "/approval/chemicalTestPopup";
 	}
 	
+	/**
+	 * 메뉴품질점검결과 보고서 팝업
+	* @methodName    : newProductResultPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/newProductResultPopup")
 	public String newProductResultPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -582,6 +843,17 @@ public class ApprovalController {
 		return "/approval/newProductResultPopup";
 	}
 	
+	/**
+	 * 사전원가서 팝업
+	* @methodName    : recipePopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/recipePopup")
 	public String recipePopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -613,6 +885,17 @@ public class ApprovalController {
 		return "/approval/recipePopup";
 	}
 	
+	/**
+	 * 기타보고서 팝업
+	* @methodName    : etcPopup
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/etcPopup")
 	public String etcPopup(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		//결재 정보 조회
@@ -639,7 +922,17 @@ public class ApprovalController {
 		return "/approval/etcPopup";
 	}
 	
-
+	/**
+	 * 결재 승인 Ajax
+	* @methodName    : approvalSubmitAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/approvalSubmitAjax")
 	@ResponseBody
 	public Map<String, String> approvalSubmitAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -657,6 +950,17 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 부분승인 Ajax
+	* @methodName    : approvalCondSubmitAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/approvalCondSubmitAjax")
 	@ResponseBody
 	public Map<String, String> approvalCondSubmitAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -674,6 +978,17 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 반려 Ajax
+	* @methodName    : approvalRejectAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/approvalRejectAjax")
 	@ResponseBody
 	public Map<String, String> approvalRejectAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -691,18 +1006,51 @@ public class ApprovalController {
 		return returnMap;
 	}
 	
+	/**
+	 * 결재라인 아이템 조회 Ajax
+	* @methodName    : selectApprItemAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectApprItemAjax")
 	@ResponseBody
 	public Map<String, Object> selectApprItemAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		return approvalService.selectApprItem(param);
 	}
 	
+	/**
+	 * 참조자 등록 Ajax
+	* @methodName    : addReferenceAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/addReferenceAjax")
 	@ResponseBody
 	public Map<String, Object> addReferenceAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		return approvalService.addReference(param);
 	}
 	
+	/**
+	 * 참조자 조회 Ajax
+	* @methodName    : selectRefInfoListAjax
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectRefInfoListAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectRefInfoListAjax(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {

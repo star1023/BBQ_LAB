@@ -83,6 +83,7 @@
 		, DOC_OWNER
 		, DOC_NO
 		, FN_GET_USER_NAME(ld.DOC_OWNER) as DOC_OWNER_NAME
+		, FN_GET_USER_NAME(ld.DOC_OWNER) as USER_NAME
 	    , FN_GET_CODE_NAME('DOC_STATUS', ld.STATUS) AS STATUS_TXT
 	    , (SELECT COUNT(*) FROM lab_design WHERE 1 = 1 AND DOC_NO = ld.DOC_NO AND IS_LAST = 'N' AND VERSION_NO <![CDATA[<]]> ld.VERSION_NO AND IS_DELETE = 'N' ) as CHILD_CNT
 	FROM 	
@@ -198,6 +199,7 @@
 			, 'N'
 			, 'Y'
 			, #{status}
+			, #{userId}
 			, #{userId}
 			, (SELECT ifnull(MAX(ld.DOC_NO),0)+1 FROM lab_design ld WHERE 1 = 1)	
 		)

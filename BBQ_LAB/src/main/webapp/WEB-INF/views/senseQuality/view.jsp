@@ -417,13 +417,6 @@ table{font-size: 12px}
 		<h2 style="position:relative">
 			<span class="title_s">Sense & Quality Test Report</span><span class="title">관능&품질평가 테스트 결과보고서</span>
 			<div class="top_btn_box">
-				<ul>
-					<li>
-						<c:if test="${senseQualityData.reportMap.STATUS == 'REG' }">
-						<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()" style="float: left">결재</button>
-						</c:if>
-					</li>
-				</ul>
 			</div>
 		</h2>
 		<div class="group01 mt20">

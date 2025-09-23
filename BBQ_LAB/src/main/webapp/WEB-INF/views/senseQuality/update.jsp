@@ -1108,7 +1108,7 @@ table{font-size: 12px}
 							<td colspan="3">
 								<input type="hidden" name="idx" id="idx" value="${senseQualityData.reportMap.REPORT_IDX}">
 								<input type="hidden" name="currentStatus" id="currentStatus" value="${senseQualityData.reportMap.STATUS}">								
-								<input type="text" name="title" style="width: 90%;"  value="${senseQualityData.reportMap.TITLE}"/>
+								<input type="text" name="title" id="title" style="width: 90%;"  value="${senseQualityData.reportMap.TITLE}"/>
 							</td>
 						</tr>
 						<tr>

@@ -228,6 +228,11 @@ li {
 			fn_searchErpMaterial();
 	}
 	
+	function bindDialogEnter2(e){
+		if(e.keyCode == 13)
+			searchMaterial();
+	}
+	
 	function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, HEIGHT, TOTAL_WEIGHT, STANDARD, ORIGIN, EXPIRATION_DATE) {
 		$("#productName").val(NAME);
 		$("#productName").prop("readonly",true);
@@ -801,7 +806,7 @@ li {
 			if (customUsage) {
 				formData.append("customUsage", customUsage.trim()); // USC
 			}
-			
+
 			formData.append("sharedUserArr", JSON.stringify($('#sharedUserIds').val().split(','))); // ✅ 추가
 			
 			var newItemNameArr = new Array();
@@ -1082,11 +1087,11 @@ li {
 				var validMat = true;
 				$('tr[id^=newMatRow]').toArray().forEach(function(contRow){
 					var rowId = $(contRow).attr('id');
-					var itemSapCode = $('#'+ rowId + ' input[name=itemSapCode]').val();
+					var itemMatCode = $('#'+ rowId + ' input[name=itemMatCode]').val();
 					var itemName = $('#'+ rowId + ' input[name=itemName]').val();
 					var mixingRatio = $('#'+ rowId + ' input[name=mixingRatio]').val();
 					
-					if(itemSapCode.length <= 0 && itemName.length <= 0){
+					if(itemMatCode.length <= 0 && itemName.length <= 0){
 						validMat = false;
 						return;
 					}
@@ -3166,7 +3171,7 @@ li {
 
 		<div id="matListDiv" class="code_box">
 			<input id="searchMatValue" type="text" class="code_input"
-				onkeyup="bindDialogEnter(event)" style="width: 300px;"
+				onkeyup="bindDialogEnter2(event)" style="width: 300px;"
 				placeholder="일부단어로 검색가능"> <img
 				src="/resources/images/icon_code_search.png"
 				onclick="searchMaterial()" />
@@ -3244,7 +3249,7 @@ li {
 					<dd>
 						<input type="text" value="" class="req"
 							style="width: 302px; float: left" name="searchValue"
-							id="searchValue" placeholder="제품코드/제품명을 입력하세요." />
+							id="searchValue" placeholder="제품코드/제품명을 입력하세요." onclick="if(e.keyCode == 13){fn_search()}"/>
 						<button class="btn_small_search ml5" onclick="fn_search()"
 							style="float: left">조회</button>
 					</dd>

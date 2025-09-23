@@ -1170,7 +1170,7 @@
 							</td>
 							<th style="border-left: none;">경유지</th>
 							<td>
-								<input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder=""/>
+								<input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder="" value="${planData.data.TRIP_TRANSIT}"/>
 							</td>
 						</tr>
 						<tr>

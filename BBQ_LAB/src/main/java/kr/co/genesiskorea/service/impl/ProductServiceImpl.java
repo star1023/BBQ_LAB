@@ -220,12 +220,14 @@ public class ProductServiceImpl implements ProductService {
 			// 공동 참여자 등록
 			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
 			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
-				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
-				sharedUserMap.put("userId", sharedUserArr.get(i));
-				sharedUserMap.put("docType", "PROD");
-				sharedUserMap.put("docIdx", productIdx);
-				
-				sharedUserList.add(sharedUserMap);
+				if( sharedUserArr.get(i) != null && !"".equals(sharedUserArr.get(i)) ) {
+					HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+					sharedUserMap.put("userId", sharedUserArr.get(i));
+					sharedUserMap.put("docType", "PROD");
+					sharedUserMap.put("docIdx", productIdx);
+					
+					sharedUserList.add(sharedUserMap);
+				}
 			} 
 			
 			if( sharedUserList != null && sharedUserList.size() > 0 ) {
@@ -545,12 +547,14 @@ public class ProductServiceImpl implements ProductService {
 			// 공동 참여자 등록
 			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
 			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
-				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
-				sharedUserMap.put("userId", sharedUserArr.get(i));
-				sharedUserMap.put("docType", "PROD");
-				sharedUserMap.put("docIdx", productIdx);
-				
-				sharedUserList.add(sharedUserMap);
+				if( sharedUserArr.get(i) != null && !"".equals(sharedUserArr.get(i)) ) {
+					HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+					sharedUserMap.put("userId", sharedUserArr.get(i));
+					sharedUserMap.put("docType", "PROD");
+					sharedUserMap.put("docIdx", productIdx);
+					
+					sharedUserList.add(sharedUserMap);
+				}
 			} 
 			
 			if( sharedUserList != null && sharedUserList.size() > 0 ) {
@@ -964,13 +968,15 @@ public class ProductServiceImpl implements ProductService {
 			
 			// 공동 참여자 등록
 			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
-			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
-				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
-				sharedUserMap.put("userId", sharedUserArr.get(i));
-				sharedUserMap.put("docType", "PROD");
-				sharedUserMap.put("docIdx", productIdx);
-				
-				sharedUserList.add(sharedUserMap);
+			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {				
+				if( sharedUserArr.get(i) != null && !"".equals(sharedUserArr.get(i)) ) {
+					HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+					sharedUserMap.put("userId", sharedUserArr.get(i));
+					sharedUserMap.put("docType", "PROD");
+					sharedUserMap.put("docIdx", productIdx);
+					
+					sharedUserList.add(sharedUserMap);
+				}
 			} 
 			
 			if( sharedUserList != null && sharedUserList.size() > 0 ) {
@@ -1301,12 +1307,14 @@ public class ProductServiceImpl implements ProductService {
 			// 공동 참여자 등록
 			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
 			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
-				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
-				sharedUserMap.put("userId", sharedUserArr.get(i));
-				sharedUserMap.put("docType", "PROD");
-				sharedUserMap.put("docIdx", productIdx);
-				
-				sharedUserList.add(sharedUserMap);
+				if( sharedUserArr.get(i) != null && !"".equals(sharedUserArr.get(i)) ) {
+					HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+					sharedUserMap.put("userId", sharedUserArr.get(i));
+					sharedUserMap.put("docType", "PROD");
+					sharedUserMap.put("docIdx", productIdx);
+					
+					sharedUserList.add(sharedUserMap);
+				}
 			} 
 			
 			if( sharedUserList != null && sharedUserList.size() > 0 ) {
@@ -1712,12 +1720,14 @@ public class ProductServiceImpl implements ProductService {
 			// 공동 참여자 등록
 			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
 			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
-				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
-				sharedUserMap.put("userId", sharedUserArr.get(i));
-				sharedUserMap.put("docType", "PROD");
-				sharedUserMap.put("docIdx", productIdx);
-				
-				sharedUserList.add(sharedUserMap);
+				if( sharedUserArr.get(i) != null && !"".equals(sharedUserArr.get(i)) ) {
+					HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+					sharedUserMap.put("userId", sharedUserArr.get(i));
+					sharedUserMap.put("docType", "PROD");
+					sharedUserMap.put("docIdx", productIdx);
+					
+					sharedUserList.add(sharedUserMap);
+				}
 			} 
 			
 			if( sharedUserList != null && sharedUserList.size() > 0 ) {
@@ -2087,12 +2097,14 @@ public class ProductServiceImpl implements ProductService {
 			// 공동 참여자 등록
 			ArrayList<HashMap<String,Object>> sharedUserList = new ArrayList<HashMap<String,Object>>();
 			for( int i = 0 ; i < sharedUserArr.size() ; i++ ) {
-				HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
-				sharedUserMap.put("userId", sharedUserArr.get(i));
-				sharedUserMap.put("docType", "PROD");
-				sharedUserMap.put("docIdx", productIdx);
-				
-				sharedUserList.add(sharedUserMap);
+				if( sharedUserArr.get(i) != null && !"".equals(sharedUserArr.get(i)) ) {
+					HashMap<String,Object> sharedUserMap = new HashMap<String,Object>();
+					sharedUserMap.put("userId", sharedUserArr.get(i));
+					sharedUserMap.put("docType", "PROD");
+					sharedUserMap.put("docIdx", productIdx);
+					
+					sharedUserList.add(sharedUserMap);
+				}
 			} 
 			
 			if( sharedUserList != null && sharedUserList.size() > 0 ) {

@@ -257,12 +257,29 @@
 	<select id="selectTotalCount" parameterType="map" resultType="int">
 		/*	approval.selectTotalCount */
 		SELECT 
-			COUNT(APPR_IDX)
-		FROM
-			lab_approval_header
+			COUNT(APPR_IDX) AS CNT
+		FROM(
+			SELECT 
+				APPR_IDX
+				, DOC_IDX
+				, DOC_TYPE
+				, TOTAL_STEP
+				, CURRENT_STEP
+				, CURRENT_USER_ID
+				, TITLE
+				, REG_USER
+				, REG_DATE
+				, LAST_STATUS
+				, FN_GET_DOC_STATUS(DOC_IDX, DOC_TYPE) AS STATUS
+				, UPDATE_DATE
+			FROM 
+				lab_approval_header
+			WHERE 1 = 1
+				AND REG_USER = #{userId}
+				<include refid="approval.whereApprovalList" />
+			)tmp
 		WHERE 1 = 1
-			AND REG_USER = #{userId}
-			<include refid="approval.whereApprovalList" />
+			AND tmp.STATUS != 'TMP'	
 	</select>
 	
 	<select id="selectApprovalList" parameterType="map" resultType="hashmap">
@@ -291,22 +308,41 @@
 			, DATE_FORMAT(UPDATE_DATE,'%Y-%m-%d') AS UPDATE_DATE_TXT
 		FROM (
 			SELECT 
-				row_number() over (order by  APPR_IDX DESC) as rnum
-				, APPR_IDX
-				, DOC_IDX
-				, DOC_TYPE
-				, TOTAL_STEP
-				, CURRENT_STEP
-				, CURRENT_USER_ID
-				, TITLE
-				, REG_USER
-				, REG_DATE
-				, LAST_STATUS
-				, UPDATE_DATE
-			FROM lab_approval_header
+				row_number() over (order by  itmp.APPR_IDX DESC) as rnum
+				, itmp.APPR_IDX
+				, itmp.DOC_IDX
+				, itmp.DOC_TYPE
+				, itmp.TOTAL_STEP
+				, itmp.CURRENT_STEP
+				, itmp.CURRENT_USER_ID
+				, itmp.TITLE
+				, itmp.REG_USER
+				, itmp.REG_DATE
+				, itmp.LAST_STATUS
+				, itmp.UPDATE_DATE
+				, itmp.STATUS
+			FROM (
+				SELECT 
+					APPR_IDX
+					, DOC_IDX
+					, DOC_TYPE
+					, TOTAL_STEP
+					, CURRENT_STEP
+					, CURRENT_USER_ID
+					, TITLE
+					, REG_USER
+					, REG_DATE
+					, LAST_STATUS
+					, FN_GET_DOC_STATUS(DOC_IDX, DOC_TYPE) AS STATUS
+					, UPDATE_DATE
+				FROM 
+					lab_approval_header
+				WHERE 1 = 1
+					AND REG_USER = #{userId}
+					<include refid="approval.whereApprovalList" />
+				)itmp
 			WHERE 1 = 1
-				AND REG_USER = #{userId}
-				<include refid="approval.whereApprovalList" />
+				AND itmp.STATUS != 'TMP'	
 		)tmp 
 		WHERE rnum between #{startRow} AND #{endRow}
 	</select>
@@ -443,6 +479,7 @@
 			tmp.REF_IDX
 			, tmp.APPR_IDX
 			, tmp.TARGET_USER_ID
+			, tmp.IS_READ
 			, tmp.DOC_IDX
 			, tmp.DOC_TYPE
 			, tmp.TOTAL_STEP
@@ -469,6 +506,7 @@
 				, laf.REF_IDX
 				, laf.APPR_IDX
 				, laf.TARGET_USER_ID
+				, laf.IS_READ
 				, lah.DOC_IDX
 				, lah.DOC_TYPE
 				, lah.TOTAL_STEP
@@ -859,7 +897,7 @@
 			lab_approval_item
 		WHERE 1 = 1
 			AND APPR_IDX = #{apprIdx}
-			AND APPR_NO = #{currentStep}+1
+			AND APPR_NO = #{currentStep+1}
 	</select>
 	
 	<update id="updateApprUser" parameterType="map">
@@ -1027,7 +1065,18 @@
 		FROM 
 			lab_approval_header
 		WHERE 1 = 1
-			AND APPR_IDX = #{apprIdx}	
+			AND APPR_IDX = #{apprIdx}
+		ON DUPLICATE KEY UPDATE
+			DOC_IDX = VALUES(DOC_IDX)
+			, DOC_TYPE = VALUES(DOC_TYPE)
+			, TOTAL_STEP = VALUES(TOTAL_STEP)
+			, CURRENT_STEP = VALUES(CURRENT_STEP)
+			, CURRENT_USER_ID = VALUES(CURRENT_USER_ID)
+			, TITLE = VALUES(TITLE)
+			, REG_USER = VALUES(REG_USER)
+			, REG_DATE = VALUES(REG_DATE)
+			, COMMENT = VALUES(COMMENT)
+			, LAST_STATUS = VALUES(LAST_STATUS)		
 	</insert>
 	
 	<insert id="insertArrpItemHistory" parameterType="map">

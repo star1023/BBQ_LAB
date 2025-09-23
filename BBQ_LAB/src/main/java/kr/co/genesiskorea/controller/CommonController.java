@@ -1,4 +1,15 @@
 package kr.co.genesiskorea.controller;
+/**
+* @packageName    	: kr.co.genesiskorea.controller
+* @fileName        	: CommonController
+* @author        	: ssung
+* @date            	: 2025.04
+* @description      : PDM 시스텤 공통 Controller 클래스
+* ===========================================================
+* DATE              AUTHOR             NOTE
+* -----------------------------------------------------------
+* 2025.04        	ssung       	최초 생성
+*/
 
 import java.util.HashMap;
 import java.util.List;
@@ -71,6 +82,17 @@ public class CommonController {
 		}
 	}
 	
+	/**
+	 * 공통코드 리스트 조회 Ajax
+	* @methodName    : codeList
+	* @date        : 2025.09.16
+	* @param param
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/codeListAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String,Object> codeList(@RequestParam Map<String, Object> param ,HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -89,12 +111,32 @@ public class CommonController {
 		}
 	}
 	
+	/**
+	 * 카테고리 조회 Ajax
+	* @methodName    : categoryListAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/categoryListAjax")
 	@ResponseBody
 	public List<Map<String, Object>> categoryListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return commonService.categoryList(param);
 	}
 	
+	/**
+	 * 카테고리 데이터 조회 Ajax
+	* @methodName    : selectCategoryByPIdAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectCategoryByPIdAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectCategoryByPIdAjax(HttpServletRequest request, HttpServletResponse response
@@ -102,6 +144,16 @@ public class CommonController {
 		return commonService.selectCategoryByPId(param);
 	}
 	
+	/**
+	 * 
+	* @methodName    : selectHistoryAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectHistoryAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectHistoryAjax(HttpServletRequest request, HttpServletResponse response
@@ -109,6 +161,15 @@ public class CommonController {
 		return commonService.selectHistory(param);
 	}
 	
+	/**
+	 * 첨부파일 다운로드
+	* @methodName    : fileDownload
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @throws Exception
+	 */
 	@RequestMapping("/fileDownload")
 	public void fileDownload(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		try{
@@ -122,6 +183,16 @@ public class CommonController {
 		}
 	}
 	
+	/**
+	 * 알림 조회
+	* @methodName    : readNotificationAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/readNotificationAjax")
 	@ResponseBody
 	public List<HashMap<String, Object>> readNotificationAjax(HttpServletRequest request, HttpServletResponse response
@@ -137,6 +208,16 @@ public class CommonController {
 		return notiList;
 	}
 	
+	/**
+	 * 팀 리스트 조회 Ajax
+	* @methodName    : teamListAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/teamListAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public List<HashMap<String,Object>> teamListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {
@@ -148,6 +229,16 @@ public class CommonController {
 		}
 	}
 	
+	/**
+	 * 사용자 리스트 조회 Ajax
+	* @methodName    : userListAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/userListAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public List<HashMap<String,Object>> userListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception {

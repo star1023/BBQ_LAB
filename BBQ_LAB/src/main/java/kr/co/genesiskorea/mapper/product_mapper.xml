@@ -246,7 +246,9 @@
 			, MATERIAL_TYPE
 		)values
 		<foreach collection="matList" item="item" index="index"  separator=",">
+		<if test="item.matIdx != null and item.matIdx != '' ">
 		( FN_NEXTVAL('product_material_seq'), #{idx} , #{item.matIdx}, #{item.matCode}, #{item.sapCode}, #{item.name}, #{item.unitPrice}, #{item.standard}, #{item.keepExp}, #{item.desc}, #{item.itemType} )
+		</if>
 		</foreach>
 	</insert>
 	

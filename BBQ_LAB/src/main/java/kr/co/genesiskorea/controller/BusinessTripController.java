@@ -1,4 +1,15 @@
 package kr.co.genesiskorea.controller;
+/**
+* @packageName    	: kr.co.genesiskorea.controller
+* @fileName        	: BusinessTripController
+* @author        	: ssung
+* @date            	: 2025.04
+* @description      : 출장결과 보고서 Controller 클래스
+* ===========================================================
+* DATE              AUTHOR             NOTE
+* -----------------------------------------------------------
+* 2025.04        	ssung       	최초 생성
+*/
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,11 +52,31 @@ public class BusinessTripController {
 	@Autowired
 	ApprovalService approvalService;
 	
+	/**
+	 * 출장결과 보고서 리스트 화면
+	* @methodName    : list
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	 */
 	@RequestMapping(value = "/list")
 	public String list( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) {
 		return "/businessTrip/list";
 	}
 	
+	/**
+	 * 출장결과 보고서 리스트 조회 Ajax
+	* @methodName    : selectBusinessTripListAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectBusinessTripListAjax")
 	@ResponseBody
 	public Map<String, Object> selectBusinessTripListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
@@ -55,11 +86,32 @@ public class BusinessTripController {
 		return returnMap;
 	}
 	
+	/**
+	 * 출장결과 보고서 등록 화면
+	* @methodName    : insert
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	 */
 	@RequestMapping(value = "/insert")
 	public String insert( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) {
 		return "/businessTrip/insert";
 	}
 	
+	/**
+	 * 출장결과 보고서 임시저장 Ajax
+	* @methodName    : insertBusinessTripTmpAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertBusinessTripTmpAjax")
 	@ResponseBody
 	public Map<String, Object> insertBusinessTripTmpAjax(HttpServletRequest request, HttpServletResponse response
@@ -81,6 +133,17 @@ public class BusinessTripController {
 		return returnMap;
 	}
 	
+	/**
+	 * 출장결과 보고서 저장 Ajax
+	* @methodName    : insertBusinessTripAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertBusinessTripAjax")
 	@ResponseBody
 	public Map<String, Object> insertBusinessTripAjax(HttpServletRequest request, HttpServletResponse response
@@ -102,6 +165,18 @@ public class BusinessTripController {
 		return returnMap;
 	}
 	
+	/**
+	 * 출장결과 보고서 상세화면
+	* @methodName    : view
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/view")
 	public String view(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
 		Auth auth = AuthUtil.getAuth(request);
@@ -139,6 +214,18 @@ public class BusinessTripController {
 		return "/businessTrip/view";
 	}
 	
+	/**
+	 * 출장결과 보고서 수정 화면
+	* @methodName    : update
+	* @date        : 2025.09.16
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/update")
 	public String update( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		Auth auth = AuthUtil.getAuth(request);
@@ -183,6 +270,17 @@ public class BusinessTripController {
 			
 	}
 	
+	/**
+	 * 출장결과 보고서 수정 임시저장
+	* @methodName    : updateBusinessTripTmpAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/updateBusinessTripTmpAjax")
 	@ResponseBody
 	public Map<String, Object> updateBusinessTripTmpAjax(HttpServletRequest request, HttpServletResponse response
@@ -203,6 +301,19 @@ public class BusinessTripController {
 		return returnMap;
 	}
 	
+	/**
+	 * 출장결과 보고서 수정
+	* @methodName    : updateBusinessTripAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/updateBusinessTripAjax")
 	@ResponseBody
 	public Map<String, Object> updateBusinessTripAjax(HttpServletRequest request, HttpServletResponse response
@@ -225,12 +336,32 @@ public class BusinessTripController {
 		return returnMap;
 	}
 	
+	/**
+	 * 이력조회 Ajax
+	* @methodName    : selectHistoryAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectHistoryAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectHistoryAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return reportService.selectHistory(param);
 	}
 	
+	/**
+	 * 출장결과 보고서 삭제
+	* @methodName    : deleteTripAjax
+	* @date        : 2025.09.16
+	* @param respose
+	* @param request
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/deleteTripAjax")
 	@ResponseBody
 	public Map<String, Object> deleteTripAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{

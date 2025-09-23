@@ -1,5 +1,15 @@
 package kr.co.genesiskorea.controller;
-
+/**
+* @packageName    	: kr.co.genesiskorea.controller
+* @fileName        	: CodeManagementController
+* @author        	: ssung
+* @date            	: 2025.04
+* @description      : PDM 시스텤 코드관리 Controller 클래스
+* ===========================================================
+* DATE              AUTHOR             NOTE
+* -----------------------------------------------------------
+* 2025.04        	ssung       	최초 생성
+*/
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,11 +40,31 @@ public class CodeManagementController {
 	@Autowired
 	CodeManagementService codeManagementService;
 	
+	/**
+	 * 코드그룹 리스트 화면
+	* @methodName    : getGroupList
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/groupList")
 	public String getGroupList(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		return "/code/groupList";
 	}
-	
+
+	/**
+	 * 코드그룹 리스트 조회 Ajax
+	* @methodName    : getGroupListAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/groupListAjax")
 	@ResponseBody
 	public List<HashMap<String,Object>> getGroupListAjax(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
@@ -42,6 +72,16 @@ public class CodeManagementController {
 		return groupList;
 	}
 	
+	/**
+	 * 코드그룹 등록 Ajax
+	* @methodName    : gruopInsertAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/gruopInsertAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> gruopInsertAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {
@@ -65,6 +105,16 @@ public class CodeManagementController {
 		return resultMap;
 	}
 	
+	/**
+	 * 코드그룹 업데이트 Ajax
+	* @methodName    : gruopUpdateAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/gruopUpdateAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> gruopUpdateAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {
@@ -88,6 +138,16 @@ public class CodeManagementController {
 		return resultMap;
 	}
 	
+	/**
+	 * 코드그룹 삭제 Ajax
+	* @methodName    : gruopDeleteAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/gruopDeleteAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> gruopDeleteAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {
@@ -117,6 +177,16 @@ public class CodeManagementController {
 		return resultMap;
 	}
 	
+	/**
+	 * 코드아이템 리스트 화면
+	* @methodName    : itemList
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/itemList")
 	public String itemList(HttpServletRequest request, HttpServletResponse response, Model model) throws Exception {
 		try {
@@ -128,6 +198,16 @@ public class CodeManagementController {
 		}
 	}
 	
+	/**
+	 * 코드아이템 리스트 Ajax
+	* @methodName    : getItemListAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/itemListAjax")
 	@ResponseBody
 	public List<HashMap<String,Object>> getItemListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {
@@ -140,6 +220,16 @@ public class CodeManagementController {
 		}
 	}
 	
+	/**
+	 * 코드아이템 등록 Ajax
+	* @methodName    : itemInsertAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/itemInsertAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> itemInsertAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {
@@ -163,6 +253,16 @@ public class CodeManagementController {
 		return resultMap;
 	}
 	
+	/**
+	 * 코드아이템 수정 Ajax
+	* @methodName    : itemUpdateAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/itemUpdateAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> itemUpdateAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {
@@ -186,6 +286,16 @@ public class CodeManagementController {
 		return resultMap;
 	}
 	
+	/**
+	 * 코드아이템 삭제 Ajax
+	* @methodName    : itemDeleteAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/itemDeleteAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> itemDeleteAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {
@@ -208,6 +318,16 @@ public class CodeManagementController {
 		return resultMap;
 	}
 	
+	/**
+	 * 코드아이템 순서 변경 Ajax
+	* @methodName    : itemOrderUpdateAjax
+	* @date        : 2025.09.16
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/itemOrderUpdateAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public HashMap<String,String> itemOrderUpdateAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, String> param) throws Exception {

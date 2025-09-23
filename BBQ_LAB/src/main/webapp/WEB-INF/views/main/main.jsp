@@ -663,7 +663,7 @@ function renderMyDocTableRow(data, docType, docTypeKey) {
 
         // === 작성자 ===
         tbodyHtml += "<td onclick=\"location.href='" + viewUrl + "'\" style=\"cursor:pointer\">";
-        tbodyHtml += nvl(item.DOC_OWNER, '&nbsp;');
+        tbodyHtml += nvl(item.USER_NAME, '&nbsp;');
         tbodyHtml += "</td>";
 
         tbodyHtml += "</tr>";

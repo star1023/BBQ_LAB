@@ -184,6 +184,11 @@ var selectedArr = new Array();
 			fn_searchErpMaterial();
 	}
 	
+	function bindDialogEnter2(e){
+		if(e.keyCode == 13)
+			searchMaterial();
+	}
+	
 	function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, HEIGHT, TOTAL_WEIGHT, STANDARD, ORIGIN, EXPIRATION_DATE) {
 		//$("#productName").val(NAME);
 		$("#productSapCode").val(SAP_CODE);
@@ -3321,7 +3326,7 @@ var selectedArr = new Array();
 		</h5>
 
 		<div id="matListDiv" class="code_box">
-			<input id="searchMatValue" type="text" class="code_input" onkeyup="bindDialogEnter(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
+			<input id="searchMatValue" type="text" class="code_input" onkeyup="bindDialogEnter2(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
 			<img src="/resources/images/icon_code_search.png" onclick="searchMaterial()"/>
 			<div class="code_box2">
 				(<strong> <span id="matCount">0</span> </strong>)건

@@ -180,6 +180,11 @@ var selectedArr = new Array();
 			fn_searchErpMaterial();
 	}
 	
+	function bindDialogEnter2(e){
+		if(e.keyCode == 13)
+			searchMaterial();
+	}
+	
 	function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, HEIGHT, TOTAL_WEIGHT, STANDARD, ORIGIN, EXPIRATION_DATE) {
 		//$("#productName").val(NAME);
 		$("#productSapCode").val(SAP_CODE);
@@ -1034,6 +1039,7 @@ var selectedArr = new Array();
 					$('#lab_loading').hide();
 				}			
 			});
+
 		}
 	}
 	
@@ -1113,22 +1119,25 @@ var selectedArr = new Array();
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
 				var matCount = 0;
 				var validMat = true;
-				$('tr[id^=matRow]').toArray().forEach(function(contRow){
+				$('tr[id^=newMatRow]').toArray().forEach(function(contRow){
 					var rowId = $(contRow).attr('id');
-					var itemSapCode = $('#'+ rowId + ' input[name=itemSapCode]').val();
+					var itemMatCode = $('#'+ rowId + ' input[name=itemMatCode]').val();
 					var itemName = $('#'+ rowId + ' input[name=itemName]').val();
 					var mixingRatio = $('#'+ rowId + ' input[name=mixingRatio]').val();
-					
-					if(itemSapCode.length <= 0){
+					console.log("itemMatCode : "+itemMatCode);
+					if(itemMatCode.length <= 0){
 						validMat = false;
 						return;
 					}
+					console.log("itemName : "+itemName);
 					if(itemName.length <= 0){
 						validMat = false;
 						return;
 					}
 					matCount++;
 				})
+				console.log("matCount : "+matCount);
+				console.log("validMat : "+validMat);
 				if( matCount == 0 || !validMat) {
 					alert('신규원료를 입력해주세요.');
 					return;
@@ -1275,7 +1284,8 @@ var selectedArr = new Array();
 					itemDescArr.push(itemDesc);
 				});
 			}
-
+			console.log(itemMatCodeArr);
+			
 			$('tr[id^=matRow]').toArray().forEach(function(contRow){
 				var rowId = $(contRow).attr('id');
 				var itemType = $('#'+ rowId + ' input[name=itemType]').val();
@@ -1311,7 +1321,7 @@ var selectedArr = new Array();
 			formData.append("itemKeepExpArr", JSON.stringify(itemKeepExpArr));
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
-			
+
 			$('#lab_loading').show();
 			URL = "../product/insertNewVersionCheckAjax";			
 			$.ajax({
@@ -1403,6 +1413,7 @@ var selectedArr = new Array();
 					$('#lab_loading').hide();
 				}			
 			});
+
 		}
 	}
 
@@ -2957,7 +2968,7 @@ var selectedArr = new Array();
 		</h5>
 
 		<div id="matListDiv" class="code_box">
-			<input id="searchMatValue" type="text" class="code_input" onkeyup="bindDialogEnter(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
+			<input id="searchMatValue" type="text" class="code_input" onkeyup="bindDialogEnter2(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
 			<img src="/resources/images/icon_code_search.png" onclick="searchMaterial()"/>
 			<div class="code_box2">
 				(<strong> <span id="matCount">0</span> </strong>)건

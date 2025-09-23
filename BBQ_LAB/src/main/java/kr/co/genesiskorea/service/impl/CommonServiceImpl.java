@@ -3,6 +3,7 @@ package kr.co.genesiskorea.service.impl;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
@@ -22,6 +23,9 @@ import kr.co.genesiskorea.service.SseEmitterService;
 public class CommonServiceImpl implements CommonService {
 	@Autowired 
 	CommonDao commonDao;
+	
+	@Autowired
+	private Properties config;
 	
 	@Override
 	public List<HashMap<String, String>> getCodeList(HashMap<String, String> param) {
@@ -107,7 +111,8 @@ public class CommonServiceImpl implements CommonService {
 		//3.lab_notificaton_history에 데이터를 저장한다.
 		commonDao.insertNotificationHistory(param);
 		//4.사용자에게 알림을 전송한다. 
-		String url = "http://localhost:8080/send-data";
+		String domain = config.getProperty("site.domain");
+		String url = domain+"/send-data";
 		//MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		Map<String, Object> params = new HashMap<>();
 		params.put("","");
@@ -118,6 +123,8 @@ public class CommonServiceImpl implements CommonService {
 		//HttpEntity<MultiValueMap<String, String>> entity = new HttpEntity<>(params, headers);
 		//HttpEntity<Map<String, Object>> entity = new HttpEntity<>(params, headers);
 		HttpEntity<Map<String, Object>> entity = new HttpEntity<>(params, httpHeaders);
+		
+		
 
 		ResponseEntity<String> response = rt.exchange(
 		                url+"/"+param.get("targetUser"), //{요청할 서버 주소}
@@ -130,7 +137,8 @@ public class CommonServiceImpl implements CommonService {
 	@Override
 	public void notificationAll() {
 		// TODO Auto-generated method stub
-		String url = "http://localhost:8080/send-data/broadcast";
+		String domain = config.getProperty("site.domain");
+		String url = domain+"/send-data/broadcast";
 		//MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		Map<String, Object> params = new HashMap<>();
 		params.put("","");

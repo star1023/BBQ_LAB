@@ -305,15 +305,15 @@ public class UserController {
 			userService.setPersonalization(param);
 			if( param.get("type") != null && "theme".equals((String)param.get("type")) ) {
 				 AuthUtil.getAuth(request).setTheme((String)param.get("value"));
-			} else if( param.get("type") != null && "contentMode".equals((String)param.get("type")) ) {
+			} else if( param.get("type") != null && "content_mode".equals((String)param.get("type")) ) {
 				AuthUtil.getAuth(request).setContentMode((String)param.get("value"));
-			} else if( param.get("type") != null && "widthMode".equals((String)param.get("type")) ) {
+			} else if( param.get("type") != null && "width_mode".equals((String)param.get("type")) ) {
 				AuthUtil.getAuth(request).setWidthMode((String)param.get("value"));
-			} else if( param.get("type") != null && "mailCheck1".equals((String)param.get("type")) ) {
+			} else if( param.get("type") != null && "mail_check1".equals((String)param.get("type")) ) {
 				AuthUtil.getAuth(request).setMailCheck1((String)param.get("value"));
-			} else if( param.get("type") != null && "mailCheck2".equals((String)param.get("type")) ) {
+			} else if( param.get("type") != null && "mail_check2".equals((String)param.get("type")) ) {
 				AuthUtil.getAuth(request).setMailCheck2((String)param.get("value"));
-			} else if( param.get("type") != null && "mailCheck3".equals((String)param.get("type")) ) {
+			} else if( param.get("type") != null && "mail_check3".equals((String)param.get("type")) ) {
 				AuthUtil.getAuth(request).setMailCheck3((String)param.get("value"));
 			}
 			map.put("resultCd", "S");

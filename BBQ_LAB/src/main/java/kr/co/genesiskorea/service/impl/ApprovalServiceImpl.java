@@ -324,7 +324,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 			notiMap.put("userId", param.get("userId"));
 			notiMap.put("docIdx", param.get("docIdx"));
 			notiMap.put("docType", param.get("docType"));
-			commonService.notification(notiMap);
+			try {
+				commonService.notification(notiMap);
+			} catch( Exception e) {
+				
+			}
 			
 			txManager.commit(status);
 		} catch( Exception e ) {
@@ -477,7 +481,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 				notiMap.put("userId", header.get("REG_USER"));
 				notiMap.put("docIdx", header.get("DOC_IDX"));
 				notiMap.put("docType", header.get("DOC_TYPE"));
-				commonService.notification(notiMap);
+				try {
+					commonService.notification(notiMap);
+				} catch( Exception e) {
+					
+				}
 				returnMap.put("RESULT", "S");
 				
 				txManager.commit(status);
@@ -526,7 +534,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 					notiMap.put("userId", header.get("REG_USER"));
 					notiMap.put("docIdx", header.get("DOC_IDX"));
 					notiMap.put("docType", header.get("DOC_TYPE"));
-					commonService.notification(notiMap);
+					try {
+						commonService.notification(notiMap);
+					} catch( Exception e) {
+						
+					}
 					
 					txManager.commit(status);
 				}
@@ -628,7 +640,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 						notiMap.put("userId", apprHeader.get("REG_USER"));
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
-						commonService.notification(notiMap);
+						try {
+							commonService.notification(notiMap);
+						} catch( Exception e) {
+							
+						}
 					} else {
 						map.put("apprIdx", (String)param.get("apprIdx"));	//결재 ID
 						map.put("status", "Y");								//결재문서 승인처리
@@ -665,7 +681,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 						notiMap.put("userId", "admin");
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
-						commonService.notification(notiMap);
+						try {
+							commonService.notification(notiMap);
+						} catch( Exception e) {
+							
+						}
 						
 						//참조자리스트를 조회한다.
 						List<Map<String, Object>> refList = approvalDao.selectReferenceList(param);	//다음 결재 데이터를 조회한다.
@@ -680,7 +700,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 							notiMap.put("userId", apprHeader.get("REG_USER"));
 							notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 							notiMap.put("docType", apprHeader.get("DOC_TYPE"));
-							commonService.notification(notiMap);
+							try {
+								commonService.notification(notiMap);
+							} catch( Exception e) {
+								
+							}
 						}					
 					}
 					
@@ -775,7 +799,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 						notiMap.put("userId", "admin");
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
-						commonService.notification(notiMap);
+						try {
+							commonService.notification(notiMap);
+						} catch( Exception e) {
+							
+						}
 					} else {
 						map.put("apprIdx", (String)param.get("apprIdx"));	//결재 ID
 						map.put("status", "Y");								//결재문서 승인처리
@@ -794,7 +822,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 						notiMap.put("userId", "admin");
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
-						commonService.notification(notiMap);
+						try {
+							commonService.notification(notiMap);
+						} catch( Exception e) {
+							
+						}
 						//참조자들에게 메일/알림을 보낸다.
 						//참조자리스트를 조회한다.
 						List<Map<String, Object>> refList = approvalDao.selectReferenceList(param);	//다음 결재 데이터를 조회한다.
@@ -809,7 +841,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 							notiMap.put("userId", apprHeader.get("REG_USER"));
 							notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 							notiMap.put("docType", apprHeader.get("DOC_TYPE"));
-							commonService.notification(notiMap);
+							try {
+								commonService.notification(notiMap);
+							} catch( Exception e) {
+								
+							}
 						}
 					}
 					
@@ -904,7 +940,11 @@ public class ApprovalServiceImpl implements ApprovalService {
 					notiMap.put("userId", "admin");
 					notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 					notiMap.put("docType", apprHeader.get("DOC_TYPE"));
-					commonService.notification(notiMap);
+					try {
+						commonService.notification(notiMap);
+					} catch( Exception e) {
+						
+					}
 					
 					txManager.commit(status);
 				} else {

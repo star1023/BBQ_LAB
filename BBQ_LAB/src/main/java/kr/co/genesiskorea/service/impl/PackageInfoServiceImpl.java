@@ -858,6 +858,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			}
 			
 			// 5. 마크 파일 저장
+			path = config.getProperty("upload.file.path.images");
 			if( markFile != null && !markFile.isEmpty() ) {
 				path += "/"+toDay;
 				String fileIdx = FileUtil.getUUID();
@@ -1062,6 +1063,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			}
 			
 			// 5. 마크 파일 저장
+			path = config.getProperty("upload.file.path.images");
 			if( markFile != null && !markFile.isEmpty() ) {
 				path += "/"+toDay;
 				String fileIdx = FileUtil.getUUID();

@@ -1,4 +1,15 @@
 package kr.co.genesiskorea.controller;
+/**
+* @packageName    	: kr.co.genesiskorea.controller
+* @fileName        	: DesignReportController
+* @author        	: ssung
+* @date            	: 2025.04
+* @description      : 상품설계변경 보고서 클래스
+* ===========================================================
+* DATE              AUTHOR             NOTE
+* -----------------------------------------------------------
+* 2025.04        	ssung       	최초 생성
+*/
 
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +51,17 @@ public class DesignReportController {
 	@Autowired
 	ApprovalService approvalService;
 	
+	/**
+	 * 상품설계변경 보고서 리스트 화면
+	* @methodName    : productList
+	* @date        : 2025.09.17
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/list")
 	public String productList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
 		try {
@@ -51,6 +73,16 @@ public class DesignReportController {
 		}
 	}
 	
+	/**
+	 * 상품설계변경 보고서 리스트 조회 Ajax
+	* @methodName    : selectDesignListAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectDesignListAjax")
 	@ResponseBody
 	public Map<String, Object> selectDesignListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
@@ -60,6 +92,17 @@ public class DesignReportController {
 		return returnMap;
 	}
 	
+	/**
+	 * 상품설계변경 보고서 등록 화면
+	* @methodName    : compInsert
+	* @date        : 2025.09.17
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/insert")
 	public String compInsert( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
 		try {
@@ -71,6 +114,19 @@ public class DesignReportController {
 		}
 	}
 	
+	/**
+	 * 상품설계변경 보고서 임시저장 Ajax
+	* @methodName    : insertTmpDesignAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertTmpDesignAjax")
 	@ResponseBody
 	public Map<String, Object> insertTmpDesignAjax(HttpServletRequest request, HttpServletResponse response
@@ -97,6 +153,19 @@ public class DesignReportController {
 		return returnMap;
 	}
 	
+	/**
+	 * 상품설계변경 보고서 등록 Ajax
+	* @methodName    : insertDesignAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertDesignAjax")
 	@ResponseBody
 	public Map<String, Object> insertDesignAjax(HttpServletRequest request, HttpServletResponse response
@@ -133,6 +202,18 @@ public class DesignReportController {
 		return returnMap;
 	}
 	
+	/**
+	 * 상품설계변경 보고서 상세보기 화면
+	* @methodName    : designView
+	* @date        : 2025.09.17
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/view")
 	public String designView(HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model) throws Exception{
 		Auth auth = AuthUtil.getAuth(request);
@@ -164,6 +245,18 @@ public class DesignReportController {
 		return "/designReport/view";
 	}
 	
+	/**
+	 * 상품설계변경 보고서 수정 화면
+	* @methodName    : designUpdateForm
+	* @date        : 2025.09.17
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/update")
 	public String designUpdateForm( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		try {
@@ -206,6 +299,19 @@ public class DesignReportController {
 		}
 	}
 	
+	/**
+	 * 상품설계변경 보고서 수정 임시저장 Ajax
+	* @methodName    : updateTmpDesignAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/updateTmpDesignAjax")
 	@ResponseBody
 	public Map<String, Object> updateTmpDesignAjax(HttpServletRequest request, HttpServletResponse response
@@ -231,6 +337,19 @@ public class DesignReportController {
 		return returnMap;
 	}
 	
+	/**
+	 * 상품설계변경 보고서 수정 Ajax
+	* @methodName    : updateDesignAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/updateDesignAjax")
 	@ResponseBody
 	public Map<String, Object> updateDesignAjax(HttpServletRequest request, HttpServletResponse response
@@ -256,12 +375,32 @@ public class DesignReportController {
 		return returnMap;
 	}
 	
+	/**
+	 * 상품설계변경 보고서 이력조회
+	* @methodName    : selectHistoryAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectHistoryAjax")
 	@ResponseBody
 	public List<Map<String, Object>> selectHistoryAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
 		return reportService.selectHistory(param);
 	}
 	
+	/**
+	 * 상품설계변경 보고서 삭제 Ajax
+	* @methodName    : deleteDesignReportAjax
+	* @date        : 2025.09.17
+	* @param respose
+	* @param request
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/deleteDesignReportAjax", method = RequestMethod.POST)
 	@ResponseBody
 	public Map<String, Object> deleteDesignReportAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
@@ -277,6 +416,18 @@ public class DesignReportController {
 		return map;
 	}
 	
+	/**
+	 * 상품설계변경 보고서 개정 화면
+	* @methodName    : versionUp
+	* @date        : 2025.09.17
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @param model
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/versionUp")
 	public String versionUp( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
 		try {
@@ -304,6 +455,20 @@ public class DesignReportController {
 		}
 	}
 	
+	/**
+	 * 상품설계변경 보고서 개정 임시저장 Ajax
+	* @methodName    : versionUpTmpDesignAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param tempFile
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/versionUpTmpDesignAjax")
 	@ResponseBody
 	public Map<String, Object> versionUpTmpDesignAjax(HttpServletRequest request, HttpServletResponse response
@@ -332,6 +497,20 @@ public class DesignReportController {
 		return returnMap;
 	}
 	
+	/**
+	 * 상품설계변경 보고서 개정 Ajax
+	* @methodName    : versionUpDesignAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param tempFile
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/versionUpDesignAjax")
 	@ResponseBody
 	public Map<String, Object> versionUpDesignAjax(HttpServletRequest request, HttpServletResponse response

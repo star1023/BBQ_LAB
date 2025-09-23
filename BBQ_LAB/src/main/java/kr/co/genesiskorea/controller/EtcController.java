@@ -1,4 +1,15 @@
 package kr.co.genesiskorea.controller;
+/**
+* @packageName    	: kr.co.genesiskorea.controller
+* @fileName        	: EtcController
+* @author        	: ssung
+* @date            	: 2025.04
+* @description      : 기타 보고서 클래스
+* ===========================================================
+* DATE              AUTHOR             NOTE
+* -----------------------------------------------------------
+* 2025.04        	ssung       	최초 생성
+*/
 
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +52,17 @@ private Logger logger = LogManager.getLogger(DesignReportController.class);
 	@Autowired
 	ApprovalService approvalService;
 	
+	/**
+	 * 기타 보고서 리스트 화면
+	* @methodName    : productList
+	* @date        : 2025.09.17
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/list")
 	public String productList( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
 		try {
@@ -52,6 +74,16 @@ private Logger logger = LogManager.getLogger(DesignReportController.class);
 		}
 	}
 	
+	/**
+	 * 기타 보고서 리스트 조회 Ajax
+	* @methodName    : selectEtcListAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/selectEtcListAjax")
 	@ResponseBody
 	public Map<String, Object> selectEtcListAjax(HttpServletRequest request, HttpServletResponse response, @RequestParam(required=false) Map<String, Object> param) throws Exception {
@@ -61,6 +93,17 @@ private Logger logger = LogManager.getLogger(DesignReportController.class);
 		return returnMap;
 	}
 	
+	/**
+	 * 기타 보고서 등록 화면
+	* @methodName    : compInsert
+	* @date        : 2025.09.17
+	* @param session
+	* @param request
+	* @param response
+	* @param param
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping(value = "/insert")
 	public String compInsert( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param ) throws Exception{
 		try {
@@ -72,6 +115,19 @@ private Logger logger = LogManager.getLogger(DesignReportController.class);
 		}
 	}
 	
+	/**
+	 * 기타 보고서 임시저장 Ajax
+	* @methodName    : insertTmpEtcAjax
+	* @date        : 2025.09.17
+	* @param request
+	* @param response
+	* @param param
+	* @param fileType
+	* @param fileTypeText
+	* @param file
+	* @return
+	* @throws Exception
+	 */
 	@RequestMapping("/insertTmpEtcAjax")
 	@ResponseBody
 	public Map<String, Object> insertTmpEtcAjax(HttpServletRequest request, HttpServletResponse response

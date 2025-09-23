@@ -393,12 +393,14 @@
 		colgroup += "<col width=\"10%\">";
 		colgroup += "<col />";
 		colgroup += "<col width=\"10%\">";
+		colgroup += "<col width=\"10%\">";
 		colgroup += "<col width=\"15%\">";
 		var thead = "";
 		thead += "<tr>";
 		thead += "<th>결재번호</th>";
 		thead += "<th>문서구분</th>";
 		thead += "<th>문서명</th>";
+		thead += "<th>열람여부</th>";
 		thead += "<th>상신자</th>";
 		thead += "<th>상신일</th>";
 		thead += "</tr>";
@@ -434,6 +436,14 @@
 
 						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\"><a href=\"#\" onclick=\"return false;\">" + item.TITLE + "</a></td>";
 
+						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">";
+						if( item.REG_USER_NAME == 'Y' ){
+							html += "확인완료";
+						} else {
+							html += "미열람"; 
+						}
+						html += "</td>";
+						
 						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.REG_USER_NAME + "</td>";
 
 						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">" + item.REG_DATE_TXT + "</td>";
@@ -442,7 +452,7 @@
 					});					
 				} else {
 					$("#list").html(html);
-					html += "<tr><td align='center' colspan='5'>데이터가 없습니다.</td></tr>";
+					html += "<tr><td align='center' colspan='6'>데이터가 없습니다.</td></tr>";
 				}
 				$("#list").html(html);
 				$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
@@ -451,7 +461,7 @@
 			error:function(request, status, errorThrown){
 				var html = "";
 				$("#list").html(html);
-				html += "<tr><td align='center' colspan='5'>오류가 발생하였습니다.</td></tr>";
+				html += "<tr><td align='center' colspan='6'>오류가 발생하였습니다.</td></tr>";
 				$("#list").html(html);
 				$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
 				$('#pageNo').val(data.navi.pageNo);
@@ -774,7 +784,7 @@
 						alert("참조자가 추가되었습니다.");
 						fn_closeRefPopup();
 						$('#lab_loading').hide();
-						loadMyCompList(1);	
+						loadMyList(1);	
 					} else {
 						alert("참조자 등록 오류가 발생하였습니다.\n"+data.MESSAGE);
 						fn_closeRefPopup();

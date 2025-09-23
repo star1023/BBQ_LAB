@@ -539,7 +539,7 @@ public class ProductController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			
-			//productService.updateProductTmp(param, listMap, file);
+			productService.updateProductTmp(param, listMap, file);
 			returnMap.put("RESULT", "S");			
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
