@@ -35,5 +35,7 @@ public interface MaterialDao {
 
 	int selectMyDataCheck(Map<String, Object> param);
 
+	void updateMaterialIsLast(Map<String, Object> param) throws Exception;
+
 
 }

@@ -104,5 +104,11 @@ public class MaterialDaoImpl implements MaterialDao {
 		// TODO Auto-generated method stub
 		return sqlSessionTemplate.selectOne("material.selectMyDataCheck", param);
 	}
+
+	@Override
+	public void updateMaterialIsLast(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("material.updateMaterialIsLast",param);
+	}
 	
 }

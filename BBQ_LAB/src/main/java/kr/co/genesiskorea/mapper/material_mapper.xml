@@ -85,6 +85,7 @@
 			)tmp 
 			WHERE rnum between #{startRow} AND #{endRow}
 	)
+		AND IS_DELETE = 'N'
 	order by DOC_NO desc, MATERIAL_IDX desc
 	</select>
 	
@@ -169,7 +170,7 @@
 			</if>
 			, #{versionNo}
 			, #{isLast}
-			, (SELECT ifnull(MAX(lm.DOC_NO),0)+1 FROM lab_material lm WHERE 1 = 1)
+			, (SELECT ifnull(MAX(lm.DOC_NO),0)+1 FROM lab_material lm WHERE 1 = 1 AND lm.IS_DELETE = 'N')
 			, #{keepCondition}
 			, #{width}
 			, #{length}
@@ -525,12 +526,22 @@
 	</select>
 	
 	<update id="deleteMaterial" parameterType="map">
+		<!-- 
 		UPDATE 
 			lab_material
 		SET 
 			IS_DELETE = 'Y'
 		WHERE 1 = 1
 			AND DOC_NO = #{docNo}
+		 -->
+		UPDATE 
+			lab_material
+		SET 
+			IS_DELETE = 'Y'
+			, IS_LAST = 'N'
+		 WHERE 1 = 1
+		 	AND MATERIAL_IDX = #{idx}
+		 	AND DOC_NO = #{docNo}
 	</update>
 	
 	<select id="selectMyDataCheck" parameterType="map" resultType="int">
@@ -543,4 +554,22 @@
 			AND DOC_OWNER = #{userId}
 			AND IS_DELETE = 'N'
 	</select>
+	
+	<update id="updateMaterialIsLast" parameterType="map">
+		<!-- 
+		UPDATE 
+			lab_material
+		SET 
+			IS_DELETE = 'Y'
+		WHERE 1 = 1
+			AND DOC_NO = #{docNo}
+		 -->
+		UPDATE 
+			lab_material
+		SET 
+			IS_LAST = 'Y'
+		WHERE 1 = 1
+			AND DOC_NO = #{docNo}
+			AND VERSION_NO = ( SELECT VERSION_NO FROM (SELECT max(lm.VERSION_NO) AS VERSION_NO FROM lab_material lm WHERE 1 = 1 AND lm.DOC_NO = #{docNo} AND IS_DELETE = 'N') AS sub )
+	</update>
 </mapper>

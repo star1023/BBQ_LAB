@@ -1203,7 +1203,7 @@ li {
 									<input type="hidden" name="itemType" value="N" />
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" />
+									<input type="text" name="itemSapCode" style="width: 100px" readonly/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
@@ -1245,7 +1245,7 @@ li {
 									<input type="hidden" name="itemType" value="N" />
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" />
+									<input type="text" name="itemSapCode" style="width: 100px" readonly/>
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 								</td>
 								<td>
