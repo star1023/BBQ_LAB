@@ -95,6 +95,7 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
+			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
 			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
 			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
 			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
@@ -161,6 +162,19 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 						featureData.put("infoType", "DEST");
 						featureData.put("infoText", tripDestinationArr.get(i));
 						addInfoList.add(featureData);
+					}
+				}
+			}
+			
+			if( tripTransitArr.size() > 0 ) {
+				for( int i = 0 ; i < tripTransitArr.size() ; i++ ) {
+					if( tripTransitArr.get(i) != null && !"".equals(tripTransitArr.get(i)) ) {
+						HashMap<String,Object> transitData = new HashMap<String,Object>();
+						transitData.put("idx", tripIdx);
+						transitData.put("displayOrder", i+1);
+						transitData.put("infoType", "TRAN");
+						transitData.put("infoText", tripTransitArr.get(i));
+						addInfoList.add(transitData);
 					}
 				}
 			}
@@ -273,6 +287,7 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
+			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
 			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
 			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
 			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
@@ -339,6 +354,19 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 						featureData.put("infoType", "DEST");
 						featureData.put("infoText", tripDestinationArr.get(i));
 						addInfoList.add(featureData);
+					}
+				}
+			}
+			
+			if( tripTransitArr.size() > 0 ) {
+				for( int i = 0 ; i < tripTransitArr.size() ; i++ ) {
+					if( tripTransitArr.get(i) != null && !"".equals(tripTransitArr.get(i)) ) {
+						HashMap<String,Object> transitData = new HashMap<String,Object>();
+						transitData.put("idx", tripIdx);
+						transitData.put("displayOrder", i+1);
+						transitData.put("infoType", "TRAN");
+						transitData.put("infoText", tripTransitArr.get(i));
+						addInfoList.add(transitData);
 					}
 				}
 			}
@@ -479,6 +507,7 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
+			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
 			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
 			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
 			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
@@ -548,6 +577,19 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 						featureData.put("infoType", "DEST");
 						featureData.put("infoText", tripDestinationArr.get(i));
 						addInfoList.add(featureData);
+					}
+				}
+			}
+			
+			if( tripTransitArr.size() > 0 ) {
+				for( int i = 0 ; i < tripTransitArr.size() ; i++ ) {
+					if( tripTransitArr.get(i) != null && !"".equals(tripTransitArr.get(i)) ) {
+						HashMap<String,Object> transitData = new HashMap<String,Object>();
+						transitData.put("idx", param.get("idx"));
+						transitData.put("displayOrder", i+1);
+						transitData.put("infoType", "TRAN");
+						transitData.put("infoText", tripTransitArr.get(i));
+						addInfoList.add(transitData);
 					}
 				}
 			}
@@ -677,6 +719,7 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
 			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
 			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
+			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
 			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
 			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
 			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
@@ -746,6 +789,19 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 						featureData.put("infoType", "DEST");
 						featureData.put("infoText", tripDestinationArr.get(i));
 						addInfoList.add(featureData);
+					}
+				}
+			}
+			
+			if( tripTransitArr.size() > 0 ) {
+				for( int i = 0 ; i < tripTransitArr.size() ; i++ ) {
+					if( tripTransitArr.get(i) != null && !"".equals(tripTransitArr.get(i)) ) {
+						HashMap<String,Object> transitData = new HashMap<String,Object>();
+						transitData.put("idx", param.get("idx"));
+						transitData.put("displayOrder", i+1);
+						transitData.put("infoType", "TRAN");
+						transitData.put("infoText", tripTransitArr.get(i));
+						addInfoList.add(transitData);
 					}
 				}
 			}

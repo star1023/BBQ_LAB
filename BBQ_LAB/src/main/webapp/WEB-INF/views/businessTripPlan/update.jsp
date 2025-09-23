@@ -11,6 +11,41 @@
 	position: absolute;
 	transform: translate(-50%, -45%);
 }
+.btn_small_plus {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: #b92c35;          /* 붉은색 */
+  font-weight: 500;        /* 굵게 */
+  font-size: 16px;         /* 플러스 크기 */
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow .15s ease, background-color .15s ease, color .15s ease, transform .05s ease;
+
+  /* ✅ 평상시에도 옅은 테두리 */
+  box-shadow: inset 0 0 0 1px rgba(211, 47, 47, 0.2);
+}
+
+/* hover 시 더 진하고 뚜렷하게 */
+.btn_small_plus:hover {
+  background-color: rgba(211, 47, 47, 0.06);
+  box-shadow:
+    0 0 0 2px rgba(211, 47, 47, 0.25),  /* 외곽 흐림 */
+    inset 0 0 0 1px #d32f2f;            /* 진한 테두리 */
+  color: #b71c1c;
+}
+
+/* 클릭 순간 살짝 눌림 */
+.btn_small_plus:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 0 0 2px rgba(211, 47, 47, 0.25),
+    inset 0 0 0 2px #d32f2f;
+}
+[id$="_minus"][disabled] { display: none !important; }
 .ck-editor__editable { max-height: 400px; min-height:150px;}
 </style>
 
@@ -31,9 +66,11 @@
 			showAnim: "",
 			onClose: function(selectedDate){
 				$("#tripEndDate").datepicker("option", "minDate", selectedDate);
+				updateScheduleDateRange();
 			},
 			onSelect: function () {
 				fn_changeDate();
+				updateScheduleDateRange();
 			}
 		});	//당일 선택 가능 0, 당일 선택 불가능 1
 		
@@ -47,10 +84,12 @@
 			showButtonPanel: true,
 			showAnim: "",
 			onClose: function(selectedDate){
-				$("#tripStartDate").datepicker("option", "maxdate", selectedDate)
+				$("#tripStartDate").datepicker("option", "maxDate", selectedDate);
+				updateScheduleDateRange();
 			},
 			onSelect: function () {
 				fn_changeDate();
+				updateScheduleDateRange();
 			}
 		});
 		/*
@@ -76,10 +115,75 @@
 		autoComplete2($("#keyword2"));
 		fn_changeDate();
 		
+		// 기존에 렌더된 첫 행 초기화
+		initScheduleDatepickers($('#contents_tbody'));
+		// 혹시 누락된 경우를 위해 focus 시 지연 초기화(선택사항)
+		$(document).on('focus', 'tbody#contents_tbody input[name="schedule"]', function () {
+		  const $el = $(this);
+		  if (!$el.hasClass('hasDatepicker')) {
+		    $el.datepicker(DATEPICKER_OPTS).datepicker('show');
+		  }
+		});
+		
+	    // 기존 1행 기준으로 −버튼 상태 세팅
+	    ['purpose','destination','transit','contents'].forEach(toggleMinus);
+
+	    // (업무수행내용의 일정) 초기 datepicker 부착
+	    initScheduleDatepickers($('#contents_tbody'));
+		
 		<c:if test="${fn:length(apprItemList) > 0}">
 	    fn_loadAppr();
 		</c:if>
 	});
+	
+	// 공통 옵션
+	const DATEPICKER_OPTS = {
+	  showOn: "both",
+	  buttonImage: "../resources/images/btn_calendar.png",
+	  buttonImageOnly: true,
+	  buttonText: "날짜 선택",
+	  dateFormat: "yy-mm-dd",
+	  showButtonPanel: true,
+	  showAnim: ""
+	};
+
+	// 특정 스코프($scope) 안의 schedule 인풋에 datepicker 연결
+	function initScheduleDatepickers($scope) {
+	  $scope.find('input[name="schedule"]').each(function () {
+	    const $el = $(this);
+	    if (!$el.hasClass('hasDatepicker')) {
+	      $el.datepicker(DATEPICKER_OPTS);
+
+	      // ✅ 생성 직후, 현재 출장기간 범위 적용
+	      const s = $('#tripStartDate').val();
+	      const e = $('#tripEndDate').val();
+	      $el.datepicker('option', 'minDate', s ? parseYMD(s) : null);
+	      $el.datepicker('option', 'maxDate', e ? parseYMD(e) : null);
+	    }
+	  });
+	}
+	
+	// "yyyy-mm-dd" -> Date
+	function parseYMD(s){
+	  if(!s) return null;
+	  const [y,m,d] = s.split('-').map(Number);
+	  return new Date(y, m-1, d);
+	}
+
+	// 출장기간을 기준으로 모든 '일정' 입력의 선택 가능 범위(min/max) 갱신
+	function updateScheduleDateRange(){
+	  const s = $('#tripStartDate').val();
+	  const e = $('#tripEndDate').val();
+	  const min = parseYMD(s);
+	  const max = parseYMD(e);
+
+	  $('tbody#contents_tbody input[name="schedule"]').each(function(){
+	    if ($(this).hasClass('hasDatepicker')) {
+	      $(this).datepicker('option', 'minDate', min || null);
+	      $(this).datepicker('option', 'maxDate', max || null);
+	    }
+	  });
+	}
 	
 	function fn_changeDate() {
 		var startDate = $("#tripStartDate").val();
@@ -391,7 +495,15 @@
 			formData.append("tripCost",$("#tripCost").val());
 			formData.append("calMethod",$("#calMethod").val());
 			formData.append("tripEffect",$("#tripEffect").val());
-			formData.append("tripTransit",$("#tripTransit").val());
+			/* formData.append("tripTransit",$("#tripTransit").val()); */
+			var tripTransitElements = document.querySelectorAll('input[name="tripTransit"]');
+			var tripTransitArr = new Array();
+			for (var tripTransitElement of tripTransitElements) {
+				if( tripTransitElement.value != '' ) {
+					tripTransitArr.push(tripTransitElement.value);
+				}				
+			}			
+			formData.append("tripTransitArr",JSON.stringify(tripTransitArr));
 			formData.append("docType", $("#docType").val());
 			formData.append("status", "TMP");
 			
@@ -590,7 +702,15 @@
 			formData.append("tripCost",$("#tripCost").val());
 			formData.append("calMethod",$("#calMethod").val());
 			formData.append("tripEffect",$("#tripEffect").val());
-			formData.append("tripTransit",$("#tripTransit").val());
+			/* formData.append("tripTransit",$("#tripTransit").val()); */
+			var tripTransitElements = document.querySelectorAll('input[name="tripTransit"]');
+			var tripTransitArr = new Array();
+			for (var tripTransitElement of tripTransitElements) {
+				if( tripTransitElement.value != '' ) {
+					tripTransitArr.push(tripTransitElement.value);
+				}				
+			}			
+			formData.append("tripTransitArr",JSON.stringify(tripTransitArr));
 			formData.append("docType", $("#docType").val());
 			formData.append("status", "REG");
 			
@@ -728,6 +848,61 @@
 		$("#"+type+"_tbody").children('tr:last').attr('id', type + '_tr_' + randomId);
 		$("#"+type+"_tbody").children('tr:last').children('td').children('input[type=checkbox]').attr('id', type+'_'+randomId);
 		$("#"+type+"_tbody").children('tr:last').children('td').children('label').attr('for', type+'_'+randomId);
+		
+		// ✅ minus 토글
+		  toggleMinus(type);
+	}
+	
+	function fn_addCol2(section) {
+	  const $newRow = $('#contents_tmp_tr_1').clone(true, true).removeAttr('id').show();
+	  $newRow.find('input').val('');
+
+	  const idx = $('#contents_tbody tr').length + 1;   // 현재 행 개수 + 1
+
+	  // ✅ 새로 추가되는 tr에도 저장 로직이 인식할 id 부여
+	  $newRow.attr('id', 'contents_tr_' + idx);
+
+	  // 일정 input 고유 id + datepicker 부착
+	  const $sch = $newRow.find('input[name="schedule"]');
+	  $sch.attr('id', 'schedule_' + idx).datepicker(DATEPICKER_OPTS);
+
+	  // tbody에 추가
+	  $('#contents_tbody').append($newRow);
+
+	  // 출장기간 범위 동기화(있다면)
+	  updateScheduleDateRange();
+
+	  // 마이너스 버튼 토글
+	  toggleMinus(section);
+	}
+	
+	// ✅ 공용: minus 버튼 활성/비활성 토글
+	function toggleMinus(section) {
+	  const $tbody = $('#' + section + '_tbody');
+	  const rowCount = $tbody.children('tr').length;
+	  $('#' + section + '_minus').prop('disabled', rowCount <= 1);
+	}
+	
+	// 마지막 행 제거 (둘 다 공용)
+	function fn_removeLastRow(section) {
+	  const $tbody = $('#' + section + '_tbody');
+	  const $lastTr = $tbody.children('tr:last');
+
+	  // 한 줄뿐이면 삭제 금지 & 버튼은 비활성
+	  if ($tbody.children('tr').length <= 1) {
+	    toggleMinus(section);
+	    return;
+	  }
+
+	  // datepicker 붙어있으면 먼저 destroy
+	  $lastTr.find('input.hasDatepicker').each(function () {
+	    try { $(this).datepicker('destroy'); } catch (e) {}
+	  });
+
+	  $lastTr.remove();
+
+	  // ✅ minus 토글
+	  toggleMinus(section);
 	}
 	
 	function fn_delCol(type) {
@@ -902,7 +1077,13 @@
 		    if (val) destinationText += val + "<br/>";
 		});
 		$doc.querySelector("#prev_tripDestination").innerHTML = destinationText;
-	    $doc.querySelector("#prev_tripTransit").innerText = document.getElementById("tripTransit").value.trim();
+		let tripTransitText = "";
+		document.querySelectorAll('input[name="tripTransit"]').forEach(function(input) {
+		    const val = input.value.trim();
+		    if (val) tripTransitText += val + "<br/>";
+		});
+	    $doc.querySelector("#prev_tripTransit").innerHTML = tripTransitText;
+	    /* $doc.querySelector("#prev_tripTransit").innerText = document.getElementById("tripTransit").value.trim(); */
 
 	    // 업무수행내용
 	    const contentsRows = document.querySelectorAll("#contents_tbody tr");
@@ -1092,7 +1273,15 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장목적<span onClick="fn_addCol('purpose')">(+)</span><span class="mandatory">*</span></th>
+							<th style="border-left: none;">
+								<div style="display:flex; justify-content: space-between;">
+									<span>출장목적<span class="mandatory">*</span></span>
+									<div>
+										<button class="btn_small_plus" onClick="fn_addCol('purpose')" >+</button>
+										<button type="button" id="purpose_minus" class="btn_small_plus" onclick="fn_removeLastRow('purpose')" disabled>−</button>
+									</div>
+								</div>
+							</th>
 							<td colspan="3">
 								<table width="100%" border="0">
 									<tbody id="purpose_tbody" name="purpose_tbody">
@@ -1135,7 +1324,15 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장지<span onClick="fn_addCol('destination')">(+)</span><span class="mandatory">*</span></th>
+							<th style="border-left: none;">
+								<div style="display: flex; justify-content: space-between;">
+									<span>출장지<span class="mandatory">*</span></span>
+									<div>
+										<button class="btn_small_plus" onClick="fn_addCol('destination')">+</button>
+										<button type="button" id="destination_minus" class="btn_small_plus" onclick="fn_removeLastRow('destination')" disabled>−</button>
+									</div>
+								</div>
+							</th>
 							<td>
 								
 								<table width="100%" border="0">
@@ -1168,13 +1365,58 @@
 									</tbody>
 								</table>
 							</td>
-							<th style="border-left: none;">경유지</th>
+							<th style="border-left: none;">
+								<div style="display: flex; justify-content: space-between;">
+									<span>경유지</span>
+									<div>
+										<button class="btn_small_plus" onClick="fn_addCol('transit')">+</button>
+										<button type="button" id="transit_minus" class="btn_small_plus" onclick="fn_removeLastRow('transit')" disabled>−</button>
+									</div>
+								</div>
+							</th>
 							<td>
-								<input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder="" value="${planData.data.TRIP_TRANSIT}"/>
+								<%-- <input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder="" value="${planData.data.TRIP_TRANSIT}"/> --%>
+								<table width="100%" border="0">
+									<tbody id="transit_tbody" name="transit_tbody">
+										<c:set var="count" value="0" />
+										<c:forEach items="${infoList}" var="infoList" varStatus="status">
+										<c:if test="${infoList.INFO_TYPE == 'TRAN' }">
+										<c:set var="count" value="${count + 1}" />
+										<tr id="transit_tr_${status.count}">
+											<td>
+												<input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder="" value="${infoList.INFO_TEXT}"/>
+											</td>
+										</tr>
+										</c:if>
+										</c:forEach>
+										<c:if test="${count == 0 }">
+										<tr id="transit_tr_1">
+											<td>
+												<input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder=""/>
+											</td>
+										</tr>
+										</c:if>
+									</tbody>
+									<tbody id="transit_tbody_temp" name="transit_tbody_temp" style="display:none">
+										<tr id="transit_tmp_tr_1" style="display:none">
+											<td>
+												<input type="text"  style="width:95%; float: left"  name="tripTransit" id="tripTransit" placeholder=""/>
+											</td>
+										</tr>
+									</tbody>
+								</table>
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">업무수행내용<span onClick="fn_addCol('contents')">(+)</span><span class="mandatory">*</span></th>
+							<th style="border-left: none;">
+								<div style="display: flex; justify-content: space-between;">
+									<span>업무수행내용<span class="mandatory">*</span></span>
+									<div>
+										<button class="btn_small_plus" onClick="fn_addCol2('contents')">+</button>
+										<button type="button" id="contents_minus" class="btn_small_plus" onclick="fn_removeLastRow('contents')" disabled>−</button>
+									</div>
+								</div>
+							</th>
 							<td colspan="3">
 								<table width="100%">
 									<tr>
@@ -1189,7 +1431,7 @@
 									<c:set var="count" value="${count + 1}" />
 										<tr id="contents_tr_${status.count}">
 											<td>
-												<input type="text" name="schedule" id="schedule" style="width: 100%;"  value="${contentsList.SCHEDULE}"/>
+												<input type="text" name="schedule" id="schedule" style="width: 90%;"  value="${contentsList.SCHEDULE}" readonly/>
 											</td>
 											<td>
 												<input type="text" name="content" id="content" style="width: 100%;"  value="${contentsList.CONTENT}"/>
@@ -1205,7 +1447,7 @@
 									<c:if test="${count == 0 }">
 										<tr id="contents_tr_1">
 											<td>
-												<input type="text" name="schedule" id="schedule" style="width: 100%;"  />
+												<input type="text" name="schedule" id="schedule" style="width: 90%;" readonly />
 											</td>
 											<td>
 												<input type="text" name="content" id="content" style="width: 100%;"  />
@@ -1222,7 +1464,7 @@
 									<tbody id="contents_tbody_temp" name="contents_tbody_temp" style="display:none">
 										<tr id="contents_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text" name="schedule" id="schedule" style="width: 100%;"  />
+												<input type="text" name="schedule" id="schedule" style="width: 90%;" readonly />
 											</td>
 											<td>
 												<input type="text" name="content" id="content" style="width: 100%;"  />

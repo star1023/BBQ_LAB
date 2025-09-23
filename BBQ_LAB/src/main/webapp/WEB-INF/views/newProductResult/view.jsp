@@ -26,8 +26,8 @@ $(document).ready(function(){
 	fn.autoComplete($("#keyword"));
 });
 // ✅ 강제로 최대화 상태로 설정
-stepchage('width_wrap', 'wrap_in02');
-setPersonalization('WIDTH_MODE', 'wrap_in02');
+/* stepchage('width_wrap', 'wrap_in02');
+setPersonalization('WIDTH_MODE', 'wrap_in02'); */
 
 let _columnFullList = [];
 let _columnStateCodes = "${newProductResultData.data.COLUMN_STATE}".split(',');

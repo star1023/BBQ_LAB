@@ -40,6 +40,9 @@
 		ClassicEditor
         .create(document.getElementById("suggestions"), {
 			language: 'ko',
+			removePlugins: ['Link', 'List', 'Indent', 'Outdent', 'Alignment',
+                'Code', 'Image', 'ImageUpload', 'MediaEmbed', 'Table'
+            ]
         }).then( editor => {
         	editor2 = editor;
     	}).catch( error => {
@@ -49,6 +52,9 @@
 		ClassicEditor
         .create(document.getElementById("cookMethod"), {
 			language: 'ko',
+			removePlugins: ['Link', 'List', 'Indent', 'Outdent', 'Alignment',
+                'Code', 'Image', 'ImageUpload', 'MediaEmbed', 'Table'
+            ]
         }).then( editor => {
         	editor3 = editor;
     	}).catch( error => {
@@ -364,6 +370,9 @@
 	    ClassicEditor
 	        .create(document.getElementById(editorId), {
 				language: 'ko',
+				removePlugins: ['Link', 'List', 'Indent', 'Outdent', 'Alignment',
+	                'Code', 'Image', 'ImageUpload', 'MediaEmbed', 'Table'
+	            ]
 	        }).then( editor => {
 	        	window.editor = editor;
 	    	}).catch( error => {

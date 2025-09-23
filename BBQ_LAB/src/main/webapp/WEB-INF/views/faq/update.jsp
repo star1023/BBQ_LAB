@@ -57,7 +57,10 @@ function loadCode(codeId, selectBoxId, selectedValue) {
 function CreateEditor(editorId) {
     ClassicEditor
         .create(document.getElementById(editorId), {
-			language: 'ko'
+			language: 'ko',
+			removePlugins: ['Link', 'List', 'Indent', 'Outdent', 'Alignment',
+                'Code', 'Image', 'ImageUpload', 'MediaEmbed', 'Table'
+            ]
         }).then(editor => {
             window.editor = editor;
             editor.setData('${faqData.data.ANSWER}');

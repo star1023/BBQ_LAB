@@ -1550,7 +1550,7 @@ const IS_SAFE_TEAM = (USER_ROLE_CODE === '6' || USER_ROLE_CODE === '7');
 
 	    // 이미지 엘리먼트 생성
 	    var img = $doc.createElement("img");
-	    img.style.width = "100%";
+	    img.style.width = "98%";
 	    img.style.maxWidth = "220px";
 	    img.style.height = "auto";
 	    img.style.border = "1px solid #e1e1e1";

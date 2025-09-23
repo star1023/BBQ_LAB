@@ -287,7 +287,11 @@
 							</td>
 							<th style="border-left: none;">경유지</th>
 							<td>
-								${businessTripData.data.TRIP_TRANSIT}								
+								<c:forEach items="${infoList}" var="infoList" varStatus="status">
+								<c:if test="${infoList.INFO_TYPE == 'TRAN' }">
+									${infoList.INFO_TEXT}<br>
+								</c:if>
+								</c:forEach>								
 							</td>
 						</tr>
 						<tr>

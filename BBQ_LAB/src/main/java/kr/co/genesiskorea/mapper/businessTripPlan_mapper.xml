@@ -85,7 +85,7 @@
 				, TITLE
 				, TRIP_START_DATE
 				, TRIP_END_DATE
-				, TRIP_TRANSIT
+				<!-- , TRIP_TRANSIT -->
 				, TRIP_COST
 				, CAL_METHOD
 				, TRIP_EFFECT
@@ -135,7 +135,7 @@
 			, TITLE
 			, TRIP_START_DATE
 			, TRIP_END_DATE
-			, TRIP_TRANSIT
+			<!-- , TRIP_TRANSIT -->
 			, TRIP_COST
 			, CAL_METHOD
 			, TRIP_EFFECT
@@ -152,7 +152,7 @@
 			, #{title}
 			, #{tripStartDate}
 			, #{tripEndDate}
-			, #{tripTransit}
+			<!-- , #{tripTransit} -->
 			, #{tripCost}
 			, #{calMethod}
 			, #{tripEffect}
@@ -227,7 +227,7 @@
 			, TITLE
 			, TRIP_START_DATE
 			, TRIP_END_DATE
-			, TRIP_TRANSIT
+			<!-- , TRIP_TRANSIT -->
 			, TRIP_COST
 			, CAL_METHOD
 			, TRIP_EFFECT
@@ -298,7 +298,7 @@
 			, TITLE = #{title}
 			, TRIP_START_DATE = #{tripStartDate}
 			, TRIP_END_DATE = #{tripEndDate}
-			, TRIP_TRANSIT = #{tripTransit}
+			<!-- , TRIP_TRANSIT = #{tripTransit} -->
 			, TRIP_COST = #{tripCost}
 			, CAL_METHOD = #{calMethod}
 			, TRIP_EFFECT = #{tripEffect}
@@ -343,7 +343,7 @@
 			, TITLE
 			, TRIP_START_DATE
 			, TRIP_END_DATE
-			, TRIP_TRANSIT
+			<!-- , TRIP_TRANSIT -->
 			, TRIP_COST
 			, CAL_METHOD
 			, TRIP_EFFECT

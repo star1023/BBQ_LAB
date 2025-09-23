@@ -120,8 +120,25 @@
 						</td>
 					</tr>
 					<tr>
+						<th >출장내용</th>
+						<td colspan="3" class="inner-table-cell">
+							<div>
+								<table width="100%" class="inner-table">
+									<tr>
+										<th width="25%">일정</th>
+										<th width="25%">세부내용</th>
+										<th width="25%">장소</th>
+										<th width="25%">비고</th>
+									</tr>
+									<tbody id="prev_contents_tbody">
+									</tbody>
+								</table>
+							</div>
+						</td>
+					</tr>
+					<tr>
 						<th >업무수행내용</th>
-						<td colspan="3" id="prev_contents">
+						<td colspan="3" id="prev_tripContents">
 						</td>
 					</tr>
 					<tr>

@@ -27,6 +27,9 @@
 	    ClassicEditor
 	        .create(document.getElementById(editorId), {
 				language: 'ko',
+				removePlugins: ['Link', 'List', 'Indent', 'Outdent', 'Alignment',
+	                'Code', 'Image', 'ImageUpload', 'MediaEmbed', 'Table'
+	            ]
 	        }).then( editor => {
 	        	window.editor = editor;
 	    	}).catch( error => {

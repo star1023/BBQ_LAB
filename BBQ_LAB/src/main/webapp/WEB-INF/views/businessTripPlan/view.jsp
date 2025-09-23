@@ -258,7 +258,7 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">출장목적<span onClick="fn_addCol('purpose')">(+)</span></th>
+							<th style="border-left: none;">출장목적</th>
 							<td colspan="3">
 								<c:forEach items="${infoList}" var="infoList" varStatus="status">
 								<c:if test="${infoList.INFO_TYPE == 'PUR' }">
@@ -289,11 +289,15 @@
 							</td>
 							<th style="border-left: none;">경유지</th>
 							<td>
-								${planData.data.TRIP_TRANSIT}								
+								<c:forEach items="${infoList}" var="infoList" varStatus="status">
+								<c:if test="${infoList.INFO_TYPE == 'TRAN' }">
+									${infoList.INFO_TEXT}<br>
+								</c:if>
+								</c:forEach>								
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">업무수행내용<span onClick="fn_addCol('contents')">(+)</span></th>
+							<th style="border-left: none;">업무수행내용</th>
 							<td colspan="3">
 								<table width="100%">
 									<tr>

@@ -11,6 +11,41 @@
 	position: absolute;
 	transform: translate(-50%, -45%);
 }
+.btn_small_plus {
+  appearance: none;
+  background: transparent;
+  border: none;
+  color: #b92c35;          /* 붉은색 */
+  font-weight: 500;        /* 굵게 */
+  font-size: 16px;         /* 플러스 크기 */
+  line-height: 1;
+  padding: 6px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  outline: none;
+  transition: box-shadow .15s ease, background-color .15s ease, color .15s ease, transform .05s ease;
+
+  /* ✅ 평상시에도 옅은 테두리 */
+  box-shadow: inset 0 0 0 1px rgba(211, 47, 47, 0.2);
+}
+
+/* hover 시 더 진하고 뚜렷하게 */
+.btn_small_plus:hover {
+  background-color: rgba(211, 47, 47, 0.06);
+  box-shadow:
+    0 0 0 2px rgba(211, 47, 47, 0.25),  /* 외곽 흐림 */
+    inset 0 0 0 1px #d32f2f;            /* 진한 테두리 */
+  color: #b71c1c;
+}
+
+/* 클릭 순간 살짝 눌림 */
+.btn_small_plus:active {
+  transform: translateY(1px);
+  box-shadow:
+    0 0 0 2px rgba(211, 47, 47, 0.25),
+    inset 0 0 0 2px #d32f2f;
+}
+[id$="_minus"][disabled] { display: none !important; }
 .ck-editor__editable { max-height: 400px; min-height:150px;}
 </style>
 
@@ -30,6 +65,9 @@
 		
 		fn.autoComplete($("#keyword"));
 		autoComplete2($("#keyword2"));
+		
+		// 기존 1행 기준으로 −버튼 상태 세팅
+	    ['market','purpose','address'].forEach(toggleMinus);
 		
 		<c:if test="${fn:length(apprItemList) > 0}">
 	    fn_loadAppr();
@@ -350,7 +388,7 @@
 									if(data.RESULT == 'S') {
 										alert("임시저장 되었습니다.");
 										$('#lab_loading').hide();
-										fn_list();
+										fn_goList();
 									} else {
 										alert("결재선 등록 중 오류가 발생하였습니다."+data.MESSAGE);
 										$('#lab_loading').hide();
@@ -360,7 +398,7 @@
 								error:function(request, status, errorThrown){
 									alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
 									$('#lab_loading').hide();
-									fn_list();
+									fn_goList();
 								}			
 							});
 						} else {
@@ -702,6 +740,61 @@
 		$("#"+type+"_tbody").children('tr:last').attr('id', type + '_tr_' + randomId);
 		$("#"+type+"_tbody").children('tr:last').children('td').children('input[type=checkbox]').attr('id', type+'_'+randomId);
 		$("#"+type+"_tbody").children('tr:last').children('td').children('label').attr('for', type+'_'+randomId);
+		
+		// ✅ minus 토글
+		  toggleMinus(type);
+	}
+	
+	function fn_addCol2(section) {
+	  const $newRow = $('#contents_tmp_tr_1').clone(true, true).removeAttr('id').show();
+	  $newRow.find('input').val('');
+
+	  const idx = $('#contents_tbody tr').length + 1;   // 현재 행 개수 + 1
+
+	  // ✅ 새로 추가되는 tr에도 저장 로직이 인식할 id 부여
+	  $newRow.attr('id', 'contents_tr_' + idx);
+
+	  // 일정 input 고유 id + datepicker 부착
+	  const $sch = $newRow.find('input[name="schedule"]');
+	  $sch.attr('id', 'schedule_' + idx).datepicker(DATEPICKER_OPTS);
+
+	  // tbody에 추가
+	  $('#contents_tbody').append($newRow);
+
+	  // 출장기간 범위 동기화(있다면)
+	  updateScheduleDateRange();
+
+	  // 마이너스 버튼 토글
+	  toggleMinus(section);
+	}
+	
+	// ✅ 공용: minus 버튼 활성/비활성 토글
+	function toggleMinus(section) {
+	  const $tbody = $('#' + section + '_tbody');
+	  const rowCount = $tbody.children('tr').length;
+	  $('#' + section + '_minus').prop('disabled', rowCount <= 1);
+	}
+	
+	// 마지막 행 제거 (둘 다 공용)
+	function fn_removeLastRow(section) {
+	  const $tbody = $('#' + section + '_tbody');
+	  const $lastTr = $tbody.children('tr:last');
+
+	  // 한 줄뿐이면 삭제 금지 & 버튼은 비활성
+	  if ($tbody.children('tr').length <= 1) {
+	    toggleMinus(section);
+	    return;
+	  }
+
+	  // datepicker 붙어있으면 먼저 destroy
+	  $lastTr.find('input.hasDatepicker').each(function () {
+	    try { $(this).datepicker('destroy'); } catch (e) {}
+	  });
+
+	  $lastTr.remove();
+
+	  // ✅ minus 토글
+	  toggleMinus(section);
 	}
 	
 	function fn_delCol(type) {
@@ -949,7 +1042,15 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">대상업소<span onClick="fn_addCol('market')" id="span_market">(+)</span><span class="mandatory">*</span></th>
+							<th style="border-left: none;">
+								<div style="display:flex; justify-content: space-between;">
+									<span>대상업소<span class="mandatory">*</span></span>
+									<div>
+										<button class="btn_small_plus" onClick="fn_addCol('market')" >+</button>
+										<button type="button" id="market_minus" class="btn_small_plus" onclick="fn_removeLastRow('market')" disabled>−</button>
+									</div>
+								</div>
+							</th>
 							<td colspan="3">
 								<table width="100%" border="0">
 									<tbody id="market_tbody" name="market_tbody">
@@ -959,7 +1060,7 @@
 										<c:set var="count" value="${count + 1}" />
 										<tr id="market_tr_${status.count}">
 											<td>
-												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder="" value="${infoList.INFO_TEXT}"/>
+												<input type="text"  style="width:90%; float: left" name="marketName" id="marketName" placeholder="" value="${infoList.INFO_TEXT}"/>
 											</td>
 										</tr>
 										</c:if>
@@ -967,7 +1068,7 @@
 										<c:if test="${count == 0 }">
 										<tr id="market_tr_1">
 											<td>
-												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder="" value="가."/>
+												<input type="text"  style="width:90%; float: left" name="marketName" id="marketName" placeholder="" value="가."/>
 											</td>
 										</tr>
 										</c:if>
@@ -975,7 +1076,7 @@
 									<tbody id="market_tbody_temp" name="market_tbody_temp" style="display:none">
 										<tr id="market_tmp_tr_1" style="display:none">
 											<td>
-												<input type="text"  style="width:300px; float: left" name="marketName" id="marketName" placeholder=""/>
+												<input type="text"  style="width:90%; float: left" name="marketName" id="marketName" placeholder=""/>
 											</td>
 										</tr>
 									</tbody>
@@ -983,7 +1084,15 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">목적<span onClick="fn_addCol('purpose')" id="span_purpose">(+)</span><span class="mandatory">*</span></th>
+							<th style="border-left: none;">
+								<div style="display:flex; justify-content: space-between;">
+									<span>목적<span class="mandatory">*</span></span>
+									<div>
+										<button class="btn_small_plus" onClick="fn_addCol('purpose')" >+</button>
+										<button type="button" id="purpose_minus" class="btn_small_plus" onclick="fn_removeLastRow('purpose')" disabled>−</button>
+									</div>
+								</div>
+							</th>
 							<td colspan="3">								
 								<table width="100%" border="0">
 									<tbody id="purpose_tbody" name="purpose_tbody">
@@ -1023,7 +1132,15 @@
 							</td>
 						</tr>
 						<tr>
-							<th style="border-left: none;">주소<span onClick="fn_addCol('address')" id="span_address">(+)</span><span class="mandatory">*</span></th>
+							<th style="border-left: none;">
+								<div style="display:flex; justify-content: space-between;">
+									<span>주소</span>
+									<div>
+										<button class="btn_small_plus" onClick="fn_addCol('address')" >+</button>
+										<button type="button" id="address_minus" class="btn_small_plus" onclick="fn_removeLastRow('address')" disabled>−</button>
+									</div>
+								</div>
+							</th>
 							<td colspan="3">
 								<table width="100%" border="0">
 									<tbody id="address_tbody" name="address_tbody">

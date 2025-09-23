@@ -84,6 +84,9 @@ input:disabled {
 		ClassicEditor
         .create(document.getElementById("requestContents"), {
 			language: 'ko',
+			removePlugins: ['Link', 'List', 'Indent', 'Outdent', 'Alignment',
+                'Code', 'Image', 'ImageUpload', 'MediaEmbed', 'Table'
+            ]
         }).then( editor => {
         	editor2 = editor;
     	}).catch( error => {
@@ -113,6 +116,9 @@ input:disabled {
 	    ClassicEditor
 	        .create(document.getElementById(editorId), {
 				language: 'ko',
+				removePlugins: ['Link', 'List', 'Indent', 'Outdent', 'Alignment',
+	                'Code', 'Image', 'ImageUpload', 'MediaEmbed', 'Table'
+	            ]
 	        }).then( editor => {
 	        	window.editor = editor;
 	    	}).catch( error => {
@@ -1381,7 +1387,7 @@ input:disabled {
 
 	    // 이미지 엘리먼트 생성
 	    var img = $doc.createElement("img");
-	    img.style.width = "100%";
+	    img.style.width = "98%";
 	    img.style.maxWidth = "220px";
 	    img.style.height = "auto";
 	    img.style.border = "1px solid #e1e1e1";

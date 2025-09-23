@@ -77,7 +77,7 @@
 				, TITLE
 				, TRIP_START_DATE
 				, TRIP_END_DATE
-				, TRIP_TRANSIT
+				<!-- , TRIP_TRANSIT -->
 				, TRIP_CONTENTS
 				, TRIP_COST
 				, OVER_REASON
@@ -130,7 +130,7 @@
 			, TITLE
 			, TRIP_START_DATE
 			, TRIP_END_DATE
-			, TRIP_TRANSIT
+			<!-- , TRIP_TRANSIT -->
 			, TRIP_CONTENTS
 			, TRIP_COST
 			, OVER_REASON
@@ -150,7 +150,7 @@
 			, #{title}
 			, #{tripStartDate}
 			, #{tripEndDate}
-			, #{tripTransit}
+			<!-- , #{tripTransit} -->
 			, #{tripContents}
 			, #{tripCost}
 			, #{overReason}
@@ -222,7 +222,7 @@
 			, TITLE
 			, TRIP_START_DATE
 			, TRIP_END_DATE
-			, TRIP_TRANSIT
+			<!-- , TRIP_TRANSIT -->
 			, TRIP_CONTENTS
 			, TRIP_COST
 			, OVER_REASON
@@ -297,7 +297,7 @@
 			, TITLE = #{title}
 			, TRIP_START_DATE = #{tripStartDate}
 			, TRIP_END_DATE = #{tripEndDate}
-			, TRIP_TRANSIT = #{tripTransit}
+			<!-- , TRIP_TRANSIT = #{tripTransit} -->
 			, TRIP_CONTENTS = #{tripContents}
 			, TRIP_COST = #{tripCost}
 			, OVER_REASON = #{overReason}

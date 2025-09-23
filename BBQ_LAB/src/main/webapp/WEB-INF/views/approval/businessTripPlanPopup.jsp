@@ -441,7 +441,11 @@ function fn_changeDate() {
 					</td>
 					<th  >경유지</th>
 					<td>
-						${planData.data.TRIP_TRANSIT}								
+						<c:forEach items="${infoList}" var="infoList" varStatus="status">
+						<c:if test="${infoList.INFO_TYPE == 'TRAN' }">
+							${infoList.INFO_TEXT}<br>
+						</c:if>
+						</c:forEach>							
 					</td>
 				</tr>
 				<tr>

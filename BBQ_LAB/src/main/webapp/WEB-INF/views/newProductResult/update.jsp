@@ -41,8 +41,8 @@ var _multiSelectCache = {
 
 $(document).ready(function(){
 	// ✅ 강제로 최대화 상태로 설정
-	stepchage('width_wrap', 'wrap_in02');
-	setPersonalization('widthMode', 'wrap_in02');
+	/* stepchage('width_wrap', 'wrap_in02');
+	setPersonalization('widthMode', 'wrap_in02'); */
 	//history.replaceState({}, null, location.pathname);
 	fn.autoComplete($("#keyword"));	
 	
@@ -1422,7 +1422,7 @@ function toggleInputMode(mode) {
 					const img = cell.querySelector("img#preview");
 					const newImg = $doc.createElement("img");
 					newImg.src = img?.src || "/resources/images/img_noimg3.png";
-					newImg.style.width = "100%";
+					newImg.style.width = "98%";
 					newImg.style.height = "150px";
 					newImg.style.objectFit = "contain";
 					newImg.style.border = "1px solid #ddd";
