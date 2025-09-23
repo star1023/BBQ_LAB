@@ -399,7 +399,13 @@ public class MaterialServiceImpl implements MaterialService {
 		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
 		status = txManager.getTransaction(def);
 		try {
+			//1.lab_materail 정보 삭제
 			materialDao.deleteMaterial(param);
+			//6.이전 버젼 is_last Y로 변경.
+			materialDao.updateMaterialIsLast(param);
+			
+			//materialDao.deleteMaterial(param);
+			
 			Map<String, Object> historyParam = new HashMap<String, Object>();
 			historyParam.put("docIdx", param.get("idx"));
 			historyParam.put("docType", "MAT");

@@ -176,6 +176,9 @@
 			, COMMENT = #{apprComment}
 			, REG_DATE = sysdate()
 			, LAST_STATUS = #{status}
+			<if test='title != null and title != "" '>
+			, TITLE = #{title}
+			</if>
 		WHERE 1 = 1
 			AND APPR_IDX = #{apprIdx}
 	</update>

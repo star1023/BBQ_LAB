@@ -468,7 +468,7 @@ function fn_update() {
         success: function (result) {
             if (result.RESULT === 'S' && result.IDX > 0) {
             	<c:choose>
-			      <c:when test="${productData.data.STATUS != null && productData.data.STATUS != 'COND_APPR' }">
+			      <c:when test="${newProductResultData.data.STATUS != null && newProductResultData.data.STATUS != 'COND_APPR' }">
             	if (document.getElementById("apprLine").options.length > 0) {
                     var apprFormData = new FormData();
                     apprFormData.append("docIdx", result.IDX);
