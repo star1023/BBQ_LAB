@@ -191,6 +191,16 @@
 						<td colspan="5" id="prev_productType">
 						</td>
 					</tr>
+					<tr>
+						<th  >첨부파일 유형</th>
+						<td colspan="5" id="prev_fileType">
+						</td>
+					</tr>
+					<tr>
+						<th  >첨부파일</th>
+						<td colspan="5" id="prev_file">
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

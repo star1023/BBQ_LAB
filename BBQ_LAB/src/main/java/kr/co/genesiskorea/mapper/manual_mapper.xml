@@ -97,7 +97,8 @@
 		    	lab_cook_manual lcm
 		    	, lab_menu lm 
 		    WHERE 1 = 1
-		    	AND lcm.MENU_IDX = lm.MENU_IDX 
+		    	AND lcm.MENU_IDX = lm.MENU_IDX
+		    	<!-- AND lcm.IS_DELETE = 'N' -->
 		    	<choose>
 					<when test="listType != null and listType == 'my' "> 
 					AND DOC_OWNER = #{userId} 

@@ -280,6 +280,14 @@
 							<p style="white-space: pre-line; text-align:left;">${planData.data.TRIP_EFFECT}</p>
 						</td>
 					</tr>
+					<tr>
+						<th  >첨부파일</th>
+						<td colspan="3">
+							<c:forEach items="${planData.fileList}" var="fileList" varStatus="status">
+								${fileList.ORG_FILE_NAME}<br>
+							</c:forEach>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

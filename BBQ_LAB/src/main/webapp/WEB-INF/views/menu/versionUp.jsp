@@ -974,16 +974,18 @@ var selectedArr = new Array();
 					var itemKeepExp = $('#'+ rowId + ' input[name=itemKeepExp]').val();
 					var itemUnitPrice = $('#'+ rowId + ' input[name=itemUnitPrice]').val();
 					var itemDesc = $('#'+ rowId + ' input[name=itemDesc]').val();
-					rowIdArr.push(rowId);
-					itemTypeArr.push(itemType);
-					itemMatIdxArr.push(itemMatIdx);
-					itemMatCodeArr.push(itemMatCode);
-					itemSapCodeArr.push(itemSapCode);
-					itemNameArr.push(itemName);
-					itemStandardArr.push(itemStandard);
-					itemKeepExpArr.push(itemKeepExp);
-					itemUnitPriceArr.push(itemUnitPrice);
-					itemDescArr.push(itemDesc);
+					if( itemMatCode != '' ) {
+						rowIdArr.push(rowId);
+						itemTypeArr.push(itemType);
+						itemMatIdxArr.push(itemMatIdx);
+						itemMatCodeArr.push(itemMatCode);
+						itemSapCodeArr.push(itemSapCode);
+						itemNameArr.push(itemName);
+						itemStandardArr.push(itemStandard);
+						itemKeepExpArr.push(itemKeepExp);
+						itemUnitPriceArr.push(itemUnitPrice);
+						itemDescArr.push(itemDesc);	
+					}
 				});
 			}
 
@@ -1195,24 +1197,20 @@ var selectedArr = new Array();
 			if( $('input[name=newMat]:checked').val() == 'Y' ) {
 				var matCount = 0;
 				var validMat = true;
-				$('tr[id^=matRow]').toArray().forEach(function(contRow){
+				$('tr[id^=newMatRow]').toArray().forEach(function(contRow){
 					var rowId = $(contRow).attr('id');
-					var itemSapCode = $('#'+ rowId + ' input[name=itemSapCode]').val();
+					var itemMatCode = $('#'+ rowId + ' input[name=itemMatCode]').val();
 					var itemName = $('#'+ rowId + ' input[name=itemName]').val();
 					var mixingRatio = $('#'+ rowId + ' input[name=mixingRatio]').val();
 					
-					if(itemSapCode.length <= 0){
-						validMat = false;
-						return;
-					}
-					if(itemName.length <= 0){
+					if(itemMatCode.length <= 0 && itemName.length <= 0){
 						validMat = false;
 						return;
 					}
 					matCount++;
 				})
 				if( matCount == 0 || !validMat) {
-					alert('신규원료를 입력해주세요.');
+					alert('신규원료를 체크하셨습니다. 신규원료를 입력해주세요.');
 					return;
 				}
 			}			
@@ -1369,16 +1367,18 @@ var selectedArr = new Array();
 					var itemKeepExp = $('#'+ rowId + ' input[name=itemKeepExp]').val();
 					var itemUnitPrice = $('#'+ rowId + ' input[name=itemUnitPrice]').val();
 					var itemDesc = $('#'+ rowId + ' input[name=itemDesc]').val();
-					rowIdArr.push(rowId);
-					itemTypeArr.push(itemType);
-					itemMatIdxArr.push(itemMatIdx);
-					itemMatCodeArr.push(itemMatCode);
-					itemSapCodeArr.push(itemSapCode);
-					itemNameArr.push(itemName);
-					itemStandardArr.push(itemStandard);
-					itemKeepExpArr.push(itemKeepExp);
-					itemUnitPriceArr.push(itemUnitPrice);
-					itemDescArr.push(itemDesc);
+					if( itemMatCode != '' ) {
+						rowIdArr.push(rowId);
+						itemTypeArr.push(itemType);
+						itemMatIdxArr.push(itemMatIdx);
+						itemMatCodeArr.push(itemMatCode);
+						itemSapCodeArr.push(itemSapCode);
+						itemNameArr.push(itemName);
+						itemStandardArr.push(itemStandard);
+						itemKeepExpArr.push(itemKeepExp);
+						itemUnitPriceArr.push(itemUnitPrice);
+						itemDescArr.push(itemDesc);
+					}
 				});
 			}
 
@@ -1979,6 +1979,195 @@ var selectedArr = new Array();
 	    // 제품유형
 	    $doc.getElementById("prev_menuType").innerText = document.getElementById("selectTxtFull").value;
 
+	 // ▼ [첨부파일 유형] 미리보기 바인딩 (value → 라벨 텍스트로)
+	    (() => {
+	      const esc = (s) => String(s)
+	        .replaceAll("&", "&amp;")
+	        .replaceAll("<", "&lt;")
+	        .replaceAll(">", "&gt;")
+	        .replaceAll('"', "&quot;")
+	        .replaceAll("'", "&#39;");
+
+	      // 체크박스에서 "보이는 텍스트"를 탄탄하게 가져오는 함수
+	      const getCheckboxLabel = (cb) => {
+	        // 1) 라벨로 감싼 형태 <label><input>텍스트</label>
+	        const wrapLabel = cb.closest('label');
+	        if (wrapLabel) {
+	          const t = wrapLabel.textContent?.trim();
+	          if (t) return t;
+	        }
+	        // 2) for-연결 형태 <input id="x"> + <label for="x">텍스트</label>
+	        if (cb.id) {
+	          const forLabel = document.querySelector(`label[for="${cb.id}"]`);
+	          const t = forLabel?.textContent?.trim();
+	          if (t) return t;
+	        }
+	        // 3) aria-label / data-label
+	        const a = cb.getAttribute('aria-label')?.trim();
+	        if (a) return a;
+	        const d = cb.dataset?.label?.trim();
+	        if (d) return d;
+
+	        // 4) 형제 텍스트 노드/요소에서 추출 (커스텀 마크업 대비)
+	        let node = cb.nextSibling;
+	        while (node) {
+	          if (node.nodeType === Node.TEXT_NODE) {
+	            const t = node.textContent?.trim();
+	            if (t) return t;
+	          } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'INPUT') {
+	            const t = node.textContent?.trim();
+	            if (t) return t;
+	          }
+	          node = node.nextSibling;
+	        }
+
+	        // 5) 그래도 없으면 최후엔 value로 (코드값)
+	        return cb.value ?? '';
+	      };
+
+	      // 체크박스 수집 (name은 실제 네임 규칙에 맞추어 조정)
+	      const raw = [];
+	      document
+	        .querySelectorAll('input[type="checkbox"][name^="docType"]:checked, input[type="checkbox"][name^="fileType"]:checked')
+	        .forEach(cb => {
+	          const label = getCheckboxLabel(cb);
+	          if (label) raw.push(label);
+	        });
+
+	      // “docTypeTxt”, “docTypeTemp(select multiple)” 쓰면 보조로 병합
+	      const txtDiv = document.getElementById('docTypeTxt');
+	      if (txtDiv?.textContent?.trim()) {
+	        txtDiv.textContent.split(/[\n,]+/).map(s => s.trim()).filter(Boolean).forEach(t => raw.push(t));
+	      }
+	      const sel = document.getElementById('docTypeTemp');
+	      if (sel?.options?.length) {
+	        Array.from(sel.options).filter(o => o.selected).forEach(o => raw.push((o.text || o.value || '').trim()));
+	      }
+
+	      // 불필요한 항목(예: '전체 선택') 제거 + 중복 제거
+	      const blocklist = new Set(['전체 선택', '전체선택', '전체']);
+	      const types = Array.from(new Set(raw.map(s => s.trim()).filter(s => s && !blocklist.has(s))));
+
+	      // 미리보기 바인딩
+	      const $prev = $doc.getElementById('prev_fileType');
+
+	      if (types.length) {
+	    	// 쉼표+공백으로 연결, 마지막에는 자동으로 안 붙음
+	    	$prev.innerHTML = types.map(esc).join(', ');
+	      }
+	      
+	    })();
+
+	    // ▼▼▼ [첨부파일] 미리보기 바인딩 추가 시작 ▼▼▼
+	    // 파일명 안전 이스케이프
+	    const esc = (s) => String(s)
+	      .replaceAll("&", "&amp;")
+	      .replaceAll("<", "&lt;")
+	      .replaceAll(">", "&gt;")
+	      .replaceAll('"', "&quot;")
+	      .replaceAll("'", "&#39;");
+
+	    // 1) <input type="file" name="files"> 들에서 선택된 파일명 수집
+	    const fileNames = [];
+	    document.querySelectorAll('input[type="file"][name="files"]').forEach(input => {
+	      // 같은 input에 여러 파일이 선택될 수도 있음
+	      Array.from(input.files || []).forEach(f => {
+	        if (f && f.name) fileNames.push(f.name);
+	      });
+	    });
+
+	    // 2) 이미 페이지의 파일 목록(UI)에서 표시 중인 항목도 수집 (드래그&드롭 등으로 추가된 케이스)
+	    //    - <ul id="attatch_file"><li>...파일명...</li></ul> 형태 가정
+	    const $ul = document.getElementById("attatch_file");
+	    if ($ul) {
+	      $ul.querySelectorAll("li").forEach(li => {
+	        // li 안에 a/span이 있든 그냥 텍스트든 전부 텍스트로 인식
+	        const t = (li.textContent || "").trim();
+	        if (t) fileNames.push(t);
+	      });
+	    }
+
+	    // 3) 중복 제거 + 공백 제거
+	    const uniqueNames = Array.from(new Set(
+	      fileNames.map(s => s.trim()).filter(Boolean)
+	    ));
+
+	    // 4) 미리보기 페이지에 반영
+	    const $prevFile = $doc.getElementById("prev_file");
+	    const $prevFileWrap = $doc.getElementById("wrapper_prev_file"); // 있으면 사용, 없으면 무시
+
+	    if (uniqueNames.length > 0) {
+	      // <br/>로 줄바꿈하여 넣기
+	      $prevFile.innerHTML = uniqueNames.map(n => esc(n)).join("<br/>");
+	      if ($prevFileWrap) $prevFileWrap.style.display = "table-row"; // 또는 "block" (미리보기 마크업에 맞게)
+	    } else {
+	      // 아무 파일도 없으면 숨기거나 대시 처리
+	      // ① 숨김
+	      if ($prevFileWrap) $prevFileWrap.style.display = "none";
+	      // ② 혹은 표시 유지 시 대시
+	      // $prevFile.textContent = "-";
+	    }
+	    // ▲▲▲ [첨부파일] 미리보기 바인딩 추가 끝 ▲▲▲
+	    
+	    // ▼ [매뉴얼 첨부] 미리보기 바인딩 (insert/update/버전업 모두 지원)
+		(() => {
+		  const esc = (s) => String(s)
+		    .replaceAll("&", "&amp;")
+		    .replaceAll("<", "&lt;")
+		    .replaceAll(">", "&gt;")
+		    .replaceAll('"', "&quot;")
+		    .replaceAll("'", "&#39;");
+		
+		  const manualNames = [];
+		
+		  // 1) 새로 업로드한 파일들: name="manualFile" (id는 manualFileInput / manualFile_vu 등 다양)
+		  document.querySelectorAll('input[type="file"][name="manualFile"]').forEach(input => {
+		    Array.from(input.files || []).forEach(f => f?.name && manualNames.push(f.name));
+		  });
+		
+		  // 2) UI 목록(드래그&드롭)에서 표시중인 파일명
+		  //    - 구버전: #attach_file_manual
+		  //    - 버전업: #attach_file_manual_vu
+		  const listIds = ["attach_file_manual_vu", "attach_file_manual"];
+		  for (const id of listIds) {
+		    const $ul = document.getElementById(id);
+		    if ($ul) {
+		      $ul.querySelectorAll("li").forEach(li => {
+		        // 삭제 아이콘/문구 제거 후 텍스트만
+		        const t = (li.textContent || "").replace(/삭제/g, "").trim();
+		        if (t) manualNames.push(t);
+		      });
+		      break; // 먼저 찾은 리스트만 사용
+		    }
+		  }
+		
+		  // 3) 기존 유지용 hidden select
+		  //    - 구버전: #manualTempFileList
+		  //    - 버전업: #manualTempFileList_vu
+		  const selectIds = ["manualTempFileList_vu", "manualTempFileList"];
+		  for (const id of selectIds) {
+		    const $sel = document.getElementById(id);
+		    if ($sel && $sel.options?.length) {
+		      Array.from($sel.options).forEach(opt => {
+		        const t = (opt.text || "").trim();
+		        if (t) manualNames.push(t);
+		      });
+		      break;
+		    }
+		  }
+		
+		  // 4) 중복/공백 제거
+		  const uniqueManuals = Array.from(new Set(
+		    manualNames.map(s => s.trim()).filter(Boolean)
+		  ));
+		
+		  // 5) 미리보기 DOM 반영
+		  const $prevManual = $doc.getElementById("prev_manual");
+		  if (uniqueManuals.length > 0) {
+		    $prevManual.innerHTML = uniqueManuals.map(esc).join("<br/>"); // 쉼표로 원하면 ', ' 로 변경
+		  }
+		})();
+	    
 	    // 신규 원료
 	    var newMatHTML = "";
 	    var newMatRows = document.querySelectorAll('tr[id^=newMatRow]');
@@ -2072,6 +2261,62 @@ var selectedArr = new Array();
 	    const $li = $(el).closest('li');
 	    $li.remove();
 	}
+	
+	function toggleDocTypeCheckboxes(masterCheckbox) {
+	    const checkboxes = document.querySelectorAll('input[name="docType"]');
+	    checkboxes.forEach(cb => {
+	        if (cb.id !== 'checkAll') {
+	            cb.checked = masterCheckbox.checked;
+	        }
+	    });
+	}
+	
+	function syncCheckAll() {
+	    const checkboxes = document.querySelectorAll('input[name="docType"]:not(#checkAll)');
+	    const allChecked = [...checkboxes].every(cb => cb.checked);
+	    document.getElementById("checkAll").checked = allChecked;
+	}
+	
+	  // 전역 배열이 없으면 초기화 (insert.jsp에서 이미 쓰는 네이밍 유지)
+	  window.manualFileArr = window.manualFileArr || [];                // 새로 추가한 매뉴얼 파일들
+	  window.manualFileTypeArr = window.manualFileTypeArr || [];
+	  window.manualDeletedFileIdArr = window.manualDeletedFileIdArr || [];
+	  window.manualDeletedFileArr = window.manualDeletedFileArr || [];
+	  window.manualDeletedFilePathArr = window.manualDeletedFilePathArr || [];
+
+	  // 매뉴얼 파일 추가: 화면 리스트/배열 둘 다 반영
+	  function addManualFile(input) {
+	    var files = input.files;
+	    if (!files || !files.length) return;
+
+	    for (var i = 0; i < files.length; i++) {
+	      var f = files[i];
+	      manualFileArr.push(f);
+	      // 저장 시 fileType = 'MAN' 으로 넣을 예정
+	      manualFileTypeArr.push({ fileType: '00', fileTypeText: 'MANUAL' });
+
+	      // 화면 표시
+	      var $li = $('<li/>').text(f.name);
+	      // 새로 추가한 파일은 바로 삭제 가능하게 (temp가 아니라 클라이언트 배열에서 제거)
+	      var $del = $('<a href="#none"><img src="/resources/images/icon_del_file.png"></a>');
+	      $del.on('click', function() {
+	        // 클릭된 li의 파일명을 기준으로 배열에서 1건 제거
+	        var name = $(this).parent().text();
+	        for (var j = manualFileArr.length - 1; j >= 0; j--) {
+	          if (manualFileArr[j].name === name) {
+	            manualFileArr.splice(j, 1);
+	            manualFileTypeArr.splice(j, 1);
+	            break;
+	          }
+	        }
+	        $(this).parent().remove();
+	      });
+	      $li.prepend($del);
+	      $('#attach_file_manual').append($li);
+	    }
+	    // 같은 파일을 다시 선택할 수 있도록 초기화
+	    input.value = '';
+	  }
 	
 	/* =====================[ MANUAL 전용 전역 상태 ]===================== */
 	/** 새로 추가한 매뉴얼 파일들(아직 서버 미업로드) */
@@ -2651,17 +2896,18 @@ var selectedArr = new Array();
 						<li>
 							<dt style="width: 20%">파일유형 <span class="mandatory">*</span></dt>
 							<dd style="width: 80%;">
-								<input id="checkbox_item1" name="docType" type="checkbox" value="10"/>
+								<input id="checkAll" type="checkbox" onchange="toggleDocTypeCheckboxes(this)" /><label for="checkAll" style="vertical-align: middle; font-weight: bold;"><span></span>전체 선택</label>
+								<input id="checkbox_item1" name="docType" type="checkbox" value="10" onchange="syncCheckAll()"/>
 								<label for="checkbox_item1" style="vertical-align: middle;"><span></span>컨셉서-개발목적</label>
-								<input id="checkbox_item2" name="docType" type="checkbox" value="20"/>
+								<input id="checkbox_item2" name="docType" type="checkbox" value="20" onchange="syncCheckAll()"/>
 								<label for="checkbox_item2" style="vertical-align: middle;"><span></span>추정 원단위표</label>
-								<input id="checkbox_item3" name="docType" type="checkbox" value="30"/>
+								<input id="checkbox_item3" name="docType" type="checkbox" value="30" onchange="syncCheckAll()"/>
 								<label for="checkbox_item3" style="vertical-align: middle;"><span></span>배합비&제조신고용 배합비</label>						
-								<input id="checkbox_item4" name="docType" type="checkbox" value="40"/>
+								<input id="checkbox_item4" name="docType" type="checkbox" value="40" onchange="syncCheckAll()"/>
 								<label for="checkbox_item4" style="vertical-align: middle;"><span></span>제조공정도</label>						
-								<input id="checkbox_item5" name="docType" type="checkbox" value="50"/>
+								<input id="checkbox_item5" name="docType" type="checkbox" value="50" onchange="syncCheckAll()"/>
 								<label for="checkbox_item5" style="vertical-align: middle;"><span></span>제조작업표준서</label>
-								<input id="checkbox_item6" name="docType" type="checkbox" value="60"/>
+								<input id="checkbox_item6" name="docType" type="checkbox" value="60" onchange="syncCheckAll()"/>
 								<label for="checkbox_item6" style="vertical-align: middle;"><span></span>제품규격서</label>
 								<select id="tempFileList" name="tempFileList" multiple style="display: none">
 								<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
@@ -2903,7 +3149,7 @@ var selectedArr = new Array();
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl read_only" value="${menuMaterialData.SAP_CODE}" onkeyup="checkMaterail(event,'newMat')" readonly="readonly"/>
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${menuMaterialData.NAME}" class="read_only" />
@@ -2928,7 +3174,7 @@ var selectedArr = new Array();
 									<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'newMat')"/>
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl read_only" onkeyup="checkMaterail(event,'newMat')" readonly="readonly"/>
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
@@ -2990,11 +3236,11 @@ var selectedArr = new Array();
 								</td>
 								<td>
 									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" value="${menuMaterialData.MATERIAL_IDX}"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')"/>
-									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl read_only" value="${menuMaterialData.MATERIAL_CODE}" onkeyup="checkMaterail(event,'mat')" readonly="readonly"/>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.SAP_CODE}"/>								
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl" value="${menuMaterialData.SAP_CODE}"/>
+									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>						
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" value="${menuMaterialData.NAME}" class="read_only" />
@@ -3015,11 +3261,11 @@ var selectedArr = new Array();
 								</td>
 								<td>
 									<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl"/>
-									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
-									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
+									<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl read_only" onkeyup="checkMaterail(event,'mat')" readonly="readonly"/>
 								</td>
 								<td>
-									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>								
+									<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>
+									<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>							
 								</td>
 								<td>
 									<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
@@ -3101,7 +3347,7 @@ var selectedArr = new Array();
 				<button class="btn_code_search2" onclick="openMaterialPopup(this,'newMat')"></button>
 			</td>
 			<td>
-				<input type="text" name="itemSapCode" style="width: 100px"/>
+				<input type="text" name="itemSapCode" class="read_only" style="width: 100px" readonly="readonly"/>
 			</td>
 			<td>
 				<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />
@@ -3120,11 +3366,11 @@ var selectedArr = new Array();
 			</td>
 			<td>
 				<input type="hidden" name="itemMatIdx" style="width: 100px" class="code_tbl" />
-				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl" onkeyup="checkMaterail(event,'mat')"/>
-				<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
+				<input type="text" name="itemMatCode" style="width: 100px" class="code_tbl read_only" onkeyup="checkMaterail(event,'mat')" readonly="readonly"/>
 			</td>
 			<td>
 				<input type="text" name="itemSapCode" style="width: 100px" class="code_tbl"/>
+				<button class="btn_code_search2" onclick="openMaterialPopup(this,'mat')"></button>
 			</td>
 			<td>
 				<input type="text" name="itemName" style="width: 85%" readonly="readonly" class="read_only" />

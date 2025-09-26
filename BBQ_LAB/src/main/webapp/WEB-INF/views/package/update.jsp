@@ -859,6 +859,58 @@
 	        }
 	    }
 	    $doc.getElementById("prev_infoText").innerHTML = etcHtml;
+	    
+	 // ▼▼▼ [첨부파일] 미리보기 바인딩 추가 시작 ▼▼▼
+	    // 파일명 안전 이스케이프
+	    const esc = (s) => String(s)
+	      .replaceAll("&", "&amp;")
+	      .replaceAll("<", "&lt;")
+	      .replaceAll(">", "&gt;")
+	      .replaceAll('"', "&quot;")
+	      .replaceAll("'", "&#39;");
+
+	    // 1) <input type="file" name="files"> 들에서 선택된 파일명 수집
+	    const fileNames = [];
+	    document.querySelectorAll('input[type="file"][name="files"]').forEach(input => {
+	      // 같은 input에 여러 파일이 선택될 수도 있음
+	      Array.from(input.files || []).forEach(f => {
+	        if (f && f.name) fileNames.push(f.name);
+	      });
+	    });
+
+	    // 2) 이미 페이지의 파일 목록(UI)에서 표시 중인 항목도 수집 (드래그&드롭 등으로 추가된 케이스)
+	    //    - <ul id="attatch_file"><li>...파일명...</li></ul> 형태 가정
+	    const $ul = document.getElementById("attatch_file");
+	    if ($ul) {
+	      $ul.querySelectorAll("li").forEach(li => {
+	        // li 안에 a/span이 있든 그냥 텍스트든 전부 텍스트로 인식
+	        const t = (li.textContent || "").trim();
+	        if (t) fileNames.push(t);
+	      });
+	    }
+
+	    // 3) 중복 제거 + 공백 제거
+	    const uniqueNames = Array.from(new Set(
+	      fileNames.map(s => s.trim()).filter(Boolean)
+	    ));
+
+	    // 4) 미리보기 페이지에 반영
+	    const $prevFile = $doc.getElementById("prev_file");
+	    const $prevFileWrap = $doc.getElementById("wrapper_prev_file"); // 있으면 사용, 없으면 무시
+
+	    if (uniqueNames.length > 0) {
+	      // <br/>로 줄바꿈하여 넣기
+	      $prevFile.innerHTML = uniqueNames.map(n => esc(n)).join("<br/>");
+	      if ($prevFileWrap) $prevFileWrap.style.display = "table-row"; // 또는 "block" (미리보기 마크업에 맞게)
+	    } else {
+	      // 아무 파일도 없으면 숨기거나 대시 처리
+	      // ① 숨김
+	      if ($prevFileWrap) $prevFileWrap.style.display = "none";
+	      // ② 혹은 표시 유지 시 대시
+	      // $prevFile.textContent = "-";
+	    }
+	    // ▲▲▲ [첨부파일] 미리보기 바인딩 추가 끝 ▲▲▲
+	    
 	}
 
 	function fn_openPreview() {

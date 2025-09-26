@@ -1227,6 +1227,32 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 	@Override
 	public void deletePackage(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		packageInfoDao.deletePackage(param);
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		try {
+			//1.lab_materail 정보 삭제
+			packageInfoDao.deletePackage(param);
+			//6.이전 버젼 is_last Y로 변경.
+			packageInfoDao.deletePackageIsLast(param);
+			
+			//materialDao.deleteMaterial(param);
+			
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", param.get("idx"));
+			historyParam.put("docType", "PACKAGE");
+			historyParam.put("historyType", "D");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 	}
 }

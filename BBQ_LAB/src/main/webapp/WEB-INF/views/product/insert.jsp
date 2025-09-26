@@ -903,7 +903,7 @@ li {
 					var itemKeepExp = $('#'+ rowId + ' input[name=itemKeepExp]').val();
 					var itemUnitPrice = $('#'+ rowId + ' input[name=itemUnitPrice]').val();
 					var itemDesc = $('#'+ rowId + ' input[name=itemDesc]').val();
-					if( itemSapCode != '' ) {
+					if( itemMatCode != '' ) {
 						rowIdArr.push(rowId);
 						itemTypeArr.push(itemType);
 						itemMatIdxArr.push(itemMatIdx);
@@ -1238,16 +1238,18 @@ li {
 								var itemKeepExp = $('#'+ rowId + ' input[name=itemKeepExp]').val();
 								var itemUnitPrice = $('#'+ rowId + ' input[name=itemUnitPrice]').val();
 								var itemDesc = $('#'+ rowId + ' input[name=itemDesc]').val();
-								rowIdArr.push(rowId);
-								itemTypeArr.push(itemType);
-								itemMatIdxArr.push(itemMatIdx);
-								itemMatCodeArr.push(itemMatCode);
-								itemSapCodeArr.push(itemSapCode);
-								itemNameArr.push(itemName);
-								itemStandardArr.push(itemStandard);
-								itemKeepExpArr.push(itemKeepExp);
-								itemUnitPriceArr.push(itemUnitPrice);
-								itemDescArr.push(itemDesc);
+								if( itemMatCode != '' ) {
+									rowIdArr.push(rowId);
+									itemTypeArr.push(itemType);
+									itemMatIdxArr.push(itemMatIdx);
+									itemMatCodeArr.push(itemMatCode);
+									itemSapCodeArr.push(itemSapCode);
+									itemNameArr.push(itemName);
+									itemStandardArr.push(itemStandard);
+									itemKeepExpArr.push(itemKeepExp);
+									itemUnitPriceArr.push(itemUnitPrice);
+									itemDescArr.push(itemDesc);
+								}
 							});
 						}
 
@@ -2113,6 +2115,140 @@ li {
 
 	    // 용도
 	    $doc.getElementById("prev_usage").innerText = document.getElementById("customUsage_1").value;
+	    
+	 	// ▼ [첨부파일 유형] 미리보기 바인딩 (value → 라벨 텍스트로)
+	    (() => {
+	      const esc = (s) => String(s)
+	        .replaceAll("&", "&amp;")
+	        .replaceAll("<", "&lt;")
+	        .replaceAll(">", "&gt;")
+	        .replaceAll('"', "&quot;")
+	        .replaceAll("'", "&#39;");
+
+	      // 체크박스에서 "보이는 텍스트"를 탄탄하게 가져오는 함수
+	      const getCheckboxLabel = (cb) => {
+	        // 1) 라벨로 감싼 형태 <label><input>텍스트</label>
+	        const wrapLabel = cb.closest('label');
+	        if (wrapLabel) {
+	          const t = wrapLabel.textContent?.trim();
+	          if (t) return t;
+	        }
+	        // 2) for-연결 형태 <input id="x"> + <label for="x">텍스트</label>
+	        if (cb.id) {
+	          const forLabel = document.querySelector(`label[for="${cb.id}"]`);
+	          const t = forLabel?.textContent?.trim();
+	          if (t) return t;
+	        }
+	        // 3) aria-label / data-label
+	        const a = cb.getAttribute('aria-label')?.trim();
+	        if (a) return a;
+	        const d = cb.dataset?.label?.trim();
+	        if (d) return d;
+
+	        // 4) 형제 텍스트 노드/요소에서 추출 (커스텀 마크업 대비)
+	        let node = cb.nextSibling;
+	        while (node) {
+	          if (node.nodeType === Node.TEXT_NODE) {
+	            const t = node.textContent?.trim();
+	            if (t) return t;
+	          } else if (node.nodeType === Node.ELEMENT_NODE && node.tagName !== 'INPUT') {
+	            const t = node.textContent?.trim();
+	            if (t) return t;
+	          }
+	          node = node.nextSibling;
+	        }
+
+	        // 5) 그래도 없으면 최후엔 value로 (코드값)
+	        return cb.value ?? '';
+	      };
+
+	      // 체크박스 수집 (name은 실제 네임 규칙에 맞추어 조정)
+	      const raw = [];
+	      document
+	        .querySelectorAll('input[type="checkbox"][name^="docType"]:checked, input[type="checkbox"][name^="fileType"]:checked')
+	        .forEach(cb => {
+	          const label = getCheckboxLabel(cb);
+	          if (label) raw.push(label);
+	        });
+
+	      // “docTypeTxt”, “docTypeTemp(select multiple)” 쓰면 보조로 병합
+	      const txtDiv = document.getElementById('docTypeTxt');
+	      if (txtDiv?.textContent?.trim()) {
+	        txtDiv.textContent.split(/[\n,]+/).map(s => s.trim()).filter(Boolean).forEach(t => raw.push(t));
+	      }
+	      const sel = document.getElementById('docTypeTemp');
+	      if (sel?.options?.length) {
+	        Array.from(sel.options).filter(o => o.selected).forEach(o => raw.push((o.text || o.value || '').trim()));
+	      }
+
+	      // 불필요한 항목(예: '전체 선택') 제거 + 중복 제거
+	      const blocklist = new Set(['전체 선택', '전체선택', '전체']);
+	      const types = Array.from(new Set(raw.map(s => s.trim()).filter(s => s && !blocklist.has(s))));
+
+	      // 미리보기 바인딩
+	      const $prev = $doc.getElementById('prev_fileType');
+	      const $wrap = $doc.getElementById('wrapper_prev_fileType'); // 있으면 사용
+
+	      if (types.length) {
+	    	// 쉼표+공백으로 연결, 마지막에는 자동으로 안 붙음
+	    	$prev.innerHTML = types.map(esc).join(', ');
+	    	if ($wrap) $wrap.style.display = 'table-row'; // 또는 'block'
+	      } else {
+	    	if ($wrap) $wrap.style.display = 'none';
+	  	    // $prev.textContent = '-';
+	   	  }
+	    })();
+
+	    // ▼▼▼ [첨부파일] 미리보기 바인딩 추가 시작 ▼▼▼
+	    // 파일명 안전 이스케이프
+	    const esc = (s) => String(s)
+	      .replaceAll("&", "&amp;")
+	      .replaceAll("<", "&lt;")
+	      .replaceAll(">", "&gt;")
+	      .replaceAll('"', "&quot;")
+	      .replaceAll("'", "&#39;");
+
+	    // 1) <input type="file" name="files"> 들에서 선택된 파일명 수집
+	    const fileNames = [];
+	    document.querySelectorAll('input[type="file"][name="files"]').forEach(input => {
+	      // 같은 input에 여러 파일이 선택될 수도 있음
+	      Array.from(input.files || []).forEach(f => {
+	        if (f && f.name) fileNames.push(f.name);
+	      });
+	    });
+
+	    // 2) 이미 페이지의 파일 목록(UI)에서 표시 중인 항목도 수집 (드래그&드롭 등으로 추가된 케이스)
+	    //    - <ul id="attatch_file"><li>...파일명...</li></ul> 형태 가정
+	    const $ul = document.getElementById("attatch_file");
+	    if ($ul) {
+	      $ul.querySelectorAll("li").forEach(li => {
+	        // li 안에 a/span이 있든 그냥 텍스트든 전부 텍스트로 인식
+	        const t = (li.textContent || "").trim();
+	        if (t) fileNames.push(t);
+	      });
+	    }
+
+	    // 3) 중복 제거 + 공백 제거
+	    const uniqueNames = Array.from(new Set(
+	      fileNames.map(s => s.trim()).filter(Boolean)
+	    ));
+
+	    // 4) 미리보기 페이지에 반영
+	    const $prevFile = $doc.getElementById("prev_file");
+	    const $prevFileWrap = $doc.getElementById("wrapper_prev_file"); // 있으면 사용, 없으면 무시
+
+	    if (uniqueNames.length > 0) {
+	      // <br/>로 줄바꿈하여 넣기
+	      $prevFile.innerHTML = uniqueNames.map(n => esc(n)).join("<br/>");
+	      if ($prevFileWrap) $prevFileWrap.style.display = "table-row"; // 또는 "block" (미리보기 마크업에 맞게)
+	    } else {
+	      // 아무 파일도 없으면 숨기거나 대시 처리
+	      // ① 숨김
+	      if ($prevFileWrap) $prevFileWrap.style.display = "none";
+	      // ② 혹은 표시 유지 시 대시
+	      // $prevFile.textContent = "-";
+	    }
+	    // ▲▲▲ [첨부파일] 미리보기 바인딩 추가 끝 ▲▲▲
 
 	    // 신규도입품
 	    var newHTML = "";
@@ -2781,7 +2917,7 @@ li {
 									<button class="btn_code_search2"
 										onclick="openMaterialPopup(this,'newMat')"></button></td>
 								<td><input type="text" name="itemSapCode"
-									style="width: 100px" /></td>
+									style="width: 100px" class="read_only" readonly="readonly"/></td>
 								<td><input type="text" name="itemName" style="width: 85%"
 									readonly="readonly" class="read_only" /></td>
 								<td><input type="text" name="itemStandard"
@@ -2843,12 +2979,13 @@ li {
 									name="itemType" value="N" /></td>
 								<td><input type="hidden" name="itemMatIdx"
 									style="width: 100px" class="code_tbl" /> <input type="text"
-									name="itemMatCode" style="width: 100px" class="code_tbl"
-									onkeyup="checkMaterail(event,'mat')" />
+									name="itemMatCode" style="width: 100px" class="code_tbl read_only"
+									onkeyup="checkMaterail(event,'mat')" readonly="readonly"/>
+								</td>
+								<td><input type="text" name="itemSapCode"
+									style="width: 100px" />
 									<button class="btn_code_search2"
 										onclick="openMaterialPopup(this,'mat')"></button></td>
-								<td><input type="text" name="itemSapCode"
-									style="width: 100px" /></td>
 								<td><input type="text" name="itemName" style="width: 85%"
 									readonly="readonly" class="read_only" /></td>
 								<td><input type="text" name="itemStandard"
@@ -2933,7 +3070,7 @@ li {
 				onkeyup="checkMaterail(event,'newMat')" />
 				<button class="btn_code_search2"
 					onclick="openMaterialPopup(this,'newMat')"></button></td>
-			<td><input type="text" name="itemSapCode" style="width: 100px" />
+			<td><input type="text" name="itemSapCode" class="read_only" style="width: 100px" readonly="readonly"/>
 			</td>
 			<td><input type="text" name="itemName" style="width: 85%"
 				readonly="readonly" class="read_only" /></td>
@@ -2952,11 +3089,12 @@ li {
 				<input type="hidden" name="itemType" /></td>
 			<td><input type="hidden" name="itemMatIdx" style="width: 100px"
 				class="code_tbl" /> <input type="text" name="itemMatCode"
-				style="width: 100px" class="code_tbl"
-				onkeyup="checkMaterail(event,'mat')" />
-				<button class="btn_code_search2"
-					onclick="openMaterialPopup(this,'mat')"></button></td>
+				style="width: 100px" class="code_tbl read_only"
+				onkeyup="checkMaterail(event,'mat')" readonly="readonly"/>
+			</td>
 			<td><input type="text" name="itemSapCode" style="width: 100px" />
+			<button class="btn_code_search2"
+					onclick="openMaterialPopup(this,'mat')"></button>
 			</td>
 			<td><input type="text" name="itemName" style="width: 85%"
 				readonly="readonly" class="read_only" /></td>

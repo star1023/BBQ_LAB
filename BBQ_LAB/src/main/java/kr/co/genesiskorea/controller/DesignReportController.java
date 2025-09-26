@@ -406,6 +406,8 @@ public class DesignReportController {
 	public Map<String, Object> deleteDesignReportAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
 			reportService.deleteDesignReport(param);
 			map.put("RESULT", "S");
 		} catch( Exception e ) {

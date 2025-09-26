@@ -35,4 +35,6 @@ public interface PackageInfoDao {
 	Map<String, Object> selectPackageInfoDataByProductCode(Map<String, Object> param);
 
 	void deletePackage(Map<String, Object> param) throws Exception;
+
+	void deletePackageIsLast(Map<String, Object> param)throws Exception;
 }

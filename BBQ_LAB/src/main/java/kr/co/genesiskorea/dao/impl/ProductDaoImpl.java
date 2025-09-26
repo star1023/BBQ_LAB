@@ -264,4 +264,10 @@ public class ProductDaoImpl implements ProductDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("product.deleteProduct", param);
 	}
+
+	@Override
+	public void deleteProductIsLast(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("product.deleteProductIsLast", param);
+	}
 }

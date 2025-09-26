@@ -179,8 +179,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", productIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -189,8 +193,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", productIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -325,7 +333,7 @@ public class ProductServiceImpl implements ProductService {
 			
 			//첨부파일 유형 저장
 			List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
-			if( docType != null ) {
+			if( docType != null && docType.size() > 0) {
 				for( int i = 0 ; i < docType.size() ; i++ ) {
 					HashMap<String, Object> paramMap = new HashMap<String, Object>();
 					paramMap.put("docIdx", productIdx);
@@ -506,8 +514,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", productIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -516,8 +528,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", productIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -650,17 +666,21 @@ public class ProductServiceImpl implements ProductService {
 				productDao.insertProductMaterial(param);				
 			}
 			
-			//첨부파일 유형 저장
-			List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
-			for( int i = 0 ; i < docType.size() ; i++ ) {
-				HashMap<String, Object> paramMap = new HashMap<String, Object>();
-				paramMap.put("docIdx", productIdx);
-				paramMap.put("docType", "PROD");
-				paramMap.put("fileType", docType.get(i));
-				paramMap.put("fileTypeText", docTypeText.get(i));
-				docTypeList.add(paramMap);
-			}		
-			commonDao.insertFileType(docTypeList);
+			if( docType != null && docType.size() > 0) {
+				//첨부파일 유형 저장
+				List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
+				for( int i = 0 ; i < docType.size() ; i++ ) {
+					HashMap<String, Object> paramMap = new HashMap<String, Object>();
+					paramMap.put("docIdx", productIdx);
+					paramMap.put("docType", "PROD");
+					paramMap.put("fileType", docType.get(i));
+					paramMap.put("fileTypeText", docTypeText.get(i));
+					docTypeList.add(paramMap);
+				}		
+				if(docTypeList != null && docTypeList.size() > 0) {
+					commonDao.insertFileType(docTypeList);				
+				}				
+			}
 			
 			//history 저장
 			Map<String, Object> historyParam = new HashMap<String, Object>();
@@ -940,6 +960,12 @@ public class ProductServiceImpl implements ProductService {
 					purposeData.put("infoType", "IMP");
 					purposeData.put("infoText", improveArr.get(i));
 					addInfoList.add(purposeData);
+					Object o = improveArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -1067,7 +1093,7 @@ public class ProductServiceImpl implements ProductService {
 				productDao.insertProductMaterial(param);
 			}			
 			
-			if( docType != null ) {
+			if( docType != null && docType.size() > 0 ) {
 				List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 				for( int i = 0 ; i < docType.size() ; i++ ) {
 					HashMap<String, Object> paramMap = new HashMap<String, Object>();
@@ -1077,7 +1103,9 @@ public class ProductServiceImpl implements ProductService {
 					paramMap.put("fileTypeText", docTypeText.get(i));
 					docTypeList.add(paramMap);
 				}		
-				commonDao.insertFileType(docTypeList);
+				if( docTypeList != null && docTypeList.size() > 0) {
+					commonDao.insertFileType(docTypeList);					
+				}
 			}
 			
 			//history 저장
@@ -1276,8 +1304,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", productIdx);
 					purposeData.put("infoType", "IMP");
-					purposeData.put("infoText", improveArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = improveArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -1405,7 +1437,7 @@ public class ProductServiceImpl implements ProductService {
 				productDao.insertProductMaterial(param);
 			}
 			
-			if( docType != null ) {
+			if( docType != null && docType.size() > 0) {
 				List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 				for( int i = 0 ; i < docType.size() ; i++ ) {
 					HashMap<String, Object> paramMap = new HashMap<String, Object>();
@@ -1415,7 +1447,9 @@ public class ProductServiceImpl implements ProductService {
 					paramMap.put("fileTypeText", docTypeText.get(i));
 					docTypeList.add(paramMap);
 				}		
-				commonDao.insertFileType(docTypeList);
+				if( docTypeList != null && docTypeList.size() > 0) {
+					commonDao.insertFileType(docTypeList);					
+				}
 			}
 			
 			//history 저장
@@ -1665,8 +1699,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", productIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -1675,8 +1713,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", productIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -1686,8 +1728,12 @@ public class ProductServiceImpl implements ProductService {
 						HashMap<String,Object> purposeData = new HashMap<String,Object>();
 						purposeData.put("idx", productIdx);
 						purposeData.put("infoType", "IMP");
-						purposeData.put("infoText", improveArr.get(i));
-						addInfoList.add(purposeData);
+						Object o = improveArr.get(i);                    
+						String text = (o == null) ? "" : o.toString().trim();
+						if (!text.isEmpty()) {                           
+							purposeData.put("infoText", text);          
+						    addInfoList.add(purposeData);
+						}
 					}
 				}				
 			}
@@ -1830,7 +1876,7 @@ public class ProductServiceImpl implements ProductService {
 			productDao.deleteFileType(map);
 			
 			//첨부파일 유형 저장
-			if( docType != null ) {
+			if( docType != null && docType.size() > 0) {
 				List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 				for( int i = 0 ; i < docType.size() ; i++ ) {
 					HashMap<String, Object> paramMap = new HashMap<String, Object>();
@@ -1839,8 +1885,10 @@ public class ProductServiceImpl implements ProductService {
 					paramMap.put("fileType", docType.get(i));
 					paramMap.put("fileTypeText", docTypeText.get(i));
 					docTypeList.add(paramMap);
-				}		
-				commonDao.insertFileType(docTypeList);
+				}
+				if( docTypeList != null && docTypeList.size() > 0) {
+					commonDao.insertFileType(docTypeList);					
+				}
 			}
 			
 			//history 저장
@@ -2042,8 +2090,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", productIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -2052,8 +2104,12 @@ public class ProductServiceImpl implements ProductService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", productIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -2063,8 +2119,12 @@ public class ProductServiceImpl implements ProductService {
 						HashMap<String,Object> purposeData = new HashMap<String,Object>();
 						purposeData.put("idx", productIdx);
 						purposeData.put("infoType", "IMP");
-						purposeData.put("infoText", improveArr.get(i));
-						addInfoList.add(purposeData);
+						Object o = improveArr.get(i);                    
+						String text = (o == null) ? "" : o.toString().trim();
+						if (!text.isEmpty()) {                           
+							purposeData.put("infoText", text);          
+						    addInfoList.add(purposeData);
+						}
 					}
 				}				
 			}
@@ -2207,7 +2267,7 @@ public class ProductServiceImpl implements ProductService {
 			productDao.deleteFileType(map);
 			
 			//첨부파일 유형 저장
-			if( docType != null ) {
+			if( docType != null && docType.size() > 0) {
 				List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 				for( int i = 0 ; i < docType.size() ; i++ ) {
 					HashMap<String, Object> paramMap = new HashMap<String, Object>();
@@ -2216,8 +2276,10 @@ public class ProductServiceImpl implements ProductService {
 					paramMap.put("fileType", docType.get(i));
 					paramMap.put("fileTypeText", docTypeText.get(i));
 					docTypeList.add(paramMap);
-				}		
-				commonDao.insertFileType(docTypeList);
+				}
+				if( docTypeList != null && docTypeList.size() > 0) {
+					commonDao.insertFileType(docTypeList);					
+				}
 			}
 			
 			//history 저장
@@ -2321,10 +2383,36 @@ public class ProductServiceImpl implements ProductService {
 		// TODO Auto-generated method stub
 		return productDao.selectSharedUser(param);
 	}
-
+	
 	@Override
 	public void deleteProduct(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		productDao.deleteProduct(param);
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		try {
+			//1.lab_materail 정보 삭제
+			productDao.deleteProduct(param);
+			//6.이전 버젼 is_last Y로 변경.
+			productDao.deleteProductIsLast(param);
+			
+			//materialDao.deleteMaterial(param);
+			
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", param.get("idx"));
+			historyParam.put("docType", "PROD");
+			historyParam.put("historyType", "D");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 	}
 }

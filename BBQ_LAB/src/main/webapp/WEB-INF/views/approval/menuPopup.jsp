@@ -602,17 +602,19 @@ function downloadFile(idx){
 						<th>첨부파일</th>
 						<td colspan="3">
 						<div class="con_file" style="">
-							<ul>
-								<li style="background-color:#fff; border:none;">
-									<dd>
-										<ul>
-											<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
-												<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-											</c:forEach>
-										</ul>
-									</dd>
-								</li>
-							</ul>
+							<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
+								<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a><br>
+							</c:forEach>
+						</div>
+						</td>
+					</tr>
+					<tr>
+						<th>매뉴얼</th>
+						<td colspan="3">
+						<div class="con_file" style="">
+							<c:forEach items="${menuData.manualFileList}" var="mfile" varStatus="status">
+				              <a href="javascript:downloadFile('${mfile.FILE_IDX}')">${mfile.ORG_FILE_NAME}</a><br>
+				            </c:forEach>
 						</div>
 						</td>
 					</tr>

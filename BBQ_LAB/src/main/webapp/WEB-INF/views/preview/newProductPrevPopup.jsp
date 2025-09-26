@@ -82,8 +82,8 @@
 						<th>시행월</th>
 						<td id="prev_excuteDate"></td>
 					</tr>
-					<tr>
-						<th>검사 요청 항목</th>
+					<tr id="prev_content">
+						<th>내용</th>
 						<td id="prev_dynamicTableTd" class="inner-table-cell">
 							<table class="inner-table">
 								<colgroup id="prev_colgroup"></colgroup>
@@ -92,6 +92,11 @@
 								</thead>
 								<tbody id="prev_dynamicTbody"></tbody>
 							</table>
+						</td>
+					</tr>
+					<tr>
+						<th>첨부파일</th>
+						<td id="prev_file" >
 						</td>
 					</tr>
 				</tbody>

@@ -437,7 +437,7 @@
 						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\"><a href=\"#\" onclick=\"return false;\">" + item.TITLE + "</a></td>";
 
 						html += "	<td onclick=\"fn_refInfo('" + item.APPR_IDX + "', '" + item.REF_IDX + "', '" + item.DOC_TYPE + "', '" + item.DOC_IDX + "')\" style=\"cursor:pointer;\">";
-						if( item.REG_USER_NAME == 'Y' ){
+						if( item.IS_READ == 'Y' ){
 							html += "확인완료";
 						} else {
 							html += "미열람"; 

@@ -588,6 +588,8 @@ public class ProductController {
 	public Map<String, Object> deleteProductAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
 			productService.deleteProduct(param);
 			map.put("RESULT", "S");
 		} catch( Exception e ) {

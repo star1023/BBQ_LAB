@@ -900,7 +900,7 @@
 			lab_approval_item
 		WHERE 1 = 1
 			AND APPR_IDX = #{apprIdx}
-			AND APPR_NO = #{currentStep+1}
+			AND APPR_NO = #{currentStep}+1
 	</select>
 	
 	<update id="updateApprUser" parameterType="map">

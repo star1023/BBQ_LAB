@@ -232,6 +232,14 @@
 							</table>
 						</td>
 					</tr>
+					<tr>
+						<th  >조사자</th>
+						<td colspan="3" >
+							<c:forEach items="${researchData.fileList}" var="fileList" varStatus="status">
+								${fileList.ORG_FILE_NAME}<br>
+							</c:forEach>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

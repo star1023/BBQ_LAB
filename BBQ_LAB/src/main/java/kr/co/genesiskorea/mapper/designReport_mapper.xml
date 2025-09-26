@@ -89,6 +89,7 @@
 	FROM 	
 		lab_design ld
 	WHERE 1 = 1
+	    AND IS_DELETE = 'N'
 		AND DOC_NO in (
 			SELECT 
 				tmp.DOC_NO
@@ -324,6 +325,38 @@
 	</delete>
 	
 	<select id="selectHistory" parameterType="map" resultType="hashmap">
+	/* product.selectHistory */
+	SELECT 
+		lh.DOC_IDX
+		, lh.HISTORY_TYPE
+		, CASE WHEN lh.HISTORY_TYPE  = 'F' then <![CDATA[
+                                 CONCAT(
+                                   '전 담당자(',
+                                   SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'from=', -1), ',', 1),
+                                   ')의 문서를 현 담당자(',
+                                   SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'to=', -1), ',', 1),
+                                   ')에게 이관했습니다.<br/>',
+                                   '사유: ',
+                                   TRIM(SUBSTRING_INDEX(lh.HISTORY_DATA, 'comment=', -1))
+                                 )
+                                 ]]>
+         ELSE FN_GET_CODE_NAME('HISTORY_CODE',lh.HISTORY_TYPE)                           
+         END HISTORY_TYPE_TXT 
+		, lp.VERSION_NO
+		, lp.PRODUCT_NAME AS TITLE
+		, lh.USER_ID 
+		, FN_GET_USER_NAME(lh.USER_ID) as USER_NAME
+		, DATE_FORMAT(lh.REG_DATE, '%Y-%m-%d %H:%i:%s') as REG_DATE
+	FROM lab_history lh ,
+		lab_design lp 
+	WHERE 1 = 1
+		AND lh.DOC_IDX IN (SELECT DESIGN_IDX FROM lab_design WHERE 1 = 1 AND DOC_NO = #{docNo})
+		AND lh.DOC_TYPE = #{docType}
+		AND lh.DOC_IDX = lp.DESIGN_IDX 
+	ORDER BY lh.REG_DATE ASC
+	</select>
+	
+<!-- 	<select id="selectHistory" parameterType="map" resultType="hashmap">
 	/* designReport.selectHistory */
 	SELECT 
 		lh.DOC_IDX
@@ -384,7 +417,7 @@
 			</when>
 		</choose>		
 	ORDER BY lh.REG_DATE ASC
-	</select>
+	</select> -->
 	
 	<select id="selectMyDataCheck" parameterType="map" resultType="int">
 		SELECT
@@ -402,7 +435,8 @@
 		UPDATE 
 			lab_design
 		SET
-			IS_DELETE = 'Y'
+			IS_DELETE = 'Y',
+			IS_LAST = 'N'
 		WHERE 1 = 1
 			AND DESIGN_IDX = #{idx}
 	</update>
@@ -441,7 +475,7 @@
 			, #{title}
 			, #{productName}
 			, #{contents}
-			, (SELECT ifnull(MAX(ld.VERSION_NO),0)+1 FROM lab_design ld WHERE 1 = 1 AND DOC_NO = #{docNo})	
+			, (SELECT ifnull(MAX(ld.VERSION_NO),0)+1 FROM lab_design ld WHERE 1 = 1 AND DOC_NO = #{docNo} AND IS_DELETE = 'N')	
 			, 'N'
 			, 'Y'
 			, #{status}
@@ -450,4 +484,15 @@
 			, #{docNo}
 		)
 	</insert>
+	
+	<update id="deleteDesignIsLast" parameterType="map">
+		UPDATE 
+			lab_design
+		SET 
+			IS_LAST = 'Y'
+		WHERE 1 = 1
+			AND DOC_NO = #{docNo}
+			AND VERSION_NO = ( SELECT VERSION_NO FROM (SELECT max(lm.VERSION_NO) AS VERSION_NO FROM lab_design lm WHERE 1 = 1 AND lm.DOC_NO = #{docNo} AND IS_DELETE = 'N') AS sub )
+	</update>
+	
 </mapper>

@@ -184,6 +184,22 @@
 						<td colspan="5" id="prev_menuType">
 						</td>
 					</tr>
+					<tr>
+						<th >첨부파일 유형</th>
+						<td colspan="5" id="prev_fileType">
+							
+						</td>
+					</tr>
+					<tr>
+						<th  >첨부파일</th>
+						<td colspan="5" id="prev_file">
+						</td>
+					</tr>
+					<tr>
+						<th  >매뉴얼</th>
+						<td colspan="5" id="prev_manual">
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

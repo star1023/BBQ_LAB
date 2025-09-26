@@ -359,6 +359,7 @@ function downloadFile(idx){
 		                <th>시행월</th>
 		                <td id="monthTd" colspan="${fn:length(columnState)}">${newProductResultData.data.EXCUTE_DATE}</td>
 		            </tr>
+					<c:if test="${fn:length(newProductResultData.data.COLUMN_STATE) > 0}">
 		            <tr>
 		                <th>내용</th>
 		                <td id="inspectionTd" class="inner-table-cell" colspan="${fn:length(columnState)}">
@@ -441,21 +442,14 @@ function downloadFile(idx){
 
 		                </td>
 		            </tr>
+		            </c:if>
 		            <tr>
 					<th>첨부파일</th>
 							<td colspan="${fn:length(columnState)}">
 							<div class="con_file" style="">
-								<ul>
-									<li style="background-color:#fff; border:none;">
-										<dd>
-											<ul>
-												<c:forEach items="${newProductResultData.fileList}" var="fileList" varStatus="status">
-													<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-												</c:forEach>
-											</ul>
-										</dd>
-									</li>
-								</ul>
+								<c:forEach items="${newProductResultData.fileList}" var="fileList" varStatus="status">
+									<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a><br>
+								</c:forEach>
 							</div>
 							</td>
 						</tr>

@@ -159,6 +159,7 @@
 		                <th>시행월</th>
 		                <td id="monthTd" colspan="${fn:length(columnState)}">${newProductResultData.data.EXCUTE_DATE}</td>
 		            </tr>
+		            <c:if test="${fn:length(newProductResultData.data.COLUMN_STATE) > 0}">
 		            <tr>
 		                <th>내용</th>
 		                <td id="inspectionTd" class="inner-table-cell" colspan="${fn:length(columnState)}">
@@ -240,6 +241,15 @@
 							</table>
 
 		                </td>
+		            </tr>
+		            </c:if>
+		            <tr>
+		                <th>첨부파일</th>
+		                <td colspan="${fn:length(columnState)}">
+			                <c:forEach items="${newProductResultData.fileList}" var="fileList" varStatus="status">
+								${fileList.ORG_FILE_NAME}<br>
+							</c:forEach>
+						</td>
 		            </tr>
 		        </tbody>
 		    </table>

@@ -88,4 +88,6 @@ public interface ProductDao {
 	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
 
 	void deleteProduct(Map<String, Object> param) throws Exception;
+
+	void deleteProductIsLast(Map<String, Object> param) throws Exception;
 }

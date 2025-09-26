@@ -212,6 +212,17 @@
 				</tbody>
 			</table>
 		</div>
+		<div id="wrapper_prev_content">
+			<div>
+				<span style="font-size: 14px;">※ 첨부파일</span>
+			</div>
+			<table class="insert_proc01">
+				<tr> 
+					<th style="width:13%;">첨부파일</th>
+					<td id="prev_file"></td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

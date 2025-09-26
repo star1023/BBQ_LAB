@@ -250,7 +250,7 @@
 									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_update('"+item.PRODUCT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
 								}
 								if( item.STATUS == 'TMP' ) {
-									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.PRODUCT_IDX+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+									html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_delete('"+item.PRODUCT_IDX+"', '"+item.DOC_NO+"')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
 								}
 							}
 							html += "		</li>";
@@ -327,7 +327,7 @@
 					} else if( item.HISTORY_TYPE == 'P' ) {
 						html += " PDF 다운로드 되었습니다.";
 					} else if( item.HISTORY_TYPE == 'F' ) {
-						html += " 담당자 이관 되었습니다.<br>" + item.HISTORY_TYPE_TXT;
+						html += " 담당자 이관 되었습니다.";
 					}
 					html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
 					html += "</li>"; 
@@ -345,14 +345,15 @@
 		location.href = '/product/update?idx='+idx;
 	}
 	
-	function fn_delete(idx) {
+	function fn_delete(idx, docNo) {
 		$('#lab_loading').show();
 		var URL = "../product/deleteProductAjax";
 		$.ajax({
 			type:"POST",
 			url:URL,
 			data:{
-				"idx" : idx
+				"idx" : idx,
+				"docNo" : docNo
 			},
 			dataType:"json",
 			async:false,
@@ -603,7 +604,7 @@
 <!-- 이력내역 레이어 start-->
 <div class="white_content" id="dialog_history">
 	<div class="modal"
-		style="margin-left: -300px; width: 500px; height: 420px; margin-top: -210px">
+		style="margin-left: -350px; width: 600px; height: 420px; margin-top: -210px">
 		<h5 style="position: relative">
 			<span class="title">문서이력</span>
 			<div class="top_btn_box">

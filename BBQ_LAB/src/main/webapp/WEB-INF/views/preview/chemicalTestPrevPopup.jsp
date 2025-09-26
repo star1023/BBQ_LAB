@@ -126,6 +126,10 @@
 						</td>
 						<td colspan="3" style="text-align: center;" id="prev_previewImg"></td>
 					</tr>
+					<tr>
+						<th >첨부파일</th>
+						<td colspan="5" id="prev_file"></td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

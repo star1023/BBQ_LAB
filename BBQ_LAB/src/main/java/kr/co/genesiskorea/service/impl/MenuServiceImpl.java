@@ -90,8 +90,10 @@ public class MenuServiceImpl implements MenuService {
 		param.put("docType", "MENU");
 		List<Map<String, String>> fileList = commonDao.selectFileList(param);
 		List<Map<String, String>> fileType = commonDao.selectFileType(param);
-		param.put("docType", "MANUAL");
-		List<Map<String, String>> manualFileList = commonDao.selectFileList(param);
+		Map<String, Object> manualParam = new HashMap<String, Object>();
+		manualParam.put("docType", "MANUAL");
+		manualParam.put("idx", param.get("idx"));
+		List<Map<String, String>> manualFileList = commonDao.selectFileList(manualParam);
 		map.put("data", data);
 		map.put("fileList", fileList);
 		map.put("fileType", fileType);
@@ -267,8 +269,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -277,8 +283,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", menuIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -604,8 +614,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -614,8 +628,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", menuIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -1002,8 +1020,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "IMP");
-					purposeData.put("infoText", improveArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = improveArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -1419,8 +1441,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "IMP");
-					purposeData.put("infoText", improveArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = improveArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -1877,8 +1903,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -1887,8 +1917,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", menuIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -1897,8 +1931,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "IMP");
-					purposeData.put("infoText", improveArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = improveArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -2339,8 +2377,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "PUR");
-					purposeData.put("infoText", purposeArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = purposeArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -2349,8 +2391,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> featureData = new HashMap<String,Object>();
 					featureData.put("idx", menuIdx);
 					featureData.put("infoType", "FEA");
-					featureData.put("infoText", featureArr.get(i));
-					addInfoList.add(featureData);
+					Object o = featureArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+						featureData.put("infoText", text);          
+					    addInfoList.add(featureData);
+					}
 				}
 			}
 			
@@ -2359,8 +2405,12 @@ public class MenuServiceImpl implements MenuService {
 					HashMap<String,Object> purposeData = new HashMap<String,Object>();
 					purposeData.put("idx", menuIdx);
 					purposeData.put("infoType", "IMP");
-					purposeData.put("infoText", improveArr.get(i));
-					addInfoList.add(purposeData);
+					Object o = improveArr.get(i);                    
+					String text = (o == null) ? "" : o.toString().trim();
+					if (!text.isEmpty()) {                           
+					    purposeData.put("infoText", text);          
+					    addInfoList.add(purposeData);
+					}
 				}				
 			}
 			
@@ -2666,7 +2716,33 @@ public class MenuServiceImpl implements MenuService {
 	@Override
 	public void deleteMenu(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		menuDao.deleteMenu(param);
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		try {
+			//1.lab_materail 정보 삭제
+			menuDao.deleteMenu(param);
+			//6.이전 버젼 is_last Y로 변경.
+			menuDao.deleteMenuIsLast(param);
+			
+			//materialDao.deleteMaterial(param);
+			
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", param.get("idx"));
+			historyParam.put("docType", "MENU");
+			historyParam.put("historyType", "D");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 	}
 
 }

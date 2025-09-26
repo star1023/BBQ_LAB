@@ -563,7 +563,33 @@ public class DesignReportServiceImpl implements DesignReportService {
 	@Override
 	public void deleteDesignReport(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
-		reportDao.deleteDesignReport(param);
+		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
+		TransactionStatus status = null;
+		
+		def.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRES_NEW);
+		status = txManager.getTransaction(def);
+		try {
+			//1.lab_materail 정보 삭제
+			reportDao.deleteDesignReport(param);
+			//6.이전 버젼 is_last Y로 변경.
+			reportDao.deleteDesignIsLast(param);
+			
+			//materialDao.deleteMaterial(param);
+			
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", param.get("idx"));
+			historyParam.put("docType", "DESIGN");
+			historyParam.put("historyType", "D");
+			historyParam.put("historyData", param.toString());
+			historyParam.put("userId", param.get("userId"));
+			commonDao.insertHistory(historyParam);
+			
+			txManager.commit(status);
+		} catch( Exception e ) {
+			txManager.rollback(status);
+			logger.error(StringUtil.getStackTrace(e, this.getClass()));
+			throw e;
+		}
 	}
 
 	@Override
@@ -693,7 +719,11 @@ public class DesignReportServiceImpl implements DesignReportService {
 								String newFileName = fileIdx+"_"+orgFileName;
 								File currentFile = new File(currentFilePath);						
 								File newFile = new File(newFilePath+File.separator+newFileName);
-								FileUtils.copyFile(currentFile, newFile);
+								try {
+									FileUtils.copyFile(currentFile, newFile);
+								} catch (Exception e) {
+									
+								}
 								
 								Map<String,Object> fileMap = new HashMap<String,Object>();
 								fileMap.put("fileIdx", fileIdx);

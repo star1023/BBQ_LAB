@@ -308,7 +308,7 @@ function fn_viewHistory(idx) {
 				} else if( item.HISTORY_TYPE == 'U' ) {
 					html += " 수정되었습니다.";
 				} else if( item.HISTORY_TYPE == 'F' ) {
-					html += " 담당자 이관 되었습니다.<br>" + item.HISTORY_TYPE_TXT;
+					html += " 담당자 이관 되었습니다.";
 				}
 				html += "<br/><span>"+item.USER_NAME+"</span>&nbsp;&nbsp;<span class=\"date\">"+item.REG_DATE+"</span>";
 				html += "</li>"; 
@@ -511,7 +511,7 @@ function paging( pageNo ) {
 <!-- 이력내역 레이어 start-->
 <div class="white_content" id="dialog_history">
 	<div class="modal"
-		style="margin-left: -300px; width: 500px; height: 420px; margin-top: -210px">
+		style="margin-left: -350px; width: 600px; height: 420px; margin-top: -210px">
 		<h5 style="position: relative">
 			<span class="title">문서이력</span>
 			<div class="top_btn_box">

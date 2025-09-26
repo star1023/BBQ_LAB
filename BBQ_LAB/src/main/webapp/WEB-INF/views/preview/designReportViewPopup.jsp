@@ -230,6 +230,14 @@
 							</c:forEach>
 						</td>
 					</tr>
+					<tr>
+						<th >첨부파일</th>
+						<td colspan="3">
+							<c:forEach items="${designData.fileList}" var="fileList" varStatus="status">
+								${fileList.ORG_FILE_NAME}<br>
+							</c:forEach>
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

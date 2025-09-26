@@ -86,4 +86,6 @@ public interface MenuDao {
 	List<Map<String, String>> selectSharedUser(Map<String, Object> param);
 
 	void deleteMenu(Map<String, Object> param) throws Exception;
+
+	void deleteMenuIsLast(Map<String, Object> param) throws Exception;
 }

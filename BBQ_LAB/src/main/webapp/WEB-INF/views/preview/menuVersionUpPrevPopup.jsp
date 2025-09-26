@@ -63,6 +63,9 @@
 	</div>
 	<div style="height: 50px;"></div>
     <div id="wrapper">
+    	<div style="width=100%; margin: 0 0 5px; display:flex; justify-content: center; font-weight: bold; font-size: 24px;">
+			<span>메뉴완료보고서</span>
+		</div>
 		<div class="mainTable">
 			<table >
 				<colgroup>
@@ -196,6 +199,21 @@
 					<tr>
 						<th  >메뉴유형</th>
 						<td colspan="5" id="prev_menuType">
+						</td>
+					</tr>
+					<tr>
+						<th  >첨부파일 유형</th>
+						<td colspan="5" id="prev_fileType">
+						</td>
+					</tr>
+					<tr>
+						<th  >첨부파일</th>
+						<td colspan="5" id="prev_file">
+						</td>
+					</tr>
+					<tr>
+						<th  >매뉴얼</th>
+						<td colspan="5" id="prev_manual">
 						</td>
 					</tr>
 				</tbody>

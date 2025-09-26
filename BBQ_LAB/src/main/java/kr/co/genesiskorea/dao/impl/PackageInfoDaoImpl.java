@@ -105,4 +105,10 @@ public class PackageInfoDaoImpl implements PackageInfoDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("package.deletePackage", param);
 	}
+
+	@Override
+	public void deletePackageIsLast(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("package.deletePackageIsLast", param);
+	}
 }

@@ -332,11 +332,19 @@
 	SELECT 
 		lh.DOC_IDX
 		, lh.HISTORY_TYPE
-		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
-			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
-			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
-			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
-			END HISTORY_TYPE_TXT 
+		, CASE WHEN lh.HISTORY_TYPE  = 'F' then <![CDATA[
+                                 CONCAT(
+                                   '전 담당자(',
+                                   SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'from=', -1), ',', 1),
+                                   ')의 문서를 현 담당자(',
+                                   SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'to=', -1), ',', 1),
+                                   ')에게 이관했습니다.<br/>',
+                                   '사유: ',
+                                   TRIM(SUBSTRING_INDEX(lh.HISTORY_DATA, 'comment=', -1))
+                                 )
+                                 ]]>
+	         ELSE FN_GET_CODE_NAME('HISTORY_CODE',lh.HISTORY_TYPE)                           
+	         END HISTORY_TYPE_TXT 
 		,<choose>
 			<when test="docType.equals('DESIGN')">
 			rt.PRODUCT_NAME 

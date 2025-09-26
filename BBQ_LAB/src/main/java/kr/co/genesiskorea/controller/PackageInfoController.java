@@ -321,6 +321,8 @@ private Logger logger = LogManager.getLogger(PackageInfoController.class);
 	public Map<String, Object> deletePackageAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
 			packageInfoService.deletePackage(param);
 			map.put("RESULT", "S");
 		} catch( Exception e ) {

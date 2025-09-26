@@ -279,6 +279,21 @@
 				</tbody>
 			</table>
 		</div>
+		<div id="wrapper_prev_content">
+			<div>
+				<span style="font-size: 14px;">※ 첨부파일</span>
+			</div>
+			<table class="insert_proc01">
+				<tr> 
+					<th style="width:16%;">첨부파일</th>
+					<td id="prev_file">
+						<c:forEach items="${packageInfoData.fileList}" var="fileList" varStatus="status">
+							${fileList.ORG_FILE_NAME}<br>
+						</c:forEach>
+					</td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

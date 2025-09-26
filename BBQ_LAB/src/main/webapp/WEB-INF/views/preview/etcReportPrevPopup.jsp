@@ -93,6 +93,17 @@
 				</tr>
 			</table>
 		</div>
+		<div id="wrapper_prev_content">
+			<div>
+				<span style="font-size: 14px;">※ 첨부파일</span>
+			</div>
+			<table>
+				<tr>
+					<th style="width:16%;">첨부파일</th>
+					<td id="prev_file"></td>
+				</tr>
+			</table>
+		</div>
 	</div>
 </body>
 </html>

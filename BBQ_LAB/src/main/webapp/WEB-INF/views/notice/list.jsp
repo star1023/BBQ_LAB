@@ -387,7 +387,7 @@ function isNoticePeriodValid(startDateStr, endDateStr) {
 <!-- 이력내역 레이어 start-->
 <div class="white_content" id="dialog_history">
 	<div class="modal"
-		style="margin-left: -300px; width: 500px; height: 420px; margin-top: -210px">
+		style="margin-left: -350px; width: 600px; height: 420px; margin-top: -210px">
 		<h5 style="position: relative">
 			<span class="title">문서이력</span>
 			<div class="top_btn_box">

@@ -373,12 +373,20 @@
 					</tr>
 					<tr>
 						<th >첨부파일 유형</th>
-						<td colspan="3">
+						<td colspan="5">
 							<c:forEach items="${productData.fileType}" var="fileType" varStatus="status">
 								<c:if test="${status.index != 0 }">
 								,
 								</c:if>
 								${fileType.FILE_TEXT}
+							</c:forEach>
+						</td>
+					</tr>
+					<tr>
+						<th >첨부파일</th>
+						<td colspan="5">
+							<c:forEach items="${productData.fileList}" var="fileList" varStatus="status">
+								${fileList.ORG_FILE_NAME}<br>
 							</c:forEach>
 						</td>
 					</tr>

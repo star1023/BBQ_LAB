@@ -36,7 +36,7 @@
         '<head>' +
           '<title>인쇄 미리보기</title>' +
           '<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css">' +
-          '<style>@media print { body { margin: 0; } }</style>' +
+          '<style>@media print { body { margin: 10px; } }</style>' +
         '</head>' +
         '<body onload="window.focus(); window.print();">' +
           printContent +
@@ -164,6 +164,16 @@
 					<tr>
 						<th  >제품유형</th>
 						<td colspan="5" id="prev_productType">
+						</td>
+					</tr>
+					<tr>
+						<th  >첨부파일 유형</th>
+						<td colspan="5" id="prev_fileType">
+						</td>
+					</tr>
+					<tr>
+						<th  >첨부파일</th>
+						<td colspan="5" id="prev_file">
 						</td>
 					</tr>
 				</tbody>

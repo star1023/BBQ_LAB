@@ -79,6 +79,8 @@ public class MenuController {
 		Auth auth = AuthUtil.getAuth(request);
 		String userId = auth.getUserId();
 		model.addAttribute("userId", userId);
+		param.put("docIdx", param.get("idx"));
+		param.put("docType", "MENU");
 		
 		//lab_menu 테이블 조회, lab_file 테이블 조회
 		Map<String, Object> menuData = menuService.selectMenuData(param);
@@ -96,8 +98,6 @@ public class MenuController {
 		model.addAttribute("sharedUserList", sharedUserList);
 		
 		//lab_approval_header 테이블 조회
-		param.put("docIdx", param.get("idx"));
-		param.put("docType", "MENU");
 		Map<String, Object> apprHeader = approvalService.selectApprHeaderData(param);
 		if( apprHeader != null && apprHeader.get("APPR_IDX") != null && !"".equals(apprHeader.get("APPR_IDX")) ) {
 			model.addAttribute("apprHeader", apprHeader);
@@ -571,6 +571,8 @@ public class MenuController {
 	public Map<String, Object> deleteMenuAjax(HttpServletResponse respose, HttpServletRequest request, @RequestParam Map<String, Object> param) throws Exception{
 		Map<String, Object> map = new HashMap<String, Object>();
 		try {
+			Auth auth = AuthUtil.getAuth(request);
+			param.put("userId", auth.getUserId());
 			menuService.deleteMenu(param);
 			map.put("RESULT", "S");
 		} catch( Exception e ) {

@@ -255,4 +255,10 @@ public class MenuDaoImpl implements MenuDao {
 		// TODO Auto-generated method stub
 		sqlSessionTemplate.update("menu.deleteMenu", param);
 	}
+	
+	@Override
+	public void deleteMenuIsLast(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("menu.deleteMenuIsLast", param);
+	}
 }

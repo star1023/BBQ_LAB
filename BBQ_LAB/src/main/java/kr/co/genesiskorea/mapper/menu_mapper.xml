@@ -166,8 +166,8 @@
 			, #{contents}
 			, #{newMat}
 			<choose>
-				<when test="menuType1 != null and menuType1 !='' ">
-				, (SELECT ifnull(MAX(lp.VERSION_NO),0)+1 FROM lab_menu lp WHERE 1 = 1 AND MENU_CODE = #{menuCode})
+				<when test=" menuCode != null and menuCode !='' ">
+				, (SELECT ifnull(MAX(lp.VERSION_NO),0)+1 FROM lab_menu lp WHERE 1 = 1 AND MENU_CODE = #{menuCode} AND lp.IS_DELETE = 'N')
 				</when>
 				<otherwise>
 				, 1
@@ -350,6 +350,7 @@
 				ON lp.MENU_IDX = lf.DOC_IDX 
 				AND lf.DOC_TYPE = "MENU" 
 		WHERE 1 = 1
+			AND lp.IS_DELETE = 'N'
 			AND DOC_NO in (
 				SELECT 
 					tmp.DOC_NO
@@ -451,23 +452,19 @@
 	SELECT 
 		lh.DOC_IDX
 		, lh.HISTORY_TYPE
-		, CASE WHEN lh.HISTORY_TYPE  = 'I' then '등록'
-			WHEN lh.HISTORY_TYPE  = 'V' then '개정'
-			WHEN lh.HISTORY_TYPE  = 'D' then '삭제'
-			WHEN lh.HISTORY_TYPE  = 'U' then '수정'
-			WHEN lh.HISTORY_TYPE  = 'T' then '임시저장'
-			WHEN lh.HISTORY_TYPE  = 'F' then <![CDATA[
-											CONCAT(
-											  '전 담당자(',
-											  SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'from=', -1), ',', 1),
-											  ')의 문서를 현 담당자(',
-											  SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'to=', -1), ',', 1),
-											  ')에게 이관했습니다.<br/>',
-											  '사유: ',
-											  TRIM(SUBSTRING_INDEX(lh.HISTORY_DATA, 'comment=', -1))
-											)
-											]]>
-			END HISTORY_TYPE_TXT 
+		, CASE WHEN lh.HISTORY_TYPE  = 'F' then <![CDATA[
+                                 CONCAT(
+                                   '전 담당자(',
+                                   SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'from=', -1), ',', 1),
+                                   ')의 문서를 현 담당자(',
+                                   SUBSTRING_INDEX(SUBSTRING_INDEX(lh.HISTORY_DATA, 'to=', -1), ',', 1),
+                                   ')에게 이관했습니다.<br/>',
+                                   '사유: ',
+                                   TRIM(SUBSTRING_INDEX(lh.HISTORY_DATA, 'comment=', -1))
+                                 )
+                                 ]]>
+         ELSE FN_GET_CODE_NAME('HISTORY_CODE',lh.HISTORY_TYPE)                           
+         END HISTORY_TYPE_TXT  
 		, lp.VERSION_NO
 		, lp.NAME 
 		, lp.MENU_CODE 
@@ -1010,8 +1007,19 @@
 		UPDATE 
 			lab_menu
 		SET
-			IS_DELETE = 'Y'
+			IS_DELETE = 'Y',
+			IS_LAST = 'N'
 		WHERE 1 = 1
 			AND MENU_IDX = #{idx}
+	</update>
+	
+	<update id="deleteMenuIsLast" parameterType="map">
+		UPDATE 
+			lab_menu
+		SET 
+			IS_LAST = 'Y'
+		WHERE 1 = 1
+			AND DOC_NO = #{docNo}
+			AND VERSION_NO = ( SELECT VERSION_NO FROM (SELECT max(lm.VERSION_NO) AS VERSION_NO FROM lab_menu lm WHERE 1 = 1 AND lm.DOC_NO = #{docNo} AND IS_DELETE = 'N') AS sub )
 	</update>
 </mapper>

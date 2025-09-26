@@ -118,4 +118,10 @@ public class DesignReportDaoImpl implements DesignReportDao {
 		sqlSessionTemplate.insert("designReport.insertVersionUpDesign", param);
 	}
 
+	@Override
+	public void deleteDesignIsLast(Map<String, Object> param) throws Exception {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.update("designReport.deleteDesignIsLast", param);
+	}
+
 }

@@ -349,24 +349,6 @@ function downloadFile(idx){
 						<th  >제목</th>
 						<td colspan="3">${etcData.data.TITLE}</td>
 					</tr>
-					<tr>
-					<th>첨부파일</th>
-					<td colspan="3">
-					<div class="con_file" style="">
-						<ul>
-							<li style="background-color:#fff; border:none;">
-								<dd>
-									<ul>
-										<c:forEach items="${etcData.fileList}" var="fileList" varStatus="status">
-											<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
-										</c:forEach>
-									</ul>
-								</dd>
-							</li>
-						</ul>
-					</div>
-					</td>
-				</tr>
 				</tbody>
 			</table>
 		</div>
@@ -377,6 +359,29 @@ function downloadFile(idx){
 			<table>
 				<tr>
 					<td><pre>${etcData.data.CONTENTS}</pre></td>
+				</tr>
+			</table>
+		</div>
+		<div>
+			<span style="font-size: 14px;">※ 첨부파일</span>
+		</div>	
+		<div class="mainTable">
+			<table>
+				<colgroup>
+					<col width="15%" />
+					<col width="35%" />
+					<col width="15%" />
+					<col width="35%" />
+				</colgroup>
+				<tr>
+					<th>첨부파일</th>
+					<td colspan="3">
+					<div class="con_file" style="">
+						<c:forEach items="${etcData.fileList}" var="fileList" varStatus="status">
+							<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a><br>
+						</c:forEach>
+					</div>
+					</td>
 				</tr>
 			</table>
 		</div>
