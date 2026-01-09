@@ -43,6 +43,7 @@
       white-space: pre-wrap;
     }
     @media print {
+      a { text-decoration: none !important; color: black; }
       body {
         margin: 0;
         background: white !important; 

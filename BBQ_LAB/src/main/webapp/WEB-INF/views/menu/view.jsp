@@ -149,7 +149,7 @@
 			formData.append("apprComment", $("#apprComment").val());
 			formData.append("apprLine", $("#apprLine").selectedValues());
 			formData.append("refLine", $("#refLine").selectedValues());
-			formData.append("title", '${menuData.data.TITLE}');
+			formData.append("title", "${menuData.data.TITLE}");
 			formData.append("docType", "MENU");
 			formData.append("status", "N");
 			var URL = "../approval/insertApprAjax";
@@ -255,6 +255,13 @@
 	            });
 	        });
 	}
+	
+	function fn_openPreview(idx) {
+		var url = "/preview/menuViewPopup?idx="+idx;
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -289,8 +296,9 @@
 						<a href="#" onClick="tabChange('tab2')"><li class="" id="tab2_li">완료보고서상세정보</li></a>
 					</div>
 					<div>
+						<button class="btn_small_search ml5" onclick='fn_openPreview("${menuData.data.MENU_IDX}")'>미리보기</button>
 						<c:if test="${menuData.data.STATUS eq 'COMP' && menuData.data.DOC_OWNER eq userId}">
-					    	<button class="btn_small_search ml5" onclick="fn_pdfDownload('${menuData.data.MENU_IDX}')">PDF 다운로드</button>
+					    	<button class="btn_small_search ml5" onclick='fn_pdfDownload("${menuData.data.MENU_IDX}")'>PDF 다운로드</button>
 					    </c:if>
 					</div>
 				</ul>
@@ -662,14 +670,14 @@
 						</li>
 					</ul>
 				</div>
-				<!-- ====================== 매뉴얼 (MANUAL) ====================== -->
+				<!-- ====================== 메뉴얼 (MANUAL) ====================== -->
 				<div class="title2 mb20" style="width:90%; margin-top: 30px;">
-				  <span class="txt">매뉴얼</span>
+				  <span class="txt">메뉴얼</span>
 				</div>
 				<div class="list_detail">
 				  <ul>
 				    <li>
-				      <dt style="width: 20%">매뉴얼</dt>
+				      <dt style="width: 20%">메뉴얼</dt>
 				      <dd style="width: 80%;">
 				        <div class="add_file" id="add_file_manual" style="width:100%"></div>
 				        <div id="manualFileList" class="file_box_pop"
@@ -936,7 +944,7 @@
 				<div>
 					<table class="insert_proc01" style="border-bottom: 2px solid #4b5165;">
 						<tr>
-							<td>${menuData.data.CONTENTS}</td>
+							<td>${strUtil:getHtmlBr(menuData.data.CONTENTS)}</td>
 						</tr>
 					</table>
 				</div>

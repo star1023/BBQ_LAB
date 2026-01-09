@@ -54,4 +54,9 @@ public class LabSchedule {
 	public void hrUserSync() {
 		batchService.hrUserSync();
 	}
+	
+	@Scheduled(cron = "0 0 1 * * ?", zone = "Asia/Seoul")
+	public void deleteHrUserMaster() {
+		batchService.deleteHrUserMaster();
+	}
 }

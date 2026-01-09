@@ -15,7 +15,7 @@
 				FROM 
 					lab_file 
 				WHERE 1 = 1 
-					AND DOC_TYPE = 'PLAN' 
+					AND DOC_TYPE = 'TRIP' 
 					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
 			)											
 		</if>
@@ -54,6 +54,8 @@
 			    </when>
 				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
 			</choose>
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
 			<include refid="businessTrip.whereBusinessTrip" />			
 	</select>
 	

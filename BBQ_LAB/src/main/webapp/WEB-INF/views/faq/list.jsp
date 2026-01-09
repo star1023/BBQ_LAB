@@ -92,6 +92,8 @@ pre {
 	font-family: '맑은고딕', Malgun Gothic;
 }
 </style>
+<script type="text/javascript"
+	src="../resources/js/common.js"></script>
 <script type="text/javascript">
 let _faqCategoryFullList = []; // 전체 FAQ 카테고리 저장용 전역변수
 
@@ -256,17 +258,17 @@ function fn_renderList(list) {
         html += "        <span class='faq-q-title'>" + item.QUESTION + "</span>";
         html += "      </div>";
         html += "    </div>";
-        html += "    <span class='faq-q-meta'>" + item.REG_USER + " | " + item.REG_DATE;
+        html += "    <span class='faq-q-meta'>" + item.REG_USER_NAME + " | " + item.REG_DATE;
         html += "      <img src='/resources/images/img_dot.png' class='toggle-btn' id='btn-" + index + "' style='width: 18px; height: 18px; transition: transform 0.3s ease; margin-left: 8px;' />";
         html += "    </span>";
         html += "  </div>";
         html += "  <div class='faq-answer' id='answer-" + index + "' style='display:none;'>";
-        html += "    <pre style='white-space:pre-wrap;'>" + item.ANSWER + "</pre>";
+        html += "    <dic style='white-space:pre-wrap;'>" + restoreStr(item.ANSWER) + "</div>";
         html += "    <div class='faq-ctrl'>";
-		<c:if test="${userUtil:getUserId(pageContext.request) == noticeData.data.REG_USER }">
-        html += "  <button class=\"btn_doc\" onclick=\"fn_updatForm('" + item.BFAQ_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>&nbsp; |";
-        html += "  <button class=\"btn_doc\" onclick=\"fn_delete('" + item.BFAQ_IDX + "')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
-        </c:if>
+		if('${userUtil:getUserId(pageContext.request)}' == item.REG_USER){
+	        html += "  <button class=\"btn_doc\" onclick=\"fn_updatForm('" + item.BFAQ_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>&nbsp; |";
+	        html += "  <button class=\"btn_doc\" onclick=\"fn_delete('" + item.BFAQ_IDX + "')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";        
+		}
         html += "    </div>";
         html += "  </div>";
         html += "</div>";

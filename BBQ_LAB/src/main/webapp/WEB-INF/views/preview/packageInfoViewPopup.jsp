@@ -16,6 +16,10 @@
   <meta charset="UTF-8">
   <title>프린트 미리보기</title>
   <script type="text/javascript">
+  function downloadFile(idx){
+	location.href = '/common/fileDownload?idx='+idx;
+  }
+  
   function fn_printPreview() {
     var printContent = document.getElementById("wrapper").outerHTML;
 
@@ -36,7 +40,7 @@
         '<head>' +
           '<title>인쇄 미리보기</title>' +
           '<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css">' +
-          '<style>@media print { body { margin: 0; } }</style>' +
+          '<style>@media print { body { margin: 0; } a { text-decoration: none; color: black; }}</style>' +
         '</head>' +
         '<body onload="window.focus(); window.print();">' +
           printContent +
@@ -267,13 +271,13 @@
 					<tr>
 						<th>주의사항</th>
 						<td class="value" colSpan="2">
-							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.SUGGESTIONS}</p>
+							<p style="white-space: pre-line; text-align:left;">${strUtil:getHtmlBr(packageInfoData.data.SUGGESTIONS)}</p>
 						</td>
 					</tr>					
 					<tr>
 						<th>조리방법</th>
 						<td class="value" colSpan="2">
-							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.COOK_METHOD}</p>
+							<p style="white-space: pre-line; text-align:left;">${strUtil:getHtmlBr(packageInfoData.data.COOK_METHOD)}</p>
 						</td>
 					</tr>					
 				</tbody>

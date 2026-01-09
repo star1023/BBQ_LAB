@@ -13,6 +13,7 @@ import java.util.Properties;
 import javax.annotation.Resource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -224,30 +225,30 @@ public class MenuServiceImpl implements MenuService {
 			MultipartFile[] manualFiles     = (MultipartFile[]) listMap.get("manualFiles");
 			
 			JSONParser parser = new JSONParser();
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray featureArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("featureArr")));
 			
-			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
-			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
-			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
-			JSONArray newItemKeepExpArr = (JSONArray) parser.parse((String)param.get("newItemKeepExpArr"));
-			JSONArray newItemNoteArr = (JSONArray) parser.parse((String)param.get("newItemNoteArr"));
-			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse((String)param.get("newItemTypeCodeArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("sharedUserArr")));
+			JSONArray newItemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemStandardArr")));
+			JSONArray newItemSupplierArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemSupplierArr")));
+			JSONArray newItemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemKeepExpArr")));
+			JSONArray newItemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNoteArr")));
+			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemTypeCodeArr")));
 			
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemTypeArr = (JSONArray) parser.parse((String)param.get("itemTypeArr"));
-			JSONArray itemMatIdxArr = (JSONArray) parser.parse((String)param.get("itemMatIdxArr"));
-			JSONArray itemMatCodeArr = (JSONArray) parser.parse((String)param.get("itemMatCodeArr"));
-			JSONArray itemSapCodeArr = (JSONArray) parser.parse((String)param.get("itemSapCodeArr"));
-			JSONArray itemNameArr = (JSONArray) parser.parse((String)param.get("itemNameArr"));
-			JSONArray itemStandardArr = (JSONArray) parser.parse((String)param.get("itemStandardArr"));
-			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
-			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
-			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemTypeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemTypeArr")));
+			JSONArray itemMatIdxArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatIdxArr")));
+			JSONArray itemMatCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatCodeArr")));
+			JSONArray itemSapCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemSapCodeArr")));
+			JSONArray itemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNameArr")));
+			JSONArray itemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemStandardArr")));
+			JSONArray itemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemKeepExpArr")));
+			JSONArray itemUnitPriceArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemUnitPriceArr")));
+			JSONArray itemDescArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDescArr")));
 			
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));
 			
 			menuIdx = 0;
 			menuIdx = menuDao.selectMenuSeq(); 	//key value 조회
@@ -570,30 +571,30 @@ public class MenuServiceImpl implements MenuService {
 			MultipartFile[] manualFiles     = (MultipartFile[]) listMap.get("manualFiles");
 			
 			JSONParser parser = new JSONParser();
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray featureArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("featureArr")));
 			
-			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
-			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
-			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
-			JSONArray newItemKeepExpArr = (JSONArray) parser.parse((String)param.get("newItemKeepExpArr"));
-			JSONArray newItemNoteArr = (JSONArray) parser.parse((String)param.get("newItemNoteArr"));
-			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse((String)param.get("newItemTypeCodeArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("sharedUserArr")));
+			JSONArray newItemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemStandardArr")));
+			JSONArray newItemSupplierArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemSupplierArr")));
+			JSONArray newItemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemKeepExpArr")));
+			JSONArray newItemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNoteArr")));
+			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemTypeCodeArr")));
 			
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemTypeArr = (JSONArray) parser.parse((String)param.get("itemTypeArr"));
-			JSONArray itemMatIdxArr = (JSONArray) parser.parse((String)param.get("itemMatIdxArr"));
-			JSONArray itemMatCodeArr = (JSONArray) parser.parse((String)param.get("itemMatCodeArr"));
-			JSONArray itemSapCodeArr = (JSONArray) parser.parse((String)param.get("itemSapCodeArr"));
-			JSONArray itemNameArr = (JSONArray) parser.parse((String)param.get("itemNameArr"));
-			JSONArray itemStandardArr = (JSONArray) parser.parse((String)param.get("itemStandardArr"));
-			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
-			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
-			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemTypeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemTypeArr")));
+			JSONArray itemMatIdxArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatIdxArr")));
+			JSONArray itemMatCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatCodeArr")));
+			JSONArray itemSapCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemSapCodeArr")));
+			JSONArray itemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNameArr")));
+			JSONArray itemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemStandardArr")));
+			JSONArray itemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemKeepExpArr")));
+			JSONArray itemUnitPriceArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemUnitPriceArr")));
+			JSONArray itemDescArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDescArr")));
 			
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));
 
 			menuIdx = menuDao.selectMenuSeq(); 	//key value 조회
 			param.put("idx", menuIdx);
@@ -935,32 +936,32 @@ public class MenuServiceImpl implements MenuService {
 			ArrayList<String> manualTempFile = (ArrayList<String>) listMap.get("manualTempFile");
 			
 			JSONParser parser = new JSONParser();
-			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
-			JSONArray itemExistArr = (JSONArray) parser.parse((String)param.get("itemExistArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
-			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
+			JSONArray itemImproveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemImproveArr")));
+			JSONArray itemExistArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemExistArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
+			JSONArray improveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("improveArr")));
 			
-			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
-			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
-			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
-			JSONArray newItemKeepExpArr = (JSONArray) parser.parse((String)param.get("newItemKeepExpArr"));
-			JSONArray newItemNoteArr = (JSONArray) parser.parse((String)param.get("newItemNoteArr"));
-			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse((String)param.get("newItemTypeCodeArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("sharedUserArr")));
+			JSONArray newItemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemStandardArr")));
+			JSONArray newItemSupplierArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemSupplierArr")));
+			JSONArray newItemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemKeepExpArr")));
+			JSONArray newItemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNoteArr")));
+			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemTypeCodeArr")));
 			
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemTypeArr = (JSONArray) parser.parse((String)param.get("itemTypeArr"));
-			JSONArray itemMatIdxArr = (JSONArray) parser.parse((String)param.get("itemMatIdxArr"));
-			JSONArray itemMatCodeArr = (JSONArray) parser.parse((String)param.get("itemMatCodeArr"));
-			JSONArray itemSapCodeArr = (JSONArray) parser.parse((String)param.get("itemSapCodeArr"));
-			JSONArray itemNameArr = (JSONArray) parser.parse((String)param.get("itemNameArr"));
-			JSONArray itemStandardArr = (JSONArray) parser.parse((String)param.get("itemStandardArr"));
-			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
-			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
-			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemTypeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemTypeArr")));
+			JSONArray itemMatIdxArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatIdxArr")));
+			JSONArray itemMatCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatCodeArr")));
+			JSONArray itemSapCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemSapCodeArr")));
+			JSONArray itemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNameArr")));
+			JSONArray itemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemStandardArr")));
+			JSONArray itemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemKeepExpArr")));
+			JSONArray itemUnitPriceArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemUnitPriceArr")));
+			JSONArray itemDescArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDescArr")));
 			
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));
 			
 			int currentVersionNo = Integer.parseInt((String)param.get("currentVersionNo"));	//현재 문서 버젼
 			int versionNo = Integer.parseInt((String)param.get("versionNo"));				//개정 문서 버젼
@@ -1355,32 +1356,32 @@ public class MenuServiceImpl implements MenuService {
 			ArrayList<String> manualTempFile  = (ArrayList<String>) listMap.get("manualTempFile");
 			
 			JSONParser parser = new JSONParser();
-			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
-			JSONArray itemExistArr = (JSONArray) parser.parse((String)param.get("itemExistArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
-			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
+			JSONArray itemImproveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemImproveArr")));
+			JSONArray itemExistArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemExistArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
+			JSONArray improveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("improveArr")));
 			
-			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
-			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
-			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
-			JSONArray newItemKeepExpArr = (JSONArray) parser.parse((String)param.get("newItemKeepExpArr"));
-			JSONArray newItemNoteArr = (JSONArray) parser.parse((String)param.get("newItemNoteArr"));
-			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse((String)param.get("newItemTypeCodeArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("sharedUserArr")));
+			JSONArray newItemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemStandardArr")));
+			JSONArray newItemSupplierArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemSupplierArr")));
+			JSONArray newItemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemKeepExpArr")));
+			JSONArray newItemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNoteArr")));
+			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemTypeCodeArr")));
 			
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemTypeArr = (JSONArray) parser.parse((String)param.get("itemTypeArr"));
-			JSONArray itemMatIdxArr = (JSONArray) parser.parse((String)param.get("itemMatIdxArr"));
-			JSONArray itemMatCodeArr = (JSONArray) parser.parse((String)param.get("itemMatCodeArr"));
-			JSONArray itemSapCodeArr = (JSONArray) parser.parse((String)param.get("itemSapCodeArr"));
-			JSONArray itemNameArr = (JSONArray) parser.parse((String)param.get("itemNameArr"));
-			JSONArray itemStandardArr = (JSONArray) parser.parse((String)param.get("itemStandardArr"));
-			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
-			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
-			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemTypeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemTypeArr")));
+			JSONArray itemMatIdxArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatIdxArr")));
+			JSONArray itemMatCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatCodeArr")));
+			JSONArray itemSapCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemSapCodeArr")));
+			JSONArray itemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNameArr")));
+			JSONArray itemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemStandardArr")));
+			JSONArray itemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemKeepExpArr")));
+			JSONArray itemUnitPriceArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemUnitPriceArr")));
+			JSONArray itemDescArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDescArr")));
 			
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));
 			
 			int currentVersionNo = Integer.parseInt((String)param.get("currentVersionNo"));	//현재 문서 버젼
 			int versionNo = Integer.parseInt((String)param.get("versionNo"));				//개정 문서 버젼
@@ -1796,37 +1797,37 @@ public class MenuServiceImpl implements MenuService {
 			ArrayList<String> deleteFilePathArr = (ArrayList<String>)listMap.get("deleteFilePathArr");*/
 
 			JSONParser parser = new JSONParser();
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray featureArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("featureArr")));
 			
-			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
-			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
-			JSONArray itemExistArr = (JSONArray) parser.parse((String)param.get("itemExistArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
-			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("sharedUserArr")));
+			JSONArray itemImproveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemImproveArr")));
+			JSONArray itemExistArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemExistArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
+			JSONArray improveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("improveArr")));
 			
-			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
-			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
-			JSONArray newItemKeepExpArr = (JSONArray) parser.parse((String)param.get("newItemKeepExpArr"));
-			JSONArray newItemNoteArr = (JSONArray) parser.parse((String)param.get("newItemNoteArr"));
-			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse((String)param.get("newItemTypeCodeArr"));
+			JSONArray newItemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemStandardArr")));
+			JSONArray newItemSupplierArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemSupplierArr")));
+			JSONArray newItemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemKeepExpArr")));
+			JSONArray newItemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNoteArr")));
+			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemTypeCodeArr")));
 			
-			JSONArray itemTypeArr = (JSONArray) parser.parse((String)param.get("itemTypeArr"));
-			JSONArray itemMatIdxArr = (JSONArray) parser.parse((String)param.get("itemMatIdxArr"));
-			JSONArray itemMatCodeArr = (JSONArray) parser.parse((String)param.get("itemMatCodeArr"));
-			JSONArray itemSapCodeArr = (JSONArray) parser.parse((String)param.get("itemSapCodeArr"));
-			JSONArray itemNameArr = (JSONArray) parser.parse((String)param.get("itemNameArr"));
-			JSONArray itemStandardArr = (JSONArray) parser.parse((String)param.get("itemStandardArr"));
-			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
-			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
-			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			JSONArray itemTypeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemTypeArr")));
+			JSONArray itemMatIdxArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatIdxArr")));
+			JSONArray itemMatCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatCodeArr")));
+			JSONArray itemSapCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemSapCodeArr")));
+			JSONArray itemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNameArr")));
+			JSONArray itemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemStandardArr")));
+			JSONArray itemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemKeepExpArr")));
+			JSONArray itemUnitPriceArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemUnitPriceArr")));
+			JSONArray itemDescArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDescArr")));
 			
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 	
 			JSONArray manualDeletedFileIdArr = new JSONArray();
 			JSONArray manualDeletedFileArr = new JSONArray();
@@ -2265,37 +2266,37 @@ public class MenuServiceImpl implements MenuService {
 			ArrayList<String> deleteFilePathArr = (ArrayList<String>)listMap.get("deleteFilePathArr");*/
 			
 			JSONParser parser = new JSONParser();
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray featureArr = (JSONArray) parser.parse((String)param.get("featureArr"));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray featureArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("featureArr")));
 			
-			JSONArray sharedUserArr = (JSONArray) parser.parse((String)param.get("sharedUserArr"));
-			JSONArray itemImproveArr = (JSONArray) parser.parse((String)param.get("itemImproveArr"));
-			JSONArray itemExistArr = (JSONArray) parser.parse((String)param.get("itemExistArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
-			JSONArray improveArr = (JSONArray) parser.parse((String)param.get("improveArr"));
+			JSONArray sharedUserArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("sharedUserArr")));
+			JSONArray itemImproveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemImproveArr")));
+			JSONArray itemExistArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemExistArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
+			JSONArray improveArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("improveArr")));
 			
-			JSONArray newItemNameArr = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemStandardArr = (JSONArray) parser.parse((String)param.get("newItemStandardArr"));
-			JSONArray newItemSupplierArr = (JSONArray) parser.parse((String)param.get("newItemSupplierArr"));
-			JSONArray newItemKeepExpArr = (JSONArray) parser.parse((String)param.get("newItemKeepExpArr"));
-			JSONArray newItemNoteArr = (JSONArray) parser.parse((String)param.get("newItemNoteArr"));
-			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse((String)param.get("newItemTypeCodeArr"));
+			JSONArray newItemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemStandardArr")));
+			JSONArray newItemSupplierArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemSupplierArr")));
+			JSONArray newItemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemKeepExpArr")));
+			JSONArray newItemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNoteArr")));
+			JSONArray newItemTypeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemTypeCodeArr")));
 			
-			JSONArray itemTypeArr = (JSONArray) parser.parse((String)param.get("itemTypeArr"));
-			JSONArray itemMatIdxArr = (JSONArray) parser.parse((String)param.get("itemMatIdxArr"));
-			JSONArray itemMatCodeArr = (JSONArray) parser.parse((String)param.get("itemMatCodeArr"));
-			JSONArray itemSapCodeArr = (JSONArray) parser.parse((String)param.get("itemSapCodeArr"));
-			JSONArray itemNameArr = (JSONArray) parser.parse((String)param.get("itemNameArr"));
-			JSONArray itemStandardArr = (JSONArray) parser.parse((String)param.get("itemStandardArr"));
-			JSONArray itemKeepExpArr = (JSONArray) parser.parse((String)param.get("itemKeepExpArr"));
-			JSONArray itemUnitPriceArr = (JSONArray) parser.parse((String)param.get("itemUnitPriceArr"));
-			JSONArray itemDescArr = (JSONArray) parser.parse((String)param.get("itemDescArr"));
+			JSONArray itemTypeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemTypeArr")));
+			JSONArray itemMatIdxArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatIdxArr")));
+			JSONArray itemMatCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemMatCodeArr")));
+			JSONArray itemSapCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemSapCodeArr")));
+			JSONArray itemNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNameArr")));
+			JSONArray itemStandardArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemStandardArr")));
+			JSONArray itemKeepExpArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemKeepExpArr")));
+			JSONArray itemUnitPriceArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemUnitPriceArr")));
+			JSONArray itemDescArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDescArr")));
 			
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			
 			JSONArray manualDeletedFileIdArr   = new JSONArray();
 			JSONArray manualDeletedFileArr     = new JSONArray();

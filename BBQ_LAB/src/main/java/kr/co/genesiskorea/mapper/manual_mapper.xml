@@ -28,7 +28,7 @@
 				FROM 
 					lab_file 
 				WHERE 1 = 1 
-					AND DOC_TYPE = 'MENU' 
+					AND DOC_TYPE = 'MANUAL' 
 					AND REGEXP_LIKE(FILE_CONTENT, #{searchFileTxt})
 			)											
 		</if>

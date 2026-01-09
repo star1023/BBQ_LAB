@@ -359,6 +359,18 @@
 			where hr1010.OBJTID = #{pTeamId}
 			union all
 			select 
+				hr1010.OBJTID
+				, hr1010.OBJTTX 
+				, hr1010.TOBJID 
+				, hr1010.SEQUEN
+				, hr1010.PRIORT 
+				, hr1010.CSTCNT 
+				, hr1010.BUKRS
+				, 2 as level
+			from lab_interface_hr1010 hr1010
+			where hr1010.OBJTID = '10001499'
+			union all
+			select 
 				hr1010_tmp.OBJTID
 				, hr1010_tmp.OBJTTX 
 				, hr1010_tmp.TOBJID 
@@ -376,6 +388,7 @@
 			)lab_team
 		WHERE 1 = 1
 		AND lab_team.level > 1
+		order by lab_team.OBJTID ASC
 	</select>
 	
 	<select id="selectUserList" parameterType="map" resultType="hashmap">

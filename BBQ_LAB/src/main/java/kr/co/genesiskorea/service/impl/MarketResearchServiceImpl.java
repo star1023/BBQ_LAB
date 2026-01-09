@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -90,12 +91,12 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray marketNameArr = (JSONArray) parser.parse((String)param.get("marketNameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray marketAddressArr = (JSONArray) parser.parse((String)param.get("marketAddressArr"));
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
+			JSONArray marketNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketNameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray marketAddressArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketAddressArr")));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
 			
 			researchIdx = reportDao.selectMarketResearchSeq();	//key value 조회
 			param.put("idx", researchIdx);
@@ -243,12 +244,12 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray marketNameArr = (JSONArray) parser.parse((String)param.get("marketNameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray marketAddressArr = (JSONArray) parser.parse((String)param.get("marketAddressArr"));
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
+			JSONArray marketNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketNameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray marketAddressArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketAddressArr")));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
 			
 			researchIdx = reportDao.selectMarketResearchSeq();	//key value 조회
 			param.put("idx", researchIdx);
@@ -418,16 +419,16 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray marketNameArr = (JSONArray) parser.parse((String)param.get("marketNameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray marketAddressArr = (JSONArray) parser.parse((String)param.get("marketAddressArr"));
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
+			JSONArray marketNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketNameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray marketAddressArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketAddressArr")));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
 			
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 
 			//1. 출장계획 등록
 			reportDao.updateMarketResearch(param);
@@ -585,16 +586,16 @@ private Logger logger = LogManager.getLogger(MarketResearchServiceImpl.class);
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray marketNameArr = (JSONArray) parser.parse((String)param.get("marketNameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray marketAddressArr = (JSONArray) parser.parse((String)param.get("marketAddressArr"));
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
+			JSONArray marketNameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketNameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray marketAddressArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("marketAddressArr")));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
 			
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			
 			//1. 출장계획 수정
 			reportDao.updateMarketResearch(param);

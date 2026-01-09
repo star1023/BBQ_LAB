@@ -66,17 +66,17 @@ function fn_approvalSubmit() {
 			type:"POST",
 			url:URL,
 			data:{
-				"apprIdx" : '${apprHeader.APPR_IDX}',
-				"idx" : '${paramVO.idx}',
-				"docIdx" : '${apprHeader.DOC_IDX}',
-				"docType" : '${apprHeader.DOC_TYPE}',
-				"totalStep" : '${apprHeader.TOTAL_STEP}',
-				"currentStep" : '${apprHeader.CURRENT_STEP}',
-				"currentUserId" : '${apprHeader.CURRENT_USER_ID}',
-				"regUser" : '${apprHeader.REG_USER}',
-				"itemIdx" : '${apprHeader.ITEM_IDX}',
-				"apprNo" : '${apprHeader.APPR_NO}',
-				"targetUserId" : '${apprHeader.TARGET_USER_ID}',
+				"apprIdx" : "${apprHeader.APPR_IDX}",
+				"idx" : "${paramVO.idx}",
+				"docIdx" : "${apprHeader.DOC_IDX}",
+				"docType" : "${apprHeader.DOC_TYPE}",
+				"totalStep" : "${apprHeader.TOTAL_STEP}",
+				"currentStep" : "${apprHeader.CURRENT_STEP}",
+				"currentUserId" : "${apprHeader.CURRENT_USER_ID}",
+				"regUser" : "${apprHeader.REG_USER}",
+				"itemIdx" : "${apprHeader.ITEM_IDX}",
+				"apprNo" : "${apprHeader.APPR_NO}",
+				"targetUserId" : "${apprHeader.TARGET_USER_ID}",
 				"comment" : $("#comment").val(),
 				"apprStatus" : 'Y'
 			},
@@ -118,17 +118,17 @@ function fn_approvalCondSubmit() {
 				type:"POST",
 				url:URL,
 				data:{
-					"apprIdx" : '${apprHeader.APPR_IDX}',
-					"idx" : '${paramVO.idx}',
-					"docIdx" : '${apprHeader.DOC_IDX}',
-					"docType" : '${apprHeader.DOC_TYPE}',
-					"totalStep" : '${apprHeader.TOTAL_STEP}',
-					"currentStep" : '${apprHeader.CURRENT_STEP}',
-					"currentUserId" : '${apprHeader.CURRENT_USER_ID}',
-					"regUser" : '${apprHeader.REG_USER}',
-					"itemIdx" : '${apprHeader.ITEM_IDX}',
-					"apprNo" : '${apprHeader.APPR_NO}',
-					"targetUserId" : '${apprHeader.TARGET_USER_ID}',
+					"apprIdx" : "${apprHeader.APPR_IDX}",
+					"idx" : "${paramVO.idx}",
+					"docIdx" : "${apprHeader.DOC_IDX}",
+					"docType" : "${apprHeader.DOC_TYPE}",
+					"totalStep" : "${apprHeader.TOTAL_STEP}",
+					"currentStep" : "${apprHeader.CURRENT_STEP}",
+					"currentUserId" : "${apprHeader.CURRENT_USER_ID}",
+					"regUser" : "${apprHeader.REG_USER}",
+					"itemIdx" : "${apprHeader.ITEM_IDX}",
+					"apprNo" : "${apprHeader.APPR_NO}",
+					"targetUserId" : "${apprHeader.TARGET_USER_ID}",
 					"comment" : $("#comment").val(),
 					"apprStatus" : 'C'
 				},
@@ -171,17 +171,17 @@ function fn_approvalReject() {
 				type:"POST",
 				url:URL,
 				data:{
-					"apprIdx" : '${apprHeader.APPR_IDX}',
-					"idx" : '${paramVO.idx}',
-					"docIdx" : '${apprHeader.DOC_IDX}',
-					"docType" : '${apprHeader.DOC_TYPE}',
-					"totalStep" : '${apprHeader.TOTAL_STEP}',
-					"currentStep" : '${apprHeader.CURRENT_STEP}',
-					"currentUserId" : '${apprHeader.CURRENT_USER_ID}',
-					"regUser" : '${apprHeader.REG_USER}',
-					"itemIdx" : '${apprHeader.ITEM_IDX}',
-					"apprNo" : '${apprHeader.APPR_NO}',
-					"targetUserId" : '${apprHeader.TARGET_USER_ID}',
+					"apprIdx" : "${apprHeader.APPR_IDX}",
+					"idx" : "${paramVO.idx}",
+					"docIdx" : "${apprHeader.DOC_IDX}",
+					"docType" : "${apprHeader.DOC_TYPE}",
+					"totalStep" : "${apprHeader.TOTAL_STEP}",
+					"currentStep" : "${apprHeader.CURRENT_STEP}",
+					"currentUserId" : "${apprHeader.CURRENT_USER_ID}",
+					"regUser" : "${apprHeader.REG_USER}",
+					"itemIdx" : "${apprHeader.ITEM_IDX}",
+					"apprNo" : "${apprHeader.APPR_NO}",
+					"targetUserId" : "${apprHeader.TARGET_USER_ID}",
 					"comment" : $("#comment").val(),
 					"apprStatus" : 'R'
 				},
@@ -294,10 +294,9 @@ function downloadFile(idx){
 							<th style="border-left: none; ">참조자</th>
 							<td colspan="2">
 								<div class="file_box_pop4">
-										<c:forEach items = "${refList}" var = "ref" varStatus= "status">
-											&nbsp;${ref.TARGET_USER_NAME}
-											<c:if test="${status.index > 0}"> , </c:if>
-										</c:forEach>												
+								  <c:forEach items="${refList}" var="ref" varStatus="st">
+								    ${ref.TARGET_USER_NAME}<c:if test="${!st.last}">, </c:if>
+								  </c:forEach>
 								</div>
 							</td>
 						</tr>
@@ -525,13 +524,13 @@ function downloadFile(idx){
 					<tr>
 						<td>주의사항</td>
 						<td class="value" colSpan="2">
-							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.SUGGESTIONS}</p>
+							<p style="white-space: pre-line; text-align:left;">${strUtil:getHtmlBr(packageInfoData.data.SUGGESTIONS)}</p>
 						</td>
 					</tr>					
 					<tr>
 						<td>조리방법</td>
 						<td class="value" colSpan="2">
-							<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.COOK_METHOD}</p>
+							<p style="white-space: pre-line; text-align:left;">${strUtil:getHtmlBr(packageInfoData.data.COOK_METHOD)}</p>
 						</td>
 					</tr>					
 				</tbody>

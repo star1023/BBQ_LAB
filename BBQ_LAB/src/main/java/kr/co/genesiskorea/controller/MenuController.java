@@ -180,7 +180,7 @@ public class MenuController {
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("tempFile", tempFile);
 			
-			 // ★ 매뉴얼 묶어서 listMap으로 전달
+			 // ★ 메뉴얼 묶어서 listMap으로 전달
 			listMap.put("manualFiles", manualFile);                 // MultipartFile[]  ← 이름 주의!
 			listMap.put("manualFileType", manualFileType);          // List<String>
 			listMap.put("manualFileTypeText", manualFileTypeText);  // List<String> (사용 안해도 put)
@@ -224,7 +224,7 @@ public class MenuController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			listMap.put("tempFile", tempFile);
-			 // ★ 매뉴얼 묶어서 listMap으로 전달
+			 // ★ 메뉴얼 묶어서 listMap으로 전달
 			listMap.put("manualFiles", manualFile);                 // MultipartFile[]  ← 이름 주의!
 			listMap.put("manualFileType", manualFileType);          // List<String>
 			listMap.put("manualFileTypeText", manualFileTypeText);  // List<String> (사용 안해도 put)
@@ -483,9 +483,9 @@ public class MenuController {
 			, @RequestParam(value = "menuType", required = false) List<String> menuType
 			, @RequestParam(value = "fileType", required = false) List<String> fileType
 			, @RequestParam(value = "fileTypeText", required = false) List<String> fileTypeText
-	        // ★ 매뉴얼 신규 파일
+	        // ★ 메뉴얼 신규 파일
 	        , @RequestParam(value = "manualFile", required = false) MultipartFile[] manualFiles
-	        // ★ 매뉴얼 삭제 배열(JSON 문자열)
+	        // ★ 메뉴얼 삭제 배열(JSON 문자열)
 	        , @RequestParam(value = "manualDeletedFileIdArr", required = false) String manualDeletedFileIdArrJson
 	        , @RequestParam(value = "manualDeletedFileArr", required = false) String manualDeletedFileArrJson
 	        , @RequestParam(value = "manualDeletedFilePathArr", required = false) String manualDeletedFilePathArrJson
@@ -507,7 +507,7 @@ public class MenuController {
 			listMap.put("fileType", fileType);
 			listMap.put("fileTypeText", fileTypeText);
 			
-			// ★ 매뉴얼 삭제 배열 전달(서비스에서 JSON 파싱)
+			// ★ 메뉴얼 삭제 배열 전달(서비스에서 JSON 파싱)
 	        listMap.put("manualDeletedFileIdArrJson", manualDeletedFileIdArrJson);
 	        listMap.put("manualDeletedFileArrJson", manualDeletedFileArrJson);
 	        listMap.put("manualDeletedFilePathArrJson", manualDeletedFilePathArrJson);

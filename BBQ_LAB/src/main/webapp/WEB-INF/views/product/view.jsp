@@ -1,21 +1,27 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
-<%@ page import="kr.co.genesiskorea.util.*" %>
+<%@ page import="kr.co.genesiskorea.util.*"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
 <title>제품완료보고서 상세</title>
 <style>
-.positionCenter{
+.positionCenter {
 	position: absolute;
 	transform: translate(-50%, -45%);
 }
-.ck-editor__editable { max-height: 400px; min-height:400px;}
+
+.ck-editor__editable {
+	max-height: 400px;
+	min-height: 400px;
+}
 </style>
 
 <link href="../resources/css/mfg.css" rel="stylesheet" type="text/css">
-<script type="text/javascript" src="../resources/js/appr/apprClass.js?v=<%= System.currentTimeMillis()%>"></script>
+<script type="text/javascript"
+	src="../resources/js/appr/apprClass.js?v=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript">
 	$(document).ready(function(){
 		//history.replaceState({}, null, location.pathname);
@@ -150,7 +156,7 @@
 			formData.append("apprComment", $("#apprComment").val());
 			formData.append("apprLine", $("#apprLine").selectedValues());
 			formData.append("refLine", $("#refLine").selectedValues());
-			formData.append("title", '${productData.data.TITLE}');
+			formData.append("title", "${productData.data.TITLE}");
 			formData.append("docType", $("#docType").val());
 			formData.append("status", "N");
 			var URL = "../approval/insertApprAjax";
@@ -258,148 +264,177 @@
 	            });
 	        });
 	}
+	
+	function fn_openPreview(idx) {
+		var url = "/preview/productViewPopup?idx="+idx;
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
-	<span class="path">
-		제품완료보고서 상세&nbsp;&nbsp;
-		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;개발완료보고서&nbsp;&nbsp;
-		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
+	<span class="path"> 제품완료보고서 상세&nbsp;&nbsp; <img
+		src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;개발완료보고서&nbsp;&nbsp;
+		<img src="/resources/images/icon_path.png"
+		style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
-		<h2 style="position:relative">
-			<span class="title_s">Complete Document</span><span class="title">제품완료보고서 상세</span>
+		<h2 style="position: relative">
+			<span class="title_s">Complete Document</span><span class="title">제품완료보고서
+				상세</span>
 			<div class="top_btn_box">
 				<ul>
-					<li>
-						<c:if test="${productData.data.IS_LAST == 'Y' and productData.data.STATUS == 'REG' }">
-						<button class="btn_small_search ml5" onclick="apprClass.openApprovalDialog()">결재</button>
-						</c:if>
-						<c:if test="${productData.data.STATUS == 'TMP' and productData.data.IS_LAST == 'Y'}">
-						<button class="btn_circle_modifiy" onclick="fn_update('${productData.data.PRODUCT_IDX}')">&nbsp;</button>
-						</c:if>
-						<c:if test="${productData.data.STATUS == 'COMP' and productData.data.IS_LAST == 'Y'}">
-						<button class="btn_circle_version" onclick="fn_versionUp('${productData.data.PRODUCT_IDX}')">&nbsp;</button>
-						</c:if>
-					</li>
+					<li><c:if
+							test="${productData.data.IS_LAST == 'Y' and productData.data.STATUS == 'REG' }">
+							<button class="btn_small_search ml5"
+								onclick="apprClass.openApprovalDialog()">결재</button>
+						</c:if> <c:if
+							test="${productData.data.STATUS == 'TMP' and productData.data.IS_LAST == 'Y'}">
+							<button class="btn_circle_modifiy"
+								onclick="fn_update('${productData.data.PRODUCT_IDX}')">&nbsp;</button>
+						</c:if> <c:if
+							test="${productData.data.STATUS == 'COMP' and productData.data.IS_LAST == 'Y'}">
+							<button class="btn_circle_version"
+								onclick="fn_versionUp('${productData.data.PRODUCT_IDX}')">&nbsp;</button>
+						</c:if></li>
 				</ul>
 			</div>
 		</h2>
 		<div class="group01 mt20">
-			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
+			<div class="title">
+				<!--span class="txt">연구개발시스템 공지사항</span-->
+			</div>
 			<div class="tab02">
-				<ul style="display:flex; justify-content:space-between;">
+				<ul style="display: flex; justify-content: space-between;">
 					<!-- 선택됬을경우는 탭 클래스에 select를 넣어주세요 -->
 					<!-- 내 제품설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
 					<div>
-						<a href="#" onClick="tabChange('tab1')"><li  class="select" id="tab1_li">기안내용</li></a>
-						<a href="#" onClick="tabChange('tab2')"><li class="" id="tab2_li">완료보고서상세정보</li></a>
+						<a href="#" onClick="tabChange('tab1')"><li class="select"
+							id="tab1_li">기안내용</li></a> <a href="#" onClick="tabChange('tab2')"><li
+							class="" id="tab2_li">완료보고서상세정보</li></a>
 					</div>
 					<div>
-						<c:if test="${productData.data.STATUS eq 'COMP' && productData.data.DOC_OWNER eq userId}">
-					    	<button class="btn_small_search ml5" onclick="fn_pdfDownload('${productData.data.PRODUCT_IDX}')">PDF 다운로드</button>
-				    	</c:if>
+						<button class="btn_small_search ml5"
+							onclick='fn_openPreview("${productData.data.PRODUCT_IDX}")'>미리보기</button>
+						<c:if
+							test="${productData.data.STATUS eq 'COMP' && productData.data.DOC_OWNER eq userId}">
+							<button class="btn_small_search ml5"
+								onclick='fn_openPreview("${productData.data.PRODUCT_IDX}")'>PDF
+								다운로드</button>
+						</c:if>
 					</div>
 				</ul>
 			</div>
-			
+
 			<div id="tab1_div">
-				<div class="title2"  style="width: 80%;"><span class="txt">제목 </span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">						
+				<div class="title2" style="width: 80%;">
+					<span class="txt">제목 </span>
+				</div>
+				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
 					<table class="tbl05" style="border-top: 2px solid #4b5165;">
 						<colgroup>
-							<col  />							
+							<col />
 						</colgroup>
 						<tbody>
 							<tr>
 								<td>
-									<div class="ellipsis_txt tgnl">
-									${productData.data.TITLE}
-									</div>
-									<input type="hidden" name="idx" id="idx" value="${productData.data.PRODUCT_IDX}"/>
-									<input type="hidden" name="docNo" id="docNo" value="${productData.data.DOC_NO}"/>
-									<input type="hidden" name="currentVersionNo" id="currentVersionNo" value="${productData.data.VERSION_NO}"/>
-									<input type="hidden" name="currentStatus" id="currentStatus" value="${productData.data.STATUS}"/>
-									<input type="hidden" name="productCode" id="productCode" value="${productData.data.PRODUCT_CODE}"/>	
+									<div class="ellipsis_txt tgnl">${productData.data.TITLE}
+									</div> <input type="hidden" name="idx" id="idx"
+									value="${productData.data.PRODUCT_IDX}" /> <input type="hidden"
+									name="docNo" id="docNo" value="${productData.data.DOC_NO}" /> <input
+									type="hidden" name="currentVersionNo" id="currentVersionNo"
+									value="${productData.data.VERSION_NO}" /> <input type="hidden"
+									name="currentStatus" id="currentStatus"
+									value="${productData.data.STATUS}" /> <input type="hidden"
+									name="productCode" id="productCode"
+									value="${productData.data.PRODUCT_CODE}" />
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				<div class="title2"  style="width: 80%;"><span class="txt">제품명</span></div>
+				<div class="title2" style="width: 80%;">
+					<span class="txt">제품명</span>
+				</div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
 					<table class="tbl05" style="border-top: 2px solid #4b5165;">
 						<colgroup>
-							<col  />							
+							<col />
 						</colgroup>
 						<tbody>
 							<tr>
 								<td>
-									<div class="ellipsis_txt tgnl">
-									${productData.data.NAME}
-									</div>
+									<div class="ellipsis_txt tgnl">${productData.data.NAME}</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				
-				<c:if test="${productData.data.VERSION_NO == 1 && addInfoCount.PUR_CNT > 0 }">
-				<div class="title2"  style="width: 80%; margin-top:20px;"><span class="txt">개발 목적</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
-				</div>
-				<div class="main_tbl">
-					<table class="tbl05" style="border-top: 2px solid #4b5165;">
-						<colgroup>
-							<col  />							
-						</colgroup>
-						<tbody id="purpose_tbody" name="purpose_tbody">
-							<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
-								<c:if test="${addInfoList.INFO_TYPE == 'PUR' }">
-								<tr id="purpose_tr_${status.count}">
-									<td>
-										<div class="ellipsis_txt tgnl">
-										${addInfoList.INFO_TEXT}
-										</div>
-									</td>
-								</tr>
-								</c:if>
-							</c:forEach>
-						</tbody>
-					</table>
-				</div>
+
+				<c:if
+					test="${productData.data.VERSION_NO == 1 && addInfoCount.PUR_CNT > 0 }">
+					<div class="title2" style="width: 80%; margin-top: 20px;">
+						<span class="txt">개발 목적</span>
+					</div>
+					<div class="title2" style="width: 20%; display: inline-block;">
+					</div>
+					<div class="main_tbl">
+						<table class="tbl05" style="border-top: 2px solid #4b5165;">
+							<colgroup>
+								<col />
+							</colgroup>
+							<tbody id="purpose_tbody" name="purpose_tbody">
+								<c:forEach items="${addInfoList}" var="addInfoList"
+									varStatus="status">
+									<c:if test="${addInfoList.INFO_TYPE == 'PUR' }">
+										<tr id="purpose_tr_${status.count}">
+											<td>
+												<div class="ellipsis_txt tgnl">
+													${addInfoList.INFO_TEXT}</div>
+											</td>
+										</tr>
+									</c:if>
+								</c:forEach>
+							</tbody>
+						</table>
+					</div>
 				</c:if>
-				
-				<c:if test="${productData.data.VERSION_NO == 1 && addInfoCount.FEA_CNT > 0 }">
-				<div class="title2"  style="width: 80%;"><span class="txt">제품 특징</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
-				</div>
-				<div class="main_tbl">
-					<table class="tbl05" style="border-top: 2px solid #4b5165;">
-						<colgroup>
-							<col  />							
-						</colgroup>
-						<tbody id="feature_tbody" name="feature_tbody">
-							<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
-								<c:if test="${addInfoList.INFO_TYPE == 'FEA' }">
-								<tr id="feature_tr_${status.count}">
-									<td>
-										<div class="ellipsis_txt tgnl">
-										${addInfoList.INFO_TEXT}
-										</div>
-									</td>
-								</tr>
-								</c:if>
-							</c:forEach>
-						</tbody>
-					</table>
-				</div>
+
+				<c:if
+					test="${productData.data.VERSION_NO == 1 && addInfoCount.FEA_CNT > 0 }">
+					<div class="title2" style="width: 80%;">
+						<span class="txt">제품 특징</span>
+					</div>
+					<div class="title2" style="width: 20%; display: inline-block;">
+					</div>
+					<div class="main_tbl">
+						<table class="tbl05" style="border-top: 2px solid #4b5165;">
+							<colgroup>
+								<col />
+							</colgroup>
+							<tbody id="feature_tbody" name="feature_tbody">
+								<c:forEach items="${addInfoList}" var="addInfoList"
+									varStatus="status">
+									<c:if test="${addInfoList.INFO_TYPE == 'FEA' }">
+										<tr id="feature_tr_${status.count}">
+											<td>
+												<div class="ellipsis_txt tgnl">
+													${addInfoList.INFO_TEXT}</div>
+											</td>
+										</tr>
+									</c:if>
+								</c:forEach>
+							</tbody>
+						</table>
+					</div>
 				</c:if>
-				
-				<c:if test="${productData.data.VERSION_NO != 1 && fn:length(imporvePurposeList) > 0 }">
+
+				<c:if
+					test="${productData.data.VERSION_NO != 1 && fn:length(imporvePurposeList) > 0 }">
 					<div class="title2" style="float: left; margin-top: 30px;">
 						<span class="txt">개선목적</span>
 					</div>
@@ -417,53 +452,53 @@
 							</tr>
 						</thead>
 						<tbody id="improve_pur_tbody" name="improve_pur_tbody">
-							<c:forEach items="${imporvePurposeList}" var="imporvePurposeList" varStatus="status">
+							<c:forEach items="${imporvePurposeList}" var="imporvePurposeList"
+								varStatus="status">
 								<tr id="improve_pur_tr__${status.count}" class="temp_color">
-									<td>
-										${imporvePurposeList.IMPROVE}
-									</td>
-									<td>
-										${imporvePurposeList.EXIST}
-									</td>
-									<td>
-										${imporvePurposeList.NOTE}
-									</td>
+									<td>${imporvePurposeList.IMPROVE}</td>
+									<td>${imporvePurposeList.EXIST}</td>
+									<td>${imporvePurposeList.NOTE}</td>
 								</tr>
-							</c:forEach>	
+							</c:forEach>
 						</tbody>
 						<tfoot>
 						</tfoot>
 					</table>
 				</c:if>
-				
-				<c:if test="${productData.data.VERSION_NO != 1 && addInfoCount.IMP_CNT > 0 }">
-				<div class="title2"  style="width: 80%;"><span class="txt">개선사항</span></div>
-				<div class="title2" style="width: 20%; display: inline-block;">
-				</div>
-				<div class="main_tbl">
-					<table class="tbl05" style="border-top: 2px solid #4b5165;">
-						<colgroup>
-							<col  />							
-						</colgroup>
-						<tbody id="feature_tbody" name="feature_tbody">
-							<c:forEach items="${addInfoList}" var="addInfoList" varStatus="status">
-								<c:if test="${addInfoList.INFO_TYPE == 'IMP' }">
-								<tr id="feature_tr_${status.count}">
-									<td>
-										<div class="ellipsis_txt tgnl">
-										${addInfoList.INFO_TEXT}
-										</div>
-									</td>
-								</tr>
-								</c:if>
-							</c:forEach>
-						</tbody>
-					</table>
-				</div>
+
+				<c:if
+					test="${productData.data.VERSION_NO != 1 && addInfoCount.IMP_CNT > 0 }">
+					<div class="title2" style="width: 80%;">
+						<span class="txt">개선사항</span>
+					</div>
+					<div class="title2" style="width: 20%; display: inline-block;">
+					</div>
+					<div class="main_tbl">
+						<table class="tbl05" style="border-top: 2px solid #4b5165;">
+							<colgroup>
+								<col />
+							</colgroup>
+							<tbody id="feature_tbody" name="feature_tbody">
+								<c:forEach items="${addInfoList}" var="addInfoList"
+									varStatus="status">
+									<c:if test="${addInfoList.INFO_TYPE == 'IMP' }">
+										<tr id="feature_tr_${status.count}">
+											<td>
+												<div class="ellipsis_txt tgnl">
+													${addInfoList.INFO_TEXT}</div>
+											</td>
+										</tr>
+									</c:if>
+								</c:forEach>
+							</tbody>
+						</table>
+					</div>
 				</c:if>
-				
+
 				<c:if test="${addInfoCount.USB_CNT > 0}">
-					<div class="title2" style="margin-top:20px;"><span class="txt">브랜드</span></div>
+					<div class="title2" style="margin-top: 20px;">
+						<span class="txt">브랜드</span>
+					</div>
 					<div class="main_tbl">
 						<table class="tbl05" style="border-top: 2px solid #4b5165;">
 							<tbody>
@@ -477,7 +512,7 @@
 													<c:set var="usbCount" value="${usbCount + 1}" />
 												</c:if>
 											</c:forEach>
-											
+
 											<%-- 출력 --%>
 											<c:set var="usbIndex" value="0" />
 											<c:forEach items="${addInfoList}" var="item">
@@ -494,9 +529,11 @@
 						</table>
 					</div>
 				</c:if>
-				
+
 				<c:if test="${addInfoCount.USC_CNT > 0}">
-					<div class="title2"><span class="txt">용도</span></div>
+					<div class="title2">
+						<span class="txt">용도</span>
+					</div>
 					<div class="main_tbl">
 						<table class="tbl05" style="border-top: 2px solid #4b5165;">
 							<tbody>
@@ -516,12 +553,13 @@
 						</table>
 					</div>
 				</c:if>
-				
+
 				<div id="">
 					<div class="title2" style="float: left; margin-top: 30px;">
 						<span class="txt">신규도입품/제품규격</span>
 					</div>
-					<table id="new_Table" class="tbl01" style="border-bottom: 2px solid #4b5165;">
+					<table id="new_Table" class="tbl01"
+						style="border-bottom: 2px solid #4b5165;">
 						<colgroup>
 							<col width="140">
 							<col width="140">
@@ -539,79 +577,94 @@
 							</tr>
 						</thead>
 						<tbody id="new_tbody" name="new_tbody">
-							<c:forEach items="${newDataList}" var="newDataList" varStatus="status">
+							<c:forEach items="${newDataList}" var="newDataList"
+								varStatus="status">
 								<tr id="new_tr_${status.count}" class="temp_color">
-									<td>
-										${newDataList.PRODUCT_NAME}
-									</td>
-									<td>
-										${newDataList.PACKAGE_STANDARD}
-									</td>
-									<td>
-										${newDataList.SUPPLIER}
-									</td>
+									<td>${newDataList.PRODUCT_NAME}</td>
+									<td>${newDataList.PACKAGE_STANDARD}</td>
+									<td>${newDataList.SUPPLIER}</td>
 									<td>${newDataList.KEEP_EXP}</td>
 									<td>${newDataList.NOTE}</td>
 								</tr>
-							</c:forEach>							
+							</c:forEach>
 						</tbody>
 					</table>
 				</div>
-				
-				<div class="title2"  style="width: 80%;"><span class="txt">도입 예정일</span></div>
+
+				<div class="title2" style="width: 80%;">
+					<span class="txt">도입 예정일</span>
+				</div>
 				<div class="title2" style="width: 20%; display: inline-block;">
 				</div>
 				<div class="main_tbl">
 					<table class="tbl05" style="border-top: 2px solid #4b5165;">
 						<colgroup>
-							<col  />							
+							<col />
 						</colgroup>
 						<tbody>
 							<tr>
 								<td>
 									<div class="ellipsis_txt tgnl">
-									<c:choose>
-										<c:when test="${productData.data.SCHEDULE_DATE != null && productData.data.SCHEDULE_DATE != '' }">
+										<c:choose>
+											<c:when
+												test="${productData.data.SCHEDULE_DATE != null && productData.data.SCHEDULE_DATE != '' }">
 										${productData.data.SCHEDULE_DATE}	
 										</c:when>
-										<c:otherwise>
+											<c:otherwise>
 										&nbsp;결재 후 즉시도입
 										</c:otherwise>
-									</c:choose>
-									
+										</c:choose>
+
 									</div>
 								</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">첨부파일</span></div>
+
+				<div class="title2 mt20" style="width: 90%;">
+					<span class="txt">첨부파일</span>
+				</div>
 				<div class="list_detail">
 					<ul style="">
 						<li>
 							<dt style="width: 20%">파일유형</dt>
 							<dd style="width: 80%;">
-								<input id="checkbox_item1" name="docType" type="checkbox" value="10" disabled/><label for="checkbox_item1" style="vertical-align: middle;"><span></span>컨셉서-개발목적</label> 
-								<input id="checkbox_item2" name="docType" type="checkbox" value="20" disabled/><label for="checkbox_item2" style="vertical-align: middle;"><span></span>추정원단위표</label> 
-								<input id="checkbox_item3" name="docType" type="checkbox" value="30" disabled/><label for="checkbox_item3" style="vertical-align: middle;"><span></span>배합비&제조신고용 배합비</label>
-								<input id="checkbox_item4" name="docType" type="checkbox" value="40" disabled/> <label for="checkbox_item4" style="vertical-align: middle;"><span></span>제조공정도</label> 
-								<input id="checkbox_item5" name="docType" type="checkbox" value="50" disabled/> <label for="checkbox_item5" style="vertical-align: middle;"><span></span>제조작업표준서</label>
-								<input id="checkbox_item6" name="docType" type="checkbox" value="60" disabled/> <label for="checkbox_item6" style="vertical-align: middle;"><span></span>제품규격서</label>
+								<input id="checkbox_item1" name="docType" type="checkbox"
+									value="10" disabled /><label for="checkbox_item1"
+									style="vertical-align: middle;"><span></span>컨셉서-개발목적</label> <input
+									id="checkbox_item2" name="docType" type="checkbox" value="20"
+									disabled /><label for="checkbox_item2"
+									style="vertical-align: middle;"><span></span>추정원단위표</label> <input
+									id="checkbox_item3" name="docType" type="checkbox" value="30"
+									disabled /><label for="checkbox_item3"
+									style="vertical-align: middle;"><span></span>배합비&제조신고용
+									배합비</label> <input id="checkbox_item4" name="docType" type="checkbox"
+									value="40" disabled /> <label for="checkbox_item4"
+									style="vertical-align: middle;"><span></span>제조공정도</label> <input
+									id="checkbox_item5" name="docType" type="checkbox" value="50"
+									disabled /> <label for="checkbox_item5"
+									style="vertical-align: middle;"><span></span>제조작업표준서</label> <input
+									id="checkbox_item6" name="docType" type="checkbox" value="60"
+									disabled /> <label for="checkbox_item6"
+									style="vertical-align: middle;"><span></span>제품규격서</label>
 							</dd>
 						</li>
 						<li>
 							<dt style="width: 20%">첨부파일</dt>
 							<dd style="width: 80%;">
-								<div class="add_file" id="add_file2" style="width:100%">
-									
+								<div class="add_file" id="add_file2" style="width: 100%">
+
 								</div>
-								<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;">
+								<div id="fileList" class="file_box_pop"
+									style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;">
 									<ul id="attatch_file">
-										<c:forEach items="${productData.fileList}" var="fileList" varStatus="status">
-											<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+										<c:forEach items="${productData.fileList}" var="fileList"
+											varStatus="status">
+											<li>&nbsp;<a
+												href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
 										</c:forEach>
-									</ul>	
+									</ul>
 								</div>
 							</dd>
 						</li>
@@ -630,15 +683,18 @@
 						</li>
 					</ul>
 				</div> --%>
-				
+
 			</div>
-			<div id="tab2_div" style="display:none">
-				<div class="title2"  style="width: 80%;"><span class="txt">기본정보</span></div>
+			<div id="tab2_div" style="display: none">
+				<div class="title2" style="width: 80%;">
+					<span class="txt">기본정보</span>
+				</div>
 				<div class="title2" style="width: 20%; display: inline-block;">
-					
+
 				</div>
 				<div class="main_tbl">
-					<table class="insert_proc01" style="border-bottom: 2px solid #4b5165;">
+					<table class="insert_proc01"
+						style="border-bottom: 2px solid #4b5165;">
 						<colgroup>
 							<col width="15%" />
 							<col width="35%" />
@@ -658,155 +714,130 @@
 							 -->
 							<tr>
 								<th style="border-left: none;">제품코드</th>
-								<td>
-									${productData.data.PRODUCT_CODE}
-								</td>
+								<td>${productData.data.PRODUCT_CODE}</td>
 								<th style="border-left: none;">상품코드</th>
-								<td>
-									${productData.data.SAP_CODE}
-								</td>
+								<td>${productData.data.SAP_CODE}</td>
 							</tr>
-							<c:if test="${userUtil:getUserId(pageContext.request) == productData.data.DOC_OWNER }">
-							<tr>
-								<th style="border-left: none;">결재라인</th>
-								<td colspan="3">
-									<c:forEach items="${apprItemList}" var="apprItemList" varStatus="status">
-										<c:if test="${status.count > 1}">
+							<c:if
+								test="${userUtil:getUserId(pageContext.request) == productData.data.DOC_OWNER }">
+								<tr>
+									<th style="border-left: none;">결재라인</th>
+									<td colspan="3"><c:forEach items="${apprItemList}"
+											var="apprItemList" varStatus="status">
+											<c:if test="${status.count > 1}">
 											&nbsp; > &nbsp; 
 										</c:if>
 										${apprItemList.TARGET_USER_NAME}										
-									</c:forEach>
-								</td>
-							</tr>
-							<tr>
-								<th style="border-left: none;">참조자</th>
-								<td colspan="3">
-									<c:forEach items="${refList}" var="refList" varStatus="status">
-										<c:if test="${status.count > 1}">
+									</c:forEach></td>
+								</tr>
+								<tr>
+									<th style="border-left: none;">참조자</th>
+									<td colspan="3"><c:forEach items="${refList}"
+											var="refList" varStatus="status">
+											<c:if test="${status.count > 1}">
 											&nbsp; , &nbsp; 
 										</c:if>
 										${refList.TARGET_USER_NAME}										
-									</c:forEach>
-								</td>
-							</tr>
+									</c:forEach></td>
+								</tr>
 							</c:if>
 							<tr>
-							    <th style="border-left: none;">공동 참여자</th>
-							    <td colspan="3">
-							        <c:forEach var="user" items="${sharedUserList}" varStatus="status">
+								<th style="border-left: none;">공동 참여자</th>
+								<td colspan="3"><c:forEach var="user"
+										items="${sharedUserList}" varStatus="status">
 							            ${user.USER_NAME}<c:if test="${!status.last}">, </c:if>
-							        </c:forEach>
-							    </td>
+									</c:forEach></td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">버전 No.</th>
-								<td colspan="3">
-									${productData.data.VERSION_NO}
-								</td>
+								<td colspan="3">${productData.data.VERSION_NO}</td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">중량</th>
-								<td>
-									${productData.data.TOTAL_WEIGHT}
-								</td>
+								<td>${productData.data.TOTAL_WEIGHT}</td>
 								<th style="border-left: none;">제품규격</th>
-								<td>
-									${productData.data.STANDARD}								
-								</td>
-								
+								<td>${productData.data.STANDARD}</td>
+
 							</tr>
 							<tr>
 								<th style="border-left: none;">보관방법</th>
-								<td>
-									${productData.data.KEEP_CONDITION}	
-								</td>
+								<td>${productData.data.KEEP_CONDITION}</td>
 								<th style="border-left: none;">소비기한</th>
-								<td>
-									${productData.data.EXPIRATION_DATE}									
-								</td>							
+								<td>${productData.data.EXPIRATION_DATE}</td>
 							</tr>
 							<tr>
 								<th style="border-left: none;">제품유형</th>
-								<td colspan="5">
-									<c:if test="${productData.data.PRODUCT_TYPE1 != null }">
+								<td colspan="5"><c:if
+										test="${productData.data.PRODUCT_TYPE1 != null }">
 									${productData.data.PRODUCT_TYPE_NAME1}
-									</c:if>
-									<c:if test="${productData.data.PRODUCT_TYPE2 != null }">
+									</c:if> <c:if test="${productData.data.PRODUCT_TYPE2 != null }">
 									&gt; ${productData.data.PRODUCT_TYPE_NAME2}
-									</c:if>
-									<c:if test="${productData.data.PRODUCT_TYPE3 != null }">
+									</c:if> <c:if test="${productData.data.PRODUCT_TYPE3 != null }">
 									&gt; ${productData.data.PRODUCT_TYPE_NAME3}
-									</c:if>
-								</td>
-							</tr>							
+									</c:if></td>
+							</tr>
 						</tbody>
 					</table>
 				</div>
 				<c:if test="${productData.data.IS_NEW_MATERIAL == 'Y' }">
-				<div class="title2" style="float: left; margin-top: 30px;">
-					<span class="txt">신규원료</span>
-				</div>
-				<div class="main_tbl">				
-					<table class="tbl01 " style="border-bottom: 2px solid #4b5165;">
-						<colgroup>
-							<col width="140">
-							<col width="140">
-							<col width="250">
-							<col width="150">
-							<col width="200">
-							<col width="8%">
-							<col />
-						</colgroup>
-						<thead>
-							<tr>
-								<th>원료코드</th>
-								<th>ERP코드</th>
-								<th>원료명</th>
-								<th>규격</th>
-								<th>보관방법 및 소비기한</th>
-								<th>공급가</th>
-								<th>비고</th>
-							</tr>
-						</thead>
-						<tbody>
-						<c:forEach items="${productMaterialData}" var="productMaterialData" varStatus="status">
-						<c:if test="${productMaterialData.MATERIAL_TYPE == 'Y' }">
-							<tr>
-								<td>
-									<div class=""><a href="#" onClick="fn_view('${productMaterialData.MATERIAL_IDX}')">${productMaterialData.MATERIAL_CODE}</a></div>
-								</td>
-								<td>
-									<a href="#" onClick="fn_erpview('${productMaterialData.SAP_CODE}')">${productMaterialData.SAP_CODE}</a>
-								</td>
-								<td>
-									${productMaterialData.NAME}
-								</td>
-								<td>
-									${productMaterialData.STANDARD}
-								</td>
-								<td>
-									${productMaterialData.KEEP_EXP}
-								</td>
-								<td>
-									${productMaterialData.UNIT_PRICE}
-								</td>
-								<td>
-									${productMaterialData.DESCRIPTION}
-								</td>
-							</tr>
-						</c:if>	
-						</c:forEach>	
-						</tbody>
-						<tfoot>
-						</tfoot>
-					</table>
-				</div>
+					<div class="title2" style="float: left; margin-top: 30px;">
+						<span class="txt">신규원료</span>
+					</div>
+					<div class="main_tbl">
+						<table class="tbl01 " style="border-bottom: 2px solid #4b5165;">
+							<colgroup>
+								<col width="140">
+								<col width="140">
+								<col width="250">
+								<col width="150">
+								<col width="200">
+								<col width="8%">
+								<col />
+							</colgroup>
+							<thead>
+								<tr>
+									<th>원료코드</th>
+									<th>ERP코드</th>
+									<th>원료명</th>
+									<th>규격</th>
+									<th>보관방법 및 소비기한</th>
+									<th>공급가</th>
+									<th>비고</th>
+								</tr>
+							</thead>
+							<tbody>
+								<c:forEach items="${productMaterialData}"
+									var="productMaterialData" varStatus="status">
+									<c:if test="${productMaterialData.MATERIAL_TYPE == 'Y' }">
+										<tr>
+											<td>
+												<div class="">
+													<a href="#"
+														onClick="fn_view('${productMaterialData.MATERIAL_IDX}')">${productMaterialData.MATERIAL_CODE}</a>
+												</div>
+											</td>
+											<td><a href="#"
+												onClick="fn_erpview('${productMaterialData.SAP_CODE}')">${productMaterialData.SAP_CODE}</a>
+											</td>
+											<td>${productMaterialData.NAME}</td>
+											<td>${productMaterialData.STANDARD}</td>
+											<td>${productMaterialData.KEEP_EXP}</td>
+											<td>${productMaterialData.UNIT_PRICE}</td>
+											<td>${productMaterialData.DESCRIPTION}</td>
+										</tr>
+									</c:if>
+								</c:forEach>
+							</tbody>
+							<tfoot>
+							</tfoot>
+						</table>
+					</div>
 				</c:if>
-				
+
 				<div class="title2" style="float: left; margin-top: 30px;">
 					<span class="txt">기존원료</span>
 				</div>
-				<div class="main_tbl">				
+				<div class="main_tbl">
 					<table class="tbl01 " style="border-bottom: 2px solid #4b5165;">
 						<colgroup>
 							<col width="140">
@@ -829,73 +860,74 @@
 							</tr>
 						</thead>
 						<tbody>
-						<c:forEach items="${productMaterialData}" var="productMaterialData" varStatus="status">
-						<c:if test="${productMaterialData.MATERIAL_TYPE == 'N' }">
-							<tr>
-								<td>
-									<div class=""><a href="#" onClick="fn_erpview('${productMaterialData.SAP_CODE}')">${productMaterialData.MATERIAL_CODE}</a></div>
-								</td>
-								<td>
-									<a href="#" onClick="fn_erpview('${productMaterialData.SAP_CODE}')">${productMaterialData.SAP_CODE}</a>
-								</td>
-								<td>
-									${productMaterialData.NAME}
-								</td>
-								<td>
-									${productMaterialData.STANDARD}
-								</td>
-								<td>
-									${productMaterialData.KEEP_EXP}
-								</td>
-								<td>
-									${productMaterialData.UNIT_PRICE}
-								</td>
-								<td>
-									${productMaterialData.DESCRIPTION}
-								</td>
-							</tr>
-						</c:if>	
-						</c:forEach>	
+							<c:forEach items="${productMaterialData}"
+								var="productMaterialData" varStatus="status">
+								<c:if test="${productMaterialData.MATERIAL_TYPE == 'N' }">
+									<tr>
+										<td>
+											<div class="">
+												<a href="#"
+													onClick="fn_erpview('${productMaterialData.SAP_CODE}')">${productMaterialData.MATERIAL_CODE}</a>
+											</div>
+										</td>
+										<td><a href="#"
+											onClick="fn_erpview('${productMaterialData.SAP_CODE}')">${productMaterialData.SAP_CODE}</a>
+										</td>
+										<td>${productMaterialData.NAME}</td>
+										<td>${productMaterialData.STANDARD}</td>
+										<td>${productMaterialData.KEEP_EXP}</td>
+										<td>${productMaterialData.UNIT_PRICE}</td>
+										<td>${productMaterialData.DESCRIPTION}</td>
+									</tr>
+								</c:if>
+							</c:forEach>
 						</tbody>
 						<tfoot>
 						</tfoot>
 					</table>
 				</div>
-				
-				<div class="title2 mt20"  style="width:90%;"><span class="txt">비고</span></div>
+
+				<div class="title2 mt20" style="width: 90%;">
+					<span class="txt">비고</span>
+				</div>
 				<div>
-					<table class="insert_proc01" style="border-bottom: 2px solid #4b5165;">
+					<table class="insert_proc01"
+						style="border-bottom: 2px solid #4b5165;">
 						<tr>
-							<td>${productData.data.CONTENTS}</td>
+							<td>${strUtil:getHtmlBr(productData.data.CONTENTS)}</td>
 						</tr>
 					</table>
 				</div>
 			</div>
 			<div class="main_tbl">
-				<div class="btn_box_con5">					
-				</div>
+				<div class="btn_box_con5"></div>
 				<div class="btn_box_con4">
-				
-					<c:if test="${userUtil:getUserId(pageContext.request) == productData.data.DOC_OWNER }">
-						<c:if test="${(productData.data.STATUS == 'TMP' or productData.data.STATUS == 'COND_APPR') and productData.data.IS_LAST == 'Y'}">
-							<button class="btn_admin_sky" onclick="fn_update('${productData.data.PRODUCT_IDX}')">수정</button>
-						</c:if>	
+
+					<c:if
+						test="${userUtil:getUserId(pageContext.request) == productData.data.DOC_OWNER }">
+						<c:if
+							test="${(productData.data.STATUS == 'TMP' or productData.data.STATUS == 'COND_APPR') and productData.data.IS_LAST == 'Y'}">
+							<button class="btn_admin_sky"
+								onclick="fn_update('${productData.data.PRODUCT_IDX}')">수정</button>
+						</c:if>
 					</c:if>
-					<button class="btn_admin_gray" onClick="fn_list();" style="width: 120px;">목록</button>
+					<button class="btn_admin_gray" onClick="fn_list();"
+						style="width: 120px;">목록</button>
 				</div>
 				<hr class="con_mode" />
 			</div>
-			
+
 		</div>
 	</section>
 </div>
 
 <!-- 자재조회 레이어 start-->
 <div class="white_content" id="open3">
-	<div class="modal" style="	width: 800px;margin-left:-400px;height: 600px;margin-top:-250px;">
-		<h5 style="position:relative">
+	<div class="modal"
+		style="width: 800px; margin-left: -400px; height: 600px; margin-top: -250px;">
+		<h5 style="position: relative">
 			<span class="title">상품 상세 정보</span>
-			<div  class="top_btn_box">
+			<div class="top_btn_box">
 				<ul>
 					<li>
 						<button class="btn_madal_close" onClick="closeDialog('open3')"></button>
@@ -915,65 +947,43 @@
 					<tbody>
 						<tr>
 							<th style="border-left: none;">원료명</th>
-							<td id="nameTxt">
-
-							</td>
+							<td id="nameTxt"></td>
 							<th style="border-left: none;">SAP 코드</th>
-							<td id="sapCodeTxt">
-
-							</td>
+							<td id="sapCodeTxt"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">단가</th>
-							<td id="priceTxt">
-
-							</td>
+							<td id="priceTxt"></td>
 							<th style="border-left: none;">단위</th>
-							<td id="unitTxt">
-
-							</td>
+							<td id="unitTxt"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">보관기준</th>
-							<td id="keepConditionTxt">
-
-							</td>
+							<td id="keepConditionTxt"></td>
 							<th style="border-left: none;">사이즈</th>
-							<td id="sizeTxt">
-
-							</td>
+							<td id="sizeTxt"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">중량</th>
-							<td id="weightTxt">
-
-							</td>
+							<td id="weightTxt"></td>
 							<th style="border-left: none;">규격</th>
-							<td id="standardTxt">
-
-							</td>
+							<td id="standardTxt"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">원산지</th>
-							<td id="originTxt">
-
-							</td>
+							<td id="originTxt"></td>
 							<th style="border-left: none;">소비기한</th>
-							<td id="expireDateTxt">
-
-							</td>
+							<td id="expireDateTxt"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">원료구분상세</th>
-							<td colspan="3" id="typeTxt">
-							</td>
+							<td colspan="3" id="typeTxt"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">첨부파일 유형</th>
-							<td colspan="3" id="fileTypeTxt">
-							</td>
+							<td colspan="3" id="fileTypeTxt"></td>
 						</tr>
-<!-- 						<tr>
+						<!-- 						<tr>
 							<th style="border-left: none;">첨부파일</th>
 							<td colspan="3">
 								<div class="file_box_pop" style=" height:120px; width:97.5%; border-top-left-radius:0px;border-top-right-radius:0px; border-top:1px solid #ddd;box-sizing:border-box;">
@@ -986,23 +996,24 @@
 				</table>
 			</div>
 			<div class="list_detail">
-			<ul>
-				<li>
-					<div class="add_file2" style="width:97.5%">
-						<span class="" >
-							<label>첨부파일</label>
-						</span>						
-					</div>
-					<div class="file_box_pop" style=" height:120px; width:97.5%; border-top-left-radius:0px;border-top-right-radius:0px; border-top:1px solid #ddd;box-sizing:border-box;">
-						<ul id="fileDataList">									
-						</ul>
-					</div>
-				</li>
-			</ul>
+				<ul>
+					<li>
+						<div class="add_file2" style="width: 97.5%">
+							<span class=""> <label>첨부파일</label>
+							</span>
+						</div>
+						<div class="file_box_pop"
+							style="height: 120px; width: 97.5%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid #ddd; box-sizing: border-box;">
+							<ul id="fileDataList">
+							</ul>
+						</div>
+					</li>
+				</ul>
 			</div>
-		</div>			
+		</div>
 		<div class="btn_box_con">
-			<button class="btn_admin_gray" onclick="closeDialog('open3')"> 닫기</button>
+			<button class="btn_admin_gray" onclick="closeDialog('open3')">
+				닫기</button>
 		</div>
 	</div>
 </div>
@@ -1010,10 +1021,11 @@
 
 <!-- 자재 조회레이어 start-->
 <div class="white_content" id="open4">
-	<div class="modal" style="	width: 800px;margin-left:-400px;height: 550px;margin-top:-250px;">
-		<h5 style="position:relative">
+	<div class="modal"
+		style="width: 800px; margin-left: -400px; height: 550px; margin-top: -250px;">
+		<h5 style="position: relative">
 			<span class="title">상품 상세 정보</span>
-			<div  class="top_btn_box">
+			<div class="top_btn_box">
 				<ul>
 					<li>
 						<button class="btn_madal_close" onClick="closeDialog('open4')"></button>
@@ -1033,105 +1045,73 @@
 					<tbody>
 						<tr>
 							<th style="border-left: none;">상품코드</th>
-							<td id="sapCodeTxt2">
-
-							</td>
+							<td id="sapCodeTxt2"></td>
 							<th style="border-left: none;">상품명</th>
-							<td id="nameTxt2">
-
-							</td>
+							<td id="nameTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">보관조건</th>
-							<td id="keepTxt2">
-
-							</td>
+							<td id="keepTxt2"></td>
 							<th style="border-left: none;">유형</th>
-							<td id="matTypeTxt2">
-
-							</td>
+							<td id="matTypeTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">품목단위</th>
-							<td id="unitTxt2">
-
-							</td>
+							<td id="unitTxt2"></td>
 							<th style="border-left: none;">중량</th>
-							<td id="weightTxt2">
-
-							</td>
+							<td id="weightTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">환산단위</th>
-							<td id="changeUnitTxt2">
-
-							</td>
+							<td id="changeUnitTxt2"></td>
 							<th style="border-left: none;">환산수량</th>
-							<td id="changeCountTxt2">
-
-							</td>
+							<td id="changeCountTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">총중량</th>
-							<td id="totalWeightTxt2">
-
-							</td>
+							<td id="totalWeightTxt2"></td>
 							<th style="border-left: none;">총중량단위</th>
-							<td id="totalWeightUnitTxt2">
-
-							</td>
+							<td id="totalWeightUnitTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">규격</th>
-							<td colspan="3" id="standardTxt2">
-							</td>
+							<td colspan="3" id="standardTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">사이즈(W/L/H)</th>
-							<td colspan="3" id="sizeTxt2">
-							</td>
+							<td colspan="3" id="sizeTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">원산지</th>
-							<td id="originTxt2">
-
-							</td>
+							<td id="originTxt2"></td>
 							<th style="border-left: none;">소비기한</th>
-							<td id="expDateTxt2">
-
-							</td>
+							<td id="expDateTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">리드타임</th>
-							<td id="leadTimeTxt2">
-							</td>
+							<td id="leadTimeTxt2"></td>
 							<th style="border-left: none;">안전재고일수</th>
-							<td id="safetyDayTxt2">
-							</td>
+							<td id="safetyDayTxt2"></td>
 						</tr>
 						<tr>
 							<th style="border-left: none;">박스당입수량</th>
-							<td id="boxAmountTxt2">
-							</td>
+							<td id="boxAmountTxt2"></td>
 							<th style="border-left: none;">파레트입수량</th>
-							<td id="palletAmountTxt2">
-							</td>
-						</tr>						
+							<td id="palletAmountTxt2"></td>
+						</tr>
 						<tr>
 							<th style="border-left: none;">부가세 코드</th>
-							<td id="cdTxt2">
-
-							</td>
+							<td id="cdTxt2"></td>
 							<th style="border-left: none;">최소발주량</th>
-							<td id="minOrderTxt2">
-							</td>
+							<td id="minOrderTxt2"></td>
 						</tr>
 					</tbody>
 				</table>
 			</div>
-		</div>			
+		</div>
 		<div class="btn_box_con">
-			<button class="btn_admin_gray" onclick="closeDialog('open4')"> 닫기</button>
+			<button class="btn_admin_gray" onclick="closeDialog('open4')">
+				닫기</button>
 		</div>
 	</div>
 </div>
@@ -1139,32 +1119,33 @@
 
 <!-- 결재 상신 레이어  start-->
 <div class="white_content" id="approval_dialog">
-	<input type="hidden" id="docType" value="PROD"/>
- 	<input type="hidden" id="deptName" />
-	<input type="hidden" id="teamName" />
-	<input type="hidden" id="userId" />
-	<input type="hidden" id="userName"/>
- 	<select style="display:none" id=apprLine name="apprLine" multiple>
- 	</select>
- 	<select style="display:none" id=refLine name="refLine" multiple>
- 	</select>
-	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
-		<h5 style="position:relative">
+	<input type="hidden" id="docType" value="PROD" /> <input type="hidden"
+		id="deptName" /> <input type="hidden" id="teamName" /> <input
+		type="hidden" id="userId" /> <input type="hidden" id="userName" /> <select
+		style="display: none" id=apprLine name="apprLine" multiple>
+	</select> <select style="display: none" id=refLine name="refLine" multiple>
+	</select>
+	<div class="modal"
+		style="margin-left: -500px; width: 1000px; height: 550px; margin-top: -300px">
+		<h5 style="position: relative">
 			<span class="title">개발완료보고서 결재 상신</span>
-			<div  class="top_btn_box">
-				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
+			<div class="top_btn_box">
+				<ul>
+					<li><button class="btn_madal_close"
+							onClick="apprClass.apprCancel(); return false;"></button></li>
+				</ul>
 			</div>
 		</h5>
 		<div class="list_detail">
 			<ul>
 				<li>
-					<dt style="width:20%">결재요청의견</dt>
-					<dd style="width:80%;">
+					<dt style="width: 20%">결재요청의견</dt>
+					<dd style="width: 80%;">
 						<div class="insert_comment">
-							<table style=" width:756px">
+							<table style="width: 756px">
 								<tr>
-									<td>
-										<textarea style="width:100%; height:50px" placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
+									<td><textarea style="width: 100%; height: 50px"
+											placeholder="의견을 입력하세요" name="apprComment" id="apprComment"></textarea>
 									</td>
 									<td width="98px"></td>
 								</tr>
@@ -1173,45 +1154,63 @@
 					</dd>
 				</li>
 				<li class="pt5">
-					<dt style="width:20%">결재자 입력</dt>
-					<dd style="width:80%;" class="ppp">
-						<input type="text" placeholder="결재자명 2자이상 입력후 선택" style="width:198px; float:left;" class="req" id="keyword" name="keyword">
-						<button class="btn_small01 ml5" onclick="apprClass.approvalAddLine(this); return false;" name="appr_add_btn" id="appr_add_btn">결재자 추가</button>
-						<button class="btn_small02  ml5" onclick="apprClass.approvalAddLine(this); return false;" name="ref_add_btn" id="ref_add_btn">참조</button>
-						<div class="selectbox ml5" style="width:180px;">
-							<label for="apprLineSelect" id="apprLineSelect_label">---- 결재라인 불러오기 ----</label>
-							<select id="apprLineSelect" name="apprLineSelect" onchange="apprClass.changeApprLine(this);">
+					<dt style="width: 20%">결재자 입력</dt>
+					<dd style="width: 80%;" class="ppp">
+						<input type="text" placeholder="결재자명 2자이상 입력후 선택"
+							style="width: 198px; float: left;" class="req" id="keyword"
+							name="keyword">
+						<button class="btn_small01 ml5"
+							onclick="apprClass.approvalAddLine(this); return false;"
+							name="appr_add_btn" id="appr_add_btn">결재자 추가</button>
+						<button class="btn_small02  ml5"
+							onclick="apprClass.approvalAddLine(this); return false;"
+							name="ref_add_btn" id="ref_add_btn">참조</button>
+						<div class="selectbox ml5" style="width: 180px;">
+							<label for="apprLineSelect" id="apprLineSelect_label">----
+								결재라인 불러오기 ----</label> <select id="apprLineSelect" name="apprLineSelect"
+								onchange="apprClass.changeApprLine(this);">
 								<option value="">---- 결재라인 불러오기 ----</option>
 							</select>
 						</div>
-						<button class="btn_small02  ml5" onclick="apprClass.deleteApprovalLine(this); return false;">선택 결재라인 삭제</button>
+						<button class="btn_small02  ml5"
+							onclick="apprClass.deleteApprovalLine(this); return false;">선택
+							결재라인 삭제</button>
 					</dd>
 				</li>
-				<li  class="mt5">
-					<dt style="width:20%; background-image:none;" ></dt>
-					<dd style="width:80%;">
-						<div class="file_box_pop2" style="height:190px;">
+				<li class="mt5">
+					<dt style="width: 20%; background-image: none;"></dt>
+					<dd style="width: 80%;">
+						<div class="file_box_pop2" style="height: 190px;">
 							<ul id="apprLineList">
 							</ul>
 						</div>
-						<div class="file_box_pop3" style="height:190px;">
+						<div class="file_box_pop3" style="height: 190px;">
 							<ul id="refLineList">
 							</ul>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼을 누르면 안보이게 처리 start -->
 						<div class="app_line_edit">
-							저장 결재선라인 입력 :  <input type="text" name="apprLineName" id="apprLineName" class="req" style="width:280px;"/> 
-							<button class="btn_doc" onclick="apprClass.approvalLineSave(this);  return false;"><img src="../resources/images/icon_doc11.png"> 저장</button> 
-							<button class="btn_doc" onclick="apprClass.apprLineSaveCancel(this); return false;"><img src="../resources/images/icon_doc04.png">취소</button>
+							저장 결재선라인 입력 : <input type="text" name="apprLineName"
+								id="apprLineName" class="req" style="width: 280px;" />
+							<button class="btn_doc"
+								onclick="apprClass.approvalLineSave(this);  return false;">
+								<img src="../resources/images/icon_doc11.png"> 저장
+							</button>
+							<button class="btn_doc"
+								onclick="apprClass.apprLineSaveCancel(this); return false;">
+								<img src="../resources/images/icon_doc04.png">취소
+							</button>
 						</div>
 						<!-- 현재 추가된 결재선 저장 버튼 눌렀을때 보이게 처리 close -->
 					</dd>
 				</li>
 			</ul>
 		</div>
-		<div class="btn_box_con4" style="padding:15px 0 20px 0">
-			<button class="btn_admin_red" onclick="fn_apprSubmit(); return false;">결재등록</button> 
-			<button class="btn_admin_gray" onclick="apprClass.apprCancel(); return false;">결재삭제</button>
+		<div class="btn_box_con4" style="padding: 15px 0 20px 0">
+			<button class="btn_admin_red"
+				onclick="fn_apprSubmit(); return false;">결재등록</button>
+			<button class="btn_admin_gray"
+				onclick="apprClass.apprCancel(); return false;">결재삭제</button>
 		</div>
 	</div>
 </div>

@@ -12,10 +12,14 @@
 <head>
   <title>${menuData.data.TITLE}_메뉴완료보고서</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <!-- <link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link> -->
+  <link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
   <meta charset="UTF-8">
   <title>프린트 미리보기</title>
-<!--   <script type="text/javascript">
+<script type="text/javascript">
+  function downloadFile(idx){
+	location.href = '/common/fileDownload?idx='+idx;
+  }
+
   function fn_printPreview() {
 	var printContent = document.getElementById("wrapper").outerHTML;
 
@@ -36,7 +40,7 @@
         '<head>' +
           '<title>인쇄 미리보기</title>' +
           '<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css">' +
-          '<style>@media print { body { margin: 0; } }</style>' +
+          '<style>@media print { body { margin: 0; } a { text-decoration: none; color: black; }}</style>' +
         '</head>' +
         '<body onload="window.focus(); window.print();">' +
           printContent +
@@ -49,7 +53,7 @@
       document.body.removeChild(iframe);
     }, 1000);
   }
-</script> -->
+</script>
 </head>
 <body>
 	<h2 style=" position:fixed; background-color: #38b6e6 !important;" class="print_hidden">
@@ -413,7 +417,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th >매뉴얼</th>
+						<th >메뉴얼</th>
 						<td colspan="5">
 							<c:forEach items="${menuData.manualFileList}" var="mfile" varStatus="status">
 				              ${mfile.ORG_FILE_NAME}<br>
@@ -572,7 +576,7 @@
 			<div class="mainTable">
 				<table >
 					<tr>
-						<td><pre>${menuData.data.CONTENTS}</pre></td>
+						<td>${strUtil:getHtmlBr(menuData.data.CONTENTS)}</td>
 					</tr>
 				</table>
 			</div>

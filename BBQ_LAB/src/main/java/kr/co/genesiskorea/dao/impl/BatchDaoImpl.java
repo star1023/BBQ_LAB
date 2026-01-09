@@ -154,4 +154,10 @@ public class BatchDaoImpl extends RfcCommonMapper implements BatchDao {
 		sqlSessionTemplate.insert("batch.insertHrUser", userList);
 	}
 
+	@Override
+	public void deleteHrUserMaster() {
+		// TODO Auto-generated method stub
+		sqlSessionTemplate.delete("batch.deleteHrUserMaster");
+	}
+
 }

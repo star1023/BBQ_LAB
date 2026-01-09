@@ -13,6 +13,7 @@ import java.util.Properties;
 import javax.annotation.Resource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -98,13 +99,13 @@ public class DesignReportServiceImpl implements DesignReportService {
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
 			JSONParser parser = new JSONParser();
-			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
-			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
-			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
-			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+			JSONArray changeReasonArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeReasonArr")));
+			JSONArray changeTimeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeTimeArr")));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDivArr")));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemCurrentArr")));
+			JSONArray itemChangeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemChangeArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
 
 			designIdx = reportDao.selectDesignSeq();	//key value 조회
 			param.put("idx", designIdx);
@@ -237,13 +238,13 @@ public class DesignReportServiceImpl implements DesignReportService {
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
 			JSONParser parser = new JSONParser();
-			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
-			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
-			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
-			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+			JSONArray changeReasonArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeReasonArr")));
+			JSONArray changeTimeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeTimeArr")));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDivArr")));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemCurrentArr")));
+			JSONArray itemChangeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemChangeArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
 
 			designIdx = reportDao.selectDesignSeq();	//key value 조회
 			param.put("idx", designIdx);
@@ -392,17 +393,17 @@ public class DesignReportServiceImpl implements DesignReportService {
 			ArrayList<String> fileType = (ArrayList<String>)listMap.get("fileType");
 			ArrayList<String> fileTypeText = (ArrayList<String>)listMap.get("fileTypeText");
 			JSONParser parser = new JSONParser();
-			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
-			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
-			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
-			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+			JSONArray changeReasonArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeReasonArr")));
+			JSONArray changeTimeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeTimeArr")));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDivArr")));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemCurrentArr")));
+			JSONArray itemChangeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemChangeArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
 			
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			
 			
 			int designIdx = Integer.parseInt((String)param.get("idx")); 	//key value 조회
@@ -611,13 +612,13 @@ public class DesignReportServiceImpl implements DesignReportService {
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
 			
 			JSONParser parser = new JSONParser();
-			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
-			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
-			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
-			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+			JSONArray changeReasonArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeReasonArr")));
+			JSONArray changeTimeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeTimeArr")));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDivArr")));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemCurrentArr")));
+			JSONArray itemChangeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemChangeArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
 			
 			reportDao.updateDesignIsLast(param);
 			
@@ -799,13 +800,13 @@ public class DesignReportServiceImpl implements DesignReportService {
 			ArrayList<String> tempFile = (ArrayList<String>)listMap.get("tempFile");
 			
 			JSONParser parser = new JSONParser();
-			JSONArray changeReasonArr = (JSONArray) parser.parse((String)param.get("changeReasonArr"));
-			JSONArray changeTimeArr = (JSONArray) parser.parse((String)param.get("changeTimeArr"));
-			JSONArray rowIdArr = (JSONArray) parser.parse((String)param.get("rowIdArr"));
-			JSONArray itemDivArr = (JSONArray) parser.parse((String)param.get("itemDivArr"));
-			JSONArray itemCurrentArr = (JSONArray) parser.parse((String)param.get("itemCurrentArr"));
-			JSONArray itemChangeArr = (JSONArray) parser.parse((String)param.get("itemChangeArr"));
-			JSONArray itemNoteArr = (JSONArray) parser.parse((String)param.get("itemNoteArr"));
+			JSONArray changeReasonArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeReasonArr")));
+			JSONArray changeTimeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("changeTimeArr")));
+			JSONArray rowIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("rowIdArr")));
+			JSONArray itemDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemDivArr")));
+			JSONArray itemCurrentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemCurrentArr")));
+			JSONArray itemChangeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemChangeArr")));
+			JSONArray itemNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemNoteArr")));
 			
 			reportDao.updateDesignIsLast(param);
 			

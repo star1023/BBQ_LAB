@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -90,16 +91,16 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
-			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
-			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
-			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
-			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
-			JSONArray noteArr = (JSONArray) parser.parse((String)param.get("noteArr"));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray tripDestinationArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripDestinationArr")));
+			JSONArray tripTransitArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripTransitArr")));
+			JSONArray scheduleArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("scheduleArr")));
+			JSONArray contentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentArr")));
+			JSONArray placeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("placeArr")));
+			JSONArray noteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("noteArr")));
 			
 			tripIdx = reportDao.selectTripSeq();	//key value 조회
 			param.put("idx", tripIdx);
@@ -282,16 +283,16 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
-			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
-			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
-			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
-			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
-			JSONArray noteArr = (JSONArray) parser.parse((String)param.get("noteArr"));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray tripDestinationArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripDestinationArr")));
+			JSONArray tripTransitArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripTransitArr")));
+			JSONArray scheduleArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("scheduleArr")));
+			JSONArray contentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentArr")));
+			JSONArray placeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("placeArr")));
+			JSONArray noteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("noteArr")));
 			
 			tripIdx = reportDao.selectTripSeq();	//key value 조회
 			param.put("idx", tripIdx);
@@ -502,20 +503,20 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
-			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
-			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
-			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
-			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
-			JSONArray noteArr = (JSONArray) parser.parse((String)param.get("noteArr"));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray tripDestinationArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripDestinationArr")));
+			JSONArray tripTransitArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripTransitArr")));
+			JSONArray scheduleArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("scheduleArr")));
+			JSONArray contentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentArr")));
+			JSONArray placeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("placeArr")));
+			JSONArray noteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("noteArr")));
 			
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			
 			//출장결과 수정
 			reportDao.updateBusinessTrip(param);
@@ -714,20 +715,20 @@ private Logger logger = LogManager.getLogger(BusinessTripServiceImpl.class);
 			}
 			
 			JSONParser parser = new JSONParser();
-			JSONArray deptArr = (JSONArray) parser.parse((String)param.get("deptArr"));
-			JSONArray positionArr = (JSONArray) parser.parse((String)param.get("positionArr"));
-			JSONArray nameArr = (JSONArray) parser.parse((String)param.get("nameArr"));
-			JSONArray purposeArr = (JSONArray) parser.parse((String)param.get("purposeArr"));
-			JSONArray tripDestinationArr = (JSONArray) parser.parse((String)param.get("tripDestinationArr"));
-			JSONArray tripTransitArr = (JSONArray) parser.parse((String)param.get("tripTransitArr"));
-			JSONArray scheduleArr = (JSONArray) parser.parse((String)param.get("scheduleArr"));
-			JSONArray contentArr = (JSONArray) parser.parse((String)param.get("contentArr"));
-			JSONArray placeArr = (JSONArray) parser.parse((String)param.get("placeArr"));
-			JSONArray noteArr = (JSONArray) parser.parse((String)param.get("noteArr"));
+			JSONArray deptArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deptArr")));
+			JSONArray positionArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("positionArr")));
+			JSONArray nameArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("nameArr")));
+			JSONArray purposeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("purposeArr")));
+			JSONArray tripDestinationArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripDestinationArr")));
+			JSONArray tripTransitArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("tripTransitArr")));
+			JSONArray scheduleArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("scheduleArr")));
+			JSONArray contentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentArr")));
+			JSONArray placeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("placeArr")));
+			JSONArray noteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("noteArr")));
 			
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr =(JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			
 			//출장결과 수정
 			reportDao.updateBusinessTrip(param);

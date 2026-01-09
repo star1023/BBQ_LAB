@@ -11,6 +11,7 @@ import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -374,9 +375,9 @@ public class NewProductResultServiceImpl implements NewProductResultService {
 		     }
 		     
 		     JSONParser parser = new JSONParser();
-		     JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			 JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			 JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+		     JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			 JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			 JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			 
 			//삭제된 파일 삭제
 			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {

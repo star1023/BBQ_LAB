@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
-<title>개발완료보고서</title>
+<title>표시사항 기재양식</title>
 <script type="text/javascript">
 $(document).ready(function(){
 	fn_loadTeam();
@@ -72,7 +72,7 @@ function changeListType(listType){
 	});
 	
 	//1.팀장인 경우
-	if( '${userUtil:getRoleCode(pageContext.request)}' == '2' || '${userUtil:getRoleCode(pageContext.request)}' == '7' ) {
+	/* if( '${userUtil:getRoleCode(pageContext.request)}' == '2' || '${userUtil:getRoleCode(pageContext.request)}' == '7' ) { */
 		//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
 		//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
 		//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
@@ -91,13 +91,17 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		} else if( listType == 'search' ) {
-			$("#searchTeam_li").hide();
-			$("#searchUser_li").hide();
+			$("#searchTeam_li").show();
+			$("#searchUser_li").show();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		}
-	}
+	/* } */
 	fn_search();
 }
 
@@ -454,13 +458,13 @@ function fn_search() {
 								<select name="searchType" id="searchType">
 									<option value="">선택</option>
 									<option value="searchName">제품명</option>
-									<option value="searchProductCode">제품코드</option>
+									<!-- <option value="searchProductCode">제품코드</option> -->
 								</select>
 							</div>
 							<input type="text" name="searchValue" id="searchValue" value="" style="width:180px; margin-left:5px;">
 						</dd>
 					</li>
-					<li>
+					<!-- <li>
 						<dt>제품구분</dt>
 						<dd >
 							<div class="selectbox" style="width:100px;" id="searchCategory1_div">  
@@ -476,6 +480,28 @@ function fn_search() {
 							<div class="selectbox lm5" style="width:100px; margin-left:5px; display:none;" id="searchCategory3_div">  
 								<label for="searchCategory3" id="searchCategory3_label">선택</label> 
 								<select name="searchCategory3" id="searchCategory3">
+								</select>
+							</div>
+						</dd>
+					</li> -->
+					<li id="searchTeam_li" style="display:none">
+						<dt>팀</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchTeam" id="searchTeam_label">선택</label> 
+								<select name="searchTeam" id="searchTeam" onChange="fn_loadUser()">
+								</select>
+							</div>
+						</dd>
+					</li>
+					<li id="searchUser_li" style="display:none">
+						<dt>담당자</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchUser" id="searchUser_label">선택</label> 
+								<select name="searchUser" id="searchUser">
 								</select>
 							</div>
 						</dd>

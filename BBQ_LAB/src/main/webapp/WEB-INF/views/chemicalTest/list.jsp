@@ -8,7 +8,20 @@
 <script type="text/javascript">
 $(document).ready(function () {
 	
-	fn_loadList(1, isUserSafeTeam(), isRequestList());
+	const userType = '${userUtil:getUserType(pageContext.request)}';
+
+	  let listType;
+	  switch ((userType || '').toUpperCase()) {
+	    case 'EXECUTIVE':
+	      listType = 'all';
+	      break;
+	    default:
+	      listType = 'my'; // 안전 기본값
+	  }
+	
+	fn_loadList(1, isUserSafeTeam(), isRequestList(), listType);
+	fn_loadTeam();
+	fn_loadSearchCategory(2,1);
 	// 요청일자
 	$("#requestDate").datepicker({
 		showOn: "both",
@@ -41,19 +54,126 @@ $(document).ready(function () {
 		'margin-top': '-5px',
 		'cursor': 'pointer'
 	});
+	
+	//1.임원인(roleCode가 4, 5) 경우에만 탭 설정 상관없이 팀, 담당자 필드를 표시한다.
+	if( '${userUtil:getUserType(pageContext.request)}' == 'EXECUTIVE' ) {
+		$("#searchTeam_li").show();
+		$("#searchUser_li").show();
+	}
 });
+
+function fn_loadSearchCategory(pIdx, level) {
+	
+	if( level == 2 ) {
+		$("#searchCategory"+(level+1)).removeOption(/./);
+		$("#searchCategory"+(level+1)+"_div").hide();
+	}
+	
+	if( pIdx == '' ) {
+		$("#searchCategory"+level).removeOption(/./);
+		$("#searchCategory"+level+"_div").hide();
+		return;
+	}
+	
+	var URL = "../common/selectCategoryByPIdAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{
+			pIdx : pIdx
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			var list = data;
+			$("#searchCategory"+level).removeOption(/./);
+			$("#searchCategory"+level).addOption("", "전체", false);
+			$("#searchCategory"+level+"_label").html("전체");
+			if( list.length > 0 ) {
+				$("#searchCategory"+level+"_div").show();
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#searchCategory"+level).addOption(value.CATEGORY_IDX, value.CATEGORY_NAME, false);
+				});
+			}
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}			
+	});
+}
+
+function fn_changeCategory(obj,level){
+	fn_loadSearchCategory($(obj).selectedValues()[0], level);
+}
+
+function fn_loadUser() {
+	if( $("#searchTeam").selectedValues()[0] != "" ) {
+		var URL = "../common/userListAjax";
+		$.ajax({
+			type:"POST",
+			url:URL,
+			data:{
+				"teamId" : $("#searchTeam").selectedValues()[0]
+			},
+			dataType:"json",
+			async:false,
+			success:function(data) {
+				var list = data;
+				$("#searchUser").removeOption(/./);
+				$("#searchUser").addOption("", "전체", false);
+				$("#searchUser_label").html("전체");
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#searchUser").addOption(value.USER_ID, value.USER_NAME+"("+value.RESP_TXT+")", false);
+				});
+			},
+			error:function(request, status, errorThrown){
+					alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+			}			
+		});
+	} else {
+		$("#searchUser").removeOption(/./);
+		$("#searchUser").addOption("", "전체", false);
+		$("#searchUser_label").html("전체");
+	}
+}
+
+function fn_loadTeam() {
+	var URL = "../common/teamListAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{
+			"pTeamId" : "10000713"
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			var list = data;
+			$("#searchTeam").removeOption(/./);
+			$("#searchTeam").addOption("", "전체", false);
+			$("#searchTeam_label").html("전체");
+			$.each(list, function( index, value ){ //배열-> index, value
+				$("#searchTeam").addOption(value.TEAM_ID, value.TEAM_NAME, false);
+			});
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}			
+	});
+}
+
 
 let currentTabType = "R"; // 기본값
 
-function fn_loadList(pageNo, isSafeTeam, isRequestList) {
+function fn_loadList(pageNo, isSafeTeam, isRequestList, auth) {
     var URL = "../chemicalTest/selectChemicalTestListAjax";
     var viewCount = $("#viewCount").selectedValues()[0];
     if (viewCount == '') {
         viewCount = "10";
     }
-
+	
  // 현재 탭에 따라 대상 tbody 선택
-	var $listBody = isRequestList ? $("#requestListBody") : $("#resultListBody");
+	var $listBody = isRequestList ? $("#requestListBody") : auth === 'my' ? $("#resultListBody") : $("#allListBody");
     
     $("#list").html("<tr><td align='center' colspan='5'>조회중입니다.</td></tr>");
     $('.page_navi').html("");
@@ -70,7 +190,10 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
             "isSafeTeam": isSafeTeam ? 'Y' : 'N',
             "isRequestList": isRequestList ? 'N' : 'C',
             "listType": currentTabType,
+            "searchTeam" : $("#searchTeam").selectedValues()[0],
+			"searchUser" : $("#searchUser").selectedValues()[0],
             "viewCount": viewCount,
+            "auth" : auth,
             "pageNo": pageNo,
             "testStatus": currentTabType
         },
@@ -101,7 +224,12 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
 					}
 
 					if (!isRequestList) {
-						html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.TEST_STATUS_TXT, '&nbsp;') + "</td>";
+						if(auth !== 'my'){
+							html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT, '&nbsp;') + "</td>";
+							html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.TEST_STATUS_TXT, '&nbsp;') + "</td>";							
+						}else {
+							html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.TEST_STATUS_TXT, '&nbsp;') + "</td>";														
+						}
 					} else {
 						html += "	<td onclick=\"fn_view('" + item.CHEMICAL_IDX + "')\" style=\"cursor:pointer;\">" + nvl(item.STATUS_TXT, '&nbsp;') + "</td>";
 					}
@@ -111,17 +239,19 @@ function fn_loadList(pageNo, isSafeTeam, isRequestList) {
 					html += "	<td>";
 					html += "		<li style=\"float:none; display:inline\">";
 					html += "			<button class=\"btn_doc\" onclick=\"fn_viewHistory('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">이력</button>";
-					if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
-						if (item.STATUS == 'TMP') {
-							html += "			<button class=\"btn_doc\" onclick=\"fn_update('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+					if(auth === 'my'){
+						if( '${userUtil:getUserId(pageContext.request)}' == item.DOC_OWNER ) {
+							if (item.STATUS == 'TMP') {
+								html += "			<button class=\"btn_doc\" onclick=\"fn_update('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">수정</button>";
+							}
+							if (item.STATUS == 'TMP') {
+								html += "			<button class=\"btn_doc\" onclick=\"fn_delete('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+							}
 						}
-						if (item.STATUS == 'TMP') {
-							html += "			<button class=\"btn_doc\" onclick=\"fn_delete('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc04.png\">삭제</button>";
+						
+						if (isUserSafeTeam() && item.TEST_STATUS != 'C') {
+							html += "			&nbsp;<button class=\"btn_doc\" onclick=\"fn_update('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">결과입력</button>";
 						}
-					}
-					
-					if (isUserSafeTeam() && item.TEST_STATUS != 'C') {
-						html += "			&nbsp;<button class=\"btn_doc\" onclick=\"fn_update('" + item.CHEMICAL_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">결과입력</button>";
 					}
 					html += "		</li>";
 					html += "	</td>";
@@ -159,7 +289,9 @@ function fn_insertForm() {
 }
 
 function fn_view(idx) {
-	window.location.href = "../chemicalTest/view?idx="+idx;
+	if( $('#listType').val() != 'search' ) {
+		window.location.href = "../chemicalTest/view?idx="+idx;	
+	}
 }
 
 function fn_update(idx) {
@@ -254,28 +386,70 @@ function fn_searchClear() {
 
 }
 
-function fn_changeTab(type) {
+function fn_changeTab(type, auth) {
 	currentTabType = type;
+	$('input[name=listType]').val(auth);
+   	// 탭 클래스 처리
+   	if (type === "R" && auth === 'my') {
+   		$("#myCount").addClass("select");
+   		$("#apprCount").removeClass("select");
+   		$("#teamCount").removeClass("select");
+   		$("#allCount").removeClass("select");
 
-	// 탭 클래스 처리
-	if (type === "R") {
-		$("#myCount").addClass("select");
-		$("#apprCount").removeClass("select");
+   		// 테이블 표시 제어
+   		$(".requestList").show();
+   		$(".resultList").hide();
+   		$(".all").hide();
+   		$("#searchTeam_li").hide();
+		$("#searchUser_li").hide();
+		$("#searchTeam").selectOptions("");
+		$("#searchUser").selectOptions("");
+   	} else if (type === "C" && auth === 'my'){
+   		$("#myCount").removeClass("select");
+   		$("#apprCount").addClass("select");
+   		$("#teamCount").removeClass("select");
+   		$("#allCount").removeClass("select");
 
-		// 테이블 표시 제어
-		$(".requestList").show();
-		$(".resultList").hide();
-	} else {
-		$("#apprCount").addClass("select");
-		$("#myCount").removeClass("select");
+   		// 테이블 표시 제어
+   		$(".requestList").hide();
+   		$(".resultList").show();
+   		$(".all").hide();
+   		$("#searchTeam_li").hide();
+		$("#searchUser_li").hide();
+		$("#searchTeam").selectOptions("");
+		$("#searchUser").selectOptions("");
+   	} else if (type === "A" && auth === "team") {
+  		$("#myCount").removeClass("select");
+  		$("#apprCount").removeClass("select");
+  		$("#teamCount").addClass("select");
+  		$("#allCount").removeClass("select");
 
-		// 테이블 표시 제어
-		$(".requestList").hide();
-		$(".resultList").show();
-	}
+  		// 테이블 표시 제어
+  		$(".requestList").hide();
+  		$(".resultList").hide();
+  		$(".all").show();
+  		$("#searchTeam_li").hide();
+		$("#searchTeam").selectOptions('${SESS_AUTH.ORGAID}');
+		fn_loadUser();
+		$("#searchUser_li").show();
+  	} else {
+  		$("#myCount").removeClass("select");
+  		$("#apprCount").removeClass("select");
+  		$("#teamCount").removeClass("select");
+  		$("#allCount").addClass("select");
+
+  		// 테이블 표시 제어
+  		$(".requestList").hide();
+  		$(".resultList").hide();
+  		$(".all").show();
+		fn_loadTeam();
+		fn_loadUser();
+  		$("#searchTeam_li").show();
+		$("#searchUser_li").show();
+  	}
 
 	// 리스트 로딩
-	fn_loadList(1, isUserSafeTeam(), isRequestList());
+	fn_loadList(1, isUserSafeTeam(), isRequestList(), auth);
 }
 
 function isUserSafeTeam() {
@@ -310,11 +484,38 @@ function isRequestList() {
 		<div class="group01" >
 			<div class="title"><!--span class="txt">연구개발시스템 공지사항</span--></div>
 			<div class="tab02">
+				<input type="hidden" name="listType" id="listType" value="${listType}">
 				<ul>
-				<!-- 선택됬을경우는 탭 클래스에 select를 넣어주세요 -->
-				<!-- 내 제품설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
-				<a href="#" onClick="fn_changeTab('R')"><li  class="select" id="myCount">의뢰 문서</li></a>
-				<a href="#" onClick="fn_changeTab('C')"><li class="" id="apprCount">결과 문서</li></a>
+					<c:choose>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
+							<a href="#" onClick="fn_changeTab('R','my')"><li  class="select" id="myCount">
+								<c:if test="${not isSafeTeam}">
+								${userUtil:getUserName(pageContext.request)}님의 </c:if>의뢰문서</li></a>
+							<a href="#" onClick="fn_changeTab('C', 'my')"><li class="" id="apprCount">
+								<c:if test="${not isSafeTeam}">
+								${userUtil:getUserName(pageContext.request)}님의 </c:if>결과문서</li></a>
+							<c:if test="${not isSafeTeam}">
+								<a href="#" onClick="fn_changeTab('A', 'team')"><li class="" id="teamCount">${userUtil:getDeptName(pageContext.request)} 의뢰&결과문서</li></a>
+							</c:if>
+							<a href="#" onClick="fn_changeTab('A', 'search')"><li class="" id="allCount">전체 의뢰&결과문서</li></a>
+						</c:when>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
+							<a href="#" onClick="fn_changeTab('R','my')"><li  class="select" id="myCount">
+								<c:if test="${not isSafeTeam}">
+									${userUtil:getUserName(pageContext.request)}님의 </c:if>의뢰문서</li></a>
+							<a href="#" onClick="fn_changeTab('C', 'my')"><li class="" id="apprCount">
+								<c:if test="${not isSafeTeam}">
+									${userUtil:getUserName(pageContext.request)}님의 </c:if>결과문서</li></a>
+							<a href="#" onClick="fn_changeTab('A', 'search')"><li class="" id="allCount">전체 의뢰&결과문서</li></a>
+						</c:when>
+						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
+							<a href="#" onClick="fn_changeTab('A', 'search')"><li class="" id="allCount">전체 의뢰&결과문서</li></a>
+						</c:when>
+					</c:choose>	
+					<!-- 선택됬을경우는 탭 클래스에 select를 넣어주세요 -->
+					<!-- 내 제품설계서 같은경우는 change select 이렇게 change 그대로 두고 한칸 띄고 select 삽입 -->
+					<!-- <a href="#" onClick="fn_changeTab('R')"><li  class="select" id="myCount">의뢰 문서</li></a>
+					<a href="#" onClick="fn_changeTab('C')"><li class="" id="apprCount">결과 문서</li></a> -->
 				</ul>
 			</div>
 			<div class="search_box" >
@@ -346,6 +547,50 @@ function isRequestList() {
 								</select>
 							</div>
 							<input type="text" name="searchValue" id="searchValue" value="" style="width:180px; margin-left:5px;">
+						</dd>
+					</li>
+					<!-- <li id="searchTeam_li" style="display:none">
+						<dt>팀</dt>
+						<dd >
+							초기값은 보통으로
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchTeam" id="searchTeam_label">선택</label> 
+								<select name="searchTeam" id="searchTeam" onChange="fn_loadUser()">
+								</select>
+							</div>
+						</dd>
+					</li>
+					<li id="searchUser_li" style="display:none">
+						<dt>담당자</dt>
+						<dd >
+							초기값은 보통으로
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchUser" id="searchUser_label">선택</label> 
+								<select name="searchUser" id="searchUser">
+								</select>
+							</div>
+						</dd>
+					</li> -->
+					<li id="searchTeam_li" style="display:none">
+						<dt>팀</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchTeam" id="searchTeam_label">선택</label> 
+								<select name="searchTeam" id="searchTeam" onChange="fn_loadUser()">
+								</select>
+							</div>
+						</dd>
+					</li>
+					<li id="searchUser_li" style="display:none">
+						<dt>담당자</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchUser" id="searchUser_label">선택</label> 
+								<select name="searchUser" id="searchUser">
+								</select>
+							</div>
 						</dd>
 					</li>
 					<li>
@@ -426,6 +671,36 @@ function isRequestList() {
 						</tr>
 					</thead>
 					<tbody id="resultListBody">						
+					</tbody>
+				</table>
+				<table class="tbl01 all" style="display:none;">
+					<colgroup id="list_colgroup">
+						<col width="20%"/>
+						<col width="8%">
+						<col width="8%">
+						<col width="8%">						
+						<col width="8%">						
+						<col width="8%">						
+						<col width="8%">						
+						<col width="8%">						
+						<col width="8%">						
+						<col width="8%">						
+					</colgroup>
+					<thead id="list_header">
+						<tr>
+							<th>시료명</th>
+							<th>요청일</th>
+							<th>희망완료일</th>
+							<th>검사완료일</th>
+							<th>의뢰자</th>
+							<th>검사자</th>
+							<th>문서상태</th> 
+							<th>검사상태</th> 
+							<th>담당자</th> 
+							<th></th> 
+						</tr>
+					</thead>
+					<tbody id="allListBody">						
 					</tbody>
 				</table>
 				<div class="page_navi  mt10">

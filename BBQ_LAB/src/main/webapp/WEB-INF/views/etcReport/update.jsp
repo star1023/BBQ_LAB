@@ -5,7 +5,7 @@
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
-<title>기타 보고서 생성</title>
+<title>기타 보고서 수정</title>
 <style>
 .positionCenter{
 	position: absolute;
@@ -401,7 +401,7 @@
 								apprFormData.append("apprComment", $("#apprComment").val());
 								apprFormData.append("apprLine", $("#apprLine").selectedValues());
 								apprFormData.append("refLine", $("#refLine").selectedValues());
-								apprFormData.append("title", '${etcData.data.TITLE}');
+								apprFormData.append("title", $("#title").val());
 								apprFormData.append("docType", $("#docType").val());
 								apprFormData.append("status", "N");
 								var URL = "../approval/insertApprAjax";
@@ -502,16 +502,11 @@
 	    previewContent.innerHTML = content;
 	    
 	 // ▼▼▼ [첨부파일] 미리보기 바인딩 추가 시작 ▼▼▼
-	    // 파일명 안전 이스케이프
-	    const esc = (s) => String(s)
-	      .replaceAll("&", "&amp;")
-	      .replaceAll("<", "&lt;")
-	      .replaceAll(">", "&gt;")
-	      .replaceAll('"', "&quot;")
-	      .replaceAll("'", "&#39;");
-
 	    // 1) <input type="file" name="files"> 들에서 선택된 파일명 수집
 	    const fileNames = [];
+	    const filePaths = [];
+	    const fileIds = [];
+	    const fileOrgNames = [];
 	    document.querySelectorAll('input[type="file"][name="files"]').forEach(input => {
 	      // 같은 input에 여러 파일이 선택될 수도 있음
 	      Array.from(input.files || []).forEach(f => {
@@ -525,31 +520,125 @@
 	    if ($ul) {
 	      $ul.querySelectorAll("li").forEach(li => {
 	        // li 안에 a/span이 있든 그냥 텍스트든 전부 텍스트로 인식
-	        const t = (li.textContent || "").trim();
-	        if (t) fileNames.push(t);
+			var fileName = $(li).attr("data-name");
+			var filePath = $(li).attr("data-path");
+			var fileId = $(li).attr("data-id");
+			var fileOrgName = $(li).attr("data-orgname");
 	      });
 	    }
 
-	    // 3) 중복 제거 + 공백 제거
-	    const uniqueNames = Array.from(new Set(
-	      fileNames.map(s => s.trim()).filter(Boolean)
-	    ));
+	 // 4) 미리보기 페이지에 반영 (기존파일 + 신규업로드 파일 모두 처리)
+	    var $prevFile = $doc.getElementById("prev_file");
+	    var $prevFileWrap = $doc.getElementById("wrapper_prev_file"); // 있으면 사용
 
-	    // 4) 미리보기 페이지에 반영
-	    const $prevFile = $doc.getElementById("prev_file");
-	    const $prevFileWrap = $doc.getElementById("wrapper_prev_file"); // 있으면 사용, 없으면 무시
+	    // 4-1) 현재 화면의 <input type="file" name="files">에서 새로 선택된 File 객체들 수집
+//	          (UL에 아직 data-id가 없고 data-*가 undefined인 신규 파일을 위해)
+	    var newFiles = [];
+	    document.querySelectorAll('input[type="file"][name="files"]').forEach(function(input){
+	      Array.from(input.files || []).forEach(function(f){
+	        if (f) newFiles.push(f);
+	      });
+	    });
 
-	    if (uniqueNames.length > 0) {
-	      // <br/>로 줄바꿈하여 넣기
-	      $prevFile.innerHTML = uniqueNames.map(n => esc(n)).join("<br/>");
-	      if ($prevFileWrap) $prevFileWrap.style.display = "table-row"; // 또는 "block" (미리보기 마크업에 맞게)
-	    } else {
-	      // 아무 파일도 없으면 숨기거나 대시 처리
-	      // ① 숨김
-	      if ($prevFileWrap) $prevFileWrap.style.display = "none";
-	      // ② 혹은 표시 유지 시 대시
-	      // $prevFile.textContent = "-";
+	    // 신규 파일을 이름으로 빠르게 찾기 위한 맵 (orgName 기준)
+	    var newFileByName = {};
+	    newFiles.forEach(function(f){
+	      // orgName 이 따로 없다면 f.name 을 orgName 으로 사용
+	      newFileByName[f.name] = f;
+	    });
+
+	    // 4-2) 미리보기용 링크 배열과, 나중에 해제할 blob URL 들
+	    var previewLinks = [];
+	    var blobUrls = [];
+
+	    // 4-3) UL에서 항목을 순회하며 기존 파일/신규 파일을 구분해 앵커 생성
+	    if ($ul) {
+	      $ul.querySelectorAll("li").forEach(function(li){
+	        var fileName = $(li).attr("data-name");       // 서버 저장 파일명
+	        var filePath = $(li).attr("data-path");
+	        var fileId = $(li).attr("data-id");           // 서버 파일 ID (있으면 기존파일)
+	        var fileOrgName = $(li).attr("data-orgname"); // 사용자가 본래 업로드한 파일명
+
+	        // 1) 서버에 이미 존재하는 파일 (fileId 有) → 기존 방식 유지
+	        if (fileId && fileOrgName) {
+	          previewLinks.push(
+	            '<a href="javascript:downloadFile(\'' + fileId + '\')">' + fileOrgName + '</a>'
+	          );
+	          return;
+	        }
+
+	        // 2) 신규 업로드 파일 (fileId 無) → Blob URL 로 즉시 다운로드 가능하게
+	        //    우선 li에 orgName이 들어와 있으면 그걸로, 아니면 li의 텍스트를 fallback으로 사용
+	        var orgNameGuess = fileOrgName;
+	        if (!orgNameGuess) {
+	          // li 내부 텍스트에서 파일명 유추 (삭제버튼 아이콘 등의 공백 제거)
+	          orgNameGuess = (li.textContent || '').trim();
+	        }
+
+	        // 맵에서 동일한 이름의 File 객체 찾기
+	        var f = orgNameGuess ? newFileByName[orgNameGuess] : null;
+
+	        // 이름 매칭이 안되면, input.files 전체에서 동일 이름을 탐색 (여러 개 있을 수 있으니 첫 매칭만)
+	        if (!f) {
+	          for (var i = 0; i < newFiles.length; i++) {
+	            if (newFiles[i] && newFiles[i].name === orgNameGuess) {
+	              f = newFiles[i];
+	              break;
+	            }
+	          }
+	        }
+
+	        if (f) {
+	          var url = $doc.defaultView.URL.createObjectURL(f);
+	          blobUrls.push(url);
+	          // download 속성으로 파일명 지정 → 클릭 시 로컬로 저장됨
+	          previewLinks.push(
+	            '<a href="' + url + '" download="' + f.name + '">' + f.name + ' (미업로드)</a>'
+	          );
+	        } else {
+	          // 매칭 실패 시 텍스트만 표시 (원하면 여기서도 단순 표시 대신 안내문 넣어도 됨)
+	          if (orgNameGuess) {
+	            previewLinks.push(orgNameGuess + ' (미업로드)');
+	          }
+	        }
+	      });
 	    }
+
+	    // 4-4) UL에 없지만 input에만 존재하는 신규 파일도 표시하고 싶다면(옵션)
+//	          UL이 아직 갱신되기 전이라 누락될 수 있으니 보강
+	    if (newFiles.length > 0) {
+	      // 이미 링크 만든 이름은 제외
+	      var alreadyListed = {};
+	      previewLinks.join('\n').replace(/>([^<]+)</g, function(_, name){ alreadyListed[name] = true; });
+
+	      newFiles.forEach(function(f){
+	        if (!alreadyListed[f.name]) {
+	          var url2 = $doc.defaultView.URL.createObjectURL(f);
+	          blobUrls.push(url2);
+	          previewLinks.push(
+	            '<a href="' + url2 + '" download="' + f.name + '">' + f.name + ' (미업로드)</a>'
+	          );
+	        }
+	      });
+	    }
+
+	    // 4-5) 출력/표시 처리
+	    if (previewLinks.length > 0) {
+	      $prevFile.innerHTML = previewLinks.join('<br/>');
+	      if ($prevFileWrap) $prevFileWrap.style.display = 'table-row';
+	    } else {
+	      if ($prevFileWrap) $prevFileWrap.style.display = 'none';
+	      // 또는 대시 처리
+	      // $prevFile.textContent = '-';
+	    }
+
+	    // 4-6) 팝업이 닫힐 때 blob URL 해제
+	    $doc.defaultView.addEventListener('beforeunload', function(){
+	      blobUrls.forEach(function(u){
+	        try { $doc.defaultView.URL.revokeObjectURL(u); } catch (e) {}
+	      });
+	    });
+
 	    // ▲▲▲ [첨부파일] 미리보기 바인딩 추가 끝 ▲▲▲
 
 	}
@@ -569,13 +658,13 @@
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		기타 보고서&nbsp;&nbsp;
+		기타 보고서 수정&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position:relative">
-			<span class="title_s">ETC Report</span><span class="title">기타 보고서</span>
+			<span class="title_s">ETC Report</span><span class="title">기타 보고서 수정</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -660,7 +749,7 @@
 							<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
 								<ul id="attatch_file">
 									<c:forEach items="${etcData.fileList}" var="fileList" varStatus="status">
-										<li data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}"><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${fileList.ORG_FILE_NAME}</li>
+										<li data-orgname="${fileList.ORG_FILE_NAME}" data-id="${fileList.FILE_IDX}" data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}"><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${fileList.ORG_FILE_NAME}</li>
 									</c:forEach>
 								</ul>	
 							</div>
@@ -757,7 +846,7 @@
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
-			<span class="title">상품설계변경보고서 결재 상신</span>
+			<span class="title">기타 보고서 결재 상신</span>
 			<div  class="top_btn_box">
 				<ul><li><button class="btn_madal_close" onClick="closeDialog('approval_dialog');"></button></li></ul>
 			</div>

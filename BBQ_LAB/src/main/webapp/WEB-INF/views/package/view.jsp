@@ -4,7 +4,7 @@
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
-<title>표시사항기재양식 생성</title>
+<title>표시사항 기재양식</title>
 <style>
 .positionCenter{
 	position: absolute;
@@ -57,7 +57,7 @@
 			formData.append("apprComment", $("#apprComment").val());
 			formData.append("apprLine", $("#apprLine").selectedValues());
 			formData.append("refLine", $("#refLine").selectedValues());
-			formData.append("title", '${packageInfoData.data.PRODUCT_NAME}'+' 표시사항 기재양식 생성.');
+			formData.append("title", "${packageInfoData.data.PRODUCT_NAME}"+" 표시사항 기재양식 생성.");
 			formData.append("docType", $("#docType").val());
 			formData.append("status", "N");
 			var URL = "../approval/insertApprAjax";
@@ -177,16 +177,23 @@
 	            });
 	        });
 	}
+	
+	function fn_openPreview(idx) {
+		var url = "/preview/packageInfoViewPopup?idx="+idx;
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		표시사항기재양식&nbsp;&nbsp;
-		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;표시사항기재양식서&nbsp;&nbsp;
+		표시사항 기재양식&nbsp;&nbsp;
+		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position:relative">
-			<span class="title_s">Package Info Document</span><span class="title">표시사항기재양식</span>
+			<span class="title_s">Package Info Document</span><span class="title">표시사항 기재양식</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -206,6 +213,7 @@
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">기본정보</span>
 				<div class="pr15">
+					<button class="btn_small_search ml5" onclick="fn_openPreview('${packageInfoData.data.PACKAGE_IDX}')">미리보기</button>
 					<c:if test="${packageInfoData.data.STATUS eq 'COMP' && packageInfoData.data.DOC_OWNER eq userId}">
 						<button class="btn_small_search" onclick="fn_pdfDownload('${packageInfoData.data.PACKAGE_IDX}')">PDF 다운로드</button>
 					</c:if>
@@ -463,13 +471,13 @@
 						<tr>
 							<td>주의사항</td>
 							<td colspan="2">
-								<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.SUGGESTIONS}</p>
+								<p style="white-space: pre-line; text-align:left;">${strUtil:getHtmlBr(packageInfoData.data.SUGGESTIONS)}</p>
 							</td>
 						</tr>
 						<tr>
 							<td>조리방법</td>
 							<td colspan="2">
-								<p style="white-space: pre-line; text-align:left;">${packageInfoData.data.COOK_METHOD}</p>
+								<p style="white-space: pre-line; text-align:left;">${strUtil:getHtmlBr(packageInfoData.data.COOK_METHOD)}</p>
 							</td>
 						</tr>
 					</tbody>

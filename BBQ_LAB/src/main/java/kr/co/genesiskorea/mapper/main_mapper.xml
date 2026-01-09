@@ -15,4 +15,291 @@
 		/* main.getApprStatusCount */
         SELECT * FROM lab_appr_status_view WHERE USER_ID = #{userId}
     </select>
+    
+    <select id="selectTeamDocCount" resultType="map">
+		/* main.selectTeamDocCount */
+		    SELECT 
+		        IFNULL(SUM(PROD_CNT), 0)          AS PROD_CNT,
+		        IFNULL(SUM(MENU_CNT), 0)          AS MENU_CNT,
+		        IFNULL(SUM(DESIGN_CNT), 0)        AS DESIGN_CNT,
+		        IFNULL(SUM(SENSE_QUALITY_CNT), 0) AS SENSE_QUALITY_CNT,
+		        IFNULL(SUM(PLAN_CNT), 0)          AS PLAN_CNT,
+		        IFNULL(SUM(TRIP_CNT), 0)          AS TRIP_CNT,
+		        IFNULL(SUM(RESEARCH_CNT), 0)      AS RESEARCH_CNT,
+		        IFNULL(SUM(RESULT_CNT), 0)        AS RESULT_CNT,
+		        IFNULL(SUM(CHEMICAL_CNT), 0)      AS CHEMICAL_CNT,
+		        IFNULL(SUM(PACKAGE_CNT), 0)       AS PACKAGE_CNT,
+		        IFNULL(SUM(RECIPE_CNT), 0)        AS RECIPE_CNT,
+		        IFNULL(SUM(ETC_CNT), 0)           AS ETC_CNT
+		    FROM lab_doc_count_view 
+		    WHERE DOC_OWNER IN (
+		            SELECT USER_ID 
+		            FROM lab_user 
+		            WHERE ORGAID = #{ORGAID} AND EMSTAT = '1' 
+		    )
+    </select>
+    
+	<select id="getTeamDocStatusCount" resultType="map">
+	  /* main.getTeamDocStatusCount : 팀원별 막대 (완성형) */
+	  SELECT
+	      U.ORGAID,
+		  COALESCE(H.OBJTTX, U.ORGAID) AS TEAM_NAME,
+		  U.USER_NAME,
+		  U.USER_ID AS DOC_OWNER,
+	
+	      /* =======================
+	         PROD (제품개발)
+	         ======================= */
+	      IFNULL(V.PROD_REG_CNT, 0)        AS PROD_REG_CNT,
+	      IFNULL(V.PROD_APPR_CNT, 0)       AS PROD_APPR_CNT,
+	      IFNULL(V.PROD_COND_APPR_CNT, 0)  AS PROD_COND_APPR_CNT,
+	      IFNULL(V.PROD_COMP_CNT, 0)       AS PROD_COMP_CNT,
+	      IFNULL(V.PROD_TMP_CNT, 0)        AS PROD_TMP_CNT,
+	      IFNULL(V.PROD_RET_CNT, 0)        AS PROD_RET_CNT,
+	
+	      /* =======================
+	         MENU (메뉴개발)
+	         ======================= */
+	      IFNULL(V.MENU_REG_CNT, 0)        AS MENU_REG_CNT,
+	      IFNULL(V.MENU_APPR_CNT, 0)       AS MENU_APPR_CNT,
+	      IFNULL(V.MENU_COND_APPR_CNT, 0)  AS MENU_COND_APPR_CNT,
+	      IFNULL(V.MENU_COMP_CNT, 0)       AS MENU_COMP_CNT,
+	      IFNULL(V.MENU_TMP_CNT, 0)        AS MENU_TMP_CNT,
+	      IFNULL(V.MENU_RET_CNT, 0)        AS MENU_RET_CNT,
+	
+	      /* =======================
+	         DESIGN (상품설계)
+	         ======================= */
+	      IFNULL(V.DESIGN_REG_CNT, 0)        AS DESIGN_REG_CNT,
+	      IFNULL(V.DESIGN_APPR_CNT, 0)       AS DESIGN_APPR_CNT,
+	      IFNULL(V.DESIGN_COND_APPR_CNT, 0)  AS DESIGN_COND_APPR_CNT,
+	      IFNULL(V.DESIGN_COMP_CNT, 0)       AS DESIGN_COMP_CNT,
+	      IFNULL(V.DESIGN_TMP_CNT, 0)        AS DESIGN_TMP_CNT,
+	      IFNULL(V.DESIGN_RET_CNT, 0)        AS DESIGN_RET_CNT,
+	
+	      /* =======================
+	         SENSE_QUALITY (관능품질)
+	         ======================= */
+	      IFNULL(V.SENSE_QUALITY_REG_CNT, 0)        AS SENSE_QUALITY_REG_CNT,
+	      IFNULL(V.SENSE_QUALITY_APPR_CNT, 0)       AS SENSE_QUALITY_APPR_CNT,
+	      IFNULL(V.SENSE_QUALITY_COND_APPR_CNT, 0)  AS SENSE_QUALITY_COND_APPR_CNT,
+	      IFNULL(V.SENSE_QUALITY_COMP_CNT, 0)       AS SENSE_QUALITY_COMP_CNT,
+	      IFNULL(V.SENSE_QUALITY_TMP_CNT, 0)        AS SENSE_QUALITY_TMP_CNT,
+	      IFNULL(V.SENSE_QUALITY_RET_CNT, 0)        AS SENSE_QUALITY_RET_CNT,
+	
+	      /* =======================
+	         PLAN (출장계획)
+	         ======================= */
+	      IFNULL(V.PLAN_REG_CNT, 0)        AS PLAN_REG_CNT,
+	      IFNULL(V.PLAN_APPR_CNT, 0)       AS PLAN_APPR_CNT,
+	      IFNULL(V.PLAN_COND_APPR_CNT, 0)  AS PLAN_COND_APPR_CNT,
+	      IFNULL(V.PLAN_COMP_CNT, 0)       AS PLAN_COMP_CNT,
+	      IFNULL(V.PLAN_TMP_CNT, 0)        AS PLAN_TMP_CNT,
+	      IFNULL(V.PLAN_RET_CNT, 0)        AS PLAN_RET_CNT,
+	
+	      /* =======================
+	         TRIP (출장결과)
+	         ======================= */
+	      IFNULL(V.TRIP_REG_CNT, 0)        AS TRIP_REG_CNT,
+	      IFNULL(V.TRIP_APPR_CNT, 0)       AS TRIP_APPR_CNT,
+	      IFNULL(V.TRIP_COND_APPR_CNT, 0)  AS TRIP_COND_APPR_CNT,
+	      IFNULL(V.TRIP_COMP_CNT, 0)       AS TRIP_COMP_CNT,
+	      IFNULL(V.TRIP_TMP_CNT, 0)        AS TRIP_TMP_CNT,
+	      IFNULL(V.TRIP_RET_CNT, 0)        AS TRIP_RET_CNT,
+	
+	      /* =======================
+	         RESEARCH (시장조사)
+	         ======================= */
+	      IFNULL(V.RESEARCH_REG_CNT, 0)        AS RESEARCH_REG_CNT,
+	      IFNULL(V.RESEARCH_APPR_CNT, 0)       AS RESEARCH_APPR_CNT,
+	      IFNULL(V.RESEARCH_COND_APPR_CNT, 0)  AS RESEARCH_COND_APPR_CNT,
+	      IFNULL(V.RESEARCH_COMP_CNT, 0)       AS RESEARCH_COMP_CNT,
+	      IFNULL(V.RESEARCH_TMP_CNT, 0)        AS RESEARCH_TMP_CNT,
+	      IFNULL(V.RESEARCH_RET_CNT, 0)        AS RESEARCH_RET_CNT,
+	
+	      /* =======================
+	         RESULT (신제품품질)
+	         ======================= */
+	      IFNULL(V.RESULT_REG_CNT, 0)        AS RESULT_REG_CNT,
+	      IFNULL(V.RESULT_APPR_CNT, 0)       AS RESULT_APPR_CNT,
+	      IFNULL(V.RESULT_COND_APPR_CNT, 0)  AS RESULT_COND_APPR_CNT,
+	      IFNULL(V.RESULT_COMP_CNT, 0)       AS RESULT_COMP_CNT,
+	      IFNULL(V.RESULT_TMP_CNT, 0)        AS RESULT_TMP_CNT,
+	      IFNULL(V.RESULT_RET_CNT, 0)        AS RESULT_RET_CNT,
+	
+	      /* =======================
+	         CHEMICAL (이화학검사)
+	         ======================= */
+	      IFNULL(V.CHEMICAL_REG_CNT, 0)        AS CHEMICAL_REG_CNT,
+	      IFNULL(V.CHEMICAL_APPR_CNT, 0)       AS CHEMICAL_APPR_CNT,
+	      IFNULL(V.CHEMICAL_COND_APPR_CNT, 0)  AS CHEMICAL_COND_APPR_CNT,
+	      IFNULL(V.CHEMICAL_COMP_CNT, 0)       AS CHEMICAL_COMP_CNT,
+	      IFNULL(V.CHEMICAL_TMP_CNT, 0)        AS CHEMICAL_TMP_CNT,
+	      IFNULL(V.CHEMICAL_RET_CNT, 0)        AS CHEMICAL_RET_CNT,
+	
+	      /* =======================
+	         PACKAGE (표시사항기재)
+	         ======================= */
+	      IFNULL(V.PACKAGE_REG_CNT, 0)        AS PACKAGE_REG_CNT,
+	      IFNULL(V.PACKAGE_APPR_CNT, 0)       AS PACKAGE_APPR_CNT,
+	      IFNULL(V.PACKAGE_COND_APPR_CNT, 0)  AS PACKAGE_COND_APPR_CNT,
+	      IFNULL(V.PACKAGE_COMP_CNT, 0)       AS PACKAGE_COMP_CNT,
+	      IFNULL(V.PACKAGE_TMP_CNT, 0)        AS PACKAGE_TMP_CNT,
+	      IFNULL(V.PACKAGE_RET_CNT, 0)        AS PACKAGE_RET_CNT
+	
+	  FROM lab_user U
+	  LEFT JOIN lab_interface_hr1010 H
+		     ON H.OBJTID = U.ORGAID
+	  LEFT JOIN lab_doc_status_view V
+		     ON U.USER_ID = V.DOC_OWNER
+	  WHERE U.ORGAID = #{ORGAID}
+	    AND U.EMSTAT = '1'
+	  ORDER BY U.USER_NAME
+	</select>
+	
+	<select id="selectDocCountByTeam" resultType="map">
+	  /* main.selectDocCountByTeam : 임원용 팀별 파이 */
+	  SELECT
+	      U.ORGAID,
+	      MAX(H.OBJTTX) AS TEAM_NAME,
+	      IFNULL(SUM(V.PROD_CNT), 0)          AS PROD_CNT,
+	      IFNULL(SUM(V.MENU_CNT), 0)          AS MENU_CNT,
+	      IFNULL(SUM(V.DESIGN_CNT), 0)        AS DESIGN_CNT,
+	      IFNULL(SUM(V.SENSE_QUALITY_CNT), 0) AS SENSE_QUALITY_CNT,
+	      IFNULL(SUM(V.PLAN_CNT), 0)          AS PLAN_CNT,
+	      IFNULL(SUM(V.TRIP_CNT), 0)          AS TRIP_CNT,
+	      IFNULL(SUM(V.RESEARCH_CNT), 0)      AS RESEARCH_CNT,
+	      IFNULL(SUM(V.RESULT_CNT), 0)        AS RESULT_CNT,
+	      IFNULL(SUM(V.CHEMICAL_CNT), 0)      AS CHEMICAL_CNT,
+	      IFNULL(SUM(V.PACKAGE_CNT), 0)       AS PACKAGE_CNT
+	  FROM lab_user U
+	  LEFT JOIN lab_interface_hr1010 H
+	         ON H.OBJTID = U.ORGAID
+	  LEFT JOIN lab_doc_count_view V
+	         ON V.DOC_OWNER = U.USER_ID
+	  WHERE U.EMSTAT = '1'
+	    <!-- 임원이 볼 수 있는 팀 범위 조건이 있다면 여기서 걸어도 됨 -->
+	  GROUP BY U.ORGAID
+	  ORDER BY TEAM_NAME
+	</select>
+	
+	<select id="selectExecTeams" resultType="map">
+	  /* main.selectExecTeams : 임원용 팀 목록(사용중 팀만) */
+	  SELECT ORGAID, TEAM_NAME
+	  FROM lab_used_team_view
+	  ORDER BY TEAM_NAME
+	</select>
+	
+	<select id="selectExecAllDocCount" resultType="map">
+	  /* main.selectExecAllDocCount : 임원용 전체(모든 팀) 파이 */
+	  SELECT
+	    IFNULL(SUM(V.PROD_CNT), 0)          AS PROD_CNT,
+	    IFNULL(SUM(V.MENU_CNT), 0)          AS MENU_CNT,
+	    IFNULL(SUM(V.DESIGN_CNT), 0)        AS DESIGN_CNT,
+	    IFNULL(SUM(V.SENSE_QUALITY_CNT), 0) AS SENSE_QUALITY_CNT,
+	    IFNULL(SUM(V.PLAN_CNT), 0)          AS PLAN_CNT,
+	    IFNULL(SUM(V.TRIP_CNT), 0)          AS TRIP_CNT,
+	    IFNULL(SUM(V.RESEARCH_CNT), 0)      AS RESEARCH_CNT,
+	    IFNULL(SUM(V.RESULT_CNT), 0)        AS RESULT_CNT,
+	    IFNULL(SUM(V.CHEMICAL_CNT), 0)      AS CHEMICAL_CNT,
+	    IFNULL(SUM(V.PACKAGE_CNT), 0)       AS PACKAGE_CNT,
+	    IFNULL(SUM(V.RECIPE_CNT), 0)        AS RECIPE_CNT,
+	    IFNULL(SUM(V.ETC_CNT), 0)           AS ETC_CNT
+	  FROM lab_user U
+	  JOIN lab_used_team_view T
+	    ON T.ORGAID = U.ORGAID
+	  LEFT JOIN lab_doc_count_view V
+	    ON V.DOC_OWNER = U.USER_ID
+	  WHERE U.EMSTAT = '1'
+	</select>
+	
+	<select id="getExecAllTeamDocStatusCount" resultType="map">
+	  /* main.getExecAllTeamDocStatusCount : 임원용 전체 팀원 상태(모든 팀) */
+	  SELECT
+	      U.ORGAID,
+	      T.TEAM_NAME,
+	      U.USER_NAME,
+	      U.USER_ID AS DOC_OWNER,
+	
+	      IFNULL(V.PROD_REG_CNT, 0)        AS PROD_REG_CNT,
+	      IFNULL(V.PROD_APPR_CNT, 0)       AS PROD_APPR_CNT,
+	      IFNULL(V.PROD_COND_APPR_CNT, 0)  AS PROD_COND_APPR_CNT,
+	      IFNULL(V.PROD_COMP_CNT, 0)       AS PROD_COMP_CNT,
+	      IFNULL(V.PROD_TMP_CNT, 0)        AS PROD_TMP_CNT,
+	      IFNULL(V.PROD_RET_CNT, 0)        AS PROD_RET_CNT,
+	
+	      IFNULL(V.MENU_REG_CNT, 0)        AS MENU_REG_CNT,
+	      IFNULL(V.MENU_APPR_CNT, 0)       AS MENU_APPR_CNT,
+	      IFNULL(V.MENU_COND_APPR_CNT, 0)  AS MENU_COND_APPR_CNT,
+	      IFNULL(V.MENU_COMP_CNT, 0)       AS MENU_COMP_CNT,
+	      IFNULL(V.MENU_TMP_CNT, 0)        AS MENU_TMP_CNT,
+	      IFNULL(V.MENU_RET_CNT, 0)        AS MENU_RET_CNT,
+	
+	      IFNULL(V.DESIGN_REG_CNT, 0)        AS DESIGN_REG_CNT,
+	      IFNULL(V.DESIGN_APPR_CNT, 0)       AS DESIGN_APPR_CNT,
+	      IFNULL(V.DESIGN_COND_APPR_CNT, 0)  AS DESIGN_COND_APPR_CNT,
+	      IFNULL(V.DESIGN_COMP_CNT, 0)       AS DESIGN_COMP_CNT,
+	      IFNULL(V.DESIGN_TMP_CNT, 0)        AS DESIGN_TMP_CNT,
+	      IFNULL(V.DESIGN_RET_CNT, 0)        AS DESIGN_RET_CNT,
+	
+	      IFNULL(V.SENSE_QUALITY_REG_CNT, 0)        AS SENSE_QUALITY_REG_CNT,
+	      IFNULL(V.SENSE_QUALITY_APPR_CNT, 0)       AS SENSE_QUALITY_APPR_CNT,
+	      IFNULL(V.SENSE_QUALITY_COND_APPR_CNT, 0)  AS SENSE_QUALITY_COND_APPR_CNT,
+	      IFNULL(V.SENSE_QUALITY_COMP_CNT, 0)       AS SENSE_QUALITY_COMP_CNT,
+	      IFNULL(V.SENSE_QUALITY_TMP_CNT, 0)        AS SENSE_QUALITY_TMP_CNT,
+	      IFNULL(V.SENSE_QUALITY_RET_CNT, 0)        AS SENSE_QUALITY_RET_CNT,
+	
+	      IFNULL(V.PLAN_REG_CNT, 0)        AS PLAN_REG_CNT,
+	      IFNULL(V.PLAN_APPR_CNT, 0)       AS PLAN_APPR_CNT,
+	      IFNULL(V.PLAN_COND_APPR_CNT, 0)  AS PLAN_COND_APPR_CNT,
+	      IFNULL(V.PLAN_COMP_CNT, 0)       AS PLAN_COMP_CNT,
+	      IFNULL(V.PLAN_TMP_CNT, 0)        AS PLAN_TMP_CNT,
+	      IFNULL(V.PLAN_RET_CNT, 0)        AS PLAN_RET_CNT,
+	
+	      IFNULL(V.TRIP_REG_CNT, 0)        AS TRIP_REG_CNT,
+	      IFNULL(V.TRIP_APPR_CNT, 0)       AS TRIP_APPR_CNT,
+	      IFNULL(V.TRIP_COND_APPR_CNT, 0)  AS TRIP_COND_APPR_CNT,
+	      IFNULL(V.TRIP_COMP_CNT, 0)       AS TRIP_COMP_CNT,
+	      IFNULL(V.TRIP_TMP_CNT, 0)        AS TRIP_TMP_CNT,
+	      IFNULL(V.TRIP_RET_CNT, 0)        AS TRIP_RET_CNT,
+	
+	      IFNULL(V.RESEARCH_REG_CNT, 0)        AS RESEARCH_REG_CNT,
+	      IFNULL(V.RESEARCH_APPR_CNT, 0)       AS RESEARCH_APPR_CNT,
+	      IFNULL(V.RESEARCH_COND_APPR_CNT, 0)  AS RESEARCH_COND_APPR_CNT,
+	      IFNULL(V.RESEARCH_COMP_CNT, 0)       AS RESEARCH_COMP_CNT,
+	      IFNULL(V.RESEARCH_TMP_CNT, 0)        AS RESEARCH_TMP_CNT,
+	      IFNULL(V.RESEARCH_RET_CNT, 0)        AS RESEARCH_RET_CNT,
+	
+	      IFNULL(V.RESULT_REG_CNT, 0)        AS RESULT_REG_CNT,
+	      IFNULL(V.RESULT_APPR_CNT, 0)       AS RESULT_APPR_CNT,
+	      IFNULL(V.RESULT_COND_APPR_CNT, 0)  AS RESULT_COND_APPR_CNT,
+	      IFNULL(V.RESULT_COMP_CNT, 0)       AS RESULT_COMP_CNT,
+	      IFNULL(V.RESULT_TMP_CNT, 0)        AS RESULT_TMP_CNT,
+	      IFNULL(V.RESULT_RET_CNT, 0)        AS RESULT_RET_CNT,
+	
+	      IFNULL(V.CHEMICAL_REG_CNT, 0)        AS CHEMICAL_REG_CNT,
+	      IFNULL(V.CHEMICAL_APPR_CNT, 0)       AS CHEMICAL_APPR_CNT,
+	      IFNULL(V.CHEMICAL_COND_APPR_CNT, 0)  AS CHEMICAL_COND_APPR_CNT,
+	      IFNULL(V.CHEMICAL_COMP_CNT, 0)       AS CHEMICAL_COMP_CNT,
+	      IFNULL(V.CHEMICAL_TMP_CNT, 0)        AS CHEMICAL_TMP_CNT,
+	      IFNULL(V.CHEMICAL_RET_CNT, 0)        AS CHEMICAL_RET_CNT,
+	
+	      IFNULL(V.PACKAGE_REG_CNT, 0)        AS PACKAGE_REG_CNT,
+	      IFNULL(V.PACKAGE_APPR_CNT, 0)       AS PACKAGE_APPR_CNT,
+	      IFNULL(V.PACKAGE_COND_APPR_CNT, 0)  AS PACKAGE_COND_APPR_CNT,
+	      IFNULL(V.PACKAGE_COMP_CNT, 0)       AS PACKAGE_COMP_CNT,
+	      IFNULL(V.PACKAGE_TMP_CNT, 0)        AS PACKAGE_TMP_CNT,
+	      IFNULL(V.PACKAGE_RET_CNT, 0)        AS PACKAGE_RET_CNT
+	
+	  FROM lab_user U
+	  JOIN lab_used_team_view T
+	    ON T.ORGAID = U.ORGAID
+	  LEFT JOIN lab_doc_status_view V
+	    ON U.USER_ID = V.DOC_OWNER
+	  WHERE U.EMSTAT = '1'
+	  ORDER BY T.TEAM_NAME, U.USER_NAME
+	</select>
+		
+		
+
 </mapper>

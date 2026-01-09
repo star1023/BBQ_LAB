@@ -42,7 +42,7 @@ function fn_apprSubmit(){
 		formData.append("apprComment", $("#apprComment").val());
 		formData.append("apprLine", $("#apprLine").selectedValues());
 		formData.append("refLine", $("#refLine").selectedValues());
-		formData.append("title", '${designData.data.TITLE}');
+		formData.append("title", "${designData.data.TITLE}");
 		formData.append("docType", $("#docType").val());
 		formData.append("status", "N");
 		var URL = "../approval/insertApprAjax";
@@ -132,11 +132,18 @@ function fn_pdfDownload(idx) {
             });
         });
 }
+
+function fn_openPreview(idx) {
+	var url = "/preview/designReportViewPopup?idx="+idx;
+
+	// 팝업 창 열기
+	var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+}
 </script>
 
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		상품설계변경 보고서&nbsp;&nbsp;
+		상품설계변경보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
@@ -157,6 +164,7 @@ function fn_pdfDownload(idx) {
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">기본정보</span>
 				<div class="pr15">
+					<button class="btn_small_search ml5" onclick="fn_openPreview('${designData.data.DESIGN_IDX}')">미리보기</button>
 					<c:if test="${designData.data.STATUS eq 'COMP' && designData.data.DOC_OWNER eq userId}">
 						<button class="btn_small_search" onclick="fn_pdfDownload('${designData.data.DESIGN_IDX}')">PDF 다운로드</button>
 					</c:if>
@@ -329,7 +337,7 @@ function fn_pdfDownload(idx) {
 			<div>
 				<table class="insert_proc01">
 					<tr>
-						<td>${designData.data.CONTENTS}</td>
+						<td>${strUtil:getHtmlBr(designData.data.CONTENTS)}</td>
 					</tr>
 				</table>
 			</div>

@@ -200,7 +200,8 @@ function getCurrentDate(){
 
 function restoreStr(str){
 	//str = str.replace(/\n/gi, "<BR>");
-	str = str.replace(/\r/gi, "");
+	str = str.replace(/\r/gi, "");	
+	str = str.replace(/\&nbsp;/gi, " ");
 	str = str.replace(/\&plusmn;/gi, "±");
 	str = str.replace(/\&excl;/gi, "!");
 	str = str.replace(/\&num\;/gi, "#");
@@ -236,6 +237,9 @@ function restoreStr(str){
 	str = str.replace(/\&gt\;/gi, ">");
 	str = str.replace(/\&lt\;/gi, "<");
 	str = str.replace(/\&quot\;/gi, '"');
+	str = str.replace(/\&#39\;/gi, "'");
+    str = str.replace(/\&apos\;/gi, "'");
+    str = str.replace(/\&amp\;/gi, "&");
 	
 	return str;
 }

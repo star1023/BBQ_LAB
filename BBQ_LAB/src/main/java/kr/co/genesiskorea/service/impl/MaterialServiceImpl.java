@@ -14,6 +14,7 @@ import javax.annotation.Resource;
 
 import org.apache.commons.compress.utils.FileNameUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -118,8 +119,8 @@ public class MaterialServiceImpl implements MaterialService {
 			
 			//첨부파일 유형 저장
 			JSONParser parser = new JSONParser();
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));			
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));			
 			List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 			for( int i = 0 ; i < docType.size() ; i++ ) {
 				HashMap<String, Object> paramMap = new HashMap<String, Object>();
@@ -277,8 +278,8 @@ public class MaterialServiceImpl implements MaterialService {
 			//첨부파일 유형 저장
 			List<HashMap<String, Object>> docTypeList = new ArrayList<HashMap<String, Object>>();
 			JSONParser parser = new JSONParser();
-			JSONArray docType = (JSONArray) parser.parse((String)param.get("docTypeArr"));
-			JSONArray docTypeText = (JSONArray) parser.parse((String)param.get("docTypeTextArr"));	
+			JSONArray docType = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeArr")));
+			JSONArray docTypeText = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("docTypeTextArr")));	
 			for( int i = 0 ; i < docType.size() ; i++ ) {
 				HashMap<String, Object> paramMap = new HashMap<String, Object>();
 				paramMap.put("docIdx", materialIdx);

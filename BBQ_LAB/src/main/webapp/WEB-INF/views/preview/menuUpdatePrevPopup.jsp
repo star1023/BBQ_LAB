@@ -16,6 +16,10 @@
   <meta charset="UTF-8">
   <title>프린트 미리보기</title>
   <script type="text/javascript">
+  function downloadFile(idx){
+	location.href = '/common/fileDownload?idx='+idx;
+  }
+  
   function fn_printPreview() {
 	var printContent = document.getElementById("wrapper").outerHTML;
 
@@ -36,7 +40,7 @@
         '<head>' +
           '<title>인쇄 미리보기</title>' +
           '<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css">' +
-          '<style>@media print { body { margin: 0; } }</style>' +
+          '<style>@media print { body { margin: 0; } a { text-decoration: none; color: black; } }</style>' +
         '</head>' +
         '<body onload="window.focus(); window.print();">' +
           printContent +
@@ -219,7 +223,7 @@
 						</td>
 					</tr>
 					<tr>
-						<th  >매뉴얼</th>
+						<th  >메뉴얼</th>
 						<td colspan="5" id="prev_manual">
 						</td>
 					</tr>

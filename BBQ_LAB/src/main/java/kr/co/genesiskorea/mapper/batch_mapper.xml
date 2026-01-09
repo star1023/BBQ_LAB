@@ -579,7 +579,10 @@
 						, hr1010.BUKRS
 						, 1 as level
 					FROM lab_interface_hr1010 hr1010
-					WHERE hr1010.OBJTID = '10000713'
+					WHERE 1 = 1
+						and (hr1010.OBJTID = '10000713'
+						or hr1010.OBJTID = '10001499'
+						)
 					UNION ALL
 					SELECT 
 						hr1010_tmp.OBJTID
@@ -616,4 +619,9 @@
 			FROM ORG_INFO
 		)user_data
 	</select>
+	
+	<delete id="deleteHrUserMaster">
+		DELETE FROM lab_interface_hr2000
+	</delete>
+	
 </mapper>

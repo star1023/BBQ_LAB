@@ -1,12 +1,19 @@
 package kr.co.genesiskorea.service.impl;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -17,10 +24,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.web.multipart.MultipartFile;
 
 import kr.co.genesiskorea.dao.CommonDao;
 import kr.co.genesiskorea.dao.RecipeDao;
 import kr.co.genesiskorea.service.RecipeService;
+import kr.co.genesiskorea.util.FileUtil;
 import kr.co.genesiskorea.util.PageNavigator;
 import kr.co.genesiskorea.util.StringUtil;
 
@@ -37,6 +46,9 @@ public class RecipeServiceImpl implements RecipeService {
 	@Resource
 	DataSourceTransactionManager txManager;
 	
+	@Autowired
+	private Properties config;
+	
 	@Override
 	public Map<String, Object> selectRecipeList(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
@@ -48,6 +60,12 @@ public class RecipeServiceImpl implements RecipeService {
 			pageNo = Integer.parseInt((String)param.get("pageNo"));
 		} catch( Exception e ) {
 			pageNo = 1;
+		}
+		
+		try {
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
+		} catch( Exception e ) {
+			viewCount = 10;
 		}
 		
 		// 페이징: 페이징 정보 SET
@@ -62,7 +80,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 	
 	@Override
-	public int insertTmpRecipe(Map<String, Object> param) throws Exception {
+	public int insertTmpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int recipeIdx = 0;
 		
@@ -74,20 +92,22 @@ public class RecipeServiceImpl implements RecipeService {
 		
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray matItemSapCode = (JSONArray) parser.parse((String)param.get("matItemSapCodeArr"));
-			JSONArray matItemName = (JSONArray) parser.parse((String)param.get("matItemNameArr"));
-			JSONArray matItemCompCount = (JSONArray) parser.parse((String)param.get("matItemCompCountArr"));
-			JSONArray matItemCompUnit = (JSONArray) parser.parse((String)param.get("matItemCompUnitArr"));
-			JSONArray matItemUseCount = (JSONArray) parser.parse((String)param.get("matItemUseCountArr"));
-			JSONArray matItemUseUnit = (JSONArray) parser.parse((String)param.get("matItemUseUnitArr"));
+			JSONArray matItemSapCode = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemSapCodeArr")));
+			JSONArray matItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemNameArr")));
+			JSONArray matItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompCountArr")));
+			JSONArray matItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompUnitArr")));
+			JSONArray matItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseCountArr")));
+			JSONArray matItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseUnitArr")));
 			
-			JSONArray newItemName = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemCompCount = (JSONArray) parser.parse((String)param.get("newItemCompCountArr"));
-			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
-			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
-			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
-			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
-			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
+			JSONArray newItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompCountArr")));
+			JSONArray newItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompUnitArr")));
+			JSONArray newItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseCountArr")));
+			JSONArray newItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseUnitArr")));
+			JSONArray newItemPrice = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemPriceArr")));
+			JSONArray newItemDesc = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemDescArr")));
+			
+			ArrayList<String> fileType = (ArrayList<String>)param.get("fileType");
 			
 			recipeIdx = recipeDao.selectRecipeSeq(); 	//key value 조
 			param.put("idx", recipeIdx);
@@ -207,6 +227,40 @@ public class RecipeServiceImpl implements RecipeService {
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				Calendar cal = Calendar.getInstance();
+		        Date day = cal.getTime();    //시간을 꺼낸다.
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+		        String toDay = sdf.format(day);
+				String path = config.getProperty("upload.file.path.recipe");
+				path += "/"+toDay; 
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", recipeIdx);
+							fileMap.put("docType", "RECIPE");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
+			
 			txManager.commit(status);
 			return recipeIdx;
 		} catch( Exception e ) {
@@ -217,7 +271,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public int insertRecipe(Map<String, Object> param) throws Exception {
+	public int insertRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int recipeIdx = 0;
 		
@@ -229,20 +283,22 @@ public class RecipeServiceImpl implements RecipeService {
 		
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray matItemSapCode = (JSONArray) parser.parse((String)param.get("matItemSapCodeArr"));
-			JSONArray matItemName = (JSONArray) parser.parse((String)param.get("matItemNameArr"));
-			JSONArray matItemCompCount = (JSONArray) parser.parse((String)param.get("matItemCompCountArr"));
-			JSONArray matItemCompUnit = (JSONArray) parser.parse((String)param.get("matItemCompUnitArr"));
-			JSONArray matItemUseCount = (JSONArray) parser.parse((String)param.get("matItemUseCountArr"));
-			JSONArray matItemUseUnit = (JSONArray) parser.parse((String)param.get("matItemUseUnitArr"));
+			JSONArray matItemSapCode = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemSapCodeArr")));
+			JSONArray matItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemNameArr")));
+			JSONArray matItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompCountArr")));
+			JSONArray matItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompUnitArr")));
+			JSONArray matItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseCountArr")));
+			JSONArray matItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseUnitArr")));
 			
-			JSONArray newItemName = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemCompCount = (JSONArray) parser.parse((String)param.get("newItemCompCountArr"));
-			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
-			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
-			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
-			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
-			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
+			JSONArray newItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompCountArr")));
+			JSONArray newItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompUnitArr")));
+			JSONArray newItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseCountArr")));
+			JSONArray newItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseUnitArr")));
+			JSONArray newItemPrice = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemPriceArr")));
+			JSONArray newItemDesc = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemDescArr")));
+			
+			ArrayList<String> fileType = (ArrayList<String>)param.get("fileType");
 			
 			recipeIdx = recipeDao.selectRecipeSeq(); 	//key value 조
 			param.put("idx", recipeIdx);
@@ -333,6 +389,18 @@ public class RecipeServiceImpl implements RecipeService {
 					} catch(Exception e) {
 						newData.put("desc", "");
 					}
+					
+					// ✅ 추가된 부분: 모든 값이 ""(빈값)이면 스킵
+			        if ("".equals(newData.get("name"))
+			            && "".equals(newData.get("compCount"))
+			            && "".equals(newData.get("compUnit"))
+			            && "".equals(newData.get("useCount"))
+			            && "".equals(newData.get("useUnit"))
+			            && "".equals(newData.get("price"))
+			            && "".equals(newData.get("desc"))) {
+			            continue;
+			        }
+			        
 					newList.add(newData);
 				}
 			}
@@ -349,6 +417,40 @@ public class RecipeServiceImpl implements RecipeService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				Calendar cal = Calendar.getInstance();
+		        Date day = cal.getTime();    //시간을 꺼낸다.
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+		        String toDay = sdf.format(day);
+				String path = config.getProperty("upload.file.path.recipe");
+				path += "/"+toDay; 
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", recipeIdx);
+							fileMap.put("docType", "RECIPE");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
 			
 			txManager.commit(status);
 			return recipeIdx;
@@ -373,8 +475,13 @@ public class RecipeServiceImpl implements RecipeService {
 
 	@Override
 	public Map<String, Object> selectRecipeData(Map<String, Object> param) {
-		// TODO Auto-generated method stub
-		return recipeDao.selectRecipeData(param);
+		// TODO Auto-generated method stub	
+		Map<String, Object> data = recipeDao.selectRecipeData(param);
+		param.put("docType", "RECIPE");
+		List<Map<String, String>> fileList = commonDao.selectFileList(param);
+		data.put("fileList", fileList);
+		return data;
+
 	}
 
 	@Override
@@ -390,7 +497,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public void updateTmpRecipe(Map<String, Object> param) throws Exception {
+	public void updateTmpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -400,20 +507,26 @@ public class RecipeServiceImpl implements RecipeService {
 		
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray matItemSapCode = (JSONArray) parser.parse((String)param.get("matItemSapCodeArr"));
-			JSONArray matItemName = (JSONArray) parser.parse((String)param.get("matItemNameArr"));
-			JSONArray matItemCompCount = (JSONArray) parser.parse((String)param.get("matItemCompCountArr"));
-			JSONArray matItemCompUnit = (JSONArray) parser.parse((String)param.get("matItemCompUnitArr"));
-			JSONArray matItemUseCount = (JSONArray) parser.parse((String)param.get("matItemUseCountArr"));
-			JSONArray matItemUseUnit = (JSONArray) parser.parse((String)param.get("matItemUseUnitArr"));
+			JSONArray matItemSapCode = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemSapCodeArr")));
+			JSONArray matItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemNameArr")));
+			JSONArray matItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompCountArr")));
+			JSONArray matItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompUnitArr")));
+			JSONArray matItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseCountArr")));
+			JSONArray matItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseUnitArr")));
 			
-			JSONArray newItemName = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemCompCount = (JSONArray) parser.parse((String)param.get("newItemCompCountArr"));
-			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
-			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
-			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
-			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
-			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
+			JSONArray newItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompCountArr")));
+			JSONArray newItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompUnitArr")));
+			JSONArray newItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseCountArr")));
+			JSONArray newItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseUnitArr")));
+			JSONArray newItemPrice = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemPriceArr")));
+			JSONArray newItemDesc = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemDescArr")));
+			
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
+			
+			ArrayList<String> fileType = (ArrayList<String>)param.get("fileType");
 			
 			recipeDao.updateRecipe(param);
 			
@@ -503,6 +616,18 @@ public class RecipeServiceImpl implements RecipeService {
 					} catch(Exception e) {
 						newData.put("desc", "");
 					}
+					
+					// ✅ 추가된 부분: 모든 값이 ""(빈값)이면 스킵
+			        if ("".equals(newData.get("name"))
+			            && "".equals(newData.get("compCount"))
+			            && "".equals(newData.get("compUnit"))
+			            && "".equals(newData.get("useCount"))
+			            && "".equals(newData.get("useUnit"))
+			            && "".equals(newData.get("price"))
+			            && "".equals(newData.get("desc"))) {
+			            continue;
+			        }
+			        
 					newList.add(newData);
 				}
 			}
@@ -520,6 +645,54 @@ public class RecipeServiceImpl implements RecipeService {
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
 			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			    	String fileIdx = (String)deletedFileIdArr.get(i);
+			        String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				Calendar cal = Calendar.getInstance();
+		        Date day = cal.getTime();    //시간을 꺼낸다.
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+		        String toDay = sdf.format(day);
+		        String path = config.getProperty("upload.file.path.recipe");
+				path += "/"+toDay; 
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", param.get("idx"));
+							fileMap.put("docType", "RECIPE");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
+			
 			txManager.commit(status);
 		} catch( Exception e ) {
 			txManager.rollback(status);
@@ -529,7 +702,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public void updateRecipe(Map<String, Object> param) throws Exception {
+	public void updateRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		DefaultTransactionDefinition def = new DefaultTransactionDefinition();
 		TransactionStatus status = null;
@@ -539,20 +712,26 @@ public class RecipeServiceImpl implements RecipeService {
 		
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray matItemSapCode = (JSONArray) parser.parse((String)param.get("matItemSapCodeArr"));
-			JSONArray matItemName = (JSONArray) parser.parse((String)param.get("matItemNameArr"));
-			JSONArray matItemCompCount = (JSONArray) parser.parse((String)param.get("matItemCompCountArr"));
-			JSONArray matItemCompUnit = (JSONArray) parser.parse((String)param.get("matItemCompUnitArr"));
-			JSONArray matItemUseCount = (JSONArray) parser.parse((String)param.get("matItemUseCountArr"));
-			JSONArray matItemUseUnit = (JSONArray) parser.parse((String)param.get("matItemUseUnitArr"));
+			JSONArray matItemSapCode = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemSapCodeArr")));
+			JSONArray matItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemNameArr")));
+			JSONArray matItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompCountArr")));
+			JSONArray matItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompUnitArr")));
+			JSONArray matItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseCountArr")));
+			JSONArray matItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseUnitArr")));
 			
-			JSONArray newItemName = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemCompCount = (JSONArray) parser.parse((String)param.get("newItemCompCountArr"));
-			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
-			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
-			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
-			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
-			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
+			JSONArray newItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompCountArr")));
+			JSONArray newItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompUnitArr")));
+			JSONArray newItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseCountArr")));
+			JSONArray newItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseUnitArr")));
+			JSONArray newItemPrice = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemPriceArr")));
+			JSONArray newItemDesc = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemDescArr")));
+			
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
+			
+			ArrayList<String> fileType = (ArrayList<String>)param.get("fileType");
 			
 			recipeDao.updateRecipe(param);
 			
@@ -642,6 +821,18 @@ public class RecipeServiceImpl implements RecipeService {
 					} catch(Exception e) {
 						newData.put("desc", "");
 					}
+					
+					// ✅ 추가된 부분: 모든 값이 ""(빈값)이면 스킵
+			        if ("".equals(newData.get("name"))
+			            && "".equals(newData.get("compCount"))
+			            && "".equals(newData.get("compUnit"))
+			            && "".equals(newData.get("useCount"))
+			            && "".equals(newData.get("useUnit"))
+			            && "".equals(newData.get("price"))
+			            && "".equals(newData.get("desc"))) {
+			            continue;
+			        }
+					
 					newList.add(newData);
 				}
 			}
@@ -658,6 +849,54 @@ public class RecipeServiceImpl implements RecipeService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			//삭제된 파일 삭제
+			if (deletedFileIdArr != null && deletedFileIdArr.size() > 0) {
+			    for (int i = 0; i < deletedFileIdArr.size(); i++) {
+			    	String fileIdx = (String)deletedFileIdArr.get(i);
+			        String fullFileName = (String)deletedFileArr.get(i);
+			        String filePath = (String)deletedFilePathArr.get(i);
+
+			        FileUtil.fileDelete(fullFileName, filePath);
+			        Map<String, Object> fileParam = new HashMap<>();
+			        fileParam.put("fileIdx", fileIdx);
+			        commonDao.deleteFileData(fileParam);  // ✅ map으로 넘김
+			    }
+			}
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				Calendar cal = Calendar.getInstance();
+		        Date day = cal.getTime();    //시간을 꺼낸다.
+		        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+		        String toDay = sdf.format(day);
+		        String path = config.getProperty("upload.file.path.recipe");
+				path += "/"+toDay; 
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", param.get("idx"));
+							fileMap.put("docType", "RECIPE");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
 			
 			txManager.commit(status);
 		} catch( Exception e ) {
@@ -693,7 +932,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public int versionUpTmpRecipe(Map<String, Object> param) throws Exception {
+	public int versionUpTmpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int recipeIdx = 0;
 		
@@ -705,20 +944,23 @@ public class RecipeServiceImpl implements RecipeService {
 		
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray matItemSapCode = (JSONArray) parser.parse((String)param.get("matItemSapCodeArr"));
-			JSONArray matItemName = (JSONArray) parser.parse((String)param.get("matItemNameArr"));
-			JSONArray matItemCompCount = (JSONArray) parser.parse((String)param.get("matItemCompCountArr"));
-			JSONArray matItemCompUnit = (JSONArray) parser.parse((String)param.get("matItemCompUnitArr"));
-			JSONArray matItemUseCount = (JSONArray) parser.parse((String)param.get("matItemUseCountArr"));
-			JSONArray matItemUseUnit = (JSONArray) parser.parse((String)param.get("matItemUseUnitArr"));
+			JSONArray matItemSapCode = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemSapCodeArr")));
+			JSONArray matItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemNameArr")));
+			JSONArray matItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompCountArr")));
+			JSONArray matItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompUnitArr")));
+			JSONArray matItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseCountArr")));
+			JSONArray matItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseUnitArr")));
 			
-			JSONArray newItemName = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemCompCount = (JSONArray) parser.parse((String)param.get("newItemCompCountArr"));
-			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
-			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
-			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
-			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
-			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
+			JSONArray newItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompCountArr")));
+			JSONArray newItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompUnitArr")));
+			JSONArray newItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseCountArr")));
+			JSONArray newItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseUnitArr")));
+			JSONArray newItemPrice = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemPriceArr")));
+			JSONArray newItemDesc = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemDescArr")));
+			
+			ArrayList<String> fileType = (ArrayList<String>)param.get("fileType");
+			ArrayList<String> tempFile = (ArrayList<String>)param.get("tempFile");
 			
 			recipeDao.updateRecipeIsLast(param);
 			
@@ -811,6 +1053,18 @@ public class RecipeServiceImpl implements RecipeService {
 					} catch(Exception e) {
 						newData.put("desc", "");
 					}
+					
+					// ✅ 추가된 부분: 모든 값이 ""(빈값)이면 스킵
+			        if ("".equals(newData.get("name"))
+			            && "".equals(newData.get("compCount"))
+			            && "".equals(newData.get("compUnit"))
+			            && "".equals(newData.get("useCount"))
+			            && "".equals(newData.get("useUnit"))
+			            && "".equals(newData.get("price"))
+			            && "".equals(newData.get("desc"))) {
+			            continue;
+			        }
+					
 					newList.add(newData);
 				}
 			}
@@ -827,6 +1081,79 @@ public class RecipeServiceImpl implements RecipeService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			String path = config.getProperty("upload.file.path.recipe");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+	        
+	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", recipeIdx);
+								fileMap.put("docType", "RECIPE");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+				}
+			}
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", recipeIdx);
+							fileMap.put("docType", "RECIPE");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
 			
 			txManager.commit(status);
 			return recipeIdx;
@@ -838,7 +1165,7 @@ public class RecipeServiceImpl implements RecipeService {
 	}
 
 	@Override
-	public int versionUpRecipe(Map<String, Object> param) throws Exception {
+	public int versionUpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception {
 		// TODO Auto-generated method stub
 		int recipeIdx = 0;
 		
@@ -850,20 +1177,23 @@ public class RecipeServiceImpl implements RecipeService {
 		
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray matItemSapCode = (JSONArray) parser.parse((String)param.get("matItemSapCodeArr"));
-			JSONArray matItemName = (JSONArray) parser.parse((String)param.get("matItemNameArr"));
-			JSONArray matItemCompCount = (JSONArray) parser.parse((String)param.get("matItemCompCountArr"));
-			JSONArray matItemCompUnit = (JSONArray) parser.parse((String)param.get("matItemCompUnitArr"));
-			JSONArray matItemUseCount = (JSONArray) parser.parse((String)param.get("matItemUseCountArr"));
-			JSONArray matItemUseUnit = (JSONArray) parser.parse((String)param.get("matItemUseUnitArr"));
+			JSONArray matItemSapCode = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemSapCodeArr")));
+			JSONArray matItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemNameArr")));
+			JSONArray matItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompCountArr")));
+			JSONArray matItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemCompUnitArr")));
+			JSONArray matItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseCountArr")));
+			JSONArray matItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("matItemUseUnitArr")));
 			
-			JSONArray newItemName = (JSONArray) parser.parse((String)param.get("newItemNameArr"));
-			JSONArray newItemCompCount = (JSONArray) parser.parse((String)param.get("newItemCompCountArr"));
-			JSONArray newItemCompUnit = (JSONArray) parser.parse((String)param.get("newItemCompUnitArr"));
-			JSONArray newItemUseCount = (JSONArray) parser.parse((String)param.get("newItemUseCountArr"));
-			JSONArray newItemUseUnit = (JSONArray) parser.parse((String)param.get("newItemUseUnitArr"));
-			JSONArray newItemPrice = (JSONArray) parser.parse((String)param.get("newItemPriceArr"));
-			JSONArray newItemDesc = (JSONArray) parser.parse((String)param.get("newItemDescArr"));
+			JSONArray newItemName = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemNameArr")));
+			JSONArray newItemCompCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompCountArr")));
+			JSONArray newItemCompUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemCompUnitArr")));
+			JSONArray newItemUseCount = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseCountArr")));
+			JSONArray newItemUseUnit = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemUseUnitArr")));
+			JSONArray newItemPrice = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemPriceArr")));
+			JSONArray newItemDesc = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("newItemDescArr")));
+			
+			ArrayList<String> fileType = (ArrayList<String>)param.get("fileType");
+			ArrayList<String> tempFile = (ArrayList<String>)param.get("tempFile");
 			
 			recipeDao.updateRecipeIsLast(param);
 			
@@ -956,6 +1286,18 @@ public class RecipeServiceImpl implements RecipeService {
 					} catch(Exception e) {
 						newData.put("desc", "");
 					}
+					
+					// ✅ 추가된 부분: 모든 값이 ""(빈값)이면 스킵
+			        if ("".equals(newData.get("name"))
+			            && "".equals(newData.get("compCount"))
+			            && "".equals(newData.get("compUnit"))
+			            && "".equals(newData.get("useCount"))
+			            && "".equals(newData.get("useUnit"))
+			            && "".equals(newData.get("price"))
+			            && "".equals(newData.get("desc"))) {
+			            continue;
+			        }
+					
 					newList.add(newData);
 				}
 			}
@@ -972,6 +1314,79 @@ public class RecipeServiceImpl implements RecipeService {
 			historyParam.put("historyData", param.toString());
 			historyParam.put("userId", param.get("userId"));
 			commonDao.insertHistory(historyParam);
+			
+			String path = config.getProperty("upload.file.path.recipe");
+			Calendar cal = Calendar.getInstance();
+	        Date day = cal.getTime();    //시간을 꺼낸다.
+	        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+	        String toDay = sdf.format(day);
+	        path += File.separator+toDay; 
+	        
+	        //문서 복사 시 기존 첨부파일을 유지하는 경우 기존 파일 데이터를 복사합니다.
+			if( tempFile != null ) {
+				if( tempFile.size() > 0 ) {
+					//기존 파일 정보를 조회한다.
+					List<Map<String, Object>> tempFileList = commonDao.selectTempFileList(tempFile);
+					if( tempFileList != null && tempFileList.size() > 0 ) {
+						for( int i = 0 ; i < tempFileList.size() ; i++ ) {
+							Map<String, Object> tempFileData = tempFileList.get(i);
+							String orgFileName = (String)tempFileData.get("ORG_FILE_NAME");
+							String fileName = (String)tempFileData.get("FILE_NAME");
+							String filePath = (String)tempFileData.get("FILE_PATH");
+							String fileContents = (String)tempFileData.get("FILE_CONTENT");
+							if( orgFileName != null && !"".equals(orgFileName) && !"undefined".equals(orgFileName) ) {
+								String currentFilePath = filePath+File.separator+fileName;
+								String fileIdx = FileUtil.getUUID();
+								String newFilePath = path;
+								String newFileName = fileIdx+"_"+orgFileName;
+								File currentFile = new File(currentFilePath);						
+								File newFile = new File(newFilePath+File.separator+newFileName);
+								FileUtils.copyFile(currentFile, newFile);
+								
+								Map<String,Object> fileMap = new HashMap<String,Object>();
+								fileMap.put("fileIdx", fileIdx);
+								fileMap.put("docIdx", recipeIdx);
+								fileMap.put("docType", "RECIPE");
+								fileMap.put("fileType", "00");
+								fileMap.put("orgFileName", orgFileName);
+								fileMap.put("filePath", path);
+								fileMap.put("changeFileName", newFileName);
+								fileMap.put("content", fileContents);
+								//파일정보 저장
+								commonDao.insertFileInfo(fileMap);
+							}
+						}
+					}
+				}
+			}
+			
+			//파일 DB 저장
+			if( file != null && file.length > 0 ) {
+				int idx = 0;
+				for( MultipartFile multipartFile : file ) {
+					try {
+						if( !multipartFile.isEmpty() ) {
+							String fileIdx = FileUtil.getUUID();
+							String result = FileUtil.upload3(multipartFile,path,fileIdx);
+							String content = FileUtil.getPdfContents(path, result);
+							Map<String,Object> fileMap = new HashMap<String,Object>();
+							fileMap.put("fileIdx", fileIdx);
+							fileMap.put("docIdx", recipeIdx);
+							fileMap.put("docType", "RECIPE");
+							fileMap.put("fileType", fileType.get(idx));
+							fileMap.put("orgFileName", multipartFile.getOriginalFilename());
+							fileMap.put("filePath", path);
+							fileMap.put("changeFileName", result);
+							fileMap.put("content", content);
+							//파일정보 저장
+							commonDao.insertFileInfo(fileMap);
+							idx++;
+						}
+					} catch( Exception e ) {
+						//throw e;
+					}					
+				}
+			}
 			
 			txManager.commit(status);
 			return recipeIdx;

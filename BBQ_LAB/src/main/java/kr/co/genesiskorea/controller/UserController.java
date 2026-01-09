@@ -440,20 +440,45 @@ public class UserController {
 		return resultMap;
 	}
 	
+//	private boolean continuousPwd(String pwd, int limit) {
+//		int o = 0;
+//		int d = 0;
+//		int p = 0;
+//		int n = 0;
+//		//int limit = 3;
+//		for(int i=0; i<pwd.length(); i++) {
+//			char tempVal = pwd.charAt(i);
+//			if(i > 0 && (p = o - tempVal) > -2 && (n = p == d ? n + 1 :0) > limit -3) {
+//				return true;
+//			}
+//			d = p;
+//			o = tempVal;
+//		}
+//		return false;
+//	}
+	
 	private boolean continuousPwd(String pwd, int limit) {
-		int o = 0;
-		int d = 0;
-		int p = 0;
-		int n = 0;
-		//int limit = 3;
-		for(int i=0; i<pwd.length(); i++) {
-			char tempVal = pwd.charAt(i);
-			if(i > 0 && (p = o - tempVal) > -2 && (n = p == d ? n + 1 :0) > limit -3) {
-				return true;
-			}
-			d = p;
-			o = tempVal;
-		}
-		return false;
-	}
+	       int o = 0; // 이전 문자 저장
+	       int n = 0; // 동일 문자 카운트
+	       
+	       for(int i=0; i<pwd.length(); i++) {
+	           char tempVal = pwd.charAt(i);
+	           
+	           // i > 0: 두 번째 문자부터 비교 시작
+	           // o == tempVal: 이전 문자와 현재 문자가 같은지 확인
+	           if(i > 0 && (o == tempVal)) {
+	               n++; // 같으면 카운트 증가
+	           } else {
+	               n = 0; // 다르면 카운트 초기화
+	           }
+	           
+	           // n이 limit-1 이면 동일 문자가 limit개 연속된 것 (limit=3이면 n=2일 때 차단)
+	           if(n >= limit - 1) {
+	               return true;
+	           }
+	           
+	           o = tempVal; // 현재 문자를 이전 문자로 저장
+	       }
+	       return false;
+	   }
 }

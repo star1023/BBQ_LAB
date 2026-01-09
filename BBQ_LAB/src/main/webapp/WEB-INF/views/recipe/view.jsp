@@ -177,6 +177,18 @@ li {
 	            });
 	        });
 	}
+	
+	function downloadFile(idx){
+		location.href = '/common/fileDownload?idx='+idx;
+	}
+	
+	function fn_openPreview(idx) {
+		var url = "/preview/recipeViewPopup?idx="+idx;
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	}
+	
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path"> 사전원가서 상세보기&nbsp;&nbsp; <img
@@ -212,10 +224,13 @@ li {
 				<!--span class="txt">연구개발시스템 공지사항</span-->
 			</div>
 				<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
-					<span class="txt">제품정보 <span class="mandatory">*</span></span>
-					<c:if test="${(recipeData.STATUS eq 'COMP' or recipeData.STATUS eq 'BOM') and recipeData.DOC_OWNER eq userId}">
-						<button class="btn_small_search" onclick="fn_pdfDownload('${recipeData.RECIPE_IDX}')">PDF 다운로드</button>
-					</c:if>
+					<span class="txt">제품정보</span>
+					<div>
+						<button class="btn_small_search ml5" onclick="fn_openPreview('${recipeData.RECIPE_IDX}')">미리보기</button>
+						<c:if test="${(recipeData.STATUS eq 'COMP' or recipeData.STATUS eq 'BOM') and recipeData.DOC_OWNER eq userId}">
+							<button class="btn_small_search" onclick="fn_pdfDownload('${recipeData.RECIPE_IDX}')">PDF 다운로드</button>
+						</c:if>
+					</div>
 				</div>
 				<div class="main_tbl">
 					<table class="insert_proc01">
@@ -381,7 +396,7 @@ li {
 								${purchaseList.ITEM_PRICE}
 							</td>
 							<td>
-								<span style="text-align: left;"><pre>${purchaseList.ITEM_DESC}</pre></span>
+								<span style="text-align: left;">${strUtil:getHtmlBr(purchaseList.ITEM_DESC)}</span>
 							</td>
 						</tr>
 						</c:forEach>
@@ -389,7 +404,27 @@ li {
 					<tfoot>
 					</tfoot>
 				</table>
-
+				
+			<div class="title2 mt20"  style="width:90%;"><span class="txt">첨부파일</span></div>
+			<div class="list_detail">
+				<ul style="">
+					<li>
+						<dt style="width: 20%">첨부파일</dt>
+						<dd style="width: 80%;">
+							<div class="add_file" id="add_file2" style="width:100%">
+								
+							</div>
+							<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;">
+								<ul id="attatch_file">
+									<c:forEach items="${recipeData.fileList}" var="fileList" varStatus="status">
+										<li>&nbsp;<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a></li>
+									</c:forEach>
+								</ul>	
+							</div>
+						</dd>
+					</li>
+				</ul>
+			</div>
 
 			<div class="main_tbl">
 				<div class="btn_box_con5">

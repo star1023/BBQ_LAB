@@ -15,6 +15,7 @@ import java.util.Properties;
 import javax.annotation.Resource;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -63,6 +64,12 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 			pageNo = 1;
 		}
 		
+		try {
+			viewCount = Integer.parseInt((String)param.get("viewCount"));
+		} catch( Exception e ) {
+			viewCount = 10;
+		}
+		
 		// 페이징: 페이징 정보 SET
 		PageNavigator navi = new PageNavigator(param, viewCount, totalCount);
 		
@@ -87,7 +94,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			JSONArray etcArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("etcArr")));
 			
 			//1. idx 조회
 			infoIdx = packageInfoDao.selectPackageInfoSeq();	//key value 조회
@@ -205,7 +212,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			JSONArray etcArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("etcArr")));
 			
 			//1. idx 조회
 			infoIdx = packageInfoDao.selectPackageInfoSeq();	//key value 조회
@@ -340,10 +347,10 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray etcArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("etcArr")));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			 
 			
 			Calendar cal = Calendar.getInstance();
@@ -575,10 +582,10 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
-			JSONArray deletedFileIdArr = (JSONArray) parser.parse((String)param.get("deletedFileIdArr"));
-			JSONArray deletedFileArr = (JSONArray) parser.parse((String)param.get("deletedFileArr"));
-			JSONArray deletedFilePathArr = (JSONArray) parser.parse((String)param.get("deletedFilePathArr"));
+			JSONArray etcArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("etcArr")));
+			JSONArray deletedFileIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileIdArr")));
+			JSONArray deletedFileArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFileArr")));
+			JSONArray deletedFilePathArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("deletedFilePathArr")));
 			
 			Calendar cal = Calendar.getInstance();
 	        Date day = cal.getTime();    //시간을 꺼낸다.
@@ -807,7 +814,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			JSONArray etcArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("etcArr")));
 			
 			//개정하는 문서 버젼이 현재 보다 높은 경우에 현재 버젼 문서 상태를 변경한다.
 			packageInfoDao.updatePackageInfoIsLast(param);
@@ -1012,7 +1019,7 @@ public class PackageInfoServiceImpl implements PackageInfoService {
 		status = txManager.getTransaction(def);
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray etcArr = (JSONArray) parser.parse((String)param.get("etcArr"));
+			JSONArray etcArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("etcArr")));
 			
 			//개정하는 문서 버젼이 현재 보다 높은 경우에 현재 버젼 문서 상태를 변경한다.
 			packageInfoDao.updatePackageInfoIsLast(param);

@@ -8,6 +8,8 @@
 <script type="text/javascript">
 $(document).ready(function () {
 	fn_loadList(1);
+	fn_loadTeam();
+	fn_loadSearchCategory(2,1);
 	const startYear = new Date().getFullYear();
 
 	const options = {
@@ -57,6 +59,50 @@ $(document).ready(function () {
 
 });
 
+function fn_loadSearchCategory(pIdx, level) {
+	
+	if( level == 2 ) {
+		$("#searchCategory"+(level+1)).removeOption(/./);
+		$("#searchCategory"+(level+1)+"_div").hide();
+	}
+	
+	if( pIdx == '' ) {
+		$("#searchCategory"+level).removeOption(/./);
+		$("#searchCategory"+level+"_div").hide();
+		return;
+	}
+	
+	var URL = "../common/selectCategoryByPIdAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{
+			pIdx : pIdx
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			var list = data;
+			$("#searchCategory"+level).removeOption(/./);
+			$("#searchCategory"+level).addOption("", "전체", false);
+			$("#searchCategory"+level+"_label").html("전체");
+			if( list.length > 0 ) {
+				$("#searchCategory"+level+"_div").show();
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#searchCategory"+level).addOption(value.CATEGORY_IDX, value.CATEGORY_NAME, false);
+				});
+			}
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}			
+	});
+}
+
+function fn_changeCategory(obj,level){
+	fn_loadSearchCategory($(obj).selectedValues()[0], level);
+}
+
 function changeListType(listType){
 	$('input[name=listType]').val(listType);
 	
@@ -69,7 +115,7 @@ function changeListType(listType){
 	});
 	
 	//1.팀장인 경우
-	if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) {
+	/* if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) { */
 		//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
 		//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
 		//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
@@ -88,13 +134,17 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		} else if( listType == 'search' ) {
-			$("#searchTeam_li").hide();
-			$("#searchUser_li").hide();
+			$("#searchTeam_li").show();
+			$("#searchUser_li").show();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		}
-	}
+	/* } */
 	fn_search();
 }
 
@@ -346,6 +396,16 @@ function fn_viewHistory(idx) {
 					html += " 수정되었습니다.";
 				} else if( item.HISTORY_TYPE == 'P' ) {
 					html += " PDF 다운로드 되었습니다.";
+				} else if( item.HISTORY_TYPE == 'A' || item.HISTORY_TYPE == 'APPR' ) {
+					html += " 결재 상신 되었습니다. (상신자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_CAN' ) {
+					html += " 결재 상신취소 되었습니다. (상신자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_COMP' ) {
+					html += " 결재 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'COND_APPR' ) {
+					html += " 결재 부분 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_RET' ) {
+					html += " 결재 반려 되었습니다. (결재자: " + item.USER_NAME + ")";
 				} else if( item.HISTORY_TYPE == 'F' ) {
 					html += " 담당자 이관 되었습니다.";
 				}
@@ -435,20 +495,34 @@ function paging( pageNo ) {
 							<input type="text" name="searchValue" id="searchValue" value="" style="width:180px; margin-left:5px;">
 						</dd>
 					</li>
+					<li id="searchTeam_li" style="display:none">
+						<dt>팀</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchTeam" id="searchTeam_label">선택</label> 
+								<select name="searchTeam" id="searchTeam" onChange="fn_loadUser()">
+								</select>
+							</div>
+						</dd>
+					</li>
+					<li id="searchUser_li" style="display:none">
+						<dt>담당자</dt>
+						<dd >
+							<!-- 초기값은 보통으로 -->
+							<div class="selectbox" style="width:180px;">  
+								<label for="searchUser" id="searchUser_label">선택</label> 
+								<select name="searchUser" id="searchUser">
+								</select>
+							</div>
+						</dd>
+					</li>
 					<li>
 						<dt>첨부 내용</dt>
 						<dd >
 							<input type="text" name="searchFileTxt" id="searchFileTxt" value="" style="width:180px;">
 						</dd>
 					</li>
-					<!--  
-					<li>
-						<dt>검색조건</dt>
-						<dd >
-
-						</dd>
-					</li>
-					--> 
 					<li>
 						<dt>표시수</dt>
 						<dd >

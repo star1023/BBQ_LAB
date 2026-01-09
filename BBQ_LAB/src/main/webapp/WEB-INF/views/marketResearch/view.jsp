@@ -4,7 +4,7 @@
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
-<title>시장조사결과 보고서 생성</title>
+<title>시장조사결과보고서</title>
 <style>
 .positionCenter{
 	position: absolute;
@@ -90,10 +90,17 @@
 	            });
 	        });
 	}
+	
+	function fn_openPreview(idx) {
+		var url = "/preview/marketResearchViewPopup?idx="+idx;
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		시장조사결과 보고서&nbsp;&nbsp;
+		시장조사결과보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
@@ -111,6 +118,7 @@
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">기본정보</span>
 				<div class="pr15">
+					<button class="btn_small_search ml5" onclick="fn_openPreview('${researchData.data.RESEARCH_IDX}')">미리보기</button>
 					<c:if test="${researchData.data.STATUS eq 'COMP' && researchData.data.DOC_OWNER eq userId}">
 						<button class="btn_small_search" onclick="fn_pdfDownload('${researchData.data.RESEARCH_IDX}')">PDF 다운로드</button>
 					</c:if>

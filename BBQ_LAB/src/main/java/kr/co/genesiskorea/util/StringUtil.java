@@ -847,7 +847,7 @@ public class StringUtil {
 	 */
 	public static synchronized String getSystemName()
 	{
-		return "PDM 시스템";
+		return "BBQ세계식문화과학기술원";
 	} 
 	
 	/**

@@ -10,12 +10,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
+  <title>${chemicalTestData.data.PRODUCT_NAME}_이화학검사의뢰서</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
   <meta charset="UTF-8">
   <title>프린트 미리보기</title>
   <script type="text/javascript">
+  function downloadFile(idx){
+	location.href = '/common/fileDownload?idx='+idx;
+  }
+  
   function fn_printPreview() {
     var printContent = document.getElementById("wrapper").outerHTML;
 
@@ -36,7 +40,7 @@
         '<head>' +
           '<title>인쇄 미리보기</title>' +
           '<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css">' +
-          '<style>@media print { body { margin: 0; } }</style>' +
+          '<style>@media print { body { margin: 0; } a { text-decoration: none; color: black; }}</style>' +
         '</head>' +
         '<body onload="window.focus(); window.print();">' +
           printContent +
@@ -102,78 +106,125 @@
 						<td colspan="5">
 							${chemicalTestData.data.PRESERVATION}
 						</td>
-					</tr>
-					<c:forEach var="start" begin="0" end="${fn:length(itemList)-1}" step="4">
-					  <!-- 검사 요청 항목 -->
-					  <tr>
-					    <th style="width: 10%; text-align: center; font-weight: bold;">검사요청 항목</th>
-					    <td colspan="5" style="padding: 0;">
-					      <table style="border:none; width: 100%; table-layout: fixed; border-collapse: collapse;">
-					        <tr>
-					          <c:forEach var="i" begin="${start}" end="${start + 3}">
-					            <c:choose>
-					              <c:when test="${i lt fn:length(itemList)}">
-					                <th style="width: 25%; text-align: center;">
-					                  ${itemList[i].TYPE_CODE_TEXT}
-					                </th>
-					              </c:when>
-					              <c:otherwise>
-					                <th style="width: 25%;"></th>
-					              </c:otherwise>
-					            </c:choose>
-					          </c:forEach>
-					        </tr>
-					      </table>
-					    </td>
-					  </tr>
+					<c:set var="len" value="${fn:length(itemList)}" />
+					<c:choose>
+					  <c:when test="${len > 0}">
+					    <c:forEach var="start" begin="0" end="${len - 1}" step="4">
+					      <!-- 검사 요청 항목 -->
+					      <tr>
+					        <th style="width:10%; text-align:center; font-weight:bold;">검사요청 항목</th>
+					        <td colspan="5" style="padding:0;">
+					          <table style="border:none; width:100%; table-layout:fixed; border-collapse:collapse;">
+					            <tr>
+					              <c:forEach var="i" begin="${start}" end="${start + 3}">
+					                <c:choose>
+					                  <c:when test="${i lt len}">
+					                    <th style="width:25%; text-align:center;">
+					                      ${itemList[i].TYPE_CODE_TEXT}
+					                    </th>
+					                  </c:when>
+					                  <c:otherwise>
+					                    <th style="width:25%;"></th>
+					                  </c:otherwise>
+					                </c:choose>
+					              </c:forEach>
+					            </tr>
+					          </table>
+					        </td>
+					      </tr>
 					
-					  <!-- 범위 -->
-					  <tr>
-					    <th style="width: 10%; text-align: center; font-weight: bold;">범위</th>
-					    <td colspan="5" style="padding: 0;">
-					      <table style="width: 100%; table-layout: fixed; border-collapse: collapse;">
-					        <tr>
-					          <c:forEach var="i" begin="${start}" end="${start + 3}">
-					            <c:choose>
-					              <c:when test="${i lt fn:length(itemList)}">
-					                <td style="width: 25%; text-align: center;">
-					                  ${itemList[i].ITEM_CONTENT}
-					                </td>
-					              </c:when>
-					              <c:otherwise>
-					                <td style="width: 25%;"></td>
-					              </c:otherwise>
-					            </c:choose>
-					          </c:forEach>
-					        </tr>
-					      </table>
-					    </td>
-					  </tr>
-					  
-					  <!-- 검사 결과 -->
-					  <tr>
-					  	<th style="width: 10%; text-align: center; font-weight: bold;">검사 결과</th>
-					    <td colspan="5" style="padding: 0;">
-					      <table style="border:none; width: 100%; table-layout: fixed; border-collapse: collapse;">
-					        <tr>
-					          <c:forEach var="i" begin="${start}" end="${start + 3}">
-					            <c:choose>
-					              <c:when test="${i lt fn:length(itemList)}">
-					                <td style="width: 25%; text-align: center;">
-					                  ${empty itemList[i].ITEM_RESULT ? '&nbsp;' : itemList[i].ITEM_RESULT}
-					                </td>
-					              </c:when>
-					              <c:otherwise>
-					                <td style="width: 25%;">&nbsp;</td>
-					              </c:otherwise>
-					            </c:choose>
-					          </c:forEach>
-					        </tr>
-					      </table>
-					    </td>
-					  </tr>
-					</c:forEach>
-					<tr>
+					      <!-- 범위 -->
+					      <tr>
+					        <th style="width:10%; text-align:center; font-weight:bold;">범위</th>
+					        <td colspan="5" style="padding:0;">
+					          <table style="width:100%; table-layout:fixed; border-collapse:collapse;">
+					            <tr>
+					              <c:forEach var="i" begin="${start}" end="${start + 3}">
+					                <c:choose>
+					                  <c:when test="${i lt len}">
+					                    <td style="width:25%; text-align:center;">
+					                      ${itemList[i].ITEM_CONTENT}
+					                    </td>
+					                  </c:when>
+					                  <c:otherwise>
+					                    <td style="width:25%;"></td>
+					                  </c:otherwise>
+					                </c:choose>
+					              </c:forEach>
+					            </tr>
+					          </table>
+					        </td>
+					      </tr>
+					
+					      <!-- 검사 결과 -->
+					      <tr>
+					        <th style="width:10%; text-align:center; font-weight:bold;">검사 결과</th>
+					        <td colspan="5" style="padding:0;">
+					          <table style="border:none; width:100%; table-layout:fixed; border-collapse:collapse;">
+					            <tr>
+					              <c:forEach var="i" begin="${start}" end="${start + 3}">
+					                <c:choose>
+					                  <c:when test="${i lt len}">
+					                    <td style="width:25%; text-align:center;">
+					                      <c:out value="${empty itemList[i].ITEM_RESULT ? '&nbsp;' : itemList[i].ITEM_RESULT}" escapeXml="false" />
+					                    </td>
+					                  </c:when>
+					                  <c:otherwise>
+					                    <td style="width:25%;">&nbsp;</td>
+					                  </c:otherwise>
+					                </c:choose>
+					              </c:forEach>
+					            </tr>
+					          </table>
+					        </td>
+					      </tr>
+					    </c:forEach>
+					  </c:when>
+					
+					  <!-- itemList가 비었을 때: 빈 레이아웃(4칸) 한 세트 출력하거나 완전히 생략 -->
+					  <c:otherwise>
+					    <!-- 완전히 생략하려면 이 블록 자체를 지우면 됩니다 -->
+					    <tr>
+					      <th style="width:10%; text-align:center; font-weight:bold;">검사요청 항목</th>
+					      <td colspan="5" style="padding:0;">
+					        <table style="border:none; width:100%; table-layout:fixed; border-collapse:collapse;">
+					          <tr>
+					            <th style="width:25%;"></th>
+					            <th style="width:25%;"></th>
+					            <th style="width:25%;"></th>
+					            <th style="width:25%;"></th>
+					          </tr>
+					        </table>
+					      </td>
+					    </tr>
+					    <tr>
+					      <th style="width:10%; text-align:center; font-weight:bold;">범위</th>
+					      <td colspan="5" style="padding:0;">
+					        <table style="width:100%; table-layout:fixed; border-collapse:collapse;">
+					          <tr>
+					            <td style="width:25%;"></td>
+					            <td style="width:25%;"></td>
+					            <td style="width:25%;"></td>
+					            <td style="width:25%;"></td>
+					          </tr>
+					        </table>
+					      </td>
+					    </tr>
+					    <tr>
+					      <th style="width:10%; text-align:center; font-weight:bold;">검사 결과</th>
+					      <td colspan="5" style="padding:0;">
+					        <table style="border:none; width:100%; table-layout:fixed; border-collapse:collapse;">
+					          <tr>
+					            <td style="width:25%;">&nbsp;</td>
+					            <td style="width:25%;">&nbsp;</td>
+					            <td style="width:25%;">&nbsp;</td>
+					            <td style="width:25%;">&nbsp;</td>
+					          </tr>
+					        </table>
+					      </td>
+					    </tr>
+					  </c:otherwise>
+					</c:choose>
 					    <th  >검사 요청 방법</th>
 					    <td colspan="5">
 					        <c:forEach var="item" items="${standardList}">
@@ -199,7 +250,7 @@
 					</tr>
 					<tr>
 						<td colspan="3">
-							<pre>${chemicalTestData.data.REQUEST_CONTENT}</pre>
+							${strUtil:getHtmlBr(chemicalTestData.data.REQUEST_CONTENT)}
 						</td>
 						<td colspan="3" style="text-align: center;">
 							<c:choose>
@@ -238,7 +289,7 @@
 					">
 					<table >
 						<tr>
-							<td><pre>${chemicalTestData.data.TEST_RESULT}</pre></td>
+							<td>${strUtil:getHtmlBr(chemicalTestData.data.TEST_RESULT)}</td>
 						</tr>
 					</table>
 				</c:when>

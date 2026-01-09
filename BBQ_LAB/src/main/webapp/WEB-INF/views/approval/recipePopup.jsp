@@ -66,17 +66,17 @@ function fn_approvalSubmit() {
 			type:"POST",
 			url:URL,
 			data:{
-				"apprIdx" : '${apprHeader.APPR_IDX}',
-				"idx" : '${paramVO.idx}',
-				"docIdx" : '${apprHeader.DOC_IDX}',
-				"docType" : '${apprHeader.DOC_TYPE}',
-				"totalStep" : '${apprHeader.TOTAL_STEP}',
-				"currentStep" : '${apprHeader.CURRENT_STEP}',
-				"currentUserId" : '${apprHeader.CURRENT_USER_ID}',
-				"regUser" : '${apprHeader.REG_USER}',
-				"itemIdx" : '${apprHeader.ITEM_IDX}',
-				"apprNo" : '${apprHeader.APPR_NO}',
-				"targetUserId" : '${apprHeader.TARGET_USER_ID}',
+				"apprIdx" : "${apprHeader.APPR_IDX}",
+				"idx" : "${paramVO.idx}",
+				"docIdx" : "${apprHeader.DOC_IDX}",
+				"docType" : "${apprHeader.DOC_TYPE}",
+				"totalStep" : "${apprHeader.TOTAL_STEP}",
+				"currentStep" : "${apprHeader.CURRENT_STEP}",
+				"currentUserId" : "${apprHeader.CURRENT_USER_ID}",
+				"regUser" : "${apprHeader.REG_USER}",
+				"itemIdx" : "${apprHeader.ITEM_IDX}",
+				"apprNo" : "${apprHeader.APPR_NO}",
+				"targetUserId" : "${apprHeader.TARGET_USER_ID}",
 				"comment" : $("#comment").val(),
 				"apprStatus" : 'Y'
 			},
@@ -118,17 +118,17 @@ function fn_approvalCondSubmit() {
 				type:"POST",
 				url:URL,
 				data:{
-					"apprIdx" : '${apprHeader.APPR_IDX}',
-					"idx" : '${paramVO.idx}',
-					"docIdx" : '${apprHeader.DOC_IDX}',
-					"docType" : '${apprHeader.DOC_TYPE}',
-					"totalStep" : '${apprHeader.TOTAL_STEP}',
-					"currentStep" : '${apprHeader.CURRENT_STEP}',
-					"currentUserId" : '${apprHeader.CURRENT_USER_ID}',
-					"regUser" : '${apprHeader.REG_USER}',
-					"itemIdx" : '${apprHeader.ITEM_IDX}',
-					"apprNo" : '${apprHeader.APPR_NO}',
-					"targetUserId" : '${apprHeader.TARGET_USER_ID}',
+					"apprIdx" : "${apprHeader.APPR_IDX}",
+					"idx" : "${paramVO.idx}",
+					"docIdx" : "${apprHeader.DOC_IDX}",
+					"docType" : "${apprHeader.DOC_TYPE}",
+					"totalStep" : "${apprHeader.TOTAL_STEP}",
+					"currentStep" : "${apprHeader.CURRENT_STEP}",
+					"currentUserId" : "${apprHeader.CURRENT_USER_ID}",
+					"regUser" : "${apprHeader.REG_USER}",
+					"itemIdx" : "${apprHeader.ITEM_IDX}",
+					"apprNo" : "${apprHeader.APPR_NO}",
+					"targetUserId" : "${apprHeader.TARGET_USER_ID}",
 					"comment" : $("#comment").val(),
 					"apprStatus" : 'C'
 				},
@@ -171,17 +171,17 @@ function fn_approvalReject() {
 				type:"POST",
 				url:URL,
 				data:{
-					"apprIdx" : '${apprHeader.APPR_IDX}',
-					"idx" : '${paramVO.idx}',
-					"docIdx" : '${apprHeader.DOC_IDX}',
-					"docType" : '${apprHeader.DOC_TYPE}',
-					"totalStep" : '${apprHeader.TOTAL_STEP}',
-					"currentStep" : '${apprHeader.CURRENT_STEP}',
-					"currentUserId" : '${apprHeader.CURRENT_USER_ID}',
-					"regUser" : '${apprHeader.REG_USER}',
-					"itemIdx" : '${apprHeader.ITEM_IDX}',
-					"apprNo" : '${apprHeader.APPR_NO}',
-					"targetUserId" : '${apprHeader.TARGET_USER_ID}',
+					"apprIdx" : "${apprHeader.APPR_IDX}",
+					"idx" : "${paramVO.idx}",
+					"docIdx" : "${apprHeader.DOC_IDX}",
+					"docType" : "${apprHeader.DOC_TYPE}",
+					"totalStep" : "${apprHeader.TOTAL_STEP}",
+					"currentStep" : "${apprHeader.CURRENT_STEP}",
+					"currentUserId" : "${apprHeader.CURRENT_USER_ID}",
+					"regUser" : "${apprHeader.REG_USER}",
+					"itemIdx" : "${apprHeader.ITEM_IDX}",
+					"apprNo" : "${apprHeader.APPR_NO}",
+					"targetUserId" : "${apprHeader.TARGET_USER_ID}",
 					"comment" : $("#comment").val(),
 					"apprStatus" : 'R'
 				},
@@ -290,10 +290,9 @@ function getTextareaHTML(note) {
 							<th style="border-left: none; ">참조자</th>
 							<td colspan="2">
 								<div class="file_box_pop4">
-										<c:forEach items = "${refList}" var = "ref" varStatus= "status">
-											&nbsp;${ref.TARGET_USER_NAME}
-											<c:if test="${status.index > 0}"> , </c:if>
-										</c:forEach>												
+								  <c:forEach items="${refList}" var="ref" varStatus="st">
+								    ${ref.TARGET_USER_NAME}<c:if test="${!st.last}">, </c:if>
+								  </c:forEach>
 								</div>
 							</td>
 						</tr>
@@ -363,6 +362,7 @@ function getTextareaHTML(note) {
 				</table>
 			</div>
 			
+			<c:if test="${not empty materialList}">
 			<div>
 				<span style="font-size: 14px;">※ 원료</span>
 			</div>
@@ -414,7 +414,9 @@ function getTextareaHTML(note) {
 					</tfoot>
 				</table>
 			</div>
+			</c:if>
 			
+			<c:if test="${not empty purchaseList}">
 			<div>
 				<span style="font-size: 14px;">※ 사입품</span>
 			</div>
@@ -441,35 +443,47 @@ function getTextareaHTML(note) {
 						</tr>
 					</thead>
 					<tbody>
-					<c:forEach items="${purchaseList}" var="purchaseList" varStatus="status">
-						<tr>
-							<td>
-								${purchaseList.ITEM_NAME}
-							</td>
-							<td>
-								${purchaseList.ITEM_COUNT}
-							</td>
-							<td>
-								${purchaseList.ITEM_UNIT_NAME}
-							</td>
-							<td>
-								${purchaseList.USED_COUNT}
-							</td>
-							<td>
-								${purchaseList.USED_UNIT_NAME}
-							</td>
-							<td>
-								${purchaseList.ITEM_PRICE}
-							</td>
-							<td>
-								<span style="text-align: left;"><pre>${purchaseList.ITEM_DESC}</pre></span>
-							</td>
-						</tr>
-					</c:forEach>	
+						<c:forEach items="${purchaseList}" var="purchaseList" varStatus="status">
+							<tr>
+								<td>${purchaseList.ITEM_NAME}</td>
+								<td>${purchaseList.ITEM_COUNT}</td>
+								<td>${purchaseList.ITEM_UNIT_NAME}</td>
+								<td>${purchaseList.USED_COUNT}</td>
+								<td>${purchaseList.USED_UNIT_NAME}</td>
+								<td>${purchaseList.ITEM_PRICE}</td>
+								<td>
+									<span style="text-align: left;">
+										${strUtil:getHtmlBr(purchaseList.ITEM_DESC)}
+									</span>
+								</td>
+							</tr>
+						</c:forEach>	
 					</tbody>
-					<tfoot>
-					</tfoot>
 				</table>
 			</div>
+		</c:if>
+			<div>
+			<span style="font-size: 14px;">※ 첨부파일</span>
+		</div>	
+		<div class="mainTable">
+			<table>
+				<colgroup>
+					<col width="15%" />
+					<col width="35%" />
+					<col width="15%" />
+					<col width="35%" />
+				</colgroup>
+				<tr>
+					<th>첨부파일</th>
+					<td colspan="3">
+					<div class="con_file" style="">
+						<c:forEach items="${recipeData.fileList}" var="fileList" varStatus="status">
+							<a href="javascript:downloadFile('${fileList.FILE_IDX}')">${fileList.ORG_FILE_NAME}</a><br>
+						</c:forEach>
+					</div>
+					</td>
+				</tr>
+			</table>
+		</div>
 	    </div>
 	</div>	

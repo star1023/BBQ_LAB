@@ -57,6 +57,8 @@
 			    </when>
 				<otherwise> AND DOC_OWNER = #{userId} </otherwise>
 			</choose>
+			AND IS_DELETE = 'N'
+			AND IS_LAST = 'Y'
 			<include refid="businessTripPlan.whereBusinessTripPlan" />			
 	</select>
 	

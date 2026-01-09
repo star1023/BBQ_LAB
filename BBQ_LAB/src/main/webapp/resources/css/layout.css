@@ -9,9 +9,9 @@ aside{ height:100%; position:fixed; width:38px; background-color:#4b5165; top:60
 .wrap{}
 
 .wrap_in01{ width:100%;}
-.wrap_in01 .wrap_in{display:table; table-layout:fixed; width:1200px;box-sizing:border-box;margin:0 auto; padding-top:75px;min-height:700px; padding-left:10px;}
+.wrap_in01 .wrap_in{display:table; table-layout:fixed; width:1400px;box-sizing:border-box;margin:0 auto; padding-top:75px;min-height:700px; padding-left:10px;}
 .wrap_in01 .wrap_in .gap{width:15px}
-.wrap_in01 .wrap_in .type01 {width:1200px; background-color:#FFF; box-sizing:border-box;  margin-bottom:20px; padding-top:35px;float:left;}
+.wrap_in01 .wrap_in .type01 {width:1400px; background-color:#FFF; box-sizing:border-box;  margin-bottom:20px; padding-top:35px;float:left;}
 .wrap_in01 .wrap_in .type02 {}
 .wrap_in01 .wrap_in .type02:nth-child(1){ width:310px; float:left;}
 .wrap_in01 .wrap_in .type02:nth-child(2){ width:10px; float:left;}

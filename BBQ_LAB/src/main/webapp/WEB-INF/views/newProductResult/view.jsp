@@ -168,7 +168,7 @@ function fn_apprSubmit(){
 		formData.append("apprComment", $("#apprComment").val());
 		formData.append("apprLine", $("#apprLine").selectedValues());
 		formData.append("refLine", $("#refLine").selectedValues());
-		formData.append("title", '${newProductResultData.data.TITLE}');
+		formData.append("title", "${newProductResultData.data.TITLE}");
 		formData.append("docType", "RESULT");
 		formData.append("status", "N");
 		var URL = "../approval/insertApprAjax";
@@ -311,6 +311,13 @@ function renderDynamicColGroup() {
         colgroup.appendChild(col);
     });
 }
+
+function fn_openPreview(idx) {
+	var url = "/preview/newProductViewPopup?idx="+idx;
+
+	// 팝업 창 열기
+	var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
@@ -336,6 +343,7 @@ function renderDynamicColGroup() {
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">기본정보</span>
 				<div class="pr15">
+					<button class="btn_small_search ml5" onclick="fn_openPreview('${newProductResultData.data.RESULT_IDX}')">미리보기</button>
 					<c:if test="${newProductResultData.data.STATUS eq 'COMP' && newProductResultData.data.DOC_OWNER eq userId && fn:length(newProductResultData.data.COLUMN_STATE) > 0}">
 						<button class="btn_small_search" onclick="fn_pdfDownload('${newProductResultData.data.RESULT_IDX}')">PDF 다운로드</button>
 					</c:if>

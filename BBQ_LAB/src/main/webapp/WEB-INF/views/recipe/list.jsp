@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
-<title>메뉴완료보고서</title>
+<title>사전원가서</title>
 <script type="text/javascript">
 	$(document).ready(function(){
 		fn_loadList(1);
@@ -47,13 +47,19 @@
 						}
 						html += "	</td>";
 						
-						html += "	<td>"+nvl(item.PRODUCT_CODE,'&nbsp;')+"</td>";
-						html += "	<td><div class=\"ellipsis_txt tgnl\"><a href=\"#\" onClick=\"fn_view('"+item.RECIPE_IDX+"')\">"+nvl(item.PRODUCT_NAME,'&nbsp;')+"</a></div></td>";
-						html += "	<td>"+nvl(item.VERSION_NO,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.PRODUCT_COUNT,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.UNIT_NAME,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.STATUS_TXT,'&nbsp;')+"</td>";
-						html += "	<td>"+nvl(item.USER_NAME,'&nbsp;')+"</td>";						
+						// 두번째 TD
+					    html += "<td style=\"cursor: pointer;\" onclick=\"fn_view('" + item.RECIPE_IDX + "')\">" + nvl(item.PRODUCT_CODE, '&nbsp;') + "</td>";
+
+					    // 세번째 TD (제품명)
+					    html += "<td style=\"cursor: pointer;\" onclick=\"fn_view('" + item.RECIPE_IDX + "')\"><div class=\"ellipsis_txt tgnl\">" + nvl(item.PRODUCT_NAME, '&nbsp;') + "</div></td>";
+
+					    // 나머지 일반 TD
+					    html += "<td style=\"cursor: pointer;\" onclick=\"fn_view('" + item.RECIPE_IDX + "')\">" + nvl(item.VERSION_NO, '&nbsp;') + "</td>";
+					    html += "<td style=\"cursor: pointer;\" onclick=\"fn_view('" + item.RECIPE_IDX + "')\">" + nvl(item.PRODUCT_COUNT, '&nbsp;') + "</td>";
+					    html += "<td style=\"cursor: pointer;\" onclick=\"fn_view('" + item.RECIPE_IDX + "')\">" + nvl(item.UNIT_NAME, '&nbsp;') + "</td>";
+					    html += "<td style=\"cursor: pointer;\" onclick=\"fn_view('" + item.RECIPE_IDX + "')\">" + nvl(item.STATUS_TXT, '&nbsp;') + "</td>";
+					    html += "<td style=\"cursor: pointer;\" onclick=\"fn_view('" + item.RECIPE_IDX + "')\">" + nvl(item.USER_NAME, '&nbsp;') + "</td>";
+					
 						html += "	<td>";
 						if( item.IS_LAST == 'Y' ) {
 							html += "		<li style=\"float:none; display:inline\">";
@@ -134,22 +140,31 @@
 	
 	function fn_erp(idx) {
 		$('#lab_loading').show();
-		var URL = "../recipe/insertErpAjax";
+		var URL = "../recipe/applyErpAjax";
 		$.ajax({
 			type:"POST",
 			url:URL,
 			data:{
 				"idx" : idx
-				, "type" : "BOM"
 			},
 			dataType:"json",
 			async:false,
-			success:function(data) {
-				$('#lab_loading').hide();
+			success:function(result) {
+				if( result.RESULT == 'S' ) {
+					alert("ERP에 정상적으로 등록되었습니다.");
+					fn_loadList(1);
+					$('#lab_loading').hide();					
+				} else {
+					alert(result.MESSAGE);
+					fn_loadList(1);
+					$('#lab_loading').hide();
+				}
 			},
 			error:function(request, status, errorThrown){
 				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
-			}
+				$('#lab_loading').hide();
+				fn_goList();	
+			}			
 		});
 	}
 	
@@ -187,6 +202,16 @@
 							html += " 수정되었습니다.";
 						} else if( item.HISTORY_TYPE == 'T' ) {
 							html += " 임시저장 되었습니다.";
+						} else if( item.HISTORY_TYPE == 'A' || item.HISTORY_TYPE == 'APPR' ) {
+							html += " 결재 상신 되었습니다. (상신자: " + item.USER_NAME + ")";
+						} else if( item.HISTORY_TYPE == 'APPR_CAN' ) {
+							html += " 결재 상신취소 되었습니다. (상신자: " + item.USER_NAME + ")";
+						} else if( item.HISTORY_TYPE == 'APPR_COMP' ) {
+							html += " 결재 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+						} else if( item.HISTORY_TYPE == 'COND_APPR' ) {
+							html += " 결재 부분 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+						} else if( item.HISTORY_TYPE == 'APPR_RET' ) {
+							html += " 결재 반려 되었습니다. (결재자: " + item.USER_NAME + ")";
 						} else if( item.HISTORY_TYPE == 'F' ) {
 							html += " 담당자 이관 되었습니다.";
 						} 
@@ -213,7 +238,7 @@
 	<section class="type01">
 	<!-- 상세 페이지  start-->
 		<h2 style="position:relative"><span class="title_s">Cost Management</span>
-			<span class="title">사전원가서 관리</span>
+			<span class="title">사전원가서</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>

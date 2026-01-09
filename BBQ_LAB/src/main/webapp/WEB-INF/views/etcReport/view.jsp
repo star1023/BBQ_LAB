@@ -42,7 +42,7 @@ function fn_apprSubmit(){
 		formData.append("apprComment", $("#apprComment").val());
 		formData.append("apprLine", $("#apprLine").selectedValues());
 		formData.append("refLine", $("#refLine").selectedValues());
-		formData.append("title", '${etcData.data.TITLE}');
+		formData.append("title", "${etcData.data.TITLE}");
 		formData.append("docType", $("#docType").val());
 		formData.append("status", "N");
 		var URL = "../approval/insertApprAjax";
@@ -132,6 +132,13 @@ function fn_pdfDownload(idx) {
             });
         });
 }
+
+function fn_openPreview(idx) {
+	var url = "/preview/etcReportViewPopup?idx="+idx;
+
+	// 팝업 창 열기
+	var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+}
 </script>
 
 <div class="wrap_in" id="fixNextTag">
@@ -157,6 +164,7 @@ function fn_pdfDownload(idx) {
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">기본정보</span>
 				<div class="pr15">
+					<button class="btn_small_search ml5" onclick="fn_openPreview('${etcData.data.ETC_IDX}')">미리보기</button>
 					<c:if test="${etcData.data.STATUS eq 'COMP' && etcData.data.DOC_OWNER eq userId}">
 						<button class="btn_small_search" onclick="fn_pdfDownload('${etcData.data.ETC_IDX}')">PDF 다운로드</button>
 					</c:if>
@@ -207,7 +215,7 @@ function fn_pdfDownload(idx) {
 			<div>
 				<table class="insert_proc01">
 					<tr>
-						<td>${etcData.data.CONTENTS}</td>
+						<td>${strUtil:getHtmlBr(etcData.data.CONTENTS)}</td>
 					</tr>
 				</table>
 			</div>

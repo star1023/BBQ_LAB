@@ -5,7 +5,7 @@
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>  <!-- ✅ 이거 추가 -->
-<title>상품설계변경 보고서 생성</title>
+<title>이화학 검사 의뢰서</title>
 <style>
 .positionCenter{
 	position: absolute;
@@ -48,7 +48,7 @@ th.contentBlock {
 			formData.append("apprComment", $("#apprComment").val());
 			formData.append("apprLine", $("#apprLine").selectedValues());
 			formData.append("refLine", $("#refLine").selectedValues());
-			formData.append("title", '${chemicalTestData.data.PRODUCT_NAME}');
+			formData.append("title", "${chemicalTestData.data.PRODUCT_NAME}");
 			formData.append("docType", $("#docType").val());
 			formData.append("status", "N");
 			var URL = "../approval/insertApprAjax";
@@ -165,6 +165,13 @@ th.contentBlock {
 	            });
 	        });
 	}
+	
+	function fn_openPreview(idx) {
+		var url = "/preview/chemicalTestViewPopup?idx="+idx;
+
+		// 팝업 창 열기
+		var popup = window.open(url, "preview", "width=842,height=1191,scrollbars=yes,resizable=yes");
+	}
 </script>
 <c:set var="isSafeTeam" value="${userUtil:getRoleCode(pageContext.request) == '6' || userUtil:getRoleCode(pageContext.request) == '7'}" />
 <div class="wrap_in" id="fixNextTag">
@@ -192,6 +199,7 @@ th.contentBlock {
 			<div class="title2"  style="display: flex; justify-content:space-between; width: 100%;">
 				<span class="txt">개요</span>
 				<div class="pr15">
+					<button class="btn_small_search ml5" onclick="fn_openPreview('${chemicalTestData.data.CHEMICAL_IDX}')">미리보기</button>
 					<c:if test="${chemicalTestData.data.STATUS eq 'COMP' && chemicalTestData.data.DOC_OWNER eq userId}">
 						<button class="btn_small_search" onclick="fn_pdfDownload('${chemicalTestData.data.CHEMICAL_IDX}')">PDF 다운로드</button>
 					</c:if>
@@ -481,9 +489,9 @@ th.contentBlock {
 						<tr style="height:300px;">
 							<!-- 왼쪽: 요청사항 에디터 -->
 							<td>
-								<pre style="max-height: 300px; overflow: auto; white-space: pre-wrap;">
-								    ${chemicalTestData.data.TEST_RESULT}
-								</pre>						
+								<div style="max-height: 300px; overflow: auto; white-space: pre-wrap;">
+								    ${strUtil:getHtmlBr(chemicalTestData.data.TEST_RESULT)}
+								</div>						
 							</td>
 						</tr>
 					</tbody>

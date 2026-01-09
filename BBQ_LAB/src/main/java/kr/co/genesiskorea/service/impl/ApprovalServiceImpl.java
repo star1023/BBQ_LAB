@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -330,6 +331,27 @@ public class ApprovalServiceImpl implements ApprovalService {
 				
 			}
 			
+			//10. history 저장
+			Map<String, Object> historyParam = new HashMap<String, Object>();
+			historyParam.put("docIdx", param.get("docIdx"));
+			historyParam.put("docType", param.get("docType"));
+			historyParam.put("historyType", "A");
+			historyParam.put("historyData",
+			    "결재 상신: " +
+			    "{"
+			    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+			    + "\"docIdx\":\"" + String.valueOf(param.get("docIdx")) + "\", "
+			    + "\"docType\":\"" + String.valueOf(param.get("docType")) + "\", "
+			    + "\"userId\":\"" + String.valueOf(param.get("userId")) + "\", "
+			    + "}"
+			);
+			historyParam.put("userId", param.get("userId"));
+			try {
+				commonService.insertHistory(historyParam);				
+			} catch(Exception e) {
+				
+			}
+			
 			txManager.commit(status);
 		} catch( Exception e ) {
 			txManager.rollback(status);
@@ -451,7 +473,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 	}
 
 	@Override
-	@Transactional
 	public Map<String, String> cancelAppr(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, String> returnMap = new HashMap<String, String>();
@@ -486,6 +507,28 @@ public class ApprovalServiceImpl implements ApprovalService {
 				} catch( Exception e) {
 					
 				}
+				
+				//5. history 저장
+				Map<String, Object> historyParam = new HashMap<String, Object>();
+				historyParam.put("docIdx", header.get("DOC_IDX"));
+				historyParam.put("docType", header.get("DOC_TYPE"));
+				historyParam.put("historyType", "APPR_CAN");
+				historyParam.put("historyData",
+				    "결재 상신취소: " +
+				    "{"
+				    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+				    + "\"docIdx\":\"" + String.valueOf(header.get("DOC_IDX")) + "\", "
+				    + "\"docType\":\"" + String.valueOf(header.get("DOC_TYPE")) + "\", "
+				    + "\"userId\":\"" + String.valueOf(header.get("REG_USER")) + "\""
+				    + "}"
+				);
+				historyParam.put("userId", header.get("REG_USER"));
+				try {
+					commonService.insertHistory(historyParam);				
+				} catch(Exception e) {
+					
+				}
+				
 				returnMap.put("RESULT", "S");
 				
 				txManager.commit(status);
@@ -500,7 +543,6 @@ public class ApprovalServiceImpl implements ApprovalService {
 	}
 
 	@Override
-	@Transactional
 	public Map<String, String> reAppr(Map<String, Object> param) throws Exception {
 		// TODO Auto-generated method stub
 		Map<String, String> returnMap = new HashMap<String, String>();
@@ -537,6 +579,27 @@ public class ApprovalServiceImpl implements ApprovalService {
 					try {
 						commonService.notification(notiMap);
 					} catch( Exception e) {
+						
+					}
+					
+					//5. history 저장
+					Map<String, Object> historyParam = new HashMap<String, Object>();
+					historyParam.put("docIdx", header.get("DOC_IDX"));
+					historyParam.put("docType", header.get("DOC_TYPE"));
+					historyParam.put("historyType", "APPR");
+					historyParam.put("historyData",
+					    "결재 재상신: " +
+					    "{"
+					    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+					    + "\"docIdx\":\"" + String.valueOf(header.get("DOC_IDX")) + "\", "
+					    + "\"docType\":\"" + String.valueOf(header.get("DOC_TYPE")) + "\", "
+					    + "\"userId\":\"" + String.valueOf(header.get("REG_USER")) + "\", "
+					    + "}"
+					);
+					historyParam.put("userId", header.get("REG_USER"));
+					try {
+						commonService.insertHistory(historyParam);				
+					} catch(Exception e) {
 						
 					}
 					
@@ -645,6 +708,23 @@ public class ApprovalServiceImpl implements ApprovalService {
 						} catch( Exception e) {
 							
 						}
+						
+						// ✅ 이력: 결재 승인(진행)
+					    Map<String, Object> historyParam = new HashMap<>();
+					    historyParam.put("docIdx", apprHeader.get("DOC_IDX"));
+					    historyParam.put("docType", apprHeader.get("DOC_TYPE"));
+					    historyParam.put("historyType", "APPR_COMP"); // 진행 승인
+					    historyParam.put("historyData",
+				    	    "결재 승인(진행): " +
+				    	    "{"
+				    	    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+				    	    + "\"docIdx\":\"" + String.valueOf(apprHeader.get("DOC_IDX")) + "\", "
+				    	    + "\"docType\":\"" + String.valueOf(apprHeader.get("DOC_TYPE")) + "\", "
+				    	    + "\"userId\":\"" + String.valueOf(apprHeader.get("REG_USER")) + "\", "
+				    	    + "}"
+				    	);
+					    historyParam.put("userId", param.get("userId")); // ✅ 결재자
+					    try { commonService.insertHistory(historyParam); } catch(Exception e) {}
 					} else {
 						map.put("apprIdx", (String)param.get("apprIdx"));	//결재 ID
 						map.put("status", "Y");								//결재문서 승인처리
@@ -706,6 +786,23 @@ public class ApprovalServiceImpl implements ApprovalService {
 								
 							}
 						}					
+						
+						// ✅ 이력: 결재 승인(완료)
+					    Map<String, Object> historyParam = new HashMap<>();
+					    historyParam.put("docIdx", apprHeader.get("DOC_IDX"));
+					    historyParam.put("docType", apprHeader.get("DOC_TYPE"));
+					    historyParam.put("historyType", "APPR_COMP"); // 완료 승인
+					    historyParam.put("historyData",
+				    	    "결재 승인(완료): " +
+				    	    "{"
+				    	    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+				    	    + "\"docIdx\":\"" + String.valueOf(apprHeader.get("DOC_IDX")) + "\", "
+				    	    + "\"docType\":\"" + String.valueOf(apprHeader.get("DOC_TYPE")) + "\", "
+				    	    + "\"userId\":\"" + String.valueOf(apprHeader.get("REG_USER")) + "\", " 
+				    	    + "}"
+				    	);
+					    historyParam.put("userId", param.get("userId")); // ✅ 결재자
+					    try { commonService.insertHistory(historyParam); } catch(Exception e) {}
 					}
 					
 					txManager.commit(status);
@@ -804,6 +901,27 @@ public class ApprovalServiceImpl implements ApprovalService {
 						} catch( Exception e) {
 							
 						}
+						// 이력 저장
+						Map<String, Object> historyParam = new HashMap<>();
+						historyParam.put("docIdx", apprHeader.get("DOC_IDX"));
+						historyParam.put("docType", apprHeader.get("DOC_TYPE"));
+						historyParam.put("historyType", "COND_APPR"); // 또는 notiMap.get("type")
+						historyParam.put("historyData",
+				    	    "결재 부분 승인(진행): " +
+				    	    "{"
+				    	    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+				    	    + "\"docIdx\":\"" + String.valueOf(apprHeader.get("DOC_IDX")) + "\", "
+				    	    + "\"docType\":\"" + String.valueOf(apprHeader.get("DOC_TYPE")) + "\", "
+				    	    + "\"userId\":\"" + String.valueOf(apprHeader.get("REG_USER")) + "\", "
+				    	    + "}"
+				    	);
+						historyParam.put("userId", param.get("userId")); // 승인자(현재 결재자)
+						try { 
+							commonService.insertHistory(historyParam); 
+						} catch(Exception e) {
+							
+						}
+						
 					} else {
 						map.put("apprIdx", (String)param.get("apprIdx"));	//결재 ID
 						map.put("status", "Y");								//결재문서 승인처리
@@ -816,9 +934,9 @@ public class ApprovalServiceImpl implements ApprovalService {
 						//담당자에게 알림을 보낸다.
 						HashMap<String, Object> notiMap = new HashMap<String, Object>();
 						notiMap.put("targetUser", apprHeader.get("REG_USER"));
-						notiMap.put("type", "APPR_COMP");
-						notiMap.put("typeTxt", "승인완료");
-						notiMap.put("message", "요청하신 결재가 승인완료 되었습니다.");
+						notiMap.put("type", "COND_APPR");
+						notiMap.put("typeTxt", "부분승인");
+						notiMap.put("message", "요청하신 결재가 부분승인 되었습니다.");
 						notiMap.put("userId", "admin");
 						notiMap.put("docIdx", apprHeader.get("DOC_IDX"));
 						notiMap.put("docType", apprHeader.get("DOC_TYPE"));
@@ -846,6 +964,27 @@ public class ApprovalServiceImpl implements ApprovalService {
 							} catch( Exception e) {
 								
 							}
+						}
+						
+						// 이력 저장
+						Map<String, Object> historyParam = new HashMap<>();
+						historyParam.put("docIdx", apprHeader.get("DOC_IDX"));
+						historyParam.put("docType", apprHeader.get("DOC_TYPE"));
+						historyParam.put("historyType", "APPR_COMP"); // 또는 "COND_APPR_COMP"
+						historyParam.put("historyData",
+				    	    "결재 부분 승인(최종완료): " +
+				    	    "{"
+				    	    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+				    	    + "\"docIdx\":\"" + String.valueOf(apprHeader.get("DOC_IDX")) + "\", "
+				    	    + "\"docType\":\"" + String.valueOf(apprHeader.get("DOC_TYPE")) + "\", "
+				    	    + "\"userId\":\"" + String.valueOf(apprHeader.get("REG_USER")) + "\", "
+				    	    + "}"
+				    	);
+						historyParam.put("userId", param.get("userId"));
+						try { 
+							commonService.insertHistory(historyParam); 
+						} catch(Exception e) {
+							
 						}
 					}
 					
@@ -946,6 +1085,27 @@ public class ApprovalServiceImpl implements ApprovalService {
 						
 					}
 					
+					// 이력 저장
+					Map<String, Object> historyParam = new HashMap<>();
+					historyParam.put("docIdx", apprHeader.get("DOC_IDX"));
+					historyParam.put("docType", apprHeader.get("DOC_TYPE"));
+					historyParam.put("historyType", "APPR_RET"); // 또는 "COND_APPR_COMP"
+					historyParam.put("historyData",
+					    "반려: " +
+					    "{"
+					    + "\"docNo\":\"" + String.valueOf(param.get("docNo")) + "\", "
+					    + "\"docIdx\":\"" + String.valueOf(apprHeader.get("DOC_IDX")) + "\", "
+					    + "\"docType\":\"" + String.valueOf(apprHeader.get("DOC_TYPE")) + "\", "
+					    + "\"userId\":\"" + String.valueOf(apprHeader.get("REG_USER")) + "\", "
+					    + "}"
+					);
+					historyParam.put("userId", param.get("userId"));
+					try { 
+						commonService.insertHistory(historyParam); 
+					} catch(Exception e) {
+						
+					}
+					
 					txManager.commit(status);
 				} else {
 					returnMap.put("RESULT", "F");
@@ -984,9 +1144,9 @@ public class ApprovalServiceImpl implements ApprovalService {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray userIdArr = (JSONArray) parser.parse((String)param.get("userIdArr"));
-			JSONArray startDateArr = (JSONArray) parser.parse((String)param.get("startDateArr"));
-			JSONArray endDateArr = (JSONArray) parser.parse((String)param.get("endDateArr"));
+			JSONArray userIdArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("userIdArr")));
+			JSONArray startDateArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("startDateArr")));
+			JSONArray endDateArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("endDateArr")));
 			
 			ArrayList<HashMap<String,Object>> refInfoList = new ArrayList<HashMap<String,Object>>();
 			for( int i = 0 ; i < userIdArr.size() ; i++ ) {

@@ -3,13 +3,15 @@ package kr.co.genesiskorea.service;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.multipart.MultipartFile;
+
 public interface RecipeService {
 	
 	Map<String, Object> selectRecipeList(Map<String, Object> param) throws Exception;
 
-	int insertTmpRecipe(Map<String, Object> param) throws Exception;
+	int insertTmpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception;
 
-	int insertRecipe(Map<String, Object> param) throws Exception;
+	int insertRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception;
 
 	List<Map<String, Object>> selectHistory(Map<String, Object> param);
 
@@ -21,15 +23,15 @@ public interface RecipeService {
 
 	List<Map<String, Object>> selectPurchaseList(Map<String, Object> param);
 
-	void updateTmpRecipe(Map<String, Object> param) throws Exception;
+	void updateTmpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception;
 
-	void updateRecipe(Map<String, Object> param) throws Exception;
+	void updateRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception;
 
 	Map<String, Object> insertErp(Map<String, Object> param);
 
-	int versionUpTmpRecipe(Map<String, Object> param) throws Exception;
+	int versionUpTmpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception;
 
-	int versionUpRecipe(Map<String, Object> param) throws Exception;
+	int versionUpRecipe(Map<String, Object> param, MultipartFile[] file) throws Exception;
 
 	Map<String, Object> applyErp(Map<String, Object> param);	
 

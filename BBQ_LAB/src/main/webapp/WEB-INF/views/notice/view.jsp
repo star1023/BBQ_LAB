@@ -128,7 +128,7 @@
      			<div>
 					<table class="insert_proc01" style="border-bottom: 2px solid #4b5165;">
 						<tr>
-							<td>${noticeData.data.CONTENT}</td>
+							<td>${strUtil:getHtmlBr(noticeData.data.CONTENT)}</td>
 						</tr>
 					</table>
 				</div>

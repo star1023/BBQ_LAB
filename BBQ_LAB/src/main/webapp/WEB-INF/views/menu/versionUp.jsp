@@ -5,7 +5,7 @@
 <%@ taglib prefix="userUtil" uri="/WEB-INF/tld/userUtil.tld"%>
 <%@ taglib prefix="strUtil" uri="/WEB-INF/tld/strUtil.tld"%>
 <%@ taglib prefix="dateUtil" uri="/WEB-INF/tld/dateUtil.tld"%>
-<title>개선완료보고서 생성</title>
+<title>메뉴완료보고서 개정</title>
 <style>
 .positionCenter{
 	position: absolute;
@@ -199,6 +199,11 @@ var selectedArr = new Array();
 	function bindDialogEnter(e){
 		if(e.keyCode == 13)
 			fn_searchErpMaterial();
+	}
+	
+	function bindDialogEnter2(e){
+		if(e.keyCode == 13)
+			searchMaterial();
 	}
 	
 	function fn_setMaterialPopupData(SAP_CODE, NAME, KEEP_CONDITION, WIDTH, LENGTH, HEIGHT, TOTAL_WEIGHT, STANDARD, ORIGIN, EXPIRATION_DATE) {
@@ -1025,12 +1030,12 @@ var selectedArr = new Array();
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
 			
-		    // 1) 승계할 기존 매뉴얼 파일 ID들
+		    // 1) 승계할 기존 메뉴얼 파일 ID들
 		    $('#manualTempFileList_vu option').each(function(){
 		      formData.append('manualTempFile', $(this).val());
 		    });
 
-		    // 2) 새로 추가한 매뉴얼 파일들
+		    // 2) 새로 추가한 메뉴얼 파일들
 		    for (var i = 0; i < manualAttachFileArr.length; i++) {
 		      formData.append('manualFile', manualAttachFileArr[i]);
 		    }
@@ -1418,12 +1423,12 @@ var selectedArr = new Array();
 			formData.append("itemUnitPriceArr", JSON.stringify(itemUnitPriceArr));
 			formData.append("itemDescArr", JSON.stringify(itemDescArr));
 			
-			// 1) 승계할 기존 매뉴얼 파일 ID들
+			// 1) 승계할 기존 메뉴얼 파일 ID들
 		    $('#manualTempFileList_vu option').each(function(){
 		      formData.append('manualTempFile', $(this).val());
 		    });
 
-		    // 2) 새로 추가한 매뉴얼 파일들
+		    // 2) 새로 추가한 메뉴얼 파일들
 		    for (var i = 0; i < manualAttachFileArr.length; i++) {
 		      formData.append('manualFile', manualAttachFileArr[i]);
 		    }
@@ -2058,17 +2063,12 @@ var selectedArr = new Array();
 	      
 	    })();
 
-	    // ▼▼▼ [첨부파일] 미리보기 바인딩 추가 시작 ▼▼▼
-	    // 파일명 안전 이스케이프
-	    const esc = (s) => String(s)
-	      .replaceAll("&", "&amp;")
-	      .replaceAll("<", "&lt;")
-	      .replaceAll(">", "&gt;")
-	      .replaceAll('"', "&quot;")
-	      .replaceAll("'", "&#39;");
-
+	 // ▼▼▼ [첨부파일] 미리보기 바인딩 추가 시작 ▼▼▼
 	    // 1) <input type="file" name="files"> 들에서 선택된 파일명 수집
 	    const fileNames = [];
+	    const filePaths = [];
+	    const fileIds = [];
+	    const fileOrgNames = [];
 	    document.querySelectorAll('input[type="file"][name="files"]').forEach(input => {
 	      // 같은 input에 여러 파일이 선택될 수도 있음
 	      Array.from(input.files || []).forEach(f => {
@@ -2082,90 +2082,188 @@ var selectedArr = new Array();
 	    if ($ul) {
 	      $ul.querySelectorAll("li").forEach(li => {
 	        // li 안에 a/span이 있든 그냥 텍스트든 전부 텍스트로 인식
-	        const t = (li.textContent || "").trim();
-	        if (t) fileNames.push(t);
+			var fileName = $(li).attr("data-name");
+			var filePath = $(li).attr("data-path");
+			var fileId = $(li).attr("data-id");
+			var fileOrgName = $(li).attr("data-orgname");
 	      });
 	    }
 
-	    // 3) 중복 제거 + 공백 제거
-	    const uniqueNames = Array.from(new Set(
-	      fileNames.map(s => s.trim()).filter(Boolean)
-	    ));
+	 // 4) 미리보기 페이지에 반영 (기존파일 + 신규업로드 파일 모두 처리)
+	    var $prevFile = $doc.getElementById("prev_file");
+	    var $prevFileWrap = $doc.getElementById("wrapper_prev_file"); // 있으면 사용
 
-	    // 4) 미리보기 페이지에 반영
-	    const $prevFile = $doc.getElementById("prev_file");
-	    const $prevFileWrap = $doc.getElementById("wrapper_prev_file"); // 있으면 사용, 없으면 무시
+	    // 4-1) 현재 화면의 <input type="file" name="files">에서 새로 선택된 File 객체들 수집
+//	          (UL에 아직 data-id가 없고 data-*가 undefined인 신규 파일을 위해)
+	    var newFiles = [];
+	    document.querySelectorAll('input[type="file"][name="files"]').forEach(function(input){
+	      Array.from(input.files || []).forEach(function(f){
+	        if (f) newFiles.push(f);
+	      });
+	    });
 
-	    if (uniqueNames.length > 0) {
-	      // <br/>로 줄바꿈하여 넣기
-	      $prevFile.innerHTML = uniqueNames.map(n => esc(n)).join("<br/>");
-	      if ($prevFileWrap) $prevFileWrap.style.display = "table-row"; // 또는 "block" (미리보기 마크업에 맞게)
-	    } else {
-	      // 아무 파일도 없으면 숨기거나 대시 처리
-	      // ① 숨김
-	      if ($prevFileWrap) $prevFileWrap.style.display = "none";
-	      // ② 혹은 표시 유지 시 대시
-	      // $prevFile.textContent = "-";
+	    // 신규 파일을 이름으로 빠르게 찾기 위한 맵 (orgName 기준)
+	    var newFileByName = {};
+	    newFiles.forEach(function(f){
+	      // orgName 이 따로 없다면 f.name 을 orgName 으로 사용
+	      newFileByName[f.name] = f;
+	    });
+
+	    // 4-2) 미리보기용 링크 배열과, 나중에 해제할 blob URL 들
+	    var previewLinks = [];
+	    var blobUrls = [];
+
+	    // 4-3) UL에서 항목을 순회하며 기존 파일/신규 파일을 구분해 앵커 생성
+	    if ($ul) {
+	      $ul.querySelectorAll("li").forEach(function(li){
+	        var fileName = $(li).attr("data-name");       // 서버 저장 파일명
+	        var filePath = $(li).attr("data-path");
+	        var fileId = $(li).attr("data-id");           // 서버 파일 ID (있으면 기존파일)
+	        var fileOrgName = $(li).attr("data-orgname"); // 사용자가 본래 업로드한 파일명
+
+	        // 1) 서버에 이미 존재하는 파일 (fileId 有) → 기존 방식 유지
+	        if (fileId && fileOrgName) {
+	          previewLinks.push(
+	            '<a href="javascript:downloadFile(\'' + fileId + '\')">' + fileOrgName + '</a>'
+	          );
+	          return;
+	        }
+
+	        // 2) 신규 업로드 파일 (fileId 無) → Blob URL 로 즉시 다운로드 가능하게
+	        //    우선 li에 orgName이 들어와 있으면 그걸로, 아니면 li의 텍스트를 fallback으로 사용
+	        var orgNameGuess = fileOrgName;
+	        if (!orgNameGuess) {
+	          // li 내부 텍스트에서 파일명 유추 (삭제버튼 아이콘 등의 공백 제거)
+	          orgNameGuess = (li.textContent || '').trim();
+	        }
+
+	        // 맵에서 동일한 이름의 File 객체 찾기
+	        var f = orgNameGuess ? newFileByName[orgNameGuess] : null;
+
+	        // 이름 매칭이 안되면, input.files 전체에서 동일 이름을 탐색 (여러 개 있을 수 있으니 첫 매칭만)
+	        if (!f) {
+	          for (var i = 0; i < newFiles.length; i++) {
+	            if (newFiles[i] && newFiles[i].name === orgNameGuess) {
+	              f = newFiles[i];
+	              break;
+	            }
+	          }
+	        }
+
+	        if (f) {
+	          var url = $doc.defaultView.URL.createObjectURL(f);
+	          blobUrls.push(url);
+	          // download 속성으로 파일명 지정 → 클릭 시 로컬로 저장됨
+	          previewLinks.push(
+	            '<a href="' + url + '" download="' + f.name + '">' + f.name + ' (미업로드)</a>'
+	          );
+	        } else {
+	          // 매칭 실패 시 텍스트만 표시 (원하면 여기서도 단순 표시 대신 안내문 넣어도 됨)
+	          if (orgNameGuess) {
+	            previewLinks.push(orgNameGuess + ' (미업로드)');
+	          }
+	        }
+	      });
 	    }
+
+	    // 4-4) UL에 없지만 input에만 존재하는 신규 파일도 표시하고 싶다면(옵션)
+//	          UL이 아직 갱신되기 전이라 누락될 수 있으니 보강
+	    if (newFiles.length > 0) {
+	      // 이미 링크 만든 이름은 제외
+	      var alreadyListed = {};
+	      previewLinks.join('\n').replace(/>([^<]+)</g, function(_, name){ alreadyListed[name] = true; });
+
+	      newFiles.forEach(function(f){
+	        if (!alreadyListed[f.name]) {
+	          var url2 = $doc.defaultView.URL.createObjectURL(f);
+	          blobUrls.push(url2);
+	          previewLinks.push(
+	            '<a href="' + url2 + '" download="' + f.name + '">' + f.name + ' (미업로드)</a>'
+	          );
+	        }
+	      });
+	    }
+
+	    // 4-5) 출력/표시 처리
+	    if (previewLinks.length > 0) {
+	      $prevFile.innerHTML = previewLinks.join('<br/>');
+	      if ($prevFileWrap) $prevFileWrap.style.display = 'table-row';
+	    } else {
+	      if ($prevFileWrap) $prevFileWrap.style.display = 'none';
+	      // 또는 대시 처리
+	      // $prevFile.textContent = '-';
+	    }
+
+	    // 4-6) 팝업이 닫힐 때 blob URL 해제
+	    $doc.defaultView.addEventListener('beforeunload', function(){
+	      blobUrls.forEach(function(u){
+	        try { $doc.defaultView.URL.revokeObjectURL(u); } catch (e) {}
+	      });
+	    });
+
 	    // ▲▲▲ [첨부파일] 미리보기 바인딩 추가 끝 ▲▲▲
 	    
-	    // ▼ [매뉴얼 첨부] 미리보기 바인딩 (insert/update/버전업 모두 지원)
+	    // ▼ [메뉴얼 첨부] 미리보기 바인딩
 		(() => {
-		  const esc = (s) => String(s)
-		    .replaceAll("&", "&amp;")
-		    .replaceAll("<", "&lt;")
-		    .replaceAll(">", "&gt;")
-		    .replaceAll('"', "&quot;")
-		    .replaceAll("'", "&#39;");
+		  // 필요시 이스케이프 (이미 있다면 생략 가능)
+		  function esc(s) {
+		    return String(s)
+		      .replaceAll("&", "&amp;")
+		      .replaceAll("<", "&lt;")
+		      .replaceAll(">", "&gt;")
+		      .replaceAll('"', "&quot;")
+		      .replaceAll("'", "&#39;");
+		  }
 		
-		  const manualNames = [];
+		  var $prevManual = $doc.getElementById("prev_manual");
+		  var $mul = document.getElementById("attach_file_manual_vu"); // 메뉴얼 UL
 		
-		  // 1) 새로 업로드한 파일들: name="manualFile" (id는 manualFileInput / manualFile_vu 등 다양)
-		  document.querySelectorAll('input[type="file"][name="manualFile"]').forEach(input => {
-		    Array.from(input.files || []).forEach(f => f?.name && manualNames.push(f.name));
+		  var previewLinks = [];
+		  var blobUrls = [];
+		
+		  // 1) UL에 표시된 항목 순회 (서버파일/신규파일 구분)
+		  if ($mul) {
+		    $mul.querySelectorAll("li").forEach(function(li){
+		      var manualId = li.getAttribute("data-id");            // 서버 파일 ID
+		      var manualOrgName = li.getAttribute("data-orgname");  // 원본 파일명          // 신규 파일 식별자
+		      // (1) 서버에 이미 존재하는 파일
+		      if (manualId && manualOrgName) {
+		        previewLinks.push(
+		          '<a href="javascript:downloadFile(\'' + manualId + '\')">' + esc(manualOrgName) + '</a>'
+		        );
+		        return;
+		      }
+		
+		      // (3) 정보가 부족한 예외 케이스 → 텍스트만
+		      var inferred = manualOrgName || (li.textContent || '').replace(/삭제/g, '').trim();
+		      if (inferred) {
+		        previewLinks.push(esc(inferred) + ' (미업로드)');
+		      }
+		    });
+		  }
+		
+		  // 2) input[name=manualFiles] 에만 있고 UL엔 아직 없는 신규 파일도 보강 표시
+		  var newManualFiles = [];
+		  document.querySelectorAll('input[type="file"][name="manualFiles"]').forEach(function(input){
+		    Array.from(input.files || []).forEach(function(f){
+		      if (f) newManualFiles.push(f);
+		    });
 		  });
 		
-		  // 2) UI 목록(드래그&드롭)에서 표시중인 파일명
-		  //    - 구버전: #attach_file_manual
-		  //    - 버전업: #attach_file_manual_vu
-		  const listIds = ["attach_file_manual_vu", "attach_file_manual"];
-		  for (const id of listIds) {
-		    const $ul = document.getElementById(id);
-		    if ($ul) {
-		      $ul.querySelectorAll("li").forEach(li => {
-		        // 삭제 아이콘/문구 제거 후 텍스트만
-		        const t = (li.textContent || "").replace(/삭제/g, "").trim();
-		        if (t) manualNames.push(t);
-		      });
-		      break; // 먼저 찾은 리스트만 사용
-		    }
+		  // 3) 출력
+		  if ($prevManual && previewLinks.length > 0) {
+		    $prevManual.innerHTML = previewLinks.join('<br/>');
+		  } else if ($prevManual) {
+		    // 필요 시 대시 처리
+		    // $prevManual.textContent = '-';
 		  }
 		
-		  // 3) 기존 유지용 hidden select
-		  //    - 구버전: #manualTempFileList
-		  //    - 버전업: #manualTempFileList_vu
-		  const selectIds = ["manualTempFileList_vu", "manualTempFileList"];
-		  for (const id of selectIds) {
-		    const $sel = document.getElementById(id);
-		    if ($sel && $sel.options?.length) {
-		      Array.from($sel.options).forEach(opt => {
-		        const t = (opt.text || "").trim();
-		        if (t) manualNames.push(t);
-		      });
-		      break;
-		    }
-		  }
-		
-		  // 4) 중복/공백 제거
-		  const uniqueManuals = Array.from(new Set(
-		    manualNames.map(s => s.trim()).filter(Boolean)
-		  ));
-		
-		  // 5) 미리보기 DOM 반영
-		  const $prevManual = $doc.getElementById("prev_manual");
-		  if (uniqueManuals.length > 0) {
-		    $prevManual.innerHTML = uniqueManuals.map(esc).join("<br/>"); // 쉼표로 원하면 ', ' 로 변경
-		  }
+		  // 4) 팝업 닫힐 때 Blob URL 정리
+		  $doc.defaultView.addEventListener('beforeunload', function(){
+		    blobUrls.forEach(function(u){
+		      try { $doc.defaultView.URL.revokeObjectURL(u); } catch(e){}
+		    });
+		  });
 		})();
 	    
 	    // 신규 원료
@@ -2278,13 +2376,13 @@ var selectedArr = new Array();
 	}
 	
 	  // 전역 배열이 없으면 초기화 (insert.jsp에서 이미 쓰는 네이밍 유지)
-	  window.manualFileArr = window.manualFileArr || [];                // 새로 추가한 매뉴얼 파일들
+	  window.manualFileArr = window.manualFileArr || [];                // 새로 추가한 메뉴얼 파일들
 	  window.manualFileTypeArr = window.manualFileTypeArr || [];
 	  window.manualDeletedFileIdArr = window.manualDeletedFileIdArr || [];
 	  window.manualDeletedFileArr = window.manualDeletedFileArr || [];
 	  window.manualDeletedFilePathArr = window.manualDeletedFilePathArr || [];
 
-	  // 매뉴얼 파일 추가: 화면 리스트/배열 둘 다 반영
+	  // 메뉴얼 파일 추가: 화면 리스트/배열 둘 다 반영
 	  function addManualFile(input) {
 	    var files = input.files;
 	    if (!files || !files.length) return;
@@ -2319,14 +2417,14 @@ var selectedArr = new Array();
 	  }
 	
 	/* =====================[ MANUAL 전용 전역 상태 ]===================== */
-	/** 새로 추가한 매뉴얼 파일들(아직 서버 미업로드) */
+	/** 새로 추가한 메뉴얼 파일들(아직 서버 미업로드) */
 	var manualAttachFileArr = [];
-	/** 기존 매뉴얼 파일 삭제용(서버에 이미 존재하던 것들) */
+	/** 기존 메뉴얼 파일 삭제용(서버에 이미 존재하던 것들) */
 	var manualDeletedFileIdArr   = [];
 	var manualDeletedFileArr     = [];   // 변경파일명(= FILE_NAME)
 	var manualDeletedFilePathArr = [];   // 경로(= FILE_PATH)
 
-	/* =====================[ 렌더링: 새로 추가한 매뉴얼 파일 ]============ */
+	/* =====================[ 렌더링: 새로 추가한 메뉴얼 파일 ]============ */
 	/** 기존(서버에 있던) li 는 건드리지 않고, 새로 추가한 것만 class=manual-new 로 다시 그림 */
 	function renderManualNewFiles() {
 	  // 새로 추가한 것들만 싹 지우고 다시 그리기
@@ -2390,7 +2488,7 @@ var selectedArr = new Array();
 	  renderManualNewFiles();
 	}
 
-	/* =====================[ 삭제: 기존(서버 저장된) 매뉴얼 파일 ]======= */
+	/* =====================[ 삭제: 기존(서버 저장된) 메뉴얼 파일 ]======= */
 	/** JSP에서 <a onclick="fn_removeManualTempFile(this,'${mfile.FILE_IDX}')"> 로 호출됨 */
 	function fn_removeManualTempFile(el, fileIdx) {
 	  var $li = $(el).closest('li');
@@ -2411,13 +2509,13 @@ var selectedArr = new Array();
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		메뉴개선완료보고서&nbsp;&nbsp;
-		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;메뉴 완료보고서&nbsp;&nbsp;
+		메뉴완료보고서 개정&nbsp;&nbsp;
+		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;메뉴완료보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position:relative">
-			<span class="title_s">Menu Update Doc</span><span class="title">메뉴개선완료보고서</span>
+			<span class="title_s">Menu Version Up Doc</span><span class="title">메뉴완료보고서 개정</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -2928,7 +3026,7 @@ var selectedArr = new Array();
 								<div id="fileList" class="file_box_pop" style="height: 120px; width: 100%; border-top-left-radius: 0px; border-top-right-radius: 0px; border-top: 1px solid rgb(221, 221, 221); box-sizing: border-box;" ondrop="drop(event)" ondragover="allowDrop(event)" ondragend="drogEnd(event)" ondragleave="drogEnd(event)">
 									<ul id="attatch_file">
 										<c:forEach items="${menuData.fileList}" var="fileList" varStatus="status">
-											<li data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}"><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${fileList.ORG_FILE_NAME}</li>
+											<li data-orgname="${fileList.ORG_FILE_NAME}" data-id="${fileList.FILE_IDX}" data-path="${fileList.FILE_PATH}" data-name="${fileList.FILE_NAME}"><a href="#none" onclick="fn_removeTempFile(this, '${fileList.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${fileList.ORG_FILE_NAME}</li>
 										</c:forEach>
 									</ul>	
 								</div>
@@ -2937,12 +3035,12 @@ var selectedArr = new Array();
 					</ul>
 				</div>
 				
-				<!-- ====================== 매뉴얼 (MANUAL) : versionUp.jsp ====================== -->
-				<div class="title2 mb20" style="width:90%;"><span class="txt">매뉴얼</span></div>
+				<!-- ====================== 메뉴얼 (MANUAL) : versionUp.jsp ====================== -->
+				<div class="title2 mb20" style="width:90%;"><span class="txt">메뉴얼</span></div>
 				<div class="list_detail">
 				  <ul>
 				    <li>
-				      <dt style="width: 20%">매뉴얼 파일</dt>
+				      <dt style="width: 20%">메뉴얼 파일</dt>
 				      <dd style="width: 80%;">
 				        <!-- 업로드 버튼: MENU 쪽과 id/name 절대 충돌 X -->
 				        <div class="add_file" id="add_file_manual_up_vu" style="width:100%">
@@ -2950,7 +3048,7 @@ var selectedArr = new Array();
 				            <!-- 컨트롤러에서 manualFile로 받는다면 name 그대로 사용 -->
 				            <input type="file" name="manualFile" id="manualFile_vu" multiple
 				                   onchange="addManualFile(this)" style="display:none">
-				            <label for="manualFile_vu">매뉴얼 등록 <img src="/resources/images/icon_add_file.png"></label>
+				            <label for="manualFile_vu">메뉴얼 등록 <img src="/resources/images/icon_add_file.png"></label>
 				          </span>
 				        </div>
 				
@@ -2963,7 +3061,7 @@ var selectedArr = new Array();
 						     ondragleave="drogEnd(event)">
 						  <ul id="attach_file_manual_vu">
 				            <c:forEach items="${menuData.manualFileList}" var="mfile" varStatus="status">
-				              <li data-path="${mfile.FILE_PATH}" data-name="${mfile.FILE_NAME}"><a href="#none" onclick="fn_removeManualTempFile(this, '${mfile.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${mfile.ORG_FILE_NAME}</li>
+				              <li data-orgname="${mfile.ORG_FILE_NAME}" data-id="${mfile.FILE_IDX}" data-path="${mfile.FILE_PATH}" data-name="${mfile.FILE_NAME}"><a href="#none" onclick="fn_removeManualTempFile(this, '${mfile.FILE_IDX}')"><img src="/resources/images/icon_del_file.png"></a>${mfile.ORG_FILE_NAME}</li>
 				            </c:forEach>
 				          </ul>
 				        </div>
@@ -3394,7 +3492,7 @@ var selectedArr = new Array();
 	<input id="erpItemType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px; margin-left: -55px; margin-top: -50px ">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeErpMatRayer()"></button></li>
@@ -3554,7 +3652,7 @@ var selectedArr = new Array();
 	<input id="searchType" type="hidden">
 	<div class="modal positionCenter" style="width: 900px; height: 600px">
 		<h5 style="position: relative">
-			<span class="title">원료코드 검색</span>
+			<span class="title">상품코드 검색</span>
 			<div class="top_btn_box">
 				<ul>
 					<li><button class="btn_madal_close" onClick="fn_closeMatRayer()"></button></li>
@@ -3563,7 +3661,7 @@ var selectedArr = new Array();
 		</h5>
 
 		<div id="matListDiv" class="code_box">
-			<input id="searchMatValue" type="text" class="code_input" onkeyup="bindDialogEnter(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
+			<input id="searchMatValue" type="text" class="code_input" onkeyup="bindDialogEnter2(event)" style="width: 300px;" placeholder="일부단어로 검색가능">
 			<img src="/resources/images/icon_code_search.png" onclick="searchMaterial()"/>
 			<div class="code_box2">
 				(<strong> <span id="matCount">0</span> </strong>)건
@@ -3627,7 +3725,7 @@ var selectedArr = new Array();
  	</select>
 	<div class="modal" style="	margin-left:-500px;width:1000px;height: 550px;margin-top:-300px">
 		<h5 style="position:relative">
-			<span class="title">개발완료보고서 결재 상신</span>
+			<span class="title">메뉴완료보고서 결재 상신</span>
 			<div  class="top_btn_box">
 				<ul><li><button class="btn_madal_close" onClick="apprClass.apprCancel(); return false;"></button></li></ul>
 			</div>

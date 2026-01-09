@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -153,10 +154,10 @@ public class ChemicalTestController {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray typeCodeArr = (JSONArray) parser.parse((String)param.get("typeCodeArr"));
-			JSONArray itemContentArr = (JSONArray) parser.parse((String)param.get("itemContentArr"));
-			JSONArray standard1Arr = (JSONArray) parser.parse((String)param.get("standard1Arr"));
-			JSONArray standard2Arr = (JSONArray) parser.parse((String)param.get("standard2Arr"));
+			JSONArray typeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("typeCodeArr")));
+			JSONArray itemContentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemContentArr")));
+			JSONArray standard1Arr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("standard1Arr")));
+			JSONArray standard2Arr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("standard2Arr")));
 			
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
@@ -328,10 +329,10 @@ public class ChemicalTestController {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray typeCodeArr = (JSONArray) parser.parse((String)param.get("typeCodeArr"));
-			JSONArray itemContentArr = (JSONArray) parser.parse((String)param.get("itemContentArr"));
-			JSONArray standard1Arr = (JSONArray) parser.parse((String)param.get("standard1Arr"));
-			JSONArray standard2Arr = (JSONArray) parser.parse((String)param.get("standard2Arr"));
+			JSONArray typeCodeArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("typeCodeArr")));
+			JSONArray itemContentArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("itemContentArr")));
+			JSONArray standard1Arr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("standard1Arr")));
+			JSONArray standard2Arr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("standard2Arr")));
 			
 			// 삭제할 파일 리스트도 파라미터에 함께 전달
 			param.put("deletedFileList", deletedFileList);

@@ -12,7 +12,9 @@
 					AND LEFT(EXCUTE_DATE, 7) = #{searchValue}
 				</when>
 				<when test="searchType.equals('searchColumnState')">
-					AND FN_GET_COLUMN_STATE_TEXT('COLUMN', COLUMN_STATE) LIKE CONCAT('%', #{searchValue}, '%')
+					<if test="searchValue.equals('업로드')">
+						AND FN_GET_COLUMN_STATE_TEXT('COLUMN', COLUMN_STATE) LIKE CONCAT('%', #{searchValue}, '%')
+					</if>
 				</when>
 			</choose>
 		</if>

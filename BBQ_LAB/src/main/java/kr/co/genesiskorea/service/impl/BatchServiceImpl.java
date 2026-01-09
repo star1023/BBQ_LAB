@@ -58,7 +58,9 @@ public class BatchServiceImpl implements BatchService {
 		importParams.put("I_DATUM", toDay);
         List<Map<String, Object>> returnList = batchDao.selectMaterial(importParams);
 		logger.debug("전체 RFC 처리 데이터 건수 : "+returnList.size());
-		batchDao.insertMaterial(returnList);
+		if( returnList.size() > 0 ) {
+			batchDao.insertMaterial(returnList);			
+		}
 	}
 
 	@Override
@@ -119,10 +121,10 @@ public class BatchServiceImpl implements BatchService {
 					if( titleCode != null && "e10".equals(titleCode) ) {	//e10 은 사장
 						roleCode = "5";
 						userType = "EXECUTIVE";
-					} else if( titleCode != null && "m10".equals(titleCode) ) {	//m10 상무
+					} else {
 						roleCode = "4";
 						userType = "EXECUTIVE";
-					} 
+					}
 				}
 				
 				//BBQ상품개발팀일 경우
@@ -170,4 +172,12 @@ public class BatchServiceImpl implements BatchService {
 
 		}
 	}
+
+	@Override
+	public void deleteHrUserMaster() {
+		// TODO Auto-generated method stub
+		batchDao.deleteHrUserMaster();
+	}
+	
+	
 }

@@ -7,7 +7,7 @@
 <% 
 	int rowLimit = 4;
 %>
-<title>상품설계변경 보고서 생성</title>
+<title>관능&품질평가 테스트 결과보고서 등록</title>
 <style>
 .positionCenter{
 	position: absolute;
@@ -695,6 +695,8 @@ table{font-size: 12px}
 	function fn_previewDataBinding(popup) {
 		  const $doc = popup.document;
 
+		  $doc.title = document.getElementById("title").value+'_관능품질평가테스트결과보고서';
+		  
 		  // 기본 항목 바인딩
 		  $doc.getElementById("prev_title").innerText = document.getElementById("title")?.value || '';
 		  $doc.getElementById("prev_companyName").innerText = document.getElementById("companyName")?.value || '';
@@ -854,13 +856,13 @@ table{font-size: 12px}
 </script>
 <div class="wrap_in" id="fixNextTag">
 	<span class="path">
-		상품설계변경 보고서&nbsp;&nbsp;
+		관능&품질평가 테스트 결과보고서 등록&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;보고서&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align: middle" />&nbsp;&nbsp;<a href="#none">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 		<h2 style="position:relative">
-			<span class="title_s">Sense & Quality Test Report</span><span class="title">관능&품질평가 테스트 결과보고서</span>
+			<span class="title_s">Sense & Quality Test Report</span><span class="title">관능&품질평가 테스트 결과보고서 등록</span>
 			<div class="top_btn_box">
 				<!-- <ul>
 					<li>

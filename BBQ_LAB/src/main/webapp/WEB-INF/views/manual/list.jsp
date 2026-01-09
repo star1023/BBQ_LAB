@@ -72,7 +72,7 @@
 		});
 		
 		//1.팀장인 경우
-		if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) {
+		/* if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) { */
 			//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
 			//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
 			//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
@@ -91,8 +91,17 @@
 				$("#searchUser_li").hide();
 				$("#searchTeam").selectOptions("");
 				$("#searchUser").selectOptions("");
+				$("#searchTeam_label").html("전체");
+				$("#searchUser_label").html("전체");
+			} else if( listType == 'all') {
+				$("#searchTeam_li").show();
+				$("#searchUser_li").show();
+				$("#searchTeam").selectOptions("");
+				$("#searchUser").selectOptions("");
+				$("#searchTeam_label").html("전체");
+				$("#searchUser_label").html("전체");
 			}
-		}
+		/* } */
 		fn_search();
 	}
 	
@@ -187,18 +196,17 @@
 			success:function(data) {
 				var html = "";
 				if (data.list.length > 0) {
-				    // DOC_NO 기준으로 그룹핑
-				    var docMap = {};
+					// ✅ 삽입 순서가 보존되는 Map 사용
+				    const docMap = new Map();
 
-				    data.list.forEach(function (item) {
-				        if (!docMap[item.DOC_NO]) {
-				            docMap[item.DOC_NO] = [];
-				        }
-				        docMap[item.DOC_NO].push(item);
-				    });
+				    data.list.forEach(item => {
+				        const key = item.DOC_NO;
+				        if (!docMap.has(key)) docMap.set(key, []);
+				        docMap.get(key).push(item);
+				      });
 
-				    Object.keys(docMap).forEach(function(docNo) {
-				        var versionList = docMap[docNo];
+				    for (const [docNo, versionListRaw] of docMap) {
+				        var versionList = [...versionListRaw];
 
 				        // IS_LAST = Y 인 아이템
 				        var lastVersion = versionList.find(v => v.IS_LAST === 'Y');
@@ -243,14 +251,23 @@
 				            html += "	<td>" + nvl(mainItem.DOC_USER_NAME, '&nbsp;') + "</td>";
 
 				            html += "	<td>";
-				            if (mainItem.REG_YN === 'N') {
-				                html += "		<li style=\"float:none; display:inline\">";
-				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_attachFileOpen('" + mainItem.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
-				                html += "		</li>";
+				            if( $('#listType').val() != 'all') {
+				            	if (mainItem.REG_YN === 'N') {
+					                html += "		<li style=\"float:none; display:inline\">";
+					                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_attachFileOpen('" + mainItem.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">메뉴얼등록</button>";
+					                html += "		</li>";
+					            } else {
+					                html += "		<li style=\"float:none; display:inline\">";
+					                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewFile('" + mainItem.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">메뉴얼확인</button>";
+					                html += "		</li>";
+					            }
 				            } else {
-				                html += "		<li style=\"float:none; display:inline\">";
-				                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewFile('" + mainItem.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
-				                html += "		</li>";
+				            	if (mainItem.REG_YN === 'N') {
+					            } else {
+					                html += "		<li style=\"float:none; display:inline\">";
+					                html += "			<button class=\"btn_doc\" onclick=\"javascript:fn_viewFile('" + mainItem.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">메뉴얼확인</button>";
+					                html += "		</li>";
+					            }
 				            }
 				            html += "	</td>";
 				            html += "</tr>";
@@ -274,22 +291,29 @@
 				            html += "  <td>" + nvl(item.REG_YN_TXT, '&nbsp;') + "</td>";
 				            html += "  <td>" + nvl(item.DOC_USER_NAME, '&nbsp;') + "</td>";
 				            html += "  <td>";
-
-				            if (item.REG_YN === 'N') {
-				                html += "    <li style=\"float:none; display:inline\">";
-				                html += "      <button class=\"btn_doc\" onclick=\"fn_attachFileOpen('" + item.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">매뉴얼등록</button>";
-				                html += "    </li>";
-				            } else {
-				                html += "    <li style=\"float:none; display:inline\">";
-				                html += "      <button class=\"btn_doc\" onclick=\"fn_viewFile('" + item.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">매뉴얼확인</button>";
-				                html += "    </li>";
-				            }
-
+							if($('#listType').val() != 'all'){
+								if (item.REG_YN === 'N') {
+					                html += "    <li style=\"float:none; display:inline\">";
+					                html += "      <button class=\"btn_doc\" onclick=\"fn_attachFileOpen('" + item.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc03.png\">메뉴얼등록</button>";
+					                html += "    </li>";
+					            } else {
+					                html += "    <li style=\"float:none; display:inline\">";
+					                html += "      <button class=\"btn_doc\" onclick=\"fn_viewFile('" + item.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">메뉴얼확인</button>";
+					                html += "    </li>";
+					            }
+							} else {
+								if (item.REG_YN === 'N') {
+					            } else {
+					                html += "    <li style=\"float:none; display:inline\">";
+					                html += "      <button class=\"btn_doc\" onclick=\"fn_viewFile('" + item.MENU_IDX + "')\"><img src=\"/resources/images/icon_doc05.png\">메뉴얼확인</button>";
+					                html += "    </li>";
+					            }
+							}
 				            html += "  </td>";
 				            html += "</tr>";
 				        });
 
-				    });
+				    };
 
 				    $("#list").html(html);
 				} else {
@@ -489,7 +513,7 @@
 	        cache: false,
 			success: function(result){
 				if( result.RESULT == 'S' ) {
-					alert("조리매뉴얼 등록이 완료되었습니다.");
+					alert("조리메뉴얼 등록이 완료되었습니다.");
 					$('#lab_loading').hide();
 					fn_loadList(1);
 				} else {
@@ -559,14 +583,14 @@
 
 <input type="hidden" name="pageNo" id="pageNo" value="${paramVO.pageNo}">
 <div class="wrap_in" id="fixNextTag">
-	<span class="path">매뉴얼&nbsp;&nbsp;
+	<span class="path">메뉴얼&nbsp;&nbsp;
 		<img src="/resources/images/icon_path.png" style="vertical-align:middle"/>&nbsp;&nbsp;
 		<a href="#">${strUtil:getSystemName()}</a>
 	</span>
 	<section class="type01">
 	<!-- 상세 페이지  start-->
 		<h2 style="position:relative"><span class="title_s">Manual List</span>
-			<span class="title">매뉴얼</span>
+			<span class="title">메뉴얼</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -594,16 +618,18 @@
 				<ul class="tab">
 					<c:choose>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "LEADER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
-							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 매뉴얼</li></a>
-							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴 매뉴얼</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 메뉴얼</li></a>
+							<a href="javascript:changeListType('team')" id="team"><li class="change">${userUtil:getDeptName(pageContext.request)} 메뉴얼</li></a>
+							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴 메뉴얼</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 메뉴얼</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "RESEARCHER"}'>
-							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 매뉴얼</li></a>
-							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴 매뉴얼</li></a>
+							<a href="javascript:changeListType('my')" id="my"><li class="select">'${userUtil:getUserName(pageContext.request)}님의 메뉴얼</li></a>
+							<a href="javascript:changeListType('share')" id="share"><li class="change">공동참여 메뉴 메뉴얼</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 메뉴얼</li></a>
 						</c:when>
 						<c:when test='${userUtil:getUserType(pageContext.request) == "EXECUTIVE"}'>
-							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 매뉴얼</li></a>
+							<a href="javascript:changeListType('all')" id="all"><li class="change">전체 메뉴얼</li></a>
 						</c:when>
 					</c:choose>	
 				</ul>
@@ -726,7 +752,7 @@
 							<th>메뉴명</th>
 							<th>버전</th>
 							<th>메뉴구분</th>
-							<th>매뉴얼등록상태</th>
+							<th>메뉴얼등록상태</th>
 							<th>담당자</th>
 							<th></th>
 						<tr>
@@ -752,7 +778,7 @@
 	<input type="hidden" name="menuIdx" id="menuIdx">
 	<div class="modal" style="margin-left: -355px; width: 710px; height: 480px; margin-top: -250px">
 		<h5 style="position: relative">
-			<span class="title">첨부파일 추가</span>
+			<span class="title">메뉴얼 파일 추가</span>
 			<div class="top_btn_box">
 				<ul>
 					<li>
@@ -801,7 +827,7 @@
 <div class="white_content" id="open3">
 	<div class="modal" style="	width: 550px;margin-left:-350px;height: 350px;margin-top:-200px;">
 		<h5 style="position:relative">
-			<span class="title">매뉴얼 상세 정보</span>
+			<span class="title">메뉴얼 상세 정보</span>
 			<div  class="top_btn_box">
 				<ul>
 					<li>
@@ -815,7 +841,7 @@
 				<li>
 					<div class="add_file2" style="width:97.5%">
 						<span class="" >
-							<label>매뉴얼</label>
+							<label>메뉴얼</label>
 						</span>						
 					</div>
 					<div class="file_box_pop" style=" height:120px; width:97.5%; border-top-left-radius:0px;border-top-right-radius:0px; border-top:1px solid #ddd;box-sizing:border-box;">

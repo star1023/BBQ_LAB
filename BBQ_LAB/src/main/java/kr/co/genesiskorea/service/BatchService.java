@@ -21,4 +21,6 @@ public interface BatchService {
 
 	void hrUserSync();
 
+	void deleteHrUserMaster();
+
 }

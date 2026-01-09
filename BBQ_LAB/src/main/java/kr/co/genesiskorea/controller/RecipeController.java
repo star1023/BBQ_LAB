@@ -16,6 +16,7 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -70,12 +71,15 @@ public class RecipeController {
 	@RequestMapping("/insertTmpRecipeAjax")
 	@ResponseBody
 	public Map<String, Object> insertTmpRecipeAjax(HttpServletRequest request, HttpServletResponse response
-			, @RequestParam(required=false) Map<String, Object> param) {
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(required=false) MultipartFile... file) {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			int recipeIdx = recipeService.insertTmpRecipe(param);			
+			param.put("fileType", fileType);
+			int recipeIdx = recipeService.insertTmpRecipe(param, file);			
 			returnMap.put("IDX", recipeIdx);
 			returnMap.put("RESULT", "S");
 		} catch( Exception e ) {
@@ -90,12 +94,15 @@ public class RecipeController {
 	@RequestMapping("/insertRecipeAjax")
 	@ResponseBody
 	public Map<String, Object> insertRecipeAjax(HttpServletRequest request, HttpServletResponse response
-			, @RequestParam(required=false) Map<String, Object> param) {
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(required=false) MultipartFile... file) {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			int recipeIdx = recipeService.insertRecipe(param);			
+			param.put("fileType", fileType);
+			int recipeIdx = recipeService.insertRecipe(param, file);			
 			returnMap.put("IDX", recipeIdx);
 			returnMap.put("RESULT", "S");
 		} catch( Exception e ) {
@@ -189,12 +196,15 @@ public class RecipeController {
 	@RequestMapping("/updateTmpRecipeAjax")
 	@ResponseBody
 	public Map<String, Object> updateTmpRecipeAjax(HttpServletRequest request, HttpServletResponse response
-			, @RequestParam(required=false) Map<String, Object> param) {
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(required=false) MultipartFile... file) {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			recipeService.updateTmpRecipe(param);			
+			param.put("fileType", fileType);
+			recipeService.updateTmpRecipe(param, file);			
 			returnMap.put("RESULT", "S");
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
@@ -208,12 +218,15 @@ public class RecipeController {
 	@RequestMapping("/updateRecipeAjax")
 	@ResponseBody
 	public Map<String, Object> updateRecipeAjax(HttpServletRequest request, HttpServletResponse response
-			, @RequestParam(required=false) Map<String, Object> param) {
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(required=false) MultipartFile... file) {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			recipeService.updateRecipe(param);			
+			param.put("fileType", fileType);
+			recipeService.updateRecipe(param, file);			
 			returnMap.put("RESULT", "S");
 		} catch( Exception e ) {
 			logger.error(StringUtil.getStackTrace(e, this.getClass()));
@@ -247,7 +260,9 @@ public class RecipeController {
 	}
 	
 	@RequestMapping(value = "/versionUp")
-	public String versionUp( HttpSession session,HttpServletRequest request, HttpServletResponse response, @RequestParam Map<String, Object> param, ModelMap model ) throws Exception{
+	public String versionUp( HttpSession session,HttpServletRequest request, HttpServletResponse response
+			, @RequestParam Map<String, Object> param
+			, ModelMap model ) throws Exception{
 		try {
 			logger.debug("param : {} ",param.toString());
 			Auth auth = AuthUtil.getAuth(request);
@@ -279,12 +294,17 @@ public class RecipeController {
 	@RequestMapping("/versionUpTmpRecipeAjax")
 	@ResponseBody
 	public Map<String, Object> versionUpTmpRecipeAjax(HttpServletRequest request, HttpServletResponse response
-			, @RequestParam(required=false) Map<String, Object> param) {
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(required=false) MultipartFile... file) {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			int idx = recipeService.versionUpTmpRecipe(param);			
+			param.put("fileType", fileType);
+			param.put("tempFile", tempFile);
+			int idx = recipeService.versionUpTmpRecipe(param, file);			
 			returnMap.put("IDX", idx);
 			returnMap.put("RESULT", "S");
 		} catch( Exception e ) {
@@ -299,12 +319,17 @@ public class RecipeController {
 	@RequestMapping("/versionUpRecipeAjax")
 	@ResponseBody
 	public Map<String, Object> versionUpRecipeAjax(HttpServletRequest request, HttpServletResponse response
-			, @RequestParam(required=false) Map<String, Object> param) {
+			, @RequestParam(required=false) Map<String, Object> param
+			, @RequestParam(value = "fileType", required = false) List<String> fileType
+			, @RequestParam(value = "tempFile", required = false) List<String> tempFile
+			, @RequestParam(required=false) MultipartFile... file) {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
-			int idx = recipeService.versionUpRecipe(param);			
+			param.put("fileType", fileType);
+			param.put("tempFile", tempFile);
+			int idx = recipeService.versionUpRecipe(param, file);			
 			returnMap.put("IDX", idx);
 			returnMap.put("RESULT", "S");
 		} catch( Exception e ) {

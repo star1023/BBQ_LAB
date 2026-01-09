@@ -53,7 +53,7 @@
 	
 	<sql id="whereMaterialList">
 		<if test="searchValue != null and searchValue != '' ">
-			AND MATERIAL_CODE LIKE CONCAT('%',#{searchValue},'%')
+			AND ( MATERIAL_CODE LIKE CONCAT('%',#{searchValue},'%') OR NAME LIKE CONCAT('%',#{searchValue},'%') )
 		</if>
 	</sql>
 	

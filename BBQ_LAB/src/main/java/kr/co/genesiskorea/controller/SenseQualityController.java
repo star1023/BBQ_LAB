@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.json.simple.JSONArray;
@@ -78,11 +79,11 @@ public class SenseQualityController {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray contentsDivArr = (JSONArray) parser.parse((String)param.get("contentsDivArr"));
-			JSONArray contentsResultArr = (JSONArray) parser.parse((String)param.get("contentsResultArr"));
-			JSONArray contentsNoteArr = (JSONArray) parser.parse((String)param.get("contentsNoteArr"));
-			JSONArray resultArr = (JSONArray) parser.parse((String)param.get("resultArr"));
-			JSONArray imageIndexArr = (JSONArray) parser.parse((String)param.get("imageIndexMap"));
+			JSONArray contentsDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsDivArr")));
+			JSONArray contentsResultArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsResultArr")));
+			JSONArray contentsNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsNoteArr")));
+			JSONArray resultArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("resultArr")));
+			JSONArray imageIndexArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("imageIndexMap")));
 			
 			
 			Auth auth = AuthUtil.getAuth(request);
@@ -118,11 +119,11 @@ public class SenseQualityController {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray contentsDivArr = (JSONArray) parser.parse((String)param.get("contentsDivArr"));
-			JSONArray contentsResultArr = (JSONArray) parser.parse((String)param.get("contentsResultArr"));
-			JSONArray contentsNoteArr = (JSONArray) parser.parse((String)param.get("contentsNoteArr"));
-			JSONArray resultArr = (JSONArray) parser.parse((String)param.get("resultArr"));
-			JSONArray imageIndexArr = (JSONArray) parser.parse((String)param.get("imageIndexMap"));
+			JSONArray contentsDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsDivArr")));
+			JSONArray contentsResultArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsResultArr")));
+			JSONArray contentsNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsNoteArr")));
+			JSONArray resultArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("resultArr")));
+			JSONArray imageIndexArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("imageIndexMap")));
 			
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());
@@ -222,13 +223,13 @@ public class SenseQualityController {
 
 	        // 1. JSON 파싱
 	        JSONParser parser = new JSONParser();
-	        JSONArray contentsDivArr       = (JSONArray) parser.parse((String) param.get("contentsDivArr"));
-	        JSONArray contentsResultArr    = (JSONArray) parser.parse((String) param.get("contentsResultArr"));
-	        JSONArray contentsNoteArr      = (JSONArray) parser.parse((String) param.get("contentsNoteArr"));
-	        JSONArray resultArr            = (JSONArray) parser.parse((String) param.get("resultArr"));
-	        JSONArray imageIndexArr        = (JSONArray) parser.parse((String) param.get("imageIndexMap"));
-	        JSONArray deleteImageIdxArr    = (JSONArray) parser.parse((String) param.get("deleteImageIdxList"));
-	        JSONArray deleteContentIdxArr  = (JSONArray) parser.parse((String) param.get("deleteContentIdxList"));
+	        JSONArray contentsDivArr       = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("contentsDivArr")));
+	        JSONArray contentsResultArr    = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("contentsResultArr")));
+	        JSONArray contentsNoteArr      = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("contentsNoteArr")));
+	        JSONArray resultArr            = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("resultArr")));
+	        JSONArray imageIndexArr        = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("imageIndexMap")));
+	        JSONArray deleteImageIdxArr    = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("deleteImageIdxList")));
+	        JSONArray deleteContentIdxArr  = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("deleteContentIdxList")));
 
 //	        System.err.println("📌 contentsDivArr: " + contentsDivArr);
 //	        System.err.println("📌 contentsResultArr: " + contentsResultArr);
@@ -349,13 +350,13 @@ public class SenseQualityController {
 		Map<String, Object> returnMap = new HashMap<String, Object>();
 		try {
 			JSONParser parser = new JSONParser();
-			JSONArray contentsDivArr = (JSONArray) parser.parse((String)param.get("contentsDivArr"));
-			JSONArray contentsResultArr = (JSONArray) parser.parse((String)param.get("contentsResultArr"));
-			JSONArray contentsNoteArr = (JSONArray) parser.parse((String)param.get("contentsNoteArr"));
-			JSONArray resultArr = (JSONArray) parser.parse((String)param.get("resultArr"));
-			JSONArray imageIndexArr        = (JSONArray) parser.parse((String) param.get("imageIndexMap"));
-	        JSONArray deleteImageIdxArr    = (JSONArray) parser.parse((String) param.get("deleteImageIdxList"));
-	        JSONArray deleteContentIdxArr  = (JSONArray) parser.parse((String) param.get("deleteContentIdxList"));
+			JSONArray contentsDivArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsDivArr")));
+			JSONArray contentsResultArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsResultArr")));
+			JSONArray contentsNoteArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("contentsNoteArr")));
+			JSONArray resultArr = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String)param.get("resultArr")));
+			JSONArray imageIndexArr        = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("imageIndexMap")));
+	        JSONArray deleteImageIdxArr    = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("deleteImageIdxList")));
+	        JSONArray deleteContentIdxArr  = (JSONArray) parser.parse(StringEscapeUtils.unescapeHtml4((String) param.get("deleteContentIdxList")));
 			
 			Auth auth = AuthUtil.getAuth(request);
 			param.put("userId", auth.getUserId());

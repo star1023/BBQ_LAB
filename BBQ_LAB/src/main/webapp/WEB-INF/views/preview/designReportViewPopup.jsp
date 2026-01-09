@@ -10,12 +10,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
+  <title>${designData.data.PRODUCT_NAME}_상품설계변경보고서</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <link rel="stylesheet" type="text/css" href="../../resources/css/preview.css"></link>
   <meta charset="UTF-8">
   <title>프린트 미리보기</title>
   <script type="text/javascript">
+  function downloadFile(idx){
+	location.href = '/common/fileDownload?idx='+idx;
+  }
+  
   function fn_printPreview() {
 	var printContent = document.getElementById("wrapper").outerHTML;
 
@@ -36,7 +40,7 @@
         '<head>' +
           '<title>인쇄 미리보기</title>' +
           '<link rel="stylesheet" type="text/css" href="../../resources/css/preview.css">' +
-          '<style>@media print { body { margin: 0; } }</style>' +
+          '<style>@media print { body { margin: 0; } a { text-decoration: none; color: black; }}</style>' +
         '</head>' +
         '<body onload="window.focus(); window.print();">' +
           printContent +
@@ -247,7 +251,7 @@
 		<div class="mainTable">
 			<table>
 				<tr>
-					<td><pre>${designData.data.CONTENTS}</pre></td>
+					<td>${strUtil:getHtmlBr(designData.data.CONTENTS)}</td>
 				</tr>
 			</table>
 		</div>

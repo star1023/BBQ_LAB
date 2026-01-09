@@ -7,8 +7,8 @@
 <script type="text/javascript" src="/resources/js/appr/apprClass.js?v=<%= System.currentTimeMillis()%>"></script>
 <script type="text/javascript">
 	var PARAM = {
-		type : '${paramVO.type}',
-		state : '${paramVO.state}'
+		type : "${paramVO.type}",
+		state : "${paramVO.state}"
 	};
 	$(document).ready(function(){
 		loadCount();

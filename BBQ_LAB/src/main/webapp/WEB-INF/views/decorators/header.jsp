@@ -244,13 +244,37 @@ JSONArray USER_MENU = (JSONArray)session.getAttribute("USER_MENU");
 							success:function(data) {
 								if( data.length > 0 ) {
 									var html = "";
+									html += "<ul>";
 									data.forEach(function (item) {
 										html += "<li>";
-										html += item.NOTI_IDX+" / "+item.TYPE+item.TYPE_TXT+item.MESSAGE;
+										if( item.TYPE == 'A' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_COMP' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_REF' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'COND_APPR' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_COMP' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else if( item.TYPE == 'APPR_CANCEL' ) {
+											html += item.TITLE +"("+item.DOC_NAME+")"+ item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										} else {
+											html += item.MESSAGE +"("+item.REG_USER_NAME+" / "+item.REG_DATE+")";
+										}
+										//html += item.NOTI_IDX+" / "+item.TYPE+item.TYPE_TXT+item.MESSAGE;
 										html += "</li>";
-									});									
-									$("#popNoti").html(html);
-									openDialog('dialog_noti');	
+									});
+									html += "</ul>";
+									 $("#popupAlramContent").empty().html(html);
+									//$("#popNoti").html(html);
+									//openDialog('dialog_noti');
+									// 팝업 열기 + fadeIn 후 바로 스크롤 0
+									 $("#alramLayerPopup").fadeIn(function () {
+									     $(".popup-container").scrollTop(0); // ✅ 정확한 스크롤 타겟
+									 });
 								}
 							},
 							error:function(request, status, errorThrown){

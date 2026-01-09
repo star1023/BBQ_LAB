@@ -7,12 +7,57 @@
 <script type="text/javascript">
 $(document).ready(function(){
 	fn_loadList(1);
-	
+	fn_loadTeam();
+	fn_changeCategory(2,1);
 	if( '${userUtil:getUserType(pageContext.request)}' == 'EXECUTIVE' ) {
 		$("#searchTeam_li").show();
 		$("#searchUser_li").show();
 	}
 });
+
+function fn_loadSearchCategory(pIdx, level) {
+	
+	if( level == 2 ) {
+		$("#searchCategory"+(level+1)).removeOption(/./);
+		$("#searchCategory"+(level+1)+"_div").hide();
+	}
+	
+	if( pIdx == '' ) {
+		$("#searchCategory"+level).removeOption(/./);
+		$("#searchCategory"+level+"_div").hide();
+		return;
+	}
+	
+	var URL = "../common/selectCategoryByPIdAjax";
+	$.ajax({
+		type:"POST",
+		url:URL,
+		data:{
+			pIdx : pIdx
+		},
+		dataType:"json",
+		async:false,
+		success:function(data) {
+			var list = data;
+			$("#searchCategory"+level).removeOption(/./);
+			$("#searchCategory"+level).addOption("", "전체", false);
+			$("#searchCategory"+level+"_label").html("전체");
+			if( list.length > 0 ) {
+				$("#searchCategory"+level+"_div").show();
+				$.each(list, function( index, value ){ //배열-> index, value
+					$("#searchCategory"+level).addOption(value.CATEGORY_IDX, value.CATEGORY_NAME, false);
+				});
+			}
+		},
+		error:function(request, status, errorThrown){
+				alert("오류가 발생하였습니다.\n다시 시도하여 주세요.");
+		}			
+	});
+}
+
+function fn_changeCategory(obj,level){
+	fn_loadSearchCategory($(obj).selectedValues()[0], level);
+}
 
 function changeListType(listType){
 	$('input[name=listType]').val(listType);
@@ -26,7 +71,7 @@ function changeListType(listType){
 	});
 	
 	//1.팀장인 경우
-	if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) {
+	/* if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) { */
 		//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
 		//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
 		//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
@@ -45,13 +90,17 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		} else if( listType == 'search' ) {
-			$("#searchTeam_li").hide();
-			$("#searchUser_li").hide();
+			$("#searchTeam_li").show();
+			$("#searchUser_li").show();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		}
-	}
+	/* } */
 	fn_search();
 }
 
@@ -130,6 +179,7 @@ function fn_loadList(pageNo) {
 		data:{
 			"searchType" : $("#searchType").selectedValues()[0]
 			, "searchValue" : $("#searchValue").val()
+			, "searchTitle" : $("#searchTitle").val()
 			, "searchFileTxt" : $("#searchFileTxt").val()
 			, "listType":$('#listType').val()
 			, "searchTeam" : $("#searchTeam").selectedValues()[0]
@@ -261,6 +311,16 @@ function fn_viewHistory(idx) {
 					html += " PDF 다운로드 되었습니다.";
 				} else if( item.HISTORY_TYPE == 'T' ) {
 					html += " 임시저장 되었습니다.";
+				} else if( item.HISTORY_TYPE == 'A' || item.HISTORY_TYPE == 'APPR' ) {
+					html += " 결재 상신 되었습니다. (상신자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_CAN' ) {
+					html += " 결재 상신취소 되었습니다. (상신자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_COMP' ) {
+					html += " 결재 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'COND_APPR' ) {
+					html += " 결재 부분 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_RET' ) {
+					html += " 결재 반려 되었습니다. (결재자: " + item.USER_NAME + ")";
 				} else if( item.HISTORY_TYPE == 'F' ) {
 					html += " 담당자 이관 되었습니다.";
 				}
@@ -279,7 +339,6 @@ function fn_viewHistory(idx) {
 function fn_searchClear() {
     // Select 요소들 초기화
     const selects = [
-        { id: 'searchType1', labelId: 'searchType1_label' },
         { id: 'searchTeam', labelId: 'searchTeam_label' },
         { id: 'searchUser', labelId: 'searchUser_label' },
         { id: 'viewCount', labelId: 'viewCount_label' }
@@ -356,18 +415,9 @@ function fn_searchClear() {
 			<div class="search_box" >
 				<ul style="border-top:none">
 					<li>
-						<dt>키워드</dt>
+						<dt>제목</dt>
 						<dd >
-							<!-- 초기값은 보통으로 -->
-							<div class="selectbox" style="width:100px;">  
-								<label for="searchType" id="searchType_label">선택</label> 
-								<select name="searchType" id="searchType">
-									<option value="">선택</option>
-									<option value="searchName">제품명</option>
-									<option value="searchTitle">제목</option>
-								</select>
-							</div>
-							<input type="text" name="searchValue" id="searchValue" value="" style="width:180px; margin-left:5px;">
+							<input type="text" name="searchTitle" id="searchTitle" value="" style="width:180px; margin-left:5px;">
 						</dd>
 					</li>
 					<li id="searchTeam_li" style="display:none">

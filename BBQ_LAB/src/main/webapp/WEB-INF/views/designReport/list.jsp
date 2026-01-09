@@ -72,7 +72,7 @@ function changeListType(listType){
 	});
 	
 	//1.팀장인 경우
-	if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) {
+	/* if( '${userUtil:getUserType(pageContext.request)}' == 'LEADER' ) { */
 		//2.my일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
 		//3.team일 경우 담당자 항목을 표시처리하고 팀을 로그인한 팀 코드로 설정 후 사용자를 조회한다.
 		//4.share일 경우 팀, 담당자 항목을 숨김처리하고, 셀렉트값을 초기화 한다.
@@ -91,13 +91,17 @@ function changeListType(listType){
 			$("#searchUser_li").hide();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		} else if( listType == 'search' ) {
-			$("#searchTeam_li").hide();
-			$("#searchUser_li").hide();
+			$("#searchTeam_li").show();
+			$("#searchUser_li").show();
 			$("#searchTeam").selectOptions("");
 			$("#searchUser").selectOptions("");
+			$("#searchTeam_label").html("전체");
+			$("#searchUser_label").html("전체");
 		}
-	}
+	/* } */
 	fn_search();
 }
 
@@ -240,7 +244,7 @@ function fn_loadList(pageNo) {
 				});				
 			} else {
 				$("#list").html(html);
-				html += "<tr><td align='center' colspan='5'>데이터가 없습니다.</td></tr>";
+				html += "<tr><td align='center' colspan='7'>데이터가 없습니다.</td></tr>";
 			}			
 			$("#list").html(html);
 			$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
@@ -249,7 +253,7 @@ function fn_loadList(pageNo) {
 		error:function(request, status, errorThrown){
 			var html = "";
 			$("#list").html(html);
-			html += "<tr><td align='center' colspan='5'>오류가 발생하였습니다.</td></tr>";
+			html += "<tr><td align='center' colspan='7'>오류가 발생하였습니다.</td></tr>";
 			$("#list").html(html);
 			$('.page_navi').html(data.navi.prevBlock+data.navi.pageList+data.navi.nextBlock);
 			$('#pageNo').val(data.navi.pageNo);
@@ -364,6 +368,16 @@ function fn_viewHistory(idx, docNo) {
 					html += " PDF 다운로드 되었습니다.";
 				} else if( item.HISTORY_TYPE == 'U' ) {
 					html += " 수정되었습니다.";
+				} else if( item.HISTORY_TYPE == 'A' || item.HISTORY_TYPE == 'APPR' ) {
+					html += " 결재 상신 되었습니다. (상신자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_CAN' ) {
+					html += " 결재 상신취소 되었습니다. (상신자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_COMP' ) {
+					html += " 결재 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'COND_APPR' ) {
+					html += " 결재 부분 승인 되었습니다. (결재자: " + item.USER_NAME + ")";
+				} else if( item.HISTORY_TYPE == 'APPR_RET' ) {
+					html += " 결재 반려 되었습니다. (결재자: " + item.USER_NAME + ")";
 				} else if( item.HISTORY_TYPE == 'F' ) {
 					html += " 담당자 이관 되었습니다.";
 				} 
@@ -465,7 +479,7 @@ function fn_searchClear() {
 								<select name="searchType" id="searchType">
 									<option value="">선택</option>
 									<option value="searchName">제품명</option>
-									<option value="searchCode">제품코드</option>
+									<!-- <option value="searchCode">제품코드</option> -->
 								</select>
 							</div>
 							<input type="text" name="searchValue" id="searchValue" value="" style="width:180px; margin-left:5px;">

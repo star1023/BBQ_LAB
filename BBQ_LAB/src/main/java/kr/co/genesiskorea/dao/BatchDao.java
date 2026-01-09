@@ -33,4 +33,6 @@ public interface BatchDao {
 
 	void insertHrUser(List<Map<String, Object>> userList);
 
+	void deleteHrUserMaster();
+
 }
